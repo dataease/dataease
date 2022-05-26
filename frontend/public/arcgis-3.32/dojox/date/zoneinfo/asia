@@ -1,0 +1,720 @@
+Rule	EUAsia	1981	max	-	Mar	lastSun	 1:00u	1:00	S
+Rule	EUAsia	1979	1995	-	Sep	lastSun	 1:00u	0	-
+Rule	EUAsia	1996	max	-	Oct	lastSun	 1:00u	0	-
+Rule E-EurAsia	1981	max	-	Mar	lastSun	 0:00	1:00	S
+Rule E-EurAsia	1979	1995	-	Sep	lastSun	 0:00	0	-
+Rule E-EurAsia	1996	max	-	Oct	lastSun	 0:00	0	-
+Rule RussiaAsia	1981	1984	-	Apr	1	 0:00	1:00	S
+Rule RussiaAsia	1981	1983	-	Oct	1	 0:00	0	-
+Rule RussiaAsia	1984	1991	-	Sep	lastSun	 2:00s	0	-
+Rule RussiaAsia	1985	1991	-	Mar	lastSun	 2:00s	1:00	S
+Rule RussiaAsia	1992	only	-	Mar	lastSat	23:00	1:00	S
+Rule RussiaAsia	1992	only	-	Sep	lastSat	23:00	0	-
+Rule RussiaAsia	1993	max	-	Mar	lastSun	 2:00s	1:00	S
+Rule RussiaAsia	1993	1995	-	Sep	lastSun	 2:00s	0	-
+Rule RussiaAsia	1996	max	-	Oct	lastSun	 2:00s	0	-
+Zone	Asia/Kabul	4:36:48 -	LMT	1890
+			4:00	-	AFT	1945
+			4:30	-	AFT
+Zone	Asia/Yerevan	2:58:00 -	LMT	1924 May  2
+			3:00	-	YERT	1957 Mar    # Yerevan Time
+			4:00 RussiaAsia YER%sT	1991 Mar 31 2:00s
+			3:00	1:00	YERST	1991 Sep 23 # independence
+			3:00 RussiaAsia	AM%sT	1995 Sep 24 2:00s
+			4:00	-	AMT	1997
+			4:00 RussiaAsia	AM%sT
+Rule	Azer	1997	max	-	Mar	lastSun	 4:00	1:00	S
+Rule	Azer	1997	max	-	Oct	lastSun	 5:00	0	-
+Zone	Asia/Baku	3:19:24 -	LMT	1924 May  2
+			3:00	-	BAKT	1957 Mar    # Baku Time
+			4:00 RussiaAsia BAK%sT	1991 Mar 31 2:00s
+			3:00	1:00	BAKST	1991 Aug 30 # independence
+			3:00 RussiaAsia	AZ%sT	1992 Sep lastSat 23:00
+			4:00	-	AZT	1996 # Azerbaijan time
+			4:00	EUAsia	AZ%sT	1997
+			4:00	Azer	AZ%sT
+Zone	Asia/Bahrain	3:22:20 -	LMT	1920		# Al Manamah
+			4:00	-	GST	1972 Jun
+			3:00	-	AST
+Zone	Asia/Dhaka	6:01:40 -	LMT	1890
+			5:53:20	-	HMT	1941 Oct    # Howrah Mean Time?
+			6:30	-	BURT	1942 May 15 # Burma Time
+			5:30	-	IST	1942 Sep
+			6:30	-	BURT	1951 Sep 30
+			6:00	-	DACT	1971 Mar 26 # Dacca Time
+			6:00	-	BDT	2009 Jun 19 23:00 # Bangladesh Time
+			6:00	1:00	BDST	2010
+			6:00	-	BDT
+Zone	Asia/Thimphu	5:58:36 -	LMT	1947 Aug 15 # or Thimbu
+			5:30	-	IST	1987 Oct
+			6:00	-	BTT	# Bhutan Time
+Zone	Indian/Chagos	4:49:40	-	LMT	1907
+			5:00	-	IOT	1996 # BIOT Time
+			6:00	-	IOT
+Zone	Asia/Brunei	7:39:40 -	LMT	1926 Mar   # Bandar Seri Begawan
+			7:30	-	BNT	1933
+			8:00	-	BNT
+Zone	Asia/Rangoon	6:24:40 -	LMT	1880		# or Yangon
+			6:24:36	-	RMT	1920	   # Rangoon Mean Time?
+			6:30	-	BURT	1942 May   # Burma Time
+			9:00	-	JST	1945 May 3
+			6:30	-	MMT		   # Myanmar Time
+Zone	Asia/Phnom_Penh	6:59:40 -	LMT	1906 Jun  9
+			7:06:20	-	SMT	1911 Mar 11 0:01 # Saigon MT?
+			7:00	-	ICT	1912 May
+			8:00	-	ICT	1931 May
+			7:00	-	ICT
+Rule	Shang	1940	only	-	Jun	 3	0:00	1:00	D
+Rule	Shang	1940	1941	-	Oct	 1	0:00	0	S
+Rule	Shang	1941	only	-	Mar	16	0:00	1:00	D
+Rule	PRC	1986	only	-	May	 4	0:00	1:00	D
+Rule	PRC	1986	1991	-	Sep	Sun>=11	0:00	0	S
+Rule	PRC	1987	1991	-	Apr	Sun>=10	0:00	1:00	D
+Zone	Asia/Harbin	8:26:44	-	LMT	1928 # or Haerbin
+			8:30	-	CHAT	1932 Mar # Changbai Time
+			8:00	-	CST	1940
+			9:00	-	CHAT	1966 May
+			8:30	-	CHAT	1980 May
+			8:00	PRC	C%sT
+Zone	Asia/Shanghai	8:05:52	-	LMT	1928
+			8:00	Shang	C%sT	1949
+			8:00	PRC	C%sT
+Zone	Asia/Chongqing	7:06:20	-	LMT	1928 # or Chungking
+			7:00	-	LONT	1980 May # Long-shu Time
+			8:00	PRC	C%sT
+Zone	Asia/Urumqi	5:50:20	-	LMT	1928 # or Urumchi
+			6:00	-	URUT	1980 May # Urumqi Time
+			8:00	PRC	C%sT
+Zone	Asia/Kashgar	5:03:56	-	LMT	1928 # or Kashi or Kaxgar
+			5:30	-	KAST	1940	 # Kashgar Time
+			5:00	-	KAST	1980 May
+			8:00	PRC	C%sT
+Rule	HK	1946	only	-	Apr	20	3:30	1:00	S
+Rule	HK	1946	only	-	Dec	1	3:30	0	-
+Rule	HK	1947	only	-	Apr	13	3:30	1:00	S
+Rule	HK	1947	only	-	Dec	30	3:30	0	-
+Rule	HK	1948	only	-	May	2	3:30	1:00	S
+Rule	HK	1948	1952	-	Oct	lastSun	3:30	0	-
+Rule	HK	1949	1953	-	Apr	Sun>=1	3:30	1:00	S
+Rule	HK	1953	only	-	Nov	1	3:30	0	-
+Rule	HK	1954	1964	-	Mar	Sun>=18	3:30	1:00	S
+Rule	HK	1954	only	-	Oct	31	3:30	0	-
+Rule	HK	1955	1964	-	Nov	Sun>=1	3:30	0	-
+Rule	HK	1965	1977	-	Apr	Sun>=16	3:30	1:00	S
+Rule	HK	1965	1977	-	Oct	Sun>=16	3:30	0	-
+Rule	HK	1979	1980	-	May	Sun>=8	3:30	1:00	S
+Rule	HK	1979	1980	-	Oct	Sun>=16	3:30	0	-
+Zone	Asia/Hong_Kong	7:36:36 -	LMT	1904 Oct 30
+			8:00	HK	HK%sT
+Rule	Taiwan	1945	1951	-	May	1	0:00	1:00	D
+Rule	Taiwan	1945	1951	-	Oct	1	0:00	0	S
+Rule	Taiwan	1952	only	-	Mar	1	0:00	1:00	D
+Rule	Taiwan	1952	1954	-	Nov	1	0:00	0	S
+Rule	Taiwan	1953	1959	-	Apr	1	0:00	1:00	D
+Rule	Taiwan	1955	1961	-	Oct	1	0:00	0	S
+Rule	Taiwan	1960	1961	-	Jun	1	0:00	1:00	D
+Rule	Taiwan	1974	1975	-	Apr	1	0:00	1:00	D
+Rule	Taiwan	1974	1975	-	Oct	1	0:00	0	S
+Rule	Taiwan	1980	only	-	Jun	30	0:00	1:00	D
+Rule	Taiwan	1980	only	-	Sep	30	0:00	0	S
+Zone	Asia/Taipei	8:06:00 -	LMT	1896 # or Taibei or T'ai-pei
+			8:00	Taiwan	C%sT
+Rule	Macau	1961	1962	-	Mar	Sun>=16	3:30	1:00	S
+Rule	Macau	1961	1964	-	Nov	Sun>=1	3:30	0	-
+Rule	Macau	1963	only	-	Mar	Sun>=16	0:00	1:00	S
+Rule	Macau	1964	only	-	Mar	Sun>=16	3:30	1:00	S
+Rule	Macau	1965	only	-	Mar	Sun>=16	0:00	1:00	S
+Rule	Macau	1965	only	-	Oct	31	0:00	0	-
+Rule	Macau	1966	1971	-	Apr	Sun>=16	3:30	1:00	S
+Rule	Macau	1966	1971	-	Oct	Sun>=16	3:30	0	-
+Rule	Macau	1972	1974	-	Apr	Sun>=15	0:00	1:00	S
+Rule	Macau	1972	1973	-	Oct	Sun>=15	0:00	0	-
+Rule	Macau	1974	1977	-	Oct	Sun>=15	3:30	0	-
+Rule	Macau	1975	1977	-	Apr	Sun>=15	3:30	1:00	S
+Rule	Macau	1978	1980	-	Apr	Sun>=15	0:00	1:00	S
+Rule	Macau	1978	1980	-	Oct	Sun>=15	0:00	0	-
+Zone	Asia/Macau	7:34:20 -	LMT	1912
+			8:00	Macau	MO%sT	1999 Dec 20 # return to China
+			8:00	PRC	C%sT
+Rule	Cyprus	1975	only	-	Apr	13	0:00	1:00	S
+Rule	Cyprus	1975	only	-	Oct	12	0:00	0	-
+Rule	Cyprus	1976	only	-	May	15	0:00	1:00	S
+Rule	Cyprus	1976	only	-	Oct	11	0:00	0	-
+Rule	Cyprus	1977	1980	-	Apr	Sun>=1	0:00	1:00	S
+Rule	Cyprus	1977	only	-	Sep	25	0:00	0	-
+Rule	Cyprus	1978	only	-	Oct	2	0:00	0	-
+Rule	Cyprus	1979	1997	-	Sep	lastSun	0:00	0	-
+Rule	Cyprus	1981	1998	-	Mar	lastSun	0:00	1:00	S
+Zone	Asia/Nicosia	2:13:28 -	LMT	1921 Nov 14
+			2:00	Cyprus	EE%sT	1998 Sep
+			2:00	EUAsia	EE%sT
+Link	Asia/Nicosia	Europe/Nicosia
+Zone	Asia/Tbilisi	2:59:16 -	LMT	1880
+			2:59:16	-	TBMT	1924 May  2 # Tbilisi Mean Time
+			3:00	-	TBIT	1957 Mar    # Tbilisi Time
+			4:00 RussiaAsia TBI%sT	1991 Mar 31 2:00s
+			3:00	1:00	TBIST	1991 Apr  9 # independence
+			3:00 RussiaAsia GE%sT	1992 # Georgia Time
+			3:00 E-EurAsia	GE%sT	1994 Sep lastSun
+			4:00 E-EurAsia	GE%sT	1996 Oct lastSun
+			4:00	1:00	GEST	1997 Mar lastSun
+			4:00 E-EurAsia	GE%sT	2004 Jun 27
+			3:00 RussiaAsia	GE%sT	2005 Mar lastSun 2:00
+			4:00	-	GET
+Zone	Asia/Dili	8:22:20 -	LMT	1912
+			8:00	-	TLT	1942 Feb 21 23:00 # E Timor Time
+			9:00	-	JST	1945 Sep 23
+			9:00	-	TLT	1976 May  3
+			8:00	-	CIT	2000 Sep 17 00:00
+			9:00	-	TLT
+Zone	Asia/Kolkata	5:53:28 -	LMT	1880	# Kolkata
+			5:53:20	-	HMT	1941 Oct    # Howrah Mean Time?
+			6:30	-	BURT	1942 May 15 # Burma Time
+			5:30	-	IST	1942 Sep
+			5:30	1:00	IST	1945 Oct 15
+			5:30	-	IST
+Zone Asia/Jakarta	7:07:12 -	LMT	1867 Aug 10
+			7:07:12	-	JMT	1923 Dec 31 23:47:12 # Jakarta
+			7:20	-	JAVT	1932 Nov	 # Java Time
+			7:30	-	WIT	1942 Mar 23
+			9:00	-	JST	1945 Sep 23
+			7:30	-	WIT	1948 May
+			8:00	-	WIT	1950 May
+			7:30	-	WIT	1964
+			7:00	-	WIT
+Zone Asia/Pontianak	7:17:20	-	LMT	1908 May
+			7:17:20	-	PMT	1932 Nov    # Pontianak MT
+			7:30	-	WIT	1942 Jan 29
+			9:00	-	JST	1945 Sep 23
+			7:30	-	WIT	1948 May
+			8:00	-	WIT	1950 May
+			7:30	-	WIT	1964
+			8:00	-	CIT	1988 Jan  1
+			7:00	-	WIT
+Zone Asia/Makassar	7:57:36 -	LMT	1920
+			7:57:36	-	MMT	1932 Nov    # Macassar MT
+			8:00	-	CIT	1942 Feb  9
+			9:00	-	JST	1945 Sep 23
+			8:00	-	CIT
+Zone Asia/Jayapura	9:22:48 -	LMT	1932 Nov
+			9:00	-	EIT	1944 Sep  1
+			9:30	-	CST	1964
+			9:00	-	EIT
+Rule	Iran	1978	1980	-	Mar	21	0:00	1:00	D
+Rule	Iran	1978	only	-	Oct	21	0:00	0	S
+Rule	Iran	1979	only	-	Sep	19	0:00	0	S
+Rule	Iran	1980	only	-	Sep	23	0:00	0	S
+Rule	Iran	1991	only	-	May	 3	0:00	1:00	D
+Rule	Iran	1992	1995	-	Mar	22	0:00	1:00	D
+Rule	Iran	1991	1995	-	Sep	22	0:00	0	S
+Rule	Iran	1996	only	-	Mar	21	0:00	1:00	D
+Rule	Iran	1996	only	-	Sep	21	0:00	0	S
+Rule	Iran	1997	1999	-	Mar	22	0:00	1:00	D
+Rule	Iran	1997	1999	-	Sep	22	0:00	0	S
+Rule	Iran	2000	only	-	Mar	21	0:00	1:00	D
+Rule	Iran	2000	only	-	Sep	21	0:00	0	S
+Rule	Iran	2001	2003	-	Mar	22	0:00	1:00	D
+Rule	Iran	2001	2003	-	Sep	22	0:00	0	S
+Rule	Iran	2004	only	-	Mar	21	0:00	1:00	D
+Rule	Iran	2004	only	-	Sep	21	0:00	0	S
+Rule	Iran	2005	only	-	Mar	22	0:00	1:00	D
+Rule	Iran	2005	only	-	Sep	22	0:00	0	S
+Rule	Iran	2008	only	-	Mar	21	0:00	1:00	D
+Rule	Iran	2008	only	-	Sep	21	0:00	0	S
+Rule	Iran	2009	2011	-	Mar	22	0:00	1:00	D
+Rule	Iran	2009	2011	-	Sep	22	0:00	0	S
+Rule	Iran	2012	only	-	Mar	21	0:00	1:00	D
+Rule	Iran	2012	only	-	Sep	21	0:00	0	S
+Rule	Iran	2013	2015	-	Mar	22	0:00	1:00	D
+Rule	Iran	2013	2015	-	Sep	22	0:00	0	S
+Rule	Iran	2016	only	-	Mar	21	0:00	1:00	D
+Rule	Iran	2016	only	-	Sep	21	0:00	0	S
+Rule	Iran	2017	2019	-	Mar	22	0:00	1:00	D
+Rule	Iran	2017	2019	-	Sep	22	0:00	0	S
+Rule	Iran	2020	only	-	Mar	21	0:00	1:00	D
+Rule	Iran	2020	only	-	Sep	21	0:00	0	S
+Rule	Iran	2021	2023	-	Mar	22	0:00	1:00	D
+Rule	Iran	2021	2023	-	Sep	22	0:00	0	S
+Rule	Iran	2024	only	-	Mar	21	0:00	1:00	D
+Rule	Iran	2024	only	-	Sep	21	0:00	0	S
+Rule	Iran	2025	2027	-	Mar	22	0:00	1:00	D
+Rule	Iran	2025	2027	-	Sep	22	0:00	0	S
+Rule	Iran	2028	2029	-	Mar	21	0:00	1:00	D
+Rule	Iran	2028	2029	-	Sep	21	0:00	0	S
+Rule	Iran	2030	2031	-	Mar	22	0:00	1:00	D
+Rule	Iran	2030	2031	-	Sep	22	0:00	0	S
+Rule	Iran	2032	2033	-	Mar	21	0:00	1:00	D
+Rule	Iran	2032	2033	-	Sep	21	0:00	0	S
+Rule	Iran	2034	2035	-	Mar	22	0:00	1:00	D
+Rule	Iran	2034	2035	-	Sep	22	0:00	0	S
+Rule	Iran	2036	2037	-	Mar	21	0:00	1:00	D
+Rule	Iran	2036	2037	-	Sep	21	0:00	0	S
+Zone	Asia/Tehran	3:25:44	-	LMT	1916
+			3:25:44	-	TMT	1946	# Tehran Mean Time
+			3:30	-	IRST	1977 Nov
+			4:00	Iran	IR%sT	1979
+			3:30	Iran	IR%sT
+Rule	Iraq	1982	only	-	May	1	0:00	1:00	D
+Rule	Iraq	1982	1984	-	Oct	1	0:00	0	S
+Rule	Iraq	1983	only	-	Mar	31	0:00	1:00	D
+Rule	Iraq	1984	1985	-	Apr	1	0:00	1:00	D
+Rule	Iraq	1985	1990	-	Sep	lastSun	1:00s	0	S
+Rule	Iraq	1986	1990	-	Mar	lastSun	1:00s	1:00	D
+Rule	Iraq	1991	2007	-	Apr	 1	3:00s	1:00	D
+Rule	Iraq	1991	2007	-	Oct	 1	3:00s	0	S
+Zone	Asia/Baghdad	2:57:40	-	LMT	1890
+			2:57:36	-	BMT	1918	    # Baghdad Mean Time?
+			3:00	-	AST	1982 May
+			3:00	Iraq	A%sT
+Rule	Zion	1940	only	-	Jun	 1	0:00	1:00	D
+Rule	Zion	1942	1944	-	Nov	 1	0:00	0	S
+Rule	Zion	1943	only	-	Apr	 1	2:00	1:00	D
+Rule	Zion	1944	only	-	Apr	 1	0:00	1:00	D
+Rule	Zion	1945	only	-	Apr	16	0:00	1:00	D
+Rule	Zion	1945	only	-	Nov	 1	2:00	0	S
+Rule	Zion	1946	only	-	Apr	16	2:00	1:00	D
+Rule	Zion	1946	only	-	Nov	 1	0:00	0	S
+Rule	Zion	1948	only	-	May	23	0:00	2:00	DD
+Rule	Zion	1948	only	-	Sep	 1	0:00	1:00	D
+Rule	Zion	1948	1949	-	Nov	 1	2:00	0	S
+Rule	Zion	1949	only	-	May	 1	0:00	1:00	D
+Rule	Zion	1950	only	-	Apr	16	0:00	1:00	D
+Rule	Zion	1950	only	-	Sep	15	3:00	0	S
+Rule	Zion	1951	only	-	Apr	 1	0:00	1:00	D
+Rule	Zion	1951	only	-	Nov	11	3:00	0	S
+Rule	Zion	1952	only	-	Apr	20	2:00	1:00	D
+Rule	Zion	1952	only	-	Oct	19	3:00	0	S
+Rule	Zion	1953	only	-	Apr	12	2:00	1:00	D
+Rule	Zion	1953	only	-	Sep	13	3:00	0	S
+Rule	Zion	1954	only	-	Jun	13	0:00	1:00	D
+Rule	Zion	1954	only	-	Sep	12	0:00	0	S
+Rule	Zion	1955	only	-	Jun	11	2:00	1:00	D
+Rule	Zion	1955	only	-	Sep	11	0:00	0	S
+Rule	Zion	1956	only	-	Jun	 3	0:00	1:00	D
+Rule	Zion	1956	only	-	Sep	30	3:00	0	S
+Rule	Zion	1957	only	-	Apr	29	2:00	1:00	D
+Rule	Zion	1957	only	-	Sep	22	0:00	0	S
+Rule	Zion	1974	only	-	Jul	 7	0:00	1:00	D
+Rule	Zion	1974	only	-	Oct	13	0:00	0	S
+Rule	Zion	1975	only	-	Apr	20	0:00	1:00	D
+Rule	Zion	1975	only	-	Aug	31	0:00	0	S
+Rule	Zion	1985	only	-	Apr	14	0:00	1:00	D
+Rule	Zion	1985	only	-	Sep	15	0:00	0	S
+Rule	Zion	1986	only	-	May	18	0:00	1:00	D
+Rule	Zion	1986	only	-	Sep	 7	0:00	0	S
+Rule	Zion	1987	only	-	Apr	15	0:00	1:00	D
+Rule	Zion	1987	only	-	Sep	13	0:00	0	S
+Rule	Zion	1988	only	-	Apr	 9	0:00	1:00	D
+Rule	Zion	1988	only	-	Sep	 3	0:00	0	S
+Rule	Zion	1989	only	-	Apr	30	0:00	1:00	D
+Rule	Zion	1989	only	-	Sep	 3	0:00	0	S
+Rule	Zion	1990	only	-	Mar	25	0:00	1:00	D
+Rule	Zion	1990	only	-	Aug	26	0:00	0	S
+Rule	Zion	1991	only	-	Mar	24	0:00	1:00	D
+Rule	Zion	1991	only	-	Sep	 1	0:00	0	S
+Rule	Zion	1992	only	-	Mar	29	0:00	1:00	D
+Rule	Zion	1992	only	-	Sep	 6	0:00	0	S
+Rule	Zion	1993	only	-	Apr	 2	0:00	1:00	D
+Rule	Zion	1993	only	-	Sep	 5	0:00	0	S
+Rule	Zion	1994	only	-	Apr	 1	0:00	1:00	D
+Rule	Zion	1994	only	-	Aug	28	0:00	0	S
+Rule	Zion	1995	only	-	Mar	31	0:00	1:00	D
+Rule	Zion	1995	only	-	Sep	 3	0:00	0	S
+Rule	Zion	1996	only	-	Mar	15	0:00	1:00	D
+Rule	Zion	1996	only	-	Sep	16	0:00	0	S
+Rule	Zion	1997	only	-	Mar	21	0:00	1:00	D
+Rule	Zion	1997	only	-	Sep	14	0:00	0	S
+Rule	Zion	1998	only	-	Mar	20	0:00	1:00	D
+Rule	Zion	1998	only	-	Sep	 6	0:00	0	S
+Rule	Zion	1999	only	-	Apr	 2	2:00	1:00	D
+Rule	Zion	1999	only	-	Sep	 3	2:00	0	S
+Rule	Zion	2000	only	-	Apr	14	2:00	1:00	D
+Rule	Zion	2000	only	-	Oct	 6	1:00	0	S
+Rule	Zion	2001	only	-	Apr	 9	1:00	1:00	D
+Rule	Zion	2001	only	-	Sep	24	1:00	0	S
+Rule	Zion	2002	only	-	Mar	29	1:00	1:00	D
+Rule	Zion	2002	only	-	Oct	 7	1:00	0	S
+Rule	Zion	2003	only	-	Mar	28	1:00	1:00	D
+Rule	Zion	2003	only	-	Oct	 3	1:00	0	S
+Rule	Zion	2004	only	-	Apr	 7	1:00	1:00	D
+Rule	Zion	2004	only	-	Sep	22	1:00	0	S
+Rule	Zion	2005	only	-	Apr	 1	2:00	1:00	D
+Rule	Zion	2005	only	-	Oct	 9	2:00	0	S
+Rule	Zion	2006	2010	-	Mar	Fri>=26	2:00	1:00	D
+Rule	Zion	2006	only	-	Oct	 1	2:00	0	S
+Rule	Zion	2007	only	-	Sep	16	2:00	0	S
+Rule	Zion	2008	only	-	Oct	 5	2:00	0	S
+Rule	Zion	2009	only	-	Sep	27	2:00	0	S
+Rule	Zion	2010	only	-	Sep	12	2:00	0	S
+Rule	Zion	2011	only	-	Apr	 1	2:00	1:00	D
+Rule	Zion	2011	only	-	Oct	 2	2:00	0	S
+Rule	Zion	2012	2015	-	Mar	Fri>=26	2:00	1:00	D
+Rule	Zion	2012	only	-	Sep	23	2:00	0	S
+Rule	Zion	2013	only	-	Sep	 8	2:00	0	S
+Rule	Zion	2014	only	-	Sep	28	2:00	0	S
+Rule	Zion	2015	only	-	Sep	20	2:00	0	S
+Rule	Zion	2016	only	-	Apr	 1	2:00	1:00	D
+Rule	Zion	2016	only	-	Oct	 9	2:00	0	S
+Rule	Zion	2017	2021	-	Mar	Fri>=26	2:00	1:00	D
+Rule	Zion	2017	only	-	Sep	24	2:00	0	S
+Rule	Zion	2018	only	-	Sep	16	2:00	0	S
+Rule	Zion	2019	only	-	Oct	 6	2:00	0	S
+Rule	Zion	2020	only	-	Sep	27	2:00	0	S
+Rule	Zion	2021	only	-	Sep	12	2:00	0	S
+Rule	Zion	2022	only	-	Apr	 1	2:00	1:00	D
+Rule	Zion	2022	only	-	Oct	 2	2:00	0	S
+Rule	Zion	2023	2032	-	Mar	Fri>=26	2:00	1:00	D
+Rule	Zion	2023	only	-	Sep	24	2:00	0	S
+Rule	Zion	2024	only	-	Oct	 6	2:00	0	S
+Rule	Zion	2025	only	-	Sep	28	2:00	0	S
+Rule	Zion	2026	only	-	Sep	20	2:00	0	S
+Rule	Zion	2027	only	-	Oct	10	2:00	0	S
+Rule	Zion	2028	only	-	Sep	24	2:00	0	S
+Rule	Zion	2029	only	-	Sep	16	2:00	0	S
+Rule	Zion	2030	only	-	Oct	 6	2:00	0	S
+Rule	Zion	2031	only	-	Sep	21	2:00	0	S
+Rule	Zion	2032	only	-	Sep	12	2:00	0	S
+Rule	Zion	2033	only	-	Apr	 1	2:00	1:00	D
+Rule	Zion	2033	only	-	Oct	 2	2:00	0	S
+Rule	Zion	2034	2037	-	Mar	Fri>=26	2:00	1:00	D
+Rule	Zion	2034	only	-	Sep	17	2:00	0	S
+Rule	Zion	2035	only	-	Oct	 7	2:00	0	S
+Rule	Zion	2036	only	-	Sep	28	2:00	0	S
+Rule	Zion	2037	only	-	Sep	13	2:00	0	S
+Zone	Asia/Jerusalem	2:20:56 -	LMT	1880
+			2:20:40	-	JMT	1918	# Jerusalem Mean Time?
+			2:00	Zion	I%sT
+Rule	Japan	1948	only	-	May	Sun>=1	2:00	1:00	D
+Rule	Japan	1948	1951	-	Sep	Sat>=8	2:00	0	S
+Rule	Japan	1949	only	-	Apr	Sun>=1	2:00	1:00	D
+Rule	Japan	1950	1951	-	May	Sun>=1	2:00	1:00	D
+Zone	Asia/Tokyo	9:18:59	-	LMT	1887 Dec 31 15:00u
+			9:00	-	JST	1896
+			9:00	-	CJT	1938
+			9:00	Japan	J%sT
+Rule	Jordan	1973	only	-	Jun	6	0:00	1:00	S
+Rule	Jordan	1973	1975	-	Oct	1	0:00	0	-
+Rule	Jordan	1974	1977	-	May	1	0:00	1:00	S
+Rule	Jordan	1976	only	-	Nov	1	0:00	0	-
+Rule	Jordan	1977	only	-	Oct	1	0:00	0	-
+Rule	Jordan	1978	only	-	Apr	30	0:00	1:00	S
+Rule	Jordan	1978	only	-	Sep	30	0:00	0	-
+Rule	Jordan	1985	only	-	Apr	1	0:00	1:00	S
+Rule	Jordan	1985	only	-	Oct	1	0:00	0	-
+Rule	Jordan	1986	1988	-	Apr	Fri>=1	0:00	1:00	S
+Rule	Jordan	1986	1990	-	Oct	Fri>=1	0:00	0	-
+Rule	Jordan	1989	only	-	May	8	0:00	1:00	S
+Rule	Jordan	1990	only	-	Apr	27	0:00	1:00	S
+Rule	Jordan	1991	only	-	Apr	17	0:00	1:00	S
+Rule	Jordan	1991	only	-	Sep	27	0:00	0	-
+Rule	Jordan	1992	only	-	Apr	10	0:00	1:00	S
+Rule	Jordan	1992	1993	-	Oct	Fri>=1	0:00	0	-
+Rule	Jordan	1993	1998	-	Apr	Fri>=1	0:00	1:00	S
+Rule	Jordan	1994	only	-	Sep	Fri>=15	0:00	0	-
+Rule	Jordan	1995	1998	-	Sep	Fri>=15	0:00s	0	-
+Rule	Jordan	1999	only	-	Jul	 1	0:00s	1:00	S
+Rule	Jordan	1999	2002	-	Sep	lastFri	0:00s	0	-
+Rule	Jordan	2000	2001	-	Mar	lastThu	0:00s	1:00	S
+Rule	Jordan	2002	max	-	Mar	lastThu	24:00	1:00	S
+Rule	Jordan	2003	only	-	Oct	24	0:00s	0	-
+Rule	Jordan	2004	only	-	Oct	15	0:00s	0	-
+Rule	Jordan	2005	only	-	Sep	lastFri	0:00s	0	-
+Rule	Jordan	2006	max	-	Oct	lastFri	0:00s	0	-
+Zone	Asia/Amman	2:23:44 -	LMT	1931
+			2:00	Jordan	EE%sT
+Zone	Asia/Almaty	5:07:48 -	LMT	1924 May  2 # or Alma-Ata
+			5:00	-	ALMT	1930 Jun 21 # Alma-Ata Time
+			6:00 RussiaAsia ALM%sT	1991
+			6:00	-	ALMT	1992
+			6:00 RussiaAsia	ALM%sT	2005 Mar 15
+			6:00	-	ALMT
+Zone	Asia/Qyzylorda	4:21:52 -	LMT	1924 May  2
+			4:00	-	KIZT	1930 Jun 21 # Kizilorda Time
+			5:00	-	KIZT	1981 Apr  1
+			5:00	1:00	KIZST	1981 Oct  1
+			6:00	-	KIZT	1982 Apr  1
+			5:00 RussiaAsia	KIZ%sT	1991
+			5:00	-	KIZT	1991 Dec 16 # independence
+			5:00	-	QYZT	1992 Jan 19 2:00
+			6:00 RussiaAsia	QYZ%sT	2005 Mar 15
+			6:00	-	QYZT
+Zone	Asia/Aqtobe	3:48:40	-	LMT	1924 May  2
+			4:00	-	AKTT	1930 Jun 21 # Aktyubinsk Time
+			5:00	-	AKTT	1981 Apr  1
+			5:00	1:00	AKTST	1981 Oct  1
+			6:00	-	AKTT	1982 Apr  1
+			5:00 RussiaAsia	AKT%sT	1991
+			5:00	-	AKTT	1991 Dec 16 # independence
+			5:00 RussiaAsia	AQT%sT	2005 Mar 15 # Aqtobe Time
+			5:00	-	AQTT
+Zone	Asia/Aqtau	3:21:04	-	LMT	1924 May  2
+			4:00	-	FORT	1930 Jun 21 # Fort Shevchenko T
+			5:00	-	FORT	1963
+			5:00	-	SHET	1981 Oct  1 # Shevchenko Time
+			6:00	-	SHET	1982 Apr  1
+			5:00 RussiaAsia	SHE%sT	1991
+			5:00	-	SHET	1991 Dec 16 # independence
+			5:00 RussiaAsia	AQT%sT	1995 Mar lastSun 2:00 # Aqtau Time
+			4:00 RussiaAsia	AQT%sT	2005 Mar 15
+			5:00	-	AQTT
+Zone	Asia/Oral	3:25:24	-	LMT	1924 May  2 # or Ural'sk
+			4:00	-	URAT	1930 Jun 21 # Ural'sk time
+			5:00	-	URAT	1981 Apr  1
+			5:00	1:00	URAST	1981 Oct  1
+			6:00	-	URAT	1982 Apr  1
+			5:00 RussiaAsia	URA%sT	1989 Mar 26 2:00
+			4:00 RussiaAsia	URA%sT	1991
+			4:00	-	URAT	1991 Dec 16 # independence
+			4:00 RussiaAsia	ORA%sT	2005 Mar 15 # Oral Time
+			5:00	-	ORAT
+Rule	Kyrgyz	1992	1996	-	Apr	Sun>=7	0:00s	1:00	S
+Rule	Kyrgyz	1992	1996	-	Sep	lastSun	0:00	0	-
+Rule	Kyrgyz	1997	2005	-	Mar	lastSun	2:30	1:00	S
+Rule	Kyrgyz	1997	2004	-	Oct	lastSun	2:30	0	-
+Zone	Asia/Bishkek	4:58:24 -	LMT	1924 May  2
+			5:00	-	FRUT	1930 Jun 21 # Frunze Time
+			6:00 RussiaAsia FRU%sT	1991 Mar 31 2:00s
+			5:00	1:00	FRUST	1991 Aug 31 2:00 # independence
+			5:00	Kyrgyz	KG%sT	2005 Aug 12    # Kyrgyzstan Time
+			6:00	-	KGT
+Rule	ROK	1960	only	-	May	15	0:00	1:00	D
+Rule	ROK	1960	only	-	Sep	13	0:00	0	S
+Rule	ROK	1987	1988	-	May	Sun>=8	0:00	1:00	D
+Rule	ROK	1987	1988	-	Oct	Sun>=8	0:00	0	S
+Zone	Asia/Seoul	8:27:52	-	LMT	1890
+			8:30	-	KST	1904 Dec
+			9:00	-	KST	1928
+			8:30	-	KST	1932
+			9:00	-	KST	1954 Mar 21
+			8:00	ROK	K%sT	1961 Aug 10
+			8:30	-	KST	1968 Oct
+			9:00	ROK	K%sT
+Zone	Asia/Pyongyang	8:23:00 -	LMT	1890
+			8:30	-	KST	1904 Dec
+			9:00	-	KST	1928
+			8:30	-	KST	1932
+			9:00	-	KST	1954 Mar 21
+			8:00	-	KST	1961 Aug 10
+			9:00	-	KST
+Zone	Asia/Kuwait	3:11:56 -	LMT	1950
+			3:00	-	AST
+Zone	Asia/Vientiane	6:50:24 -	LMT	1906 Jun  9 # or Viangchan
+			7:06:20	-	SMT	1911 Mar 11 0:01 # Saigon MT?
+			7:00	-	ICT	1912 May
+			8:00	-	ICT	1931 May
+			7:00	-	ICT
+Rule	Lebanon	1920	only	-	Mar	28	0:00	1:00	S
+Rule	Lebanon	1920	only	-	Oct	25	0:00	0	-
+Rule	Lebanon	1921	only	-	Apr	3	0:00	1:00	S
+Rule	Lebanon	1921	only	-	Oct	3	0:00	0	-
+Rule	Lebanon	1922	only	-	Mar	26	0:00	1:00	S
+Rule	Lebanon	1922	only	-	Oct	8	0:00	0	-
+Rule	Lebanon	1923	only	-	Apr	22	0:00	1:00	S
+Rule	Lebanon	1923	only	-	Sep	16	0:00	0	-
+Rule	Lebanon	1957	1961	-	May	1	0:00	1:00	S
+Rule	Lebanon	1957	1961	-	Oct	1	0:00	0	-
+Rule	Lebanon	1972	only	-	Jun	22	0:00	1:00	S
+Rule	Lebanon	1972	1977	-	Oct	1	0:00	0	-
+Rule	Lebanon	1973	1977	-	May	1	0:00	1:00	S
+Rule	Lebanon	1978	only	-	Apr	30	0:00	1:00	S
+Rule	Lebanon	1978	only	-	Sep	30	0:00	0	-
+Rule	Lebanon	1984	1987	-	May	1	0:00	1:00	S
+Rule	Lebanon	1984	1991	-	Oct	16	0:00	0	-
+Rule	Lebanon	1988	only	-	Jun	1	0:00	1:00	S
+Rule	Lebanon	1989	only	-	May	10	0:00	1:00	S
+Rule	Lebanon	1990	1992	-	May	1	0:00	1:00	S
+Rule	Lebanon	1992	only	-	Oct	4	0:00	0	-
+Rule	Lebanon	1993	max	-	Mar	lastSun	0:00	1:00	S
+Rule	Lebanon	1993	1998	-	Sep	lastSun	0:00	0	-
+Rule	Lebanon	1999	max	-	Oct	lastSun	0:00	0	-
+Zone	Asia/Beirut	2:22:00 -	LMT	1880
+			2:00	Lebanon	EE%sT
+Rule	NBorneo	1935	1941	-	Sep	14	0:00	0:20	TS # one-Third Summer
+Rule	NBorneo	1935	1941	-	Dec	14	0:00	0	-
+Zone Asia/Kuala_Lumpur	6:46:46 -	LMT	1901 Jan  1
+			6:55:25	-	SMT	1905 Jun  1 # Singapore M.T.
+			7:00	-	MALT	1933 Jan  1 # Malaya Time
+			7:00	0:20	MALST	1936 Jan  1
+			7:20	-	MALT	1941 Sep  1
+			7:30	-	MALT	1942 Feb 16
+			9:00	-	JST	1945 Sep 12
+			7:30	-	MALT	1982 Jan  1
+			8:00	-	MYT	# Malaysia Time
+Zone Asia/Kuching	7:21:20	-	LMT	1926 Mar
+			7:30	-	BORT	1933	# Borneo Time
+			8:00	NBorneo	BOR%sT	1942 Feb 16
+			9:00	-	JST	1945 Sep 12
+			8:00	-	BORT	1982 Jan  1
+			8:00	-	MYT
+Zone	Indian/Maldives	4:54:00 -	LMT	1880	# Male
+			4:54:00	-	MMT	1960	# Male Mean Time
+			5:00	-	MVT		# Maldives Time
+Rule	Mongol	1983	1984	-	Apr	1	0:00	1:00	S
+Rule	Mongol	1983	only	-	Oct	1	0:00	0	-
+Rule	Mongol	1985	1998	-	Mar	lastSun	0:00	1:00	S
+Rule	Mongol	1984	1998	-	Sep	lastSun	0:00	0	-
+Rule	Mongol	2001	only	-	Apr	lastSat	2:00	1:00	S
+Rule	Mongol	2001	2006	-	Sep	lastSat	2:00	0	-
+Rule	Mongol	2002	2006	-	Mar	lastSat	2:00	1:00	S
+Zone	Asia/Hovd	6:06:36 -	LMT	1905 Aug
+			6:00	-	HOVT	1978	# Hovd Time
+			7:00	Mongol	HOV%sT
+Zone	Asia/Ulaanbaatar 7:07:32 -	LMT	1905 Aug
+			7:00	-	ULAT	1978	# Ulaanbaatar Time
+			8:00	Mongol	ULA%sT
+Zone	Asia/Choibalsan	7:38:00 -	LMT	1905 Aug
+			7:00	-	ULAT	1978
+			8:00	-	ULAT	1983 Apr
+			9:00	Mongol	CHO%sT	2008 Mar 31 # Choibalsan Time
+			8:00	Mongol	CHO%sT
+Zone	Asia/Kathmandu	5:41:16 -	LMT	1920
+			5:30	-	IST	1986
+			5:45	-	NPT	# Nepal Time
+Zone	Asia/Muscat	3:54:20 -	LMT	1920
+			4:00	-	GST
+Rule Pakistan	2002	only	-	Apr	Sun>=2	0:01	1:00	S
+Rule Pakistan	2002	only	-	Oct	Sun>=2	0:01	0	-
+Rule Pakistan	2008	only	-	Jun	1	0:00	1:00	S
+Rule Pakistan	2008	only	-	Nov	1	0:00	0	-
+Rule Pakistan	2009	only	-	Apr	15	0:00	1:00	S
+Rule Pakistan	2009	only	-	Nov	1	0:00	0	-
+Zone	Asia/Karachi	4:28:12 -	LMT	1907
+			5:30	-	IST	1942 Sep
+			5:30	1:00	IST	1945 Oct 15
+			5:30	-	IST	1951 Sep 30
+			5:00	-	KART	1971 Mar 26 # Karachi Time
+			5:00 Pakistan	PK%sT	# Pakistan Time
+Rule EgyptAsia	1957	only	-	May	10	0:00	1:00	S
+Rule EgyptAsia	1957	1958	-	Oct	 1	0:00	0	-
+Rule EgyptAsia	1958	only	-	May	 1	0:00	1:00	S
+Rule EgyptAsia	1959	1967	-	May	 1	1:00	1:00	S
+Rule EgyptAsia	1959	1965	-	Sep	30	3:00	0	-
+Rule EgyptAsia	1966	only	-	Oct	 1	3:00	0	-
+Rule Palestine	1999	2005	-	Apr	Fri>=15	0:00	1:00	S
+Rule Palestine	1999	2003	-	Oct	Fri>=15	0:00	0	-
+Rule Palestine	2004	only	-	Oct	 1	1:00	0	-
+Rule Palestine	2005	only	-	Oct	 4	2:00	0	-
+Rule Palestine	2006	2008	-	Apr	 1	0:00	1:00	S
+Rule Palestine	2006	only	-	Sep	22	0:00	0	-
+Rule Palestine	2007	only	-	Sep	Thu>=8	2:00	0	-
+Rule Palestine	2008	only	-	Aug	lastFri	2:00	0	-
+Rule Palestine	2009	max	-	Mar	lastFri	0:00	1:00	S
+Rule Palestine	2009	max	-	Sep	lastMon	2:00	0	-
+Zone	Asia/Gaza	2:17:52	-	LMT	1900 Oct
+			2:00	Zion	EET	1948 May 15
+			2:00 EgyptAsia	EE%sT	1967 Jun  5
+			2:00	Zion	I%sT	1996
+			2:00	Jordan	EE%sT	1999
+			2:00 Palestine	EE%sT
+Rule	Phil	1936	only	-	Nov	1	0:00	1:00	S
+Rule	Phil	1937	only	-	Feb	1	0:00	0	-
+Rule	Phil	1954	only	-	Apr	12	0:00	1:00	S
+Rule	Phil	1954	only	-	Jul	1	0:00	0	-
+Rule	Phil	1978	only	-	Mar	22	0:00	1:00	S
+Rule	Phil	1978	only	-	Sep	21	0:00	0	-
+Zone	Asia/Manila	-15:56:00 -	LMT	1844 Dec 31
+			8:04:00 -	LMT	1899 May 11
+			8:00	Phil	PH%sT	1942 May
+			9:00	-	JST	1944 Nov
+			8:00	Phil	PH%sT
+Zone	Asia/Qatar	3:26:08 -	LMT	1920	# Al Dawhah / Doha
+			4:00	-	GST	1972 Jun
+			3:00	-	AST
+Zone	Asia/Riyadh	3:06:52 -	LMT	1950
+			3:00	-	AST
+Zone	Asia/Singapore	6:55:25 -	LMT	1901 Jan  1
+			6:55:25	-	SMT	1905 Jun  1 # Singapore M.T.
+			7:00	-	MALT	1933 Jan  1 # Malaya Time
+			7:00	0:20	MALST	1936 Jan  1
+			7:20	-	MALT	1941 Sep  1
+			7:30	-	MALT	1942 Feb 16
+			9:00	-	JST	1945 Sep 12
+			7:30	-	MALT	1965 Aug  9 # independence
+			7:30	-	SGT	1982 Jan  1 # Singapore Time
+			8:00	-	SGT
+Zone	Asia/Colombo	5:19:24 -	LMT	1880
+			5:19:32	-	MMT	1906	# Moratuwa Mean Time
+			5:30	-	IST	1942 Jan  5
+			5:30	0:30	IHST	1942 Sep
+			5:30	1:00	IST	1945 Oct 16 2:00
+			5:30	-	IST	1996 May 25 0:00
+			6:30	-	LKT	1996 Oct 26 0:30
+			6:00	-	LKT	2006 Apr 15 0:30
+			5:30	-	IST
+Rule	Syria	1920	1923	-	Apr	Sun>=15	2:00	1:00	S
+Rule	Syria	1920	1923	-	Oct	Sun>=1	2:00	0	-
+Rule	Syria	1962	only	-	Apr	29	2:00	1:00	S
+Rule	Syria	1962	only	-	Oct	1	2:00	0	-
+Rule	Syria	1963	1965	-	May	1	2:00	1:00	S
+Rule	Syria	1963	only	-	Sep	30	2:00	0	-
+Rule	Syria	1964	only	-	Oct	1	2:00	0	-
+Rule	Syria	1965	only	-	Sep	30	2:00	0	-
+Rule	Syria	1966	only	-	Apr	24	2:00	1:00	S
+Rule	Syria	1966	1976	-	Oct	1	2:00	0	-
+Rule	Syria	1967	1978	-	May	1	2:00	1:00	S
+Rule	Syria	1977	1978	-	Sep	1	2:00	0	-
+Rule	Syria	1983	1984	-	Apr	9	2:00	1:00	S
+Rule	Syria	1983	1984	-	Oct	1	2:00	0	-
+Rule	Syria	1986	only	-	Feb	16	2:00	1:00	S
+Rule	Syria	1986	only	-	Oct	9	2:00	0	-
+Rule	Syria	1987	only	-	Mar	1	2:00	1:00	S
+Rule	Syria	1987	1988	-	Oct	31	2:00	0	-
+Rule	Syria	1988	only	-	Mar	15	2:00	1:00	S
+Rule	Syria	1989	only	-	Mar	31	2:00	1:00	S
+Rule	Syria	1989	only	-	Oct	1	2:00	0	-
+Rule	Syria	1990	only	-	Apr	1	2:00	1:00	S
+Rule	Syria	1990	only	-	Sep	30	2:00	0	-
+Rule	Syria	1991	only	-	Apr	 1	0:00	1:00	S
+Rule	Syria	1991	1992	-	Oct	 1	0:00	0	-
+Rule	Syria	1992	only	-	Apr	 8	0:00	1:00	S
+Rule	Syria	1993	only	-	Mar	26	0:00	1:00	S
+Rule	Syria	1993	only	-	Sep	25	0:00	0	-
+Rule	Syria	1994	1996	-	Apr	 1	0:00	1:00	S
+Rule	Syria	1994	2005	-	Oct	 1	0:00	0	-
+Rule	Syria	1997	1998	-	Mar	lastMon	0:00	1:00	S
+Rule	Syria	1999	2006	-	Apr	 1	0:00	1:00	S
+Rule	Syria	2006	only	-	Sep	22	0:00	0	-
+Rule	Syria	2007	only	-	Mar	lastFri	0:00	1:00	S
+Rule	Syria	2007	only	-	Nov	 Fri>=1	0:00	0	-
+Rule	Syria	2008	only	-	Apr	Fri>=1	0:00	1:00	S
+Rule	Syria	2008	max	-	Nov	1	0:00	0	-
+Rule	Syria	2009	max	-	Mar	lastFri	0:00	1:00	S
+Zone	Asia/Damascus	2:25:12 -	LMT	1920	# Dimashq
+			2:00	Syria	EE%sT
+Zone	Asia/Dushanbe	4:35:12 -	LMT	1924 May  2
+			5:00	-	DUST	1930 Jun 21 # Dushanbe Time
+			6:00 RussiaAsia DUS%sT	1991 Mar 31 2:00s
+			5:00	1:00	DUSST	1991 Sep  9 2:00s
+			5:00	-	TJT		    # Tajikistan Time
+Zone	Asia/Bangkok	6:42:04	-	LMT	1880
+			6:42:04	-	BMT	1920 Apr # Bangkok Mean Time
+			7:00	-	ICT
+Zone	Asia/Ashgabat	3:53:32 -	LMT	1924 May  2 # or Ashkhabad
+			4:00	-	ASHT	1930 Jun 21 # Ashkhabad Time
+			5:00 RussiaAsia	ASH%sT	1991 Mar 31 2:00
+			4:00 RussiaAsia	ASH%sT	1991 Oct 27 # independence
+			4:00 RussiaAsia	TM%sT	1992 Jan 19 2:00
+			5:00	-	TMT
+Zone	Asia/Dubai	3:41:12 -	LMT	1920
+			4:00	-	GST
+Zone	Asia/Samarkand	4:27:12 -	LMT	1924 May  2
+			4:00	-	SAMT	1930 Jun 21 # Samarkand Time
+			5:00	-	SAMT	1981 Apr  1
+			5:00	1:00	SAMST	1981 Oct  1
+			6:00	-	TAST	1982 Apr  1 # Tashkent Time
+			5:00 RussiaAsia	SAM%sT	1991 Sep  1 # independence
+			5:00 RussiaAsia	UZ%sT	1992
+			5:00	-	UZT
+Zone	Asia/Tashkent	4:37:12 -	LMT	1924 May  2
+			5:00	-	TAST	1930 Jun 21 # Tashkent Time
+			6:00 RussiaAsia	TAS%sT	1991 Mar 31 2:00
+			5:00 RussiaAsia	TAS%sT	1991 Sep  1 # independence
+			5:00 RussiaAsia	UZ%sT	1992
+			5:00	-	UZT
+Zone	Asia/Ho_Chi_Minh	7:06:40 -	LMT	1906 Jun  9
+			7:06:20	-	SMT	1911 Mar 11 0:01 # Saigon MT?
+			7:00	-	ICT	1912 May
+			8:00	-	ICT	1931 May
+			7:00	-	ICT
+Zone	Asia/Aden	3:00:48	-	LMT	1950
+			3:00	-	AST

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Resumir Dentro</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Resumir Dentro"></h2>
+        <hr/>
+    <p>Esta ferramenta localiza fei&ccedil;&otilde;es (e por&ccedil;&otilde;es de fei&ccedil;&otilde;es) que est&atilde;o dentro dos limites das &aacute;reas na primeira camada de entrada.  Por exemplo:
+        <ul>
+            <li>Fornecida uma camada de limites da bacia e uma camada de limites de uso do solo por tipo de uso do solo, calcule a &aacute;rea total em acres do tipo de uso do solo para cada bacia. 
+            </li>
+            <li>Fornecida uma camada de lotes em um munic&iacute;pio e uma camada de limites da cidade, resuma o valor m&eacute;dio de lotes desocupados dentro de cada limite da cidade.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Se  <b>Utilizar extens&atilde;o de mapa atual</b> estiver selecionada, somente estas fei&ccedil;&otilde;es na camada de entrada e a camada a ser resumida que s&atilde;o vis&iacute;veis dentro da extens&atilde;o de mapa atual ser&atilde;o analisadas.  Se n&atilde;o selecionada, todas as fei&ccedil;&otilde;es em ambas a camada de entrada e a camada a ser resumida ser&atilde;o analisadas, mesmo que estiverem fora da extens&atilde;o de mapa atual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Escolha a camada de área para resumir outras feições dentro dos seus limites</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de &aacute;rea que ser&aacute; utilizada para resumir as fei&ccedil;&otilde;es que caem dentro dos seus limites. 
+            </p>
+            <p>Voc&ecirc; pode escolher entre uma camada de &aacute;rea que voc&ecirc; fornece ou caixas que s&atilde;o geradas quando a ferramenta &eacute; executada.   Ao gerar caixas, para  <b>Quadrado</b>, o n&uacute;mero e unidades especificadas determinam a altura e comprimento do quadrado. Para <b>Hex&aacute;gono</b>, o n&uacute;mero e unidades especificadas determina a dist&acirc;ncia entre os lados paralelos.
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> localizado na parte inferior da lista suspensa. Esta op&ccedil;&atilde;o abre uma galeria onde voc&ecirc; pode procurar e selecionar conjunto de dados de v&aacute;rias fontes para utilizar em sua an&aacute;lise. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Escolher camada para resumir</h2></div>
+        <hr/>
+        <div>
+            <p>As fei&ccedil;&otilde;es nesta camada que caem dentro dos limites das fei&ccedil;&otilde;es na camada de entrada acima ser&atilde;o resumidas. 
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> localizado na parte inferior da lista suspensa. Esta op&ccedil;&atilde;o abre uma galeria onde voc&ecirc; pode procurar e selecionar conjunto de dados de v&aacute;rias fontes para utilizar em sua an&aacute;lise. 
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Adicionar estatística da camada para resumir</h2></div>
+        <hr/>
+        <div>
+            <p>Voc&ecirc; pode opcionalmente calcular estat&iacute;sticas para atributos num&eacute;ricos dos pontos que caem dentro dos limites das fei&ccedil;&otilde;es. 
+            </p>
+            <p>A caixa de sele&ccedil;&atilde;o  <b>Contagem de pontos</b> se selecionada, calcular&aacute; o n&uacute;mero total de pontos dentro de cada limite de &aacute;rea.  Al&eacute;m disso, voc&ecirc; pode calcular estat&iacute;sticas para atributos num&eacute;ricos dos pontos que est&atilde;o dentro de cada limite de &aacute;rea.
+            </p>
+            <ul>
+                <li> <b>Soma</b>&mdash;O valor total do campo especificado.
+                </li>
+                <li> <b>M&eacute;dia</b>&mdash;Calcula a m&eacute;dia do campo especificado.
+                </li>
+                <li> <b>M&iacute;nimo</b>&mdash;O menor valor no campo especificado.
+                </li>
+                <li> <b>M&aacute;ximo</b>&mdash;O maior valor no campo especificado.
+                </li>
+                <li> <b>Desvio Padr&atilde;o</b>&mdash;O desvio padr&atilde;o dos valores no campo especificado.
+                </li>
+            </ul>
+            
+            <p>Se a camada para resumir n&atilde;o tiver quaisquer campos de n&uacute;mero, a estat&iacute;stica adicional n&atilde;o estar&aacute; dispon&iacute;vel.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Adicionar estatística de</h2></div>
+        <hr/>
+        <div>
+            <p>Voc&ecirc; pode opcionalmente calcular estat&iacute;sticas para atributos num&eacute;ricos das linhas a serem resumidas. 
+            </p>
+            <p>A caixa de sele&ccedil;&atilde;o  <b>Comprimento total das linhas em</b> se selecionada, calcular&aacute; o comprimento total das linhas dentro de cada limite de &aacute;rea.  Al&eacute;m disso, voc&ecirc; pode calcular estat&iacute;sticas para atributos num&eacute;ricos das linhas que est&atilde;o dentro de cada limite de &aacute;rea.
+            </p>
+            <ul>
+                <li> <b>Soma</b>&mdash;O valor total do campo especificado.
+                </li>
+                <li> <b>M&eacute;dia</b>&mdash;Calcula a m&eacute;dia do campo especificado.
+                </li>
+                <li> <b>M&iacute;nimo</b>&mdash;O menor valor no campo especificado.
+                </li>
+                <li> <b>M&aacute;ximo</b>&mdash;O maior valor no campo especificado.
+                </li>
+                <li> <b>Desvio Padr&atilde;o</b>&mdash;O desvio padr&atilde;o dos valores no campo especificado.
+                </li>
+            </ul>
+            
+            <p>Se a camada para resumir n&atilde;o tiver quaisquer campos de n&uacute;mero, a estat&iacute;stica adicional n&atilde;o estar&aacute; dispon&iacute;vel.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Adicionar estatística de</h2></div>
+        <hr/>
+        <div>
+            <p>Voc&ecirc; pode opcionalmente calcular estat&iacute;sticas para atributos num&eacute;ricos das &aacute;reas a serem resumidas. 
+            </p>
+            <p>A caixa de sele&ccedil;&atilde;o  <b>Somar &aacute;rea utilizando</b> se selecionada, calcular&aacute; a &aacute;rea total das fei&ccedil;&otilde;es que est&atilde;o dentro de cada limite de &aacute;rea da primeira camada de entrada.  Al&eacute;m disso, voc&ecirc; pode calcular estat&iacute;sticas para atributos num&eacute;ricos das fei&ccedil;&otilde;es que est&atilde;o dentro de cada limite de &aacute;rea.
+            </p>
+            <ul>
+                <li> <b>Soma</b>&mdash;O valor total do campo especificado.
+                </li>
+                <li> <b>M&eacute;dia</b>&mdash;Calcula a m&eacute;dia do campo especificado.
+                </li>
+                <li> <b>M&iacute;nimo</b>&mdash;O menor valor no campo especificado.
+                </li>
+                <li> <b>M&aacute;ximo</b>&mdash;O maior valor no campo especificado.
+                </li>
+                <li> <b>Desvio Padr&atilde;o</b>&mdash;O desvio padr&atilde;o dos valores no campo especificado.
+                </li>
+            </ul>
+            
+            <p>Se a camada para resumir n&atilde;o tiver quaisquer campos de n&uacute;mero, a estat&iacute;stica adicional n&atilde;o estar&aacute; dispon&iacute;vel.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Adicionar estatística de</h2></div>
+        <hr/>
+        <div>
+            <p>Ap&oacute;s voc&ecirc; escolher uma camada para resumir, voc&ecirc; pode opcionalmente calcular estat&iacute;sticas de quaisquer atributos num&eacute;ricos dos pontos, linhas ou &aacute;reas dentro da camada de &aacute;rea de entrada. 
+            </p>
+            <ul>
+                <li> <b>Soma</b>&mdash;O valor total do campo especificado
+                </li>
+                <li> <b>M&eacute;dia</b>&mdash;Calcula a m&eacute;dia do campo especificado
+                </li>
+                <li> <b>M&iacute;nimo</b>&mdash;O menor valor no campo especificado
+                </li>
+                <li> <b>M&aacute;ximo</b>&mdash;O maior valor no campo especificado
+                </li>
+                <li> <b>Desvio Padr&atilde;o</b>&mdash;O desvio padr&atilde;o dos valores no campo especificado
+                </li>
+            </ul>
+            
+            <p>Dependendo dos tipos de fei&ccedil;&otilde;es que voc&ecirc; est&aacute; resumindo, voc&ecirc; poder&aacute; calcular a contagem total de pontos, comprimento total das linhas ou &aacute;rea total.
+            </p>
+            <p>Se a camada para resumir n&atilde;o tiver quaisquer campos de n&uacute;mero, a estat&iacute;stica adicional n&atilde;o estar&aacute; dispon&iacute;vel.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Escolher campo para agrupar por</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; um atributo de  <b>Resumir</b> fei&ccedil;&otilde;es que voc&ecirc; pode utilizar para calcular estat&iacute;sticas separadamente para cada valor de atributo &uacute;nico. Por exemplo, suponha que a primeira camada de entrada cont&eacute;m limites da cidade e as fei&ccedil;&otilde;es de resumo s&atilde;o lotes.  Um dos atributos dos lotes &eacute; <i>Status</i> que cont&eacute;m dois valores: VACANT e OCCUPIED. Para calcular a &aacute;rea total dos lotes ocupados e desocupados dentro dos limites das cidades, utilize <i>Status</i> como o grupo por atributo. A estat&iacute;stica para cada grupo, como tamb&eacute;m, a contagem de fei&ccedil;&otilde;es dentro de cada limite de &aacute;rea, ser&aacute; exibida no pop-up da camada resultante.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Adicionar minoria, maioria</h2></div>
+        <hr/>
+        <div>
+            <p>Esta caixa de sele&ccedil;&atilde;o &eacute; habilitada quando voc&ecirc; escolhe um campo para agrupar. Se voc&ecirc; deseja descobrir quais valores de atributo dentro de cada grupo s&atilde;o a minoria (menos dominante) ou a maioria (mais dominante) dentro de cada limite da primeira camada de entrada, selecione  <b>Adicionar minoria, maioria</b>.   Quando voc&ecirc; seleciona <b>Adicionar minoria, maioria</b>, dois novos campos s&atilde;o adicionados na sua camada resultante.   Se voc&ecirc; tamb&eacute;m selecionar <b>Adicionar porcentagens</b>, dois campos adicionais ser&atilde;o adicionados na camada resultante contendo as porcentagens dos valores de atributo da minoria e maioria dentro de cada grupo.
+            </p>
+            <ul>
+                <li>Se voc&ecirc; estiver resumindo pontos, os valores da minoria e maioria ser&atilde;o calculados baseados na contagem de pontos dentro de cada &aacute;rea de limite na camada de &aacute;rea de entrada.  
+                </li>
+                <li>Se voc&ecirc; estiver resumindo linhas, os valores da minoria e maioria ser&atilde;o calculados baseados no comprimento das linhas dentro de cada &aacute;rea de limite na camada de &aacute;rea de entrada.  
+                </li>
+                <li>Se voc&ecirc; estiver resumindo &aacute;reas, os valores da minoria e maioria ser&atilde;o calculados baseados na &aacute;rea dentro de cada &aacute;rea de limite na camada de &aacute;rea de entrada.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Adicionar porcentagens</h2></div>
+        <hr/>
+        <div>
+            <p>Esta caixa de sele&ccedil;&atilde;o &eacute; habilitada quando voc&ecirc; escolhe um campo para agrupar. Selecione  <b>Adicionar porcentagens</b> se desejar localizar a porcentagem de cada valor de atributo dentro de cada grupo.  Um novo campo &eacute; adicionado na tabela resultante contendo as porcentagens de cada valor de atributo dentro de cada grupo. Se <b>Adicionar minoria, maioria</b> tamb&eacute;m for selecionado, dois campos adicionais ser&atilde;o adicionados na camada resultante contendo as porcentagens dos valores de atributo da minoria e maioria dentro de cada grupo.
+            </p>
+        </div>
+    </div>
+    <div id="ResultLayerName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa.  O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se o nome da camada j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Salvar resultado em</b>, &eacute; poss&iacute;vel especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

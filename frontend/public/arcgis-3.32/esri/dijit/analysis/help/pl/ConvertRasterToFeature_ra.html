@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Konwertuj raster na obiekt</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="Narzędzie portalu Konwertuj raster na obiekt"></h2>
+        <hr/>
+    <p>To narzędzie konwertuje raster na zestaw danych obiekt&oacute;w, takich jak punkty, linie lub poligony.
+    </p>
+    <p>Parametr  <b>Wybierz pole</b> umożliwia wybranie pola atrybutu zestawu danych rastrowych, kt&oacute;re stanie się atrybutem w wynikowej klasie obiekt&oacute;w. Ten parametr jest dostępny tylko w przypadku rastr&oacute;w opartych na liczbach całkowitych, kt&oacute;re mają dodatkowe atrybuty w powiązanej tabeli.
+    </p>
+    <p>Raster wejściowy może mieć kom&oacute;rki dowolnej wielkości.
+    </p>
+    <p>Rastry oparte na liczbach całkowitych można konwertować na obiekty punktowe, liniowe lub poligonowe, natomiast rastry oparte na liczbach zmiennoprzecinkowych można konwertować tylko na obiekty punktowe.
+    </p>
+    <p>Jeśli zaznaczono opcję  <b>Użyj zasięgu bieżącej mapy</b>, konwertowane będą tylko te kom&oacute;rki rastra, kt&oacute;re są widoczne bieżącym zasięgu mapy. Jeśli opcja ta nie jest zaznaczona, będą konwertowane wszystkie kom&oacute;rki w rastrze, nawet jeśli znajdują się poza bieżącym zasięgiem mapy. Należy o tym pamiętać, jeśli warstwa rastrowa jest duża lub ma bardzo dużą rozdzielczość.
+    </p>
+    <p>Narzędzie to ma r&oacute;wnież następujące zastosowania:
+ 
+        <ul>
+            <li>Utw&oacute;rz obiekty poligonowe na podstawie rastra klasyfikacji użytkowania terenu.
+                
+ 
+            </li>
+            <li>Strumienie zidentyfikowane w DEM można konwertować na obiekty liniowe.
+                
+
+            </li>
+            <li>DEM można konwertować na obiekty punktowe, kt&oacute;rych można używać w nierastrowej procedurze wykonywania zadań.
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Wybierz warstwę rastrową do konwersji</h2></div>
+        <hr/>
+        <div>
+            <p>Wejściowa warstwa rastrowa, kt&oacute;ra będzie konwertowana na warstwy obiektowe.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Wybierz pole</h2></div>
+        <hr/>
+        <div>
+            <p>Podaj pole, decydując o tym, kt&oacute;ra wartość będzie używana podczas konwersji.
+            </p>
+            <p>Może to być dowolna wartość całkowita lub tekstowa.
+            </p>
+            <p>Pola zawierającego wartości zmiennoprzecinkowe można użyć tylko wtedy, gdy dane wynikowe są zestawem danych punktowych.
+            </p>
+            <p>Domyślnie używane jest pole  <i>Value</i>, kt&oacute;re zawiera wartość w każdej kom&oacute;rce rastra.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Wybierz typ danych wynikowych</h2></div>
+        <hr/>
+        <div>
+            <p>Wybierz typ danych wynikowych: punkt, linia lub poligon.
+            </p>
+            <ul>
+                <li>Punkt &mdash; raster będzie konwertowany na zestaw danych punktowych.
+                    
+ 
+                </li>
+                <li>Linia &mdash; raster będzie konwertowany na zestaw danych obiekt&oacute;w liniowych.
+                    
+ 
+                </li>
+                <li>Poligon &mdash; raster będzie konwertowany na zestaw danych obiekt&oacute;w poligonowych.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>Uprość linie i poligony</h2></div>
+        <hr/>
+        <div>
+            <p>Zdecyduj, czy obiekty mają być upraszczane.
+            </p>
+            <p>Jeśli ta opcja zostanie zaznaczona (domyślnie), obiekty liniowe lub poligonowe zostaną wygładzone, dzięki czemu zostanie wygenerowany bardziej uog&oacute;lniony wynik. Jeśli ta opcja nie jest zaznaczona, obiekty liniowe będą tworzone zgodnie z granicami kom&oacute;rek zestawu danych rastrowych.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Nazwa warstwy, kt&oacute;ra zostanie utworzona w obszarze  <b>Moje zasoby</b> i dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, wyświetlony zostanie komunikat z monitem o podanie innej nazwy.
+            </p>
+            <p>Za pomocą listy rozwijanej  <b>Zapisz wynik w</b> można podać nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

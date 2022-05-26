@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Optimum Seyahat Maliyeti Ağını Belirle</h2><p/>
+        <h2><img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" alt="Optimum Seyahat Maliyeti Ağını Belirleme aracının &ccedil;izimi"></h2>
+        <hr/>
+    <p>Bu ara&ccedil;, bir dizi girdi b&ouml;lgesinden optimum maliyet ağını hesaplar.
+    </p>
+    <p>Bu aracın &ouml;rnek uygulanışlarından biri, acil durum ara&ccedil;ları i&ccedil;in en iyi ağı bulmaktır.
+    </p>
+    <p> <b>Ge&ccedil;erli harita yayılımını kullan</b> işaretli ise, yalnızca ge&ccedil;erli harita yayılımında g&ouml;r&uuml;n&uuml;r olan girdi katmanındaki konumlar analiz edilir. İşaretli değilse, girdi katmanındaki t&uuml;m konumlar, ge&ccedil;erli harita yayılımının dışında bile olsa analiz edilir.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRegionsRasterOrFeatures">
+        <div><h2>Şunların arasındaki seyahat yollarını belirlemek için raster veya detay konumu katmanı seçin</h2></div>
+        <hr/>
+        <div>
+            <p>En d&uuml;ş&uuml;k maliyetli ağ ile bağlanacak olan girdi b&ouml;lgeleri.
+            </p>
+            <p>B&ouml;lgeler, bir g&ouml;r&uuml;nt&uuml; servisi veya detay servisi tarafından tanımlanabilir.
+            </p>
+            <p>G&ouml;r&uuml;nt&uuml; servisi i&ccedil;in b&ouml;lgeler, aynı değere sahip bitişik (komşu) h&uuml;crelerden oluşan gruplar tarafından tanımlanır. Her b&ouml;lge benzersiz bir şekilde numaralandırılmalıdır. Herhangi bir b&ouml;lgenin par&ccedil;ası olmayan h&uuml;creler Verisiz olmalıdır. Raster t&uuml;r&uuml; tam sayı olmalıdır ve değerler pozitif veya negatif olabilir.
+            </p>
+            <p>Detay servisi i&ccedil;in girdi nokta, &ccedil;izgi veya &ccedil;okgen olabilir.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Seyahat maliyeti raster katmanı seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Her bir h&uuml;crenin i&ccedil;inden planimetrik olarak hareket etmek i&ccedil;in empedansı ya da maliyeti tanımlayan bir raster.
+            </p>
+            <p>Her h&uuml;cre konumundaki değer, h&uuml;cre i&ccedil;inde hareket etmek i&ccedil;in birim başına maliyet mesafesini temsil eder. Her h&uuml;cre konumu değeri h&uuml;cre &ccedil;&ouml;z&uuml;n&uuml;rl&uuml;ğ&uuml; ile &ccedil;arpılırken, aynı zamanda h&uuml;cre i&ccedil;inden ge&ccedil;menin toplam maliyetini elde etmek i&ccedil;in &ccedil;apraz (diyagonal) hareketi dengeler.
+            </p>
+            <p>Maliyet rasterının değerleri tamsayı veya kayan nokta olabilir, ancak negatif veya sıfır olamaz (negatif veya sıfır maliyete sahip olamazsınız).
+            </p> 
+        </div>
+    </div>
+    <div id="outputOptimumNetworkName">
+        <div><h2>Sonuç optimum yol çoklu çizgi katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adı. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>İ&ccedil;eriğim</b>&rsquo;de, <b>Sonu&ccedil;ları Kaydet</b> a&ccedil;ılır kutusunu kullanarak sonucun kaydedileceği klas&ouml;r&uuml;n adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="outputNeighborNetworkName">
+        <div><h2>Sonuç komşu yol çoklu çizgi katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adı. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>İ&ccedil;eriğim</b>&rsquo;de, <b>Sonu&ccedil;ları Kaydet</b> a&ccedil;ılır kutusunu kullanarak sonucun kaydedileceği klas&ouml;r&uuml;n adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

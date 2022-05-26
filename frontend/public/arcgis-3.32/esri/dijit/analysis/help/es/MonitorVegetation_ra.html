@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Supervisar vegetación</h2><p/>
+        <h2><img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" alt="Herramienta Supervisar vegetaci&oacute;n para Portal"></h2>
+        <hr/>
+    <p>Esta herramienta realiza una operaci&oacute;n aritm&eacute;tica en las bandas de un dataset r&aacute;ster multibanda para mostrar la informaci&oacute;n de la cobertura de vegetaci&oacute;n del &aacute;rea de estudio.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Seleccione los datos de entrada</h2></div>
+        <hr/>
+        <div>
+            <p>Elija la capa r&aacute;ster multibanda. Aseg&uacute;rese de que la capa r&aacute;ster tenga disponibles las bandas apropiadas.
+            </p> 
+        </div>
+    </div>
+    <div id="vegetationIndexType">
+        <div><h2>Elija el método para supervisar la vegetación</h2></div>
+        <hr/>
+        <div>
+            <p>Elija el m&eacute;todo para crear la capa de &iacute;ndice de vegetaci&oacute;n. Los diferentes &iacute;ndices de vegetaci&oacute;n pueden ayudar a resaltar determinadas entidades o a reducir el ruido.
+            </p>
+            <ul>
+                <li>Global Environmental Monitoring Index &mdash; 
+El GEMI es un &iacute;ndice de vegetaci&oacute;n no lineal para la supervisi&oacute;n medioambiental global desde las im&aacute;genes de sat&eacute;lite. Es similar a NDVI, pero es menos sensible a los efectos atmosf&eacute;ricos. Lo afecta el terreno desnudo, por lo tanto, no se recomienda su uso en &aacute;reas de vegetaci&oacute;n escasa o moderada.
+
+                </li>
+                <li>Green Vegetation Index - Landsat TM &mdash; 
+El GVI se dise&ntilde;o originalmente desde las im&aacute;genes Landsat MSS, pero se modific&oacute; para utilizarlo con im&aacute;genes Landsat TM. Tambi&eacute;n se denomina &iacute;ndice de vegetaci&oacute;n verde Landsat TM Tasseled Cap. Este &iacute;ndice de supervisi&oacute;n tambi&eacute;n se puede utilizar con im&aacute;genes cuyas bandas comparten las mismas caracter&iacute;sticas espectrales.
+
+                </li>
+                <li>Modified Soil Adjusted Vegetation Index &mdash; 
+El MSAVI2 es un &iacute;ndice de vegetaci&oacute;n que intenta minimizar las influencias del terreno del m&eacute;todo SAVI.
+
+                </li>
+                <li>Normalized Difference Vegetation Index  &mdash; 
+El NDVI es un &iacute;ndice normalizado que le permite generar una imagen que muestra el verdor, o biomasa relativa. Este &iacute;ndice aprovecha el contraste de las caracter&iacute;sticas de dos bandas de un dataset r&aacute;ster multiespectral: las absorciones de pigmento de clorofila en la banda roja y la alta reflectividad de los materiales de las plantas en la banda infrarroja cercana (NIR).
+
+                </li>
+                <li>Perpendicular Vegetation Index &mdash; 
+El PVI es similar a un &iacute;ndice diferencial de vegetaci&oacute;n; sin embargo, es sensible a las variaciones atmosf&eacute;ricas. Al utilizar este m&eacute;todo para comparar diferentes im&aacute;genes, s&oacute;lo se debe utilizar en im&aacute;genes que se han corregido atmosf&eacute;ricamente. Esta informaci&oacute;n puede proporcionarla el proveedor de datos.
+
+                </li>
+                <li>Soil-Adjusted Vegetation Index &mdash; 
+El SAVI es un &iacute;ndice de vegetaci&oacute;n que intenta minimizar las influencias del brillo del suelo utilizando un factor de correcci&oacute;n de brillo del suelo. Esto con frecuencia se utiliza en regiones &aacute;ridas en donde la cubierta de vegetaci&oacute;n es baja.
+
+                </li>
+                <li>Sultan's Formula &mdash; 
+El proceso F&oacute;rmula de Sultan utiliza una imagen de 8 bits de seis bandas a la que aplica un algoritmo espec&iacute;fico para producir una imagen de 8 bits de tres bandas. La imagen que resulta resalta las formaciones de roca denominadas ofiol&iacute;ticos en zonas costeras. Esta f&oacute;rmula se dise&ntilde;&oacute; bas&aacute;ndose en las bandas TM y ETM de una escena Landsat 5 o 7.
+
+                </li>
+                <li>Transformed Soil-Adjusted Vegetation Index &mdash; 
+El SAVI transformado es un &iacute;ndice de vegetaci&oacute;n que intenta minimizar las influencias de brillo del suelo al asumir que la l&iacute;nea del suelo tiene una intercepci&oacute;n y pendiente arbitraria.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bandIndexes">
+        <div><h2>Especificar los índices de la banda NIR y la banda roja</h2></div>
+        <hr/>
+        <div>
+            <p>Especifique los &iacute;ndices de banda para las bandas NIR y roja.
+            </p>
+            <p>Cada sensor de sat&eacute;lite y c&aacute;mara a&eacute;rea capturan informaci&oacute;n que se desglosa en &iacute;ndices de banda. Cada &iacute;ndice de banda contiene la informaci&oacute;n para una parte espec&iacute;fica del espectro electromagn&eacute;tico. Para este m&eacute;todo de supervisi&oacute;n de la vegetaci&oacute;n, es necesario que especifique el &iacute;ndice de banda que captur&oacute; las longitudes de onda de NIR y roja.
+            </p>
+        </div>
+    </div>
+    <div id="slopeOfSoilLine">
+        <div><h2>Pendiente de línea de suelo</h2></div>
+        <hr/>
+        <div>
+            <p>La pendiente de la l&iacute;nea del suelo. La pendiente es la relaci&oacute;n lineal aproximada entre las bandas NIR y roja en un gr&aacute;fico de dispersi&oacute;n.
+            </p>
+            <p>Este par&aacute;metro solo es v&aacute;lido para el m&eacute;todo &Iacute;ndice de vegetaci&oacute;n ajustado al suelo transformado.
+            </p>
+        </div>
+    </div>
+    <div id="interceptOfSoilLine">
+        <div><h2>Interceptar</h2></div>
+        <hr/>
+        <div>
+            <p>El valor del NIR cuando el valor de reflejo de la banda roja es 0 para las l&iacute;neas del suelo concretas.
+            </p>
+            <p> <code>(a = NIR - sRed)</code> , cuando Rojo es 0.
+            </p> 
+            <p>Este par&aacute;metro solo es v&aacute;lido para el m&eacute;todo &Iacute;ndice de vegetaci&oacute;n ajustado al suelo transformado.
+            </p>
+        </div>
+    </div>
+    <div id="greenVegetativeCover">
+        <div><h2>Cantidad de cobertura de vegetación verde</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica la cantidad de cobertura de vegetaci&oacute;n verde, requerida por el m&eacute;todo SAVI.
+            </p>
+            <p>Los valores v&aacute;lidos son los siguientes: 
+
+                <ul>
+                    <li>1 = &Aacute;reas sin cobertura de vegetaci&oacute;n verde
+                        
+ 
+                    </li>
+                    <li>0,5 = &Aacute;reas con cobertura moderada de vegetaci&oacute;n verde
+                        
+ 
+                    </li>
+                    <li>0 = &Aacute;reas con cobertura alta de vegetaci&oacute;n verde
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="adjustmentFactor">
+        <div><h2>Factor de ajuste</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica el factor de ajuste para ayudar a minimizar el efecto del suelo, lo cual se requiere para el m&eacute;todo &Iacute;ndice de vegetaci&oacute;n ajustado al suelo transformado. El valor predeterminado es 0.08.
+            </p>
+            <p>Un valor bajo significa que est&aacute; ignorando el efecto del suelo. Un valor alto significa que el suelo afecta al resultado.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>El nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y que se agregar&aacute; al mapa. El nombre predeterminado se basa en el nombre de la herramienta y en el nombre de la capa de entrada. Si la capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Puede especificar el nombre de una carpeta de  <b>Mi contenido</b> en la que se guardar&aacute; el resultado con el cuadro desplegable <b>Guardar el resultado en</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

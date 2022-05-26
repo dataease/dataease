@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Laske tiheys</h2><p/>
+        <h2><img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" alt="Laske tiheys"></h2>
+        <hr/>
+    <p>Laske tiheys -ty&ouml;kalu luo tiheyskartan piste- tai viivakohteista jakamalla tietyn ilmi&ouml;n tunnetut m&auml;&auml;r&auml;t (esitet&auml;&auml;n pisteiden ja viivojen ominaisuustietoina) kartan alueelle. Tuloksena syntyy karttataso, jonka alueet on luokiteltu v&auml;hiten tihe&auml;st&auml; tiheimp&auml;&auml;n.   
+
+    </p>
+    <p>Pistel&auml;ht&ouml;aineiston kunkin pisteen tulee esitt&auml;&auml; jonkin tapahtuman tai tapauksen sijaintia. Tulostaso kuvaa tapausten m&auml;&auml;r&auml;&auml; tietyll&auml; yksik&ouml;n alueella. Korkeampi tiheysarvo uudessa sijainnissa tarkoittaa, ett&auml; kyseisen sijainnin l&auml;hell&auml; on enemm&auml;n pisteit&auml;. Useissa tapauksissa tulostasoa voidaan tulkita tulevien tapahtumien riskimallina. Jos pistel&auml;ht&ouml;aineisto esitt&auml;&auml; esimerkiksi salamaniskujen sijainteja, tulostasoa voidaan tulkita tulevien salamaniskujen riskimallina.
+    </p>
+    <p>Viival&auml;ht&ouml;aineistossa viivojen tiheyspinta kuvaa kunkin sijainnin l&auml;hell&auml; olevien viivojen kokonaism&auml;&auml;r&auml;&auml;. Laskettujen tiheysarvojen yksik&ouml;t ovat viivojen pituus tietyll&auml; yksikk&ouml;alueella. Jos viivat esitt&auml;v&auml;t esimerkiksi jokia, tulostaso kuvaa jokien kokonaispituutta etsint&auml;s&auml;teen alueella. T&auml;m&auml;n tuloksen avulla voidaan tunnistaa alueet, jotka sopivat el&auml;inten laiduntamiseen.
+    </p>
+    <p> Ty&ouml;kalua voi k&auml;ytt&auml;&auml; my&ouml;s esimerkiksi seuraaviin tarkoituksiin:
+        <ul>
+            <li>Rikostiheyden karttojen luominen voi auttaa poliisilaitoksia kohdentamaan resurssejaan alueille, joilla rikollisuustaso on korkea.
+            </li>
+            <li>Maan sairaaloiden tiheyksien laskeminen. Tulostaso n&auml;ytt&auml;&auml; alueet, joilta sairaalaan p&auml;&auml;sy on helppoa tai vaikeaa. N&auml;it&auml; tietoja voidaan k&auml;ytt&auml;&auml; apuna p&auml;&auml;tett&auml;ess&auml; uusien sairaaloiden sijainneista.
+            </li>
+            <li>Mets&auml;paloille alttiiden alueiden tunnistaminen mets&auml;palojen historiallisten sijaintien perusteella.
+            </li>
+            <li>Kaukana valtateist&auml; sijaitsevien asutusten paikantaminen suunniteltaessa uusien teiden rakentamista.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse piste- tai viivakarttataso, joista tiheys lasketaan.</h2></div>
+        <hr/>
+        <div>
+            <p>Piste- tai viivakarttataso, josta tiheys lasketaan.
+
+            </p>
+            <p>Kartasta valittavan karttatason lis&auml;ksi voit valita alareunan avattavasta luettelosta  <b>Valitse analyysikarttataso</b> -vaihtoehdon. T&auml;m&auml; vaihtoehto avaa gallerian, jossa voit selata ja valita aineistoryhmi&auml; erilaisista l&auml;hteist&auml; ja k&auml;ytt&auml;&auml; niit&auml; analyysissa. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Käytä määräkenttää</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rit&auml; kentt&auml;, joka osoittaa tapausten m&auml;&auml;r&auml;n kussakin sijainnissa. Jos pisteet esitt&auml;v&auml;t esimerkiksi kaupunkeja, voit k&auml;ytt&auml;&auml; m&auml;&auml;r&auml;kentt&auml;n&auml; kentt&auml;&auml;, joka osoittaa kaupungin asukasluvun. Tuloksena syntyv&auml; v&auml;est&ouml;tiheyden karttataso laskee korkean v&auml;est&ouml;tiheyden asukasluvultaan suurien kaupunkien alueille.
+            </p>
+            <p> Jos k&auml;yt&auml;t oletusvalintaa Ei mit&auml;&auml;n, kunkin sijainnin oletetaan esitt&auml;v&auml;n yht&auml; tapausta.
+            </p>
+        </div>
+    </div>
+    <div id="radius">
+        <div><h2>Etsi etäisyys</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rit&auml; et&auml;isyys, joka osoittaa, kuinka suurelta alueelta piste- tai viivakohteet haetaan tiheysarvojen laskentaa varten. Jos hakuet&auml;isyydeksi m&auml;&auml;ritet&auml;&auml;n esimerkiksi 10&nbsp;000 metri&auml;, tuloskarttatason kunkin sijainnin tiheys lasketaan 10&nbsp;000 metrin s&auml;teell&auml; sijainnista olevien kohteiden perusteella. Jos yht&auml;&auml;n tapausta ei ole 10&nbsp;000 metrin s&auml;teell&auml; sijainnista, tiheysarvoksi m&auml;&auml;ritet&auml;&auml;n nolla.     
+
+            </p>
+            <p>Jos et&auml;isyytt&auml; ei m&auml;&auml;ritet&auml;, oletusasetus lasketaan l&auml;ht&ouml;aineiston sijaintien ja m&auml;&auml;r&auml;kent&auml;n arvojen perusteella (jos m&auml;&auml;r&auml;kentt&auml; on m&auml;&auml;ritetty).
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Leikkaa tulosaineisto kohteeseen</h2></div>
+        <hr/>
+        <div>
+            <p>Piirr&auml; tai m&auml;&auml;rit&auml; karttataso, jonka alueelta tiheydet lasketaan. Jos esimerkiksi lasket j&auml;rven kalatiheyksi&auml;, voit k&auml;ytt&auml;&auml; tulosaineiston rajoina j&auml;rven rajaa, jolloin tulokset piirret&auml;&auml;n vain j&auml;rven rajojen sis&auml;puolelle.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Luokitteluperuste</h2></div>
+        <hr/>
+        <div>
+            <p>Valitse, miten tiheysarvot luokitellaan alueisiin.
+                <ul>
+                    <li>Tasav&auml;linen &ndash; Alueet luodaan niin, ett&auml; tiheysarvojen alueet jaetaan samankokoisiin alueisiin.
+                    </li>
+                    <li>Geometrinen v&auml;li &ndash; Alueet perustuvat geometrisen sarjan mukaisesti m&auml;&auml;ritettyihin luokkav&auml;leihin. T&auml;m&auml; menetelm&auml; varmistaa, ett&auml; kullakin luokka-alueella on keskim&auml;&auml;rin saman verran arvoja ja ett&auml; luokkien v&auml;liset siirtym&auml;t ovat yhdenmukaisia.
+                    </li>
+                    <li>Luonnolliset rajat &ndash; Alueiden luokkav&auml;lit perustuvat aineiston luontaisiin ryhmittelyihin. Luokkien raja-arvot m&auml;&auml;ritet&auml;&auml;n siten, ett&auml; luokat kokoavat yhteen samantapaiset arvot ja n&auml;ytt&auml;v&auml;t ryhmien v&auml;liset erot parhaiten.
+
+                    </li>
+                    <li>Samanlainen alue &ndash; Alueet luodaan niin, ett&auml; kunkin alueen koko on sama. Jos tulostasossa on esimerkiksi enemm&auml;n korkean tiheyden arvoja kuin matalan tiheyden arvoja, korkeille tiheyksille luodaan enemm&auml;n alueita.
+                    </li>
+                    <li>Keskihajonta &ndash; Alueet luodaan ennustettujen tiheysarvojen keskihajonnan perusteella. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Luokkien määrä</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;ritt&auml;&auml; tulostason luokkien (ennustettujen arvojen alueiden) m&auml;&auml;r&auml;n. Luokat m&auml;&auml;ritt&auml;v&auml;t alueiden rajat. N&auml;iden luokkien arvot m&auml;&auml;r&auml;ytyv&auml;t  <b>Luokitteluperuste</b>-parametrin mukaan.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Tulospinta-alan yksiköt</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rit&auml; tulosalueen yksik&ouml;t. Tiheys kuvaa m&auml;&auml;r&auml;&auml; tietty&auml; pinta-alaa kohden. T&auml;m&auml; parametri m&auml;&auml;ritt&auml;&auml; tiheyden laskennassa k&auml;ytett&auml;v&auml;n pinta-alayksik&ouml;n.  
+
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen tason nimi, joka luodaan kohtaan  <b>Oma sis&auml;lt&ouml;</b> ja joka lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttatason nimi on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Avattavan  <b>Tallenna tulos kohteeseen</b> -valikon avulla voit m&auml;&auml;ritt&auml;&auml; sen <b>Oma sis&auml;lt&ouml;</b> -kansion nimen, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

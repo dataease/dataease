@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Hitta befintliga platser</h2><p/>
+        <h2><img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" alt="Hitta befintliga platser"></h2>
+        <hr/>
+    <p>Det h&auml;r verktyget markerar befintliga geoobjekt i unders&ouml;kningsomr&aring;det som uppfyller en rad kriterier du anger. Kriterierna kan bygga p&aring; attributfr&aring;gor (till exempel fastigheter som &auml;r tomma) och geografiska fr&aring;gor (till exempel inom en kilometer fr&aring;n en flod). 
+    </p>
+    <p>Om  <b>Anv&auml;nd aktuell kartutbredning</b> markeras, analyseras bara de geoobjekt i indatalagret som visas i den aktuella kartutbredningen. Om alternativet inte markeras analyseras alla geoobjekt, &auml;ven om de ligger utanf&ouml;r den aktuella kartutbredningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayers">
+        <div><h2>Välj lagret som innehåller de geoobjekt som du vill hitta med attributfrågor och geografiska frågor</h2></div>
+        <hr/>
+        <div>
+            <p>Det punkt-, linje- eller omr&aring;deslager f&ouml;r vilket du vill hitta geoobjekt baserat p&aring; en kombination av attributfr&aring;gor och geografiska fr&aring;gor som anges nedan.
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager p&aring; din karta kan du v&auml;lja  <b>V&auml;lj analyslager</b>, som du hittar l&auml;ngst ned i listrutan. Det alternativet &ouml;ppnar ett galleri d&auml;r du kan bl&auml;ddra till och v&auml;lja dataupps&auml;ttningar fr&aring;n diverse k&auml;llor som du kan anv&auml;nda i din analys. 
+            </p>
+        </div>
+    </div>
+    <div id="Expression">
+        <div><h2>Skapa en fråga för att hitta geoobjekt</h2></div>
+        <hr/>
+        <div>
+            <p>Klicka p&aring; knappen  <b>L&auml;gg till uttryck</b> n&auml;r du vill definiera ett uttryck. Du kan l&auml;gga till flera uttryck. N&auml;r du har angett uttrycken och klickat p&aring; knappen <b>K&ouml;r analys</b> filtreras geoobjekt i ditt indatalager genom varje uttryck. De geoobjekt som uppfyller alla uttryck skrivs till resultatlagret.
+            </p>
+            <p>Du kan skapa tv&aring; grundl&auml;ggande typer av uttryck: attribututtryck och geografiska uttryck. Attribututtryck &auml;r fr&aring;gor om f&auml;ltv&auml;rden, t.ex.  <code>d&auml;r namnet &auml;r &quot;San Francisco&quot;</code>. Det finns fyra typer av geografiska uttryck:
+                <ul>
+                    <li> <b>inom ett avst&aring;nd fr&aring;n</b>: geoobjektet m&aring;ste finnas inom ett avst&aring;nd fr&aring;n ett geoobjekt i ett annat lager. Exempel: hitta fastigheter inom 500 meter fr&aring;n Los Angelesfloden.
+                    </li>
+                    <li> <b>inneh&aring;ller helt</b>: geoobjektet m&aring;ste inneh&aring;lla ett helt geoobjekt i ett annat lager. Exempel: hitta avrinningsomr&aring;den som helt inneh&aring;ller fastigheter f&ouml;r industribruk. Ingen del av fastigheten f&aring;r ligga utanf&ouml;r avrinningsomr&aring;det.
+                    </li>
+                    <li> <b>helt inom</b>: geoobjektet m&aring;ste vara helt omgivet av ett geoobjekt i ett annat lager. Exempel: hitta skoldistrikt som helt ligger innanf&ouml;r en kommungr&auml;ns. Ingen del av skoldistriktet f&aring;r ligga utanf&ouml;r kommungr&auml;nsen.
+                    </li>
+                    <li> <b>korsar</b>: geoobjektet inneh&aring;ller en del av ett geoobjekt i ett annat lager. Exempel: hitta fastigheter som korsar floder. Alla delar av floden som g&aring;r genom fastigheten eller r&ouml;r vid fastighetsgr&auml;nsen korsar fastigheten.
+                    </li>
+                    <li> <b>n&auml;rmast</b>: geoobjektet m&aring;ste vara n&auml;rmast ett geoobjekt i ett annat lager. Hitta till exempel den restaurang som ligger n&auml;rmast varje hotell.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Varje geografiskt uttryck har en motsvarande negation, med undantag f&ouml;r  <b>n&auml;rmast</b>: <b>inte inom ett avst&aring;nd fr&aring;n</b>, <b>inneh&aring;ller inte helt</b>, <b>inte helt inom</b> och <b>korsar inte</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OuputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagernamnet redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Om du anv&auml;nder listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

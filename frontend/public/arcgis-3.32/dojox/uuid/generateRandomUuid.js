@@ -1,0 +1,2 @@
+//>>built
+define("dojox/uuid/generateRandomUuid",["./_base"],function(){dojox.uuid.generateRandomUuid=function(){function a(){for(var a=Math.floor(Math.random()%1*Math.pow(2,32)).toString(16);8>a.length;)a="0"+a;return a}var d=a(),b=a(),b=b.substring(0,4)+"-4"+b.substring(5,8),c=a(),c="8"+c.substring(1,4)+"-"+c.substring(4,8),e=a();return(d+"-"+b+"-"+c+e).toLowerCase()};return dojox.uuid.generateRandomUuid});

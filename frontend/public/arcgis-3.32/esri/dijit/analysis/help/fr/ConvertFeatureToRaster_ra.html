@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Convertir l’entité en raster</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="Outil Convertir l'entit&eacute; en raster"></h2>
+        <hr/>
+    <p>Cet outil convertit des entit&eacute;s multipatchs en jeu de donn&eacute;es raster.
+    </p>
+    <p>Toute classe d'entit&eacute;s contenant des entit&eacute;s ponctuelles, lin&eacute;aires ou surfaciques peut &ecirc;tre convertie en un jeu de donn&eacute;es raster.
+    </p>
+    <p>Le centre des cellules permet de conna&icirc;tre la valeur du pixel du raster en sortie.
+    </p>
+    <p>Le type du champ en entr&eacute;e d&eacute;termine le type du raster en sortie. S'il s'agit d'un champ de type entier, le raster en sortie est &eacute;galement de type entier. S'il s'agit d'un champ de type virgule flottante, la sortie est &eacute;galement de type virgule flottante.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choisir la couche d'entités à convertir</h2></div>
+        <hr/>
+        <div>
+            <p>La couche d'entit&eacute;s en entr&eacute;e &agrave; convertir en jeu de donn&eacute;es raster.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Choisir un champ</h2></div>
+        <hr/>
+        <div>
+            <p>Choisissez le champ qui permettra d'attribuer des valeurs au raster en sortie.
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Taille de cellule en sortie</h2></div>
+        <hr/>
+        <div>
+            <p>Taille de cellule et unit&eacute; des rasters en sortie.
+            </p>
+            <p>Les unit&eacute;s disponibles sont les miles, les pieds, les m&egrave;tres et les kilom&egrave;tres. Les pieds sont utilis&eacute;s par d&eacute;faut.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Le nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans  <b>My Content (Mon contenu)</b>, dans lequel le r&eacute;sultat sera enregistr&eacute; via la zone de liste d&eacute;roulante <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

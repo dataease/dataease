@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/nb/SummarizeCenterAndDispersion",{inputLayerLabel:"Velg et lag som skal beskrives",summaryTypes:"Sammendragstyper",centralFeature:"Sentralt geoobjekt",meanCenter:"Snitt for midtpunkt",medianCenter:"Median for midtpunkt",ellipse:"Ellipse",weightBy:"Vekt etter (valgfritt)",groupBy:"Grupper etter (valgfritt)",resultLayerName:"Navn p\u00e5 resultatlag",outputLayerName:"Beskriv fordeling for ${layerName}",none:"Ingen",itemDescription:"Geoobjektslag generert ved kj\u00f8ring av Summer midtpunkt og fordeling p\u00e5 ${layerName}. ",
+itemTags:"Analyseresultat, Summer midtpunkt og fordeling,  ${layerName}",itemSnippet:"Geoobjektslag generert fra Summer midtpunkt og fordeling"});

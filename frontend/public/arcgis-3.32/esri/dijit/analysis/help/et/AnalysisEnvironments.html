@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Portali analüüsikeskkonna seaded</h2><p/>
+        <h2></h2>
+        <hr/>
+    <p>  Anal&uuml;&uuml;sikeskkonna seaded rakendustes Portal for ArcGIS ja  ArcGIS Online. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="overwriteResult">
+        <div><h2>Ülekirjutamise tulemuse kiht</h2></div>
+        <hr/>
+        <div>
+            
+            <p>M&auml;&auml;rab, kas olemasolevad kihid kirjutatakse &uuml;le. Kui see ruut on m&auml;rgitud ja sama nimega kiht on sisu hulgas juba olemas, kirjutatakse see &uuml;le.
+            </p>
+            <p>
+                <ul>
+                    <li>M&auml;rgitud &ndash; kui sama nimega kiht on sisu hulgas juba olemas, kirjutatakse see &uuml;le. V&auml;ljundil on sama koordinaats&uuml;steem, mis sisendil.
+                    </li>
+                    <li>M&auml;rkimata &ndash; kui sisestatud tulemkihi nimi on juba olemas, ilmneb t&otilde;rge ja tulemkiht tuleb enne t&ouml;&ouml;riista k&auml;ivitamist &uuml;mber nimetada. See on vaikimisi valik.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="closeAnalysisWidget">
+        <div><h2>Sulge analüüsimoodul pärast analüüsi teostamist</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rab, kas j&auml;tta anal&uuml;&uuml;sidialoog t&ouml;&ouml;riista t&ouml;&ouml;tlemise ajal avatuks ja lubatuks. See s&auml;te v&otilde;imaldab anal&uuml;&uuml;siparameetreid muuta samal ajal, kui eelmine anal&uuml;&uuml;sit&ouml;&ouml; on j&auml;tkuvalt pooleli. Anal&uuml;&uuml;simine on iteratiivne protsess ja hoides t&ouml;&ouml;riista dialoogi avatuna, saate parameetrit h&otilde;lpsalt muuta ning anal&uuml;&uuml;si korrata.
+            </p>
+            <p>
+                <ul>
+                    <li>M&auml;rgitud &ndash; anal&uuml;&uuml;sit&ouml;&ouml;riista aken suletakse ja fookusesse v&otilde;etakse taas sisukord. See on vaikimisi valitud
+                    </li>
+                    <li>M&auml;rkimata &ndash; anal&uuml;&uuml;sit&ouml;&ouml;riista aken j&auml;&auml;b avatuks ja lubatuks.   
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="storeAnalysisResults">
+        <div><h2>Salvesta analüüsi tulemused majutatud objektikihtidena</h2></div>
+        <hr/>
+        <div>
+            
+            <p>V&otilde;imalus m&auml;&auml;rata, kas anal&uuml;&uuml;si kaudu loodud tulemkihist saab objektide kogum v&otilde;i majutatud objektikiht. 
+            </p>
+            <p>
+                <ul>
+                    <li>M&auml;rgitud &ndash; anal&uuml;&uuml;situlemus loob majutatud objektikihi ja sisusse luuakse sisuobjekt. See on vaikimisi valik.
+                    </li>
+                    <li>M&auml;rkimata &ndash; anal&uuml;&uuml;situlemus luuakse objektide kogumina.     
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputCoordinateSystem">
+        <div><h2>Väljundi koordinaatsüsteem</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rab rasteranal&uuml;&uuml;si jaoks tulemuskihi koordinaats&uuml;steemi.    
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Sama, mis sisend</b> &ndash; anal&uuml;&uuml;situlemus on samas koordinaats&uuml;steemis nagu sisend. See on vaikimisi valik.
+                    </li>
+                    <li> <b>Nagu m&auml;&auml;ratud</b> &ndash; anal&uuml;&uuml;situlemus on teie valitud  koordinaats&uuml;steemis. Kui see suvand on valitud, kl&otilde;psake gloobusenuppu, et teha valik tuntud koordinaats&uuml;steemide loendist, v&otilde;i lisage ruumiline v&otilde;rdlus koordinaats&uuml;steemi WKID vastavale v&auml;ljale.
+                    </li>
+                    <li> <b>Kiht
+&lt;name&gt;</b> &mdash; Teie anal&uuml;&uuml;si tulemus on samas koordinaats&uuml;steemis nagu olemasolev kiht, mille valite veebikaardil.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingCoordinateSystem">
+        <div><h2>Koordinaatsüsteemi töötlemine</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rab koordinaats&uuml;steemi, mida kasutatakse GeoAnalyticsi anal&uuml;&uuml;si tegemisel.   
+            </p>
+            <p>GeoAnalytics keskkonnas on osade anal&uuml;&uuml;side puhul n&otilde;utav, et t&ouml;&ouml;tlemine teostatakse tasapinnalises ristkoordinaatide koordinaats&uuml;steemis. Mis tahes t&ouml;&ouml;riist, kus on rakendatud andmete v&otilde;i lineaarsete m&otilde;&otilde;t&uuml;hikute r&uuml;hmitamist, n&otilde;uab tasapinnalist ristkoordinaatide s&uuml;steemi. 
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Sama, mis sisend</b> &ndash; anal&uuml;&uuml;si t&ouml;&ouml;deldakse samas koordinaats&uuml;steemis nagu sisendit. See on vaikimisi valik.
+                    </li>
+                    <li> <b>Nagu m&auml;&auml;ratud</b> &ndash; anal&uuml;&uuml;situlemus on teie valitud  koordinaats&uuml;steemis. Kui see suvand on valitud, kl&otilde;psake gloobusenuppu, et teha valik tuntud koordinaats&uuml;steemide loendist, v&otilde;i lisage ruumiline v&otilde;rdlus koordinaats&uuml;steemi WKID vastavale v&auml;ljale.
+                    </li>
+                    <li> <b>Kiht
+&lt;name&gt;</b> &mdash; Teie anal&uuml;&uuml;si tulemus on samas koordinaats&uuml;steemis nagu olemasolev kiht, mille valite veebikaardil.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingExtent">
+        <div><h2>Kuvaulatus</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rab piiri ulatuse, mida kasutatakse anal&uuml;&uuml;si teostamisel. K&otilde;iki sisendobjekte, mis on t&auml;ielikult ulatuse piirides v&otilde;i mis l&otilde;ikuvad sellega, kasutatakse anal&uuml;&uuml;sis.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Vaikimisi</b> &ndash; kasutab t&ouml;&ouml;riista pakutud ulatust.
+                    </li>
+                    <li> <b>Nagu m&auml;&auml;ratud</b> &mdash; Ulatuse m&auml;&auml;ravad teie esitatud koordinaadid.
+                    </li>
+                    <li> <b>Kiht
+&lt;name&gt;</b>&mdash; Teie anal&uuml;&uuml;si t&ouml;&ouml;tlemisel kasutatav ulatus on samasugune nagu ruumiline ulatus olemasoleval kihil, mille valite veebikaardil . 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="snapRaster">
+        <div><h2>Rastri snäp</h2></div>
+        <hr/>
+        <div>
+            <p>Reguleerib v&auml;ljundi rasterkihi ulatust nii, et see sobib m&auml;&auml;ratud  <b>Rastri sn&auml;pi</b> kihi lahtrite joondusega rastrianal&uuml;&uuml;sis.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Lahtri suurus</h2></div>
+        <hr/>
+        <div>
+            <p>Rasteranal&uuml;&uuml;si teostamise ajal m&auml;&auml;rab see keskkond piksli suuruse v&otilde;i resolutsiooni, mida kasutatakse v&auml;ljundi rasterkihi loomiseks. V&auml;ljundi resolutsiooni vaikimisi v&auml;&auml;rtuse m&auml;&auml;rab sisendi rasterkihi suurim piksli k&uuml;ljepikkuse suurus.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Sisendite miinimumarv</b> &ndash; kasutage k&otilde;ikide sisendkihtide v&auml;ikseimat piksli suurust.
+                    </li>
+                    <li> <b>Sisendite maksimumarv</b> &ndash; kasutage k&otilde;ikide sisendkihtide suurimat piksli suurust. See on vaikimisi valik.
+                    </li>
+                    <li> <b>Nagu m&auml;&auml;ratud</b> &ndash; sisestage arvv&auml;&auml;rtus, et m&auml;&auml;rata piksli suurus. Kui see on valitud, on vaikev&auml;&auml;rtus 1.
+                    </li>
+                    <li> <b>Kiht &lt;name&gt;</b> &ndash; m&auml;&auml;rab valitud rasterkihi piksli suuruse.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="mask">
+        <div><h2>Mask</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rab kihi, mida kasutatakse teie huvipakkuva ala m&auml;&auml;ratlemiseks rastrianal&uuml;&uuml;sis. Anal&uuml;&uuml;simisel v&otilde;etakse arvesse ainult neid piksleid, mis j&auml;&auml;vad anal&uuml;&uuml;simaski piiresse.
+            </p>
+            <ul>
+                <li>Mask v&otilde;ib olla kas raster- v&otilde;i objektikiht.
+                </li>
+                <li>Kui anal&uuml;&uuml;simask on raster, v&otilde;etakse maski m&auml;&auml;ratlemisel arvesse k&otilde;iki piksleid, millel on v&auml;&auml;rtus. Maski rastri pikslid, mille v&auml;&auml;rtus on NoData, loetakse olevat v&auml;ljaspool maski ja need on anal&uuml;&uuml;situlemuse kihis v&auml;&auml;rtusega NoData. 
+                </li>
+                <li>Kui anal&uuml;&uuml;simask on objektikiht, teisendatakse see k&auml;ivitamisel sisemiselt rastriks. Sel p&otilde;hjusel peaksite veenduma, et  
+ <b>Piksli suurus</b> ja <b>Rastri sn&auml;p</b> oleksid anal&uuml;&uuml;si jaoks &otilde;igesti m&auml;&auml;ratud.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Andmeladu</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalyticsi tulemused saab salvestada kas andmelattu  ArcGIS Data Store ja avaldada tulemuskihina portaalis  Portal for ArcGIS v&otilde;i konfigureerida suurandmete failijaotusena. 
+            </p>
+            <p>Kui tulemuse salvestuskoht on  ArcGIS Data Store, siis enamikul juhtudel tuleb tulemused salvestada ajalisruumilises andmelaos. See on vaikimisi valitud. Allpool on toodud m&otilde;ned p&otilde;hjused, miks oleks soovitatav tulemid salvestada  relatsioonilisse andmelattu. 
+                <ul>
+                    <li>Saate tulemeid kasutada portaalidevahelises koost&ouml;&ouml;s
+                    </li>
+                    <li>Saate tulemitega s&uuml;nkroniseerida
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Relatsioonilist andmeladu pole otstarbekas kasutada, kui GeoAnalyticsi tulemite arv suureneb. Sel juhul peaksite kasutama suurt ajalisruumilist andmeladu, mis v&otilde;imaldab hallata suurt andmemahtu. 
+            </p>
+        </div>
+    </div>
+    <div id="parallelProcessingFactor">
+        <div><h2>Paralleeltöötluse tegur</h2></div>
+        <hr/>
+        <div>
+            <p>Jaotab anal&uuml;&uuml;si &uuml;le mitme rastri t&ouml;&ouml;tlemise teenuse eksemplari. 
+            </p>
+            <p>T&ouml;&ouml;riistad, mis j&auml;rgivad  <b>Paralleelt&ouml;&ouml;tluse teguri</b> keskkonda, v&otilde;imaldavad  reguleerida rastri t&ouml;&ouml;tlemise teenuse eksemplaride arvu, mida saab kasutada andmete t&ouml;&ouml;tlemisel.
+            </p>
+            <p>Kui t&ouml;&ouml;riist ei j&auml;rgi  <b>Protsessori t&uuml;&uuml;pi</b> v&otilde;i kui <b>Protsessori t&uuml;&uuml;bi </b> keskkonnaks on seatud <b>CPU</b>, reguleerib <b>Paralleelse t&ouml;&ouml;tluse teguri</b> keskkond rastri t&ouml;&ouml;tlemise (CPU) teenuse eksemplare. Kui <b>Protsessori t&uuml;&uuml;biks</b> on seatud <b>GPU</b>, reguleerib <b>Paralleelse t&ouml;&ouml;tluse teguri</b> keskkond rastri t&ouml;&ouml;tlemise GPU eksemplaride arvu.
+            </p> 
+            <p> <b>Paralleelse t&ouml;&ouml;tluse teguri</b>, seadistamise teel saate valida paralleelsete t&ouml;&ouml;tajate arvu, keda rastri anal&uuml;&uuml;si pildiserver kasutab rastrianal&uuml;&uuml;si &uuml;lesande t&ouml;&ouml;tlemisel. Kui paralleelsete protsesside &uuml;ldarv &uuml;letab siiski rastri t&ouml;&ouml;tlemise (CPU v&otilde;i GPU) teenuse eksemplaride arvu, seatakse t&auml;iendavad paralleelsed protsessid j&auml;rjekorda.
+            </p>
+            <p>Kui  <b>Paralleelse t&ouml;&ouml;tlemise tegur</b> ei ole m&auml;&auml;ratud, mis on vaikeseadistus, siis kasutab t&ouml;&ouml;riist 80% rastri t&ouml;&ouml;tlemise teenuse eksemplaride maksimaalsest arvust. Paralleelse t&ouml;&ouml;tlemise teguri saab m&auml;&auml;rata kas t&auml;isarvulise numbrina v&otilde;i protsendina.
+            </p>
+        </div>
+    </div>
+    <div id="processorType">
+        <div><h2>Protsessori tüüp</h2></div>
+        <hr/>
+        <div>
+            <p>T&ouml;&ouml;riistad, mis j&auml;rgivad <b>Protsessori t&uuml;&uuml;bi</b> keskkonda, v&otilde;imaldavad teil valida, kus ja kuidas soovite oma andmeid t&ouml;&ouml;delda. Saate t&ouml;&ouml;delda oma andmeid, kasutades serverarvuti CPU-d v&otilde;i GPU-d.  Kui <b>Protsessori t&uuml;&uuml;bi </b> keskkond on t&uuml;hi, kasutab t&ouml;&ouml;riist andmete t&ouml;&ouml;tlemiseks CPU-d. See on vaikimisi valik.
+            </p> 
+            <p>CPU abil t&ouml;&ouml;tlemist saab muuta paralleelseks mitmes tuumas ja eksemplaris nagu ka k&auml;sitleda  <b>Paralleelse t&ouml;&ouml;tluse teguri</b>abil.
+            </p>
+            <p>GPU-d on t&otilde;husad graafika ja pildiandmete t&ouml;&ouml;tluse jaoks, kus nende suure paralleelsusega struktuur muudab nad t&otilde;husaks suurte andmeplokkide t&ouml;&ouml;tlemiseks korduval viisil. Rasteranal&uuml;&uuml;si t&ouml;&ouml;riistad, mis j&auml;rgivad seda keskkonda, saavad jaotada oma t&ouml;&ouml; GPU eksemplaridele rasteranal&uuml;&uuml;si mitmes serverseadmes nagu ka k&auml;sitleda  <b>Paralleelse t&ouml;&ouml;tluse teguri</b>abil.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>GPU</b>&mdash; Andmeid t&ouml;&ouml;deldakse graafilise t&ouml;&ouml;tlemise seadme abil.
+                    </li>
+                    <li> <b>GPU</b>&mdash; Andmeid t&ouml;&ouml;deldakse arvuti keskprotsessori abil.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

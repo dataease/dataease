@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Wzbogać na podstawie siatki wielu zmiennych</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="Wzbogać na podstawie siatki wielu zmiennych"></h2>
+        <hr/>
+    <p>Narzędzie  Wzbogać na podstawie siatki wielu zmiennych pozwala efektywnie łączyć atrybuty z siatki wielu zmiennych w warstwie punktowej.
+    </p>
+    <p>Siatka wielu zmiennych to dowolna warstwa utworzona za pomocą narzędzia Buduj siatkę wielu zmiennych, kt&oacute;re zbiera atrybuty z wielu warstw w pojedynczej siatce poligon&oacute;w. Wzbogacanie za pomocą siatki wielu zmiennych pozwala szybko dodawać do danych punktowych duże i zr&oacute;żnicowane zbiory informacji w celu przeprowadzania dalszych analiz przestrzennych.
+    </p>
+    <p>Użytkownik może na przykład otrzymać nową warstwę przestępstw, kt&oacute;re popełniono w całym mieście w poprzednim roku. Na jej podstawie planowane jest utworzenie modelu zależności między częstością występowania przestępstw a pewną liczbą czynnik&oacute;w demograficznych, ekonomicznych i geograficznych. Użytkownik ma dostęp do danych opisujących te czynniki, ale są one przechowywane w pięciu r&oacute;żnych warstwach o r&oacute;żnych typach geometrii. Ponadto niekt&oacute;re warstwy są przechowywane w udostępnionym pliku dużych zbior&oacute;w danych, a inne są przechowywane jako usługi obiektowe. Po utworzeniu siatki wielu zmiennych do zapisywania tych informacji, a następnie połączeniu tej siatki z  przypadkami popełnienia przestępstw za pomocą narzędzia  Wzbogać na podstawie siatki wielu zmiennych użytkownik jest w stanie wydajnie dołączać r&oacute;żne atrybuty do warstwy punktowej przez uruchomienie tylko dw&oacute;ch przebieg&oacute;w działania narzędzia. Następnie  można użyć dołączonych atrybut&oacute;w jako zmiennych objaśniających oraz przystąpić do budowania modelu częstości występowania przestępstw z użyciem warstwy wynikowej.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>Wybierz obiekty punktowe do wzbogacenia</h2></div>
+        <hr/>
+        <div>
+            <p>Obiekty punktowe, kt&oacute;re zostaną wzbogacone z użyciem siatki wielu zmiennych.
+            </p>
+            <p>Opr&oacute;cz wybrania warstwy z mapy, można wybrać opcję  <b>Wybierz warstwę analizy</b> znajdującą się w dolnej części listy rozwijanej, aby przejść do zasob&oacute;w zestawu danych udostępnionych plik&oacute;w dużych zbior&oacute;w danych lub warstwy obiektowej.
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>Wybierz siatkę wielu zmiennych, która zostanie użyta do wzbogacania</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa siatki wielu zmiennych zawierająca atrybuty, kt&oacute;re zostaną dołączone do wejściowych obiekt&oacute;w punktowych. Warstwa musi zostać utworzona przy użyciu narzędzia Buduj siatkę wielu zmiennych i musi być hostowaną warstwą obiektową. Warstwy siatki wielu zmiennych zapisane w udostępnionym pliku dużych zbior&oacute;w danych nie są obsługiwane jako dane wejściowe dla tego narzędzia.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>Wybierz zmienne do dodania</h2></div>
+        <hr/>
+        <div>
+            <p>Atrybuty w warstwie siatki wielu zmiennych, kt&oacute;re będą dołączane do wejściowych obiekt&oacute;w punktowych, gdy obiekty punktowe będą przecinać się z siatką.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p> Nazwa warstwy, kt&oacute;ra zostanie utworzona w oknie Moje zasoby. W przypadku zapisywania w ArcGIS Data Store wyniki będą przechowywane w obszarze  <b>Moje zasoby</b> i dodawane do mapy. W przypadku zapisywania w udostępnionym pliku dużych zbior&oacute;w danych wyniki będą przechowywane w udostępnionym pliku dużych zbior&oacute;w danych i dodawane do jego manifestu. Nie będą dodawane do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, działanie narzędzia nie powiedzie się.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

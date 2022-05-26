@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Cari Lokasi yang Ada</h2><p/>
+        <h2><img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" alt="Cari Lokasi yang Ada"></h2>
+        <hr/>
+    <p>Alat ini akan memilih fitur yang ada di area studi Anda yang sesuai dengan seperangkat kriteria yang sudah Anda tentukan. Kriteria ini dapat didasarkan pada kueri atribut (contohnya, persil yang kosong) dan kueri spasial (contohnya, dalam jarak satu mil dari sungai). 
+    </p>
+    <p>Jika  <b>Gunakan jangkauan peta saat ini</b> dicentang, hanya fitur di layer input tersebut yang visibel dalam jangkauan peta saat ini yang akan dianalisis.  Jika tidak dicentang, seluruh fitur akan dianalisis, meskipun berada di luar cakupan peta saat ini.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayers">
+        <div><h2>Pilih layer berisi fitur yang ingin Anda temukan menggunakan kueri atribut dan kueri spasial</h2></div>
+        <hr/>
+        <div>
+            <p>Layer titik, garis, atau area yang ingin Anda temukan fiturnya berdasarkan kombinasi atribut dan kueri spasial yang ditentukan di bawah ini.
+            </p>
+            <p>Selain memilih sebuah layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> yang terdapat di bagian paling bawah daftar drop-down. Opsi ini membuka galeri di mana Anda dapat menelusuri dan memilih set data dari berbagai sumber untuk digunakan dalam analisis Anda. 
+            </p>
+        </div>
+    </div>
+    <div id="Expression">
+        <div><h2>Buat kueri untuk menemukan fitur</h2></div>
+        <hr/>
+        <div>
+            <p>Klik tombol  <b>Tambahkan Ekspresi</b> untuk menentukan ekspresi.  Anda dapat menambahkan beberapa ekspresi.  Setelah memasukkan ekspresi dan mengklik tombol <b>Jalankan Analisis</b>, fitur pada layer input Anda difilter melalui masing-masing ekspresi.  Fitur-fitur yang sesuai dengan seluruh ekspresi akan ditulis pada layer hasil.
+            </p>
+            <p>Ada dua tipe ekspresi dasar yang dapat Anda buat; atribut dan spasial.  Ekspresi atribut adalah kueri pada kolom nilai, seperti  <code>ketika namanya 'San Francisco'</code>.  Ada empat tipe ekspresi spasial:
+                <ul>
+                    <li> <b>dalam jarak</b>: fitur tersebut harus dalam jarak fitur yang berada di layer lainnya.  Contoh, temukan persil yang berada dalam jarak 500 meter dari sungai Los Angeles.
+                    </li>
+                    <li> <b>sepenuhnya berisi</b>: fitur tersebut harus mengandung seluruh fitur pada layer lainnya.  Contoh, temukan batas air yang di dalamnya sepenuhnya mengandung bidang untuk zona industri. Tidak ada bagian dari bidang tersebut yang dapat berada di luar dari batas air.
+                    </li>
+                    <li> <b>sepenuhnya di dalam</b>: fitur tersebut harus seluruhnya dikelilingi oleh fitur pada layer lainnya.  Contoh, cari distrik sekolah yang sepenuhnya berada di dalam batasan suatu kota.  Tidak ada bagian dari distrik sekolah yang dapat berada di luar batas kota.
+                    </li>
+                    <li> <b>berpotongan</b>: fitur tersebut mengandung bagian fitur dari layer lainnya.  Contoh, temukan persil yang berpotongan dengan sungai.  Setiap bagian sungai yang melalui persil, atau bersentuhan dengan batas persil, berpotongan dengan persil tersebut.
+                    </li>
+                    <li> <b>terdekat ke</b>: fitur harus merupakan yang terdekat ke fitur pada layer lainnya.  Misalnya, temukan restoran terdekat ke setiap hotel.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Masing-masing ekspresi spasial memiliki negasi yang berkaitan, dengan pengecualian  <b>terdekat ke</b>; <b>tidak dalam jarak</b>, <b>tidak sepenuhnya berisi</b>, <b>tidak sepenuhnya di dalam</b>, dan <b>tidak berpotongan</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OuputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Ini adalah nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta.  Nama default ditetapkan berdasarkan nama layer input. Jika nama layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Dengan menggunakan  <b>Simpan hasil di</b> menu drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> sebagai tempat penyimpanan hasil.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

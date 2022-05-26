@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Déterminer le réseau de coût de déplacement optimal</h2><p/>
+        <h2><img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" alt="Illustration de l&rsquo;outil D&eacute;terminer le r&eacute;seau de co&ucirc;t de d&eacute;placement optimal"></h2>
+        <hr/>
+    <p>Cet outil calcule le r&eacute;seau de co&ucirc;t optimal &agrave; partir d&rsquo;un ensemble de r&eacute;gions en entr&eacute;e.
+    </p>
+    <p>Un exemple d&rsquo;application de cet outil est la recherche du meilleur r&eacute;seau pour les v&eacute;hicules d&rsquo;urgence.
+    </p>
+    <p>Si l&rsquo;option  <b>Use current map extent (Utiliser l&rsquo;&eacute;tendue courante de la carte)</b> est s&eacute;lectionn&eacute;e, seuls les emplacements de la couche en entr&eacute;e qui sont visibles au sein de l&rsquo;&eacute;tendue courante de la carte sont analys&eacute;s. Si l&rsquo;option n&rsquo;est pas s&eacute;lectionn&eacute;e, tous les emplacements qui se trouvent dans la couche en entr&eacute;e seront analys&eacute;s, m&ecirc;me s&rsquo;ils se trouvent en dehors de l&rsquo;&eacute;tendue courante de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRegionsRasterOrFeatures">
+        <div><h2>Choisir un raster ou une couche d’entités d’emplacements pour déterminer les trajets</h2></div>
+        <hr/>
+        <div>
+            <p>Les r&eacute;gions en entr&eacute;e qui doivent &ecirc;tre connect&eacute;es par le r&eacute;seau de connectivit&eacute; de moindre co&ucirc;t.
+            </p>
+            <p>Les r&eacute;gions peuvent &ecirc;tre d&eacute;finies par un service d&rsquo;imagerie ou un service d&rsquo;entit&eacute;s.
+            </p>
+            <p>Pour le service d&rsquo;imagerie, les r&eacute;gions sont d&eacute;finies par groupes de cellules contigu&euml;s (adjacentes) de m&ecirc;me valeur. Un num&eacute;ro unique doit &ecirc;tre attribu&eacute; &agrave; chaque r&eacute;gion. Les cellules qui ne font pas partie d'une r&eacute;gion doivent &ecirc;tre de type NoData. Le type raster doit &ecirc;tre un entier et les valeurs peuvent &ecirc;tre positives ou n&eacute;gatives.
+            </p>
+            <p>Pour le service d&rsquo;entit&eacute;s, l&rsquo;entr&eacute;e peut &ecirc;tre de type ponctuel, lin&eacute;aire ou surfacique.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Choisir la couche raster de coût de déplacement</h2></div>
+        <hr/>
+        <div>
+            <p>Raster d&eacute;finissant l'imp&eacute;dance ou le co&ucirc;t de d&eacute;placement planim&eacute;trique &agrave; travers chaque cellule.
+            </p>
+            <p>La valeur de chaque emplacement de cellule repr&eacute;sente le co&ucirc;t par unit&eacute; de distance du d&eacute;placement &agrave; travers la cellule. Chaque valeur d'emplacement de cellule est multipli&eacute;e par la r&eacute;solution de cellule (avec &eacute;galement une compensation simultan&eacute;e pour mouvement diagonal) afin d'obtenir le co&ucirc;t total du passage &agrave; travers la cellule.
+            </p>
+            <p>Les valeurs du raster de co&ucirc;t peuvent &ecirc;tre des entiers ou valeurs &agrave; virgule flottante, mais elles ne peuvent pas &ecirc;tre n&eacute;gatives ni nulles (un co&ucirc;t ne peut pas &ecirc;tre n&eacute;gatif ou nul).
+            </p> 
+        </div>
+    </div>
+    <div id="outputOptimumNetworkName">
+        <div><h2>Nom de la couche de résultat des chemins optimaux sous forme d’une polyligne</h2></div>
+        <hr/>
+        <div>
+            <p>Le nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans  <b>My Content (Mon contenu)</b>, dans lequel le r&eacute;sultat sera enregistr&eacute; via la zone de liste d&eacute;roulante <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputNeighborNetworkName">
+        <div><h2>Nom de la couche de résultat des chemins du voisinage sous forme d’une polyligne</h2></div>
+        <hr/>
+        <div>
+            <p>Le nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans  <b>My Content (Mon contenu)</b>, dans lequel le r&eacute;sultat sera enregistr&eacute; via la zone de liste d&eacute;roulante <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

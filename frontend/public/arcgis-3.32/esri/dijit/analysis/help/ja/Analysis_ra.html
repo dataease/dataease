@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="raToolbox">
+        <p>[ラスター解析] では、 ArcGIS Image Server を使用して大規模なラスター データセットの解析を実行できます。このツールを使用すると、サーバーの能力を活用して、より多くのデータをよりすばやく解析できます。Portal for ArcGIS Web ユーザー操作で現在使用できるツールセットは、<b>[データの集約]</b>、 <b>[パターンの分析]</b>、 <b>[近接エリアの分析]</b>、 <b>[画像の分析]</b>、 <b>[テレインの分析]</b>、 <b>[データの管理]</b>、および <b>[ディープ ラーニング]</b>です。
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="smallsize">
+        <h2>データの集約</h2>
+        <hr/>
+        <p>このツールセットには、定義されたエリア境界内にあるラスター レイヤーの統計情報を計算するツールが用意されています。
+            <ul>
+                <li> <b>[エリア内でのラスターの集約]</b> では、定義されたエリア境界内にあるラスター セルの統計情報を計算します。
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="SummarizeRasterWithinTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>エリア内でのラスターの集約 (Summarize Raster Within)</h2></td>
+                    <td>
+                    <img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" class="titleImage" alt="エリア内でのラスターの集約ツール">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>定義されたエリア内にあるラスター セルの統計情報のサマリーを計算します。
+            </p>
+            <p>適用例のいくつかを次に示します。
+
+                <ul>
+                    <li>集水域エリアのレイヤーと標高ラスター レイヤーを使用して、それぞれの集水域内の標高の範囲を計算し、エネルギーの流れが最も大きいものはどれかを特定します。
+                        
+
+                    </li>
+                    <li>行政管理単位のレイヤーと土地利用カテゴリのラスター レイヤーを使用して、各管理領域内のさまざまな土地利用の値を計算し、管理計画を決定する際に最も労力を必要とするものはどれかを特定します。
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="smallsize">
+        <h2>パターンの分析</h2>
+        <hr/>
+        <p>これらのツールを使用すると、データ内の空間パターンを識別、定量化、および視覚化できます。
+
+            <ul>
+                <li> <b>[密度の計算]</b> は、ある現象の既知の数量を取得し、これらの数量をマップ上に分布して密度マップを作成します。
+                    
+
+                </li>
+                <li> <b>[ポイントの内挿]</b> は、一連のポイントでの計測値に基づいて、新しい場所の値を推定します。
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>密度の計算 (Calculate Density)</h2></td>
+                    <td>
+                    <img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" class="titleImage" alt="密度の計算 (Calculate Density) ツール">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>密度分析では、ある現象の既知の数量を取得し、これらの数量をマップ上に分布して密度マップを作成します。このツールを使用すると、たとえば、落雷や竜巻の集中する場所、健康管理施設へのアクセス、人口密度などを表示できます。
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsEBKTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>ポイントの内挿 (Interpolate Points)</h2></td>
+                    <td>
+                    <img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" class="titleImage" alt="[ポイントの内挿 (Interpolate Points)] ツール">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>このツールを使用すると、一連のポイントでの計測値に基づいて、新しい場所の値を推定できます。このツールは、各ポイントの値を持つポイント データを取得して、推定値で分類したエリアを返します。このツールを使用すると、たとえば、個々の雨量計で計測した値に基づいて、集水域全体の雨量を推定できます。
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="smallsize">
+        <h2>近接エリアの分析</h2>
+        <hr/>
+        <p>次のツールを使用すると、「近くにあるのは何か」という空間解析で最も一般的な質問の 1 つに答えることができます。
+
+            <ul>
+                <li> <b>[距離の計算]</b> は、1 つのソースまたは複数のソースからのユークリッド距離、方向、および割り当てを計算します。
+                    
+
+                </li>
+                <li> <b>[最適な移動コスト ネットワークの特定]</b> は、最適なコスト ネットワークを、入力された一群の地域から計算します。
+                    
+
+                </li>
+                <li> <b>[ポリラインとしての移動コスト パスの決定]</b> は、ソースと既知の目的地の間のポリラインとしての最小コスト パスを計算します。
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDistanceTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>距離の計算</h2></td>
+                    <td>
+                    <img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" class="titleImage" alt="距離の計算">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>1 つのソースまたは複数のソースからのユークリッド距離、方向、および割り当てを計算します。このツールを使用して、ある位置から道路、建物、または公園までの距離を決定できます。最も直接的な方法でソースに戻るために、ある位置からどの方向に移動する必要があるかを決定することもできます。分析範囲内の、最も近いソースであるすべての位置を確認することができます。
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineOptimumTravelCostNetworkTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>最適な移動コスト ネットワークの決定</h2></td>
+                    <td>
+                    <img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" class="titleImage" alt="[最適移動コスト ネットワークの決定 (Determine Optimum Travel Cost Network)] ツールの図">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>入力地域から、最適コスト ネットワークを計算します。
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineTravelCostPathAsPolylineTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>ポリラインとしての移動コスト パスの決定</h2></td>
+                    <td>
+                    <img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" class="titleImage" alt="[ポリラインとしての移動コスト パスの決定] ツールの図">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>ソースと既知の目的地の間のポリラインとしての最小コスト パスを計算します。
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeImageCategory" class="smallsize">
+        <h2>画像の分析</h2>
+        <hr/>
+        <p>次のツールは、画像の分析に役立ちます。
+            <ul>
+                <li> <b>[ラスター関数テンプレートの適用]</b> は、ラスター関数テンプレートで指定されているように、画像を関数チェーンで処理します。
+                </li>
+                <li> <b>[植生の監視]</b> では、バンドに対する算術演算に基づいて、画像に含まれる植生を検出します。
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ApplyRFxTemplateTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>ラスター関数テンプレートの適用</h2></td>
+                    <td>
+                    <img src="../images/GUID-6464A140-88C7-4CCB-BB2A-07548ADC9981-web.png" class="titleImage" alt="ラスター関数テンプレートの適用">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>ラスター関数テンプレートで指定されているように、画像を関数チェーンで処理します。
+            </p>
+            <br/>
+        </div>
+        <div id="MonitorVegetationTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>植生の監視</h2></td>
+                    <td>
+                    <img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" class="titleImage" alt="ポータルの [植生の監視] ツール">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>マルチバンド ラスター レイヤーのバンドに対する算術演算を実行し、分析範囲の植被情報を明確にします。
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeTerrainCategory" class="smallsize">
+        <h2>テレインの分析</h2>
+        <hr/>
+        <p>これらのツールを使用すると、ラスター サーフェスを解析できます。
+            <ul>
+                <li> <b>[傾斜角の計算]</b> では、地形の傾きを計算します。
+                    
+
+                </li>
+                <li> <b>[傾斜方向の取得]</b> では、各場所の最も急な傾斜角の方向を計算します。
+                    
+
+                </li>
+                <li> <b>[可視領域の作成]</b> では、地形上の任意のポイントから何が見えるかを特定します。
+                    
+
+                </li>
+                <li> <b>[集水域ラスターの作成]</b> では、サーフェス上の識別された位置で流出寄与域を計算します。
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateSlopeTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>傾斜角の計算</h2></td>
+                    <td>
+                    <img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" class="titleImage" alt="ポータルの [傾斜角の計算] ツール">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>入力標高データの傾斜角を示すサーフェスを特定します。傾斜角は、各デジタル標高モデル (DEM) セルの標高の変化率を表します。
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveAspectTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>傾斜方向の取得</h2></td>
+                    <td>
+                    <img src="../images/GUID-D03FF025-0530-4D0D-87A3-B25D6716F8F0-web.png" class="titleImage" alt="ポータルの [傾斜方向の取得] ツール">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>各セルから近傍セルへ値の変化率が最大になる下り方向の傾斜を特定します。傾斜方向 (Aspect) は、斜面の方向と考えることができます。
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>可視領域の作成</h2></td>
+                    <td>
+                    <img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" class="titleImage" alt="[可視領域の作成] ツール">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>一連の観測点から見通せるラスター サーフェスの位置を特定します。
+            </p>
+            <br/>
+        </div>
+        <div id="WatershedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>集水域ラスターの作成</h2></td>
+                    <td>
+                    <img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" class="titleImage" alt="[集水域ラスターの作成] タスク">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>ラスター内のセルに対する集水域を決定します。
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="smallsize">
+        <h2>データの管理</h2>
+        <hr/>
+        <p>これらのツールは、地理データの日常的な管理と、解析前のデータの結合のために使用されます。
+            <ul>
+                <li> <b>[ラスターの抽出]</b> では、詳細な解析のためにラスター データセットの一部をクリップします。
+                    
+
+                </li>
+                <li> <b>[再分類値]</b> では、さまざまな値をラスター セルに割り当てます。
+                    
+
+                </li>
+                <li> <b>[フィーチャをラスターに変換]</b> では、ベクター データをラスター化します。
+                    
+
+                </li>
+                <li> <b>[ラスターをフィーチャに変換]</b> では、ラスター データをベクター変換します。
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ExtractRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>ラスターの抽出</h2></td>
+                    <td>
+                    <img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" class="titleImage" alt="ポータルの [ラスターの抽出] ツール">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>さまざまなデータセットの値、形状、または範囲に基づいてラスターからセルを抽出します。
+            </p>
+            <br/>
+        </div>
+        <div id="RemapValuesTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>再分類値</h2></td>
+                    <td>
+                    <img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" class="titleImage" alt="ポータルの [再分類値] ツール">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>個別のセル値または一連のセル値を新しい値に変更します。
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertFeatureToRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>フィーチャをラスターに変換</h2></td>
+                    <td>
+                    <img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" class="titleImage" alt="フィーチャをラスターに変換ツール">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>既存のフィーチャ データセットから新しいラスター データセットを作成します。
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertRasterToFeatureTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>ラスターをフィーチャに変換</h2></td>
+                    <td>
+                    <img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" class="titleImage" alt="ラスターをフィーチャに変換ツール">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>既存のラスター データセットから新しいフィーチャ データセットを作成します。
+            </p>
+            <br/>
+        </div>
+    <div id="DeepLearningCategory" class="regularsize">
+        <h2>ツールセット: ディープ ラーニング</h2>
+        <hr/>
+        <p>これらのツールは、イメージ内の特定のフィーチャを検出するためや、ラスター データセット内のピクセルを分類するために使用されます。ディープ ラーニングは、人工知能機械学習手法の一種であり、各レイヤーが画像内の 1 つ以上の一意なフィーチャを抽出できるニューラル ネットワークで複数のレイヤーを使用して画像内のフィーチャを検出します。これらのツールは、トレーニングされたモデルを使用して、サード パーティのディープ ラーニング フレームワーク (TensorFlow、CNTK、Keras など) で特定のフィーチャを検出し、フィーチャまたは分類マップを出力します。
+            <ul>
+                <li> <b>[ディープ ラーニングを使用したピクセルの分類 (Classify Pixels Using Deep Learning)]</b> は、トレーニング済みのディープ ラーニング モデルを使用し、分類済みのラスターを生成します。
+                </li>
+                <li> <b>[ディープ ラーニングを使用したオブジェクトの検出 (Detect Objects Using Deep Learning)]</b> は、トレーニング済みのディープ ラーニング モデルを使用し、入力ラスターで検出したオブジェクトを含むフィーチャクラスを作成します。
+                </li>
+            </ul>
+             
+        </p>
+    </div>
+        <div id="ClassifyPixelsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>ディープ ラーニングを使用したピクセルの分類 (Classify Pixels Using Deep Learning)</h2></td>
+                    <td>
+                    <img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" class="titleImage" alt="ディープ ラーニングを使用したピクセルの分類 (Classify Pixels Using Deep Learning)">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>入力ラスターにトレーニング済みディープ ラーニング モデルを実行して、有効な各ピクセルにクラス ラベルを割り当てた分類済みラスターを作成します。
+            </p>
+            <br/>
+        </div>
+        <div id="DetectObjectsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>ディープ ラーニングを使用したオブジェクトの検出 (Detect Objects Using Deep Learning)</h2></td>
+                    <td>
+                    <img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" class="titleImage" alt="ディープ ラーニングを使用したオブジェクトの検出 (Detect Objects Using Deep Learning)">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>入力ラスターにトレーニング済みディープ ラーニング モデルを実行して、検出したオブジェクトを含むフィーチャクラスを作成します。フィーチャには、検出されたオブジェクトの周囲の境界四角形やポリゴン、またはオブジェクトの中心のポイントを指定できます。
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

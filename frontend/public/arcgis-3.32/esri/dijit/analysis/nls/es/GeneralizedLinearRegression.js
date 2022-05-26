@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/es/GeneralizedLinearRegression",{modifiedTitle:"Regresi\u00f3n lineal generalizada - ${goal}",fit:"Ajustar",fitAndPredict:"Ajustar y predecir",selectGoal:"\u00bfQu\u00e9 desea hacer?",fitGoal:"Ajustar un modelo para evaluar el rendimiento del modelo",fitAndPredictGoal:"Ajustar un modelo y predecir valores",inputLayerLabel:"Elegir una capa a partir de la cual generar un modelo",chooseDependentField:"Elegir el campo que se va a modelar",chooseDataType:"Elija el tipo de datos que va a modelar",
+continuousData:"Continuo",binaryData:"Binario",countData:"Recuento",chooseExplanatoryField:"Elegir los campos explicativos",chooseFeaturesToPredict:"Elegir una capa para la que predecir valores",chooseExplainMatch:"Elegir la forma de concordar campos explicativos",outputLayerName:"GLR ${inputLayerName}",itemDescription:"Capa de entidades generada al ejecutar ${goal} soluciones de Regresi\u00f3n lineal generalizada.",itemTags:"Resultado del an\u00e1lisis, Regresi\u00f3n lineal generalizada, ${inputLayerName}, ${goal}",
+itemSnippet:"Capa de entidades generada a partir de Regresi\u00f3n lineal generalizada (${goal})"});

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/metadata/form/iso/gemet/GemetThemeTool","dojo/_base/declare dojo/_base/lang dojo/has ../../tools/ClickableTool ../../../base/etc/docUtil ./ThemeDialog ../../../../../kernel".split(" "),function(c,d,e,f,g,h,k){c=c([f],{postCreate:function(){this.inherited(arguments)},startup:function(){if(!this._started){var a=g.findGxeContext(this);a&&a.gemetUrl&&a.gemetInspireThemeThesaurus||(this.domNode.style.display="none")}},whenToolClicked:function(a,b){b&&b.parentXNode&&(a=b.getInputValue(),
+null===a||a.push||(a=[a]),(new h({gxeDocument:b.parentXNode.gxeDocument,initiallySelectedValues:a,onSelect:d.hitch(this,function(a){b.importValues(null,a)})})).show())}});e("extend-esri")&&d.setObject("dijit.metadata.form.iso.gemet.GemetThemeTool",c,k);return c});

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/lists/_FlowListHoverSupport",["dojo/_base/declare","dojo/on","../utils/MouseUtil"],function(b,c,d){var e=b(null,{_list:null,_checkIntervalH:null,constructor:function(a){this._list=a},setHoveredItem:function(a){clearInterval(this._checkIntervalH);this._emitHoverEvent(a);this._checkIntervalH=setInterval(function(){d.isMouseOver(a)||this.setHoveredItem(null)}.bind(this),100)},_emitHoverEvent:function(a){this._list.onItemHovered({type:"itemHover",index:a?a.index:-1,item:a?
+a.item:null,value:a?a.item[this._list.idProperty]:void 0})}});return b(null,{_mouseHelper:null,postCreate:function(){this._mouseHelper=new e(this);this.inherited(arguments)},_addClickHandler:function(a){this.inherited(arguments);this._clickHandles.push(c(a,"mouseover",function(){this._mouseHelper.setHoveredItem(a)}.bind(this)))},onItemHovered:function(a){}})});

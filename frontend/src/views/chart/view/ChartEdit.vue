@@ -257,7 +257,7 @@
                   />
                   <div v-else>
 
-                    <el-row v-if="view.type ==='map'" class="padding-lr">
+                    <el-row v-if="view.type ==='map' || view.type === 'arc_map'" class="padding-lr">
                       <span style="width: 80px;text-align: right;">
                         <span>{{ $t('chart.map_range') }}</span>
                       </span>
@@ -274,6 +274,41 @@
                           @input="calcData"
                           @deselect="calcData"
                         />
+                      </span>
+                    </el-row>
+
+                    <el-row v-if="view.type === 'arc_map'" class="padding-lr">
+                      <span style="width: 80px;text-align: right;">
+                        <span>{{ $t('chart.arc_map_update') }}</span>
+                      </span>
+                      <span class="tree-select-span">
+                        <el-upload
+                          class="upload-demo"
+                          action="#"
+                          :show-file-list="false"
+                          :on-success="handleAvatarSuccess"
+                          :before-upload="beforeAvatarUpload"
+                          :http-request="httpRequestUpdate"
+                          accept=".tar,.zip"
+                        >
+                          <el-button size="small" type="primary">选择附件</el-button>
+                          <div slot="tip" class="el-upload__tip">
+                            支持格式：.tar .zip
+                          </div>
+                        </el-upload>
+                      </span>
+                    </el-row>
+                    <el-row v-if="view.type === 'arc_map'" class="padding-lr">
+                      <span style="width: 80px;text-align: right;">
+                        <span>{{ $t('chart.arc_map_url') }}</span>
+                      </span>
+                      <span class="tree-select-span">
+                        <el-input 
+                          v-model="view.urlMap" 
+                          :placeholder="$t('chart.arc_map_url_place')" 
+                          @Change="calcData"
+                          size="small">
+                        </el-input>
                       </span>
                     </el-row>
 
@@ -1218,6 +1253,8 @@ import Threshold from '@/views/chart/components/senior/Threshold'
 import TotalCfg from '@/views/chart/components/shape-attr/TotalCfg'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 import { pluginTypes } from '@/api/chart/chart'
+// import ArcGIS from "@/map/init.js"
+// const Map = new ArcGIS()
 export default {
   name: 'ChartEdit',
   components: {
@@ -1322,8 +1359,11 @@ export default {
         },
         customFilter: [],
         render: 'antv',
-        isPlugin: false
+        isPlugin: false,
+        file: "",
+        urlMap: "http://www.sdmap.gov.cn/tileservice/SDPubMap?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=0&STYLE=default&FORMAT=image/png&TILEMATRIXSET=taishannew&TILEMATRIX=10&TILEROW=152&TILECOL=851",
       },
+      urlMap1: '',
       moveId: -1,
       chart: {
         id: 'echart',
@@ -1365,7 +1405,7 @@ export default {
       renderOptions: [
         { name: 'AntV', value: 'antv' },
         { name: 'ECharts', value: 'echarts' },
-        // { name: 'HighCharts', value: 'highcharts' }
+        { name: 'HighCharts', value: 'highcharts' }
       ],
       drill: false,
       hasEdit: false,
@@ -1408,14 +1448,14 @@ export default {
       this.fieldFilter(val)
     },
     'chartType': function(newVal, oldVal) {
-      if ((newVal === 'map' || newVal === 'buddle-map') && newVal !== oldVal) {
+      if ((newVal === 'map' || newVal === 'buddle-map' || newVal === 'arc_map') && newVal !== oldVal) {
         this.initAreas()
       }
       this.$emit('typeChange', newVal)
     },
     'view.type': function(newVal, oldVal) {
       this.view.isPlugin = this.$refs['cu-chart-type'] && this.$refs['cu-chart-type'].currentIsPlugin(newVal)
-    }
+    },
   },
   created() {
     const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views'))
@@ -1460,6 +1500,8 @@ export default {
       this.hasEdit = (this.panelViewEditInfo[this.param.id] || false)
     },
     chartInit() {
+      this.urlMap1 = this.view.urlMap
+      console.log('chartInit::::::::::',this.urlMap1,this.view)
       this.resetDrill()
       this.initFromPanel()
       this.getChart(this.param.id)
@@ -1672,6 +1714,11 @@ export default {
           ele.filter = []
         }
       })
+      
+      if(view.type === 'arc_map') {
+        view.urlMap = view.urlMap
+      }
+      
       this.chart = JSON.parse(JSON.stringify(view))
       this.view = JSON.parse(JSON.stringify(view))
       // stringify json param
@@ -1686,6 +1733,8 @@ export default {
       view.drillFields = JSON.stringify(view.drillFields)
       view.extBubble = JSON.stringify(view.extBubble)
       view.senior = JSON.stringify(view.senior)
+      
+      console.log('buildParam：',view)
       delete view.data
       return view
     },
@@ -1734,6 +1783,7 @@ export default {
     calcData(getData, trigger, needRefreshGroup = false, switchType = false) {
       this.changeEditStatus(true)
       const view = this.buildParam(true, 'chart', false, switchType)
+      console.log('calcData：',view)
       if (!view) return
       save2Cache(this.panelInfo.id, view).then(() => {
         bus.$emit('view-in-cache', { type: 'propChange', viewId: this.param.id })
@@ -1868,7 +1918,9 @@ export default {
           this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
           this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
           this.view.senior = this.view.senior ? JSON.parse(this.view.senior) : {}
-
+          this.view.file = this.view.file ? this.view.file : ''
+          this.view.urlMap = this.view.urlMap ? this.view.urlMap : this.urlMap1
+          console.log('getChart::::::::::',this.view)
           // 将视图传入echart组件
           this.chart = response.data
           this.data = response.data.data
@@ -1882,8 +1934,33 @@ export default {
       }
     },
 
+    // 上传成功
+    handleAvatarSuccess(res,file) {
+      console.log(res,file)
+    },
+    // 上传之前
+    beforeAvatarUpload(file) {
+      console.log('file',file)
+      if(file.type !== 'application/x-tar' && file.type !== 'application/x-zip-compressed') {
+        this.$message.error("支持格式为：.tar .zip")
+        return
+      }
+    },
+    // 获取上传数据
+    httpRequestUpdate(data){
+      console.log(data,this.view.file)
+      // let _this = this 
+      // let rd = new FileReader() // 创建文件读取对象
+      // let file = data.file
+      // rd.readAsDataURL(file) // 文件读取转化为base64类型
+      // rd.onloadend = function(e) {
+
+      // }
+
+    },
     // move回调方法
     onMove(e, originalEvent) {
+      console.log('拖动',e)
       this.moveId = e.draggedContext.element.id
       return true
     },
@@ -2394,7 +2471,7 @@ export default {
     chartClick(param) {
       if (this.drillClickDimensionList.length < this.view.drillFields.length - 1) {
         // const isSwitch = (this.chart.type === 'map' && this.sendToChildren(param))
-        if (this.chart.type === 'map' || this.chart.type === 'buddle-map') {
+        if (this.chart.type === 'map' || this.chart.type === 'buddle-map' || this.chart.type === 'arc_map') {
           if (this.sendToChildren(param)) {
             this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
             // this.getData(this.param.id)
@@ -2417,7 +2494,7 @@ export default {
     resetDrill() {
       const length = this.drillClickDimensionList.length
       this.drillClickDimensionList = []
-      if (this.chart.type === 'map' || this.chart.type === 'buddle-map') {
+      if (this.chart.type === 'map' || this.chart.type === 'buddle-map' || this.chart.type === 'arc_map') {
         this.backToParent(0, length)
         this.currentAcreaNode = null
         const current = this.$refs.dynamicChart

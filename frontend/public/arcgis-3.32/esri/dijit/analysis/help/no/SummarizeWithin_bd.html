@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Summer innenfor</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Summer innenfor"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet finner geoobjekter (og deler av geoobjekter) som er innenfor grensene for omr&aring;dene i det f&oslash;rste inndatalaget.  
+        <ul>
+            <li>Hvis du har et lag med nedb&oslash;rsfeltgrenser og et lag med arealbruksgrenser etter arealbrukstype, kan du beregne samlet areal for arealbrukstypen for hvert nedb&oslash;rsfelt. 
+            </li>
+            <li>Hvis du har et lag med tomtene i et fylke og et lag med bygrenser, kan du summere gjennomsnittsverdien p&aring; ledige tomter innenfor hver enkelt bygrense.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Hvis det er merket av for  <b>Bruk gjeldende kartutstrekning</b>, er det kun geoobjektene i inndatalaget og laget som skal summeres som er synlige i gjeldende kartutstrekning, som analyseres. Hvis det ikke er merket av for dette alternativet, analyseres alle geoobjekter i b&aring;de inndatalaget og laget som skal summeres, selv om de befinner seg utenfor gjeldende kartutstrekning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Velg områdelaget for å summere andre geoobjekter innenfor grensene</h2></div>
+        <hr/>
+        <div>
+            <p>Omr&aring;delaget som skal brukes til &aring; summere geoobjekter som er innenfor grensene. Du kan velge &aring; summere innenfor et polygonlag som du oppgir eller innenfor kvadrat eller heksagonbeholdere som genereres n&aring;r verkt&oslash;yet kj&oslash;res.  N&aring;r du genererer beholdere for  <b>Kvadrat</b>, avgj&oslash;r antallet og enhetene som er spesifisert h&oslash;yden og lengden p&aring; kvadratet. For <b>Heksagon</b> avgj&oslash;r antallet og enhetene som er angitt, avstanden mellom de parallelle sidene.
+            </p>
+            <p>Analyse ved hjelp av beholderne  <b>Kvadrat</b> eller <b>Heksagon</b> krever et projisert koordinatsystem. Du kan angi <b>Behandlende koordinatsystem</b> i <b>Analysemilj&oslash;er</b>. Hvis koordinatsystemet for behandling ikke er angitt som et projisert koordinatsystem, blir du bedt om &aring; angi det n&aring;r du bruker funksjonen <b>Kj&oslash;r analyse</b> .
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> nederst i rullegardinlisten, for &aring; bla gjennom innholdet p&aring; et fildelingsomr&aring;de for stordata eller et geoobjektlag.
+            </p>
+        </div>
+    </div>
+    <div id="summaryLayer">
+        <div><h2>Velg laget som skal summeres</h2></div>
+        <hr/>
+        <div>
+            <p>Geoobjektene i dette laget som faller innenfor grensene for geoobjektene i inndatalaget eller beholderne ovenfor, summeres. 
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> nederst i rullegardinlisten, for &aring; bla gjennom innholdet p&aring; et fildelingsomr&aring;de for stordata eller et geoobjektlag.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Velg en avstand som skal brukes til å generere beholdere og aggregeres til</h2></div>
+        <hr/>
+        <div>
+            <p>Avstanden som brukes til &aring; generere beholdere.  
+            </p>
+            <p>Du m&aring; angi enten  <b>Bin Size</b> (Beholderst&oslash;rrelse) for beholdere eller <b>Area Layer</b> (Polygonlag).
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Aggreger ved hjelp av tidsintervaller (valgfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Hvis tid er aktivert i dette inndatapunktlaget og det er av typen umiddelbart, kan du analysere med tidssteg. Det er tre parametere du kan angi n&aring;r du bruker tid:
+                <ul>
+                    <li> <b>Tidsstegintervall</b>
+                    </li>
+                    <li> <b>Hvor ofte skal tidssteget gjentas</b>
+                    </li>
+                    <li> <b>Tid som tidssteg justeres mot</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Hvis du for eksempel har data som representerer et &aring;r i tid, og du vil analysere dem ved &aring; bruke ukentlige trinn, setter du  <b>Tidsstegintervall</b> til <code>1 uke</code>. 
+            </p>
+            <p>Hvis du for eksempel har data som representerer et &aring;r i tid, og du vil analysere dem ved &aring; bruke den f&oslash;rste uken i m&aring;neden, setter du  <b>Tidsstegintervall</b> til <code>1 uke</code>, <b>Hvor ofte skal tidssteget gjentas</b> til <code>1 m&aring;ned</code>, og <b>Tid som tidssteg justeres mot</b> til <code>1. Januar kl. 12:00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Tidsintervall som det skal samles inn i</h2></div>
+        <hr/>
+        <div>
+            <p>Intervallene som brukes til &aring; generere tidssteg.  <b>Tidsstegintervall</b> kan brukes alene eller sammen med parameterne <b>Hvor ofte skal tidssteget gjentas</b> eller <b>Tid som tidssteg justeres mot</b> .
+            </p>
+            <p>Hvis du for eksempel vil opprette tidssteg som finner sted hver mandag fra kl. 09:00 til kl. 10:00, setter du  <b>Tidsstegintervall</b> til <code>1 time</code>, <b>Hvor ofte skal tidssteget gjentas</b> til <code>1 uke</code>, og <b>Tid som tidssteg justeres mot</b> til <code>kl. 09:00:00 p&aring; en mandag</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Tidstrinn som det skal samles inn i</h2></div>
+        <hr/>
+        <div>
+            <p> Trinnet som brukes til &aring; beregne et tidssteg. <b>Hvor ofte skal tidssteget gjentas</b> kan brukes alene, sammen med <b>Tidsstegintervall</b>, med <b>Referansetid</b>, eller med b&aring;de <b>Tidsstegintervall</b> og <b>Tid som tidssteg justeres mot</b>.
+            </p>
+            <p> Hvis du for eksempel vil opprette tidssteg som finner sted hver mandag fra kl. 09:00 til kl.&nbsp;10:00, setter du <b>Tidsstegintervall</b> til <code>1 time</code>, <b>Hvor ofte skal tidssteget gjentas</b> til <code>1 uke</code>, og <b>Tid som tidssteg justeres mot</b> til <code>kl. 09:00:00 p&aring; en mandag</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Referansetid som brukes til å innrette tidsinndelingen</h2></div>
+        <hr/>
+        <div>
+            <p>Datoen og tidspunktet som brukes til &aring; justere tidsinndelingene. Tidssteg starter fra p&aring; og fortsetter bakover fra denne tiden. Hvis ingen referansetid velges, justeres tidssteg mot 1. januar 1970. 
+            </p>
+            <p> Hvis du for eksempel vil opprette tidssteg som finner sted hver mandag fra kl. 09:00 til kl. 10:00, setter du <b>Tidsstegintervall</b> til <code>1 time</code>, <b>Hvor ofte skal tidssteget gjentas</b> til <code>1 uke</code>, og <b>Tid som tidssteg justeres mot</b> til <code>kl. 09:00:00 p&aring; en mandag</code>.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Legg til statistikk (valgfritt)</h2></div>
+        <hr/>
+        <div>
+            <p> Du kan beregne statistikk p&aring; geoobjekter som er summert. Du kan beregne f&oslash;lgende p&aring; numeriske felt:
+                <ul>
+                    <li>Antall&nbsp;&ndash; Beregner antall verdier som ikke er null. Det kan brukes p&aring; numeriske felt eller strenger. Antallet for [null, 0, 2] er 2.
+                    </li>
+                    <li>Sum &ndash; Summen av numeriske verdier i et felt. Summen av [null, null, 3] er 3.
+                    </li>
+                    <li>Gjennomsnitt &ndash; Gjennomsnittet for numeriske verdier. Gjennomsnittet av [0, 2, null] er 1.
+                    </li>
+                    <li>Min &ndash; Minimumsverdien for et numerisk felt. Minimum av [0, 2, null] er 0. 
+                    </li>
+                    <li>Maks &ndash; Maksimumsverdien for et numerisk felt. Maksimumsverdien for [0, 2, null] er 2.
+                    </li>
+                    <li>Omr&aring;de &ndash; Omr&aring;det for et numerisk felt. Beregnes som den maksimale verdien minus minimumsverdien. Omr&aring;det av [0, null, 1] er 1. Omr&aring;det av [null, 4] er 0.
+                    </li>
+                    <li>Varians &ndash; Variansen for et numerisk felt i et spor. Variansen for [1] er null. Variansen for [null, 1,0,1,1] er 0,25.
+                    </li>
+                    <li>Standardavvik &ndash; Standardavviket for et numerisk felt. Standardavviket for [1] er null. Standardavviket for [null, 1,0,1,1] er 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du kan beregne f&oslash;lgende p&aring; strengfelter:
+                <ul>
+                    <li>Antall &ndash; Antallet strenger som ikke er null.
+                    </li>
+                    <li>Noen &ndash; Denne statistikken er en tilfeldig pr&oslash;ve av en strengverdi i det spesifiserte feltet.
+                    </li>
+                </ul>
+                All statistikk beregnes p&aring; ikke-nullverdier. Resultatlaget inneholder et nytt felt for hver beregnet statistikk. Du kan legge til flere statistikker ved &aring; velge et attributt og statistikk. 
+            </p>
+            <p>I tillegg til denne statistikken, vil proporsjonal statistikk bli beregnet for alle numeriske felt:
+                <ul>
+                    <li>Antall &ndash; Antallet for hvert felt multiplisert med proporsjonen av sammendragslaget innenfor polygonene. 
+                    </li>
+                    <li>Sum &ndash; Summen av vektede verdier i hvert felt. Der vekten som brukes, er proporsjonen av sammendragslaget innenfor polygonene.
+                    </li>
+                    <li>Gjennomsnitt &ndash; Det vektede gjennomsnittet av verdier i hvert felt. Der vekten som brukes, er proporsjonen av sammendragslaget innenfor polygonene.
+                    </li>
+                    <li>Min &ndash; Minimum vektede verdier i hvert felt. Der vekten som brukes, er proporsjonen av sammendragslaget innenfor polygonene.
+                    </li>
+                    <li>Maks &ndash; Maksimum vektede verdier i hvert felt. Der vekten som brukes, er proporsjonen av sammendragslaget innenfor polygonene.
+                    </li>
+                    <li>Omr&aring;de &ndash; Forskjellen mellom maksimum og minimum vektede verdier.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Avhengig av hvilke typer geoobjekter du summerer, vil det totale antallet punkter i n&aelig;rheten, total lengde p&aring; linjene eller samlet areal bli beregnet.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Velg feltet det skal grupperes etter</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er et attributt for funksjonen for summering  <b></b> av geoobjekter som du kan bruke til &aring; beregne statistikk for hver unike attributtverdi for seg. La oss for eksempel si at det f&oslash;rste inndatalaget inneholder bygrenser og geoobjektene for summering er tomter. Ett av attributtene for tomtene er <i>Status</i>, som inneholder to verdier: LEDIG og OPPTATT. N&aring;r du skal beregne det totale omr&aring;det med ledige og opptatte tomter innenfor byenes grenser, grupperer du etter attributtet <i>Status</i>. Statistikken for hver gruppe vises i resultatlagets popupvindu sammen med antall geoobjekter innenfor hver omr&aring;degrense.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Legg til minoritet, majoritet</h2></div>
+        <hr/>
+        <div>
+            <p>Denne avmerkingsboksen er aktivert n&aring;r du velger &aring; gruppere etter et felt. Hvis du vil finne ut hvilke attributtverdier innenfor hver gruppe som er minoriteten (minst dominerende) eller majoriteten (mest dominerende) innenfor hver grense i det f&oslash;rste inndatalaget, velger du  <b>Legg til minoritet, majoritet</b>. N&aring;r du velger <b>Legg til minoritet, majoritet</b>, legges det til to felt i resultatlaget. Hvis du ogs&aring; velger <b>Legg til prosenter</b>, legges det til to ekstra felt i resultatlaget som inneholder prosentene for attributtverdiene for minoritet og majoritet innenfor hver gruppe.
+            </p>
+            <ul>
+                <li>Hvis du summerer punkter, beregnes minoritets- og majoritetsverdiene basert p&aring; antall punkt innenfor hvert avgrensningsomr&aring;de i det f&oslash;rste inndatalaget.  
+                </li>
+                <li>Hvis du summerer linjer, beregnes minoritets- og majoritetsverdiene basert p&aring; lengden av linjer innenfor hvert avgrensningsomr&aring;de i omr&aring;delaget med inndata.  
+                </li>
+                <li>Hvis du summerer omr&aring;der, beregnes minoritets- og majoritetsverdiene basert p&aring; omr&aring;dene innenfor hvert avgrensningsomr&aring;de i omr&aring;delaget med inndata  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Legg til prosenter</h2></div>
+        <hr/>
+        <div>
+            <p>Denne boksen er aktivert n&aring;r du velger gruppere etter et felt.    Velg  <b>Legg til prosenter</b>  hvis du vil finne prosenten for hver attributtverdi innenfor hver gruppe.  Det legges til et nytt felt i resultattabellen som inneholder prosentene for hver attributtverdi innenfor hver gruppe.   Hvis det ogs&aring; er merket av for <b>Legg til prosenter</b>, legges det til to ekstra felt i resultatlaget som inneholder prosentene for attributtverdiene for minoritet og majoritet innenfor hver gruppe.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Velg datalager</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-resultater lagre s p&aring; et datalager og vises som et geoobjektlag i  Portal for ArcGIS. Resultatene b&oslash;r i de fleste tilfeller lagres i et geotemporalt datalager, og dette er standarden. I enkelte tilfeller, er det en god l&oslash;sning &aring; lagre resultatene i relasjonsdatalageret. Du kan velge &aring; lagre resultatene i relasjonsdatalageret av f&oslash;lgende grunner: 
+                <ul>
+                    <li>Du kan bruke resultater i portal-til-portal-samarbeid.
+                    </li>
+                    <li>Du kan aktivere synkroniseringsfunksjoner for resultatene dine.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du b&oslash;r ikke bruke relasjonsdatalageret hvis du forventer at GeoAnalytics-resultatene skal &oslash;ke, og du &oslash;nsker &aring; dra fordeler av det geotemporale stordatalagerets funksjoner til &aring; h&aring;ndtere store mengder data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; laget som opprettes. Hvis du skriver til en ArcGIS Data Store, blir resultatene dine lagret i  <b>Mitt innhold</b> og lagt til kartet. Hvis du skriver til et fildelingsomr&aring;de for stordata, blir resultatene lagret i fildelingsomr&aring;det for stordata og lagt til dets innholdsoversikt. De blir ikke lagt til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget allerede eksisterer, vil verkt&oslash;yet mislykkes.
+            </p>
+            <p>N&aring;r du skriver til  ArcGIS Data Store (fildelingsomr&aring;de for relasjons- eller geotemporale stordata) via rullegardinlisten  <b>Lagre resultat i</b>, kan du angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatet skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

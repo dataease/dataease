@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Temukan Hot Spot</h2><p/>
+        <h2><img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" alt="Temukan Hot Spot"></h2>
+        <hr/>
+    <p> Alat Temukan Hot Spot akan menentukan apakah ada kluster yang signifikan secara statistik pada pola spasial data Anda.
+        <ul>
+            <li>Apakah titik (kejadian kriminal, pohon, kecelakaan lalu lintas) Anda benar-benar terkluster?  Bagaimana Anda bisa yakin?
+            </li>
+            <li>Apakah Anda benar-benar menemukan hot spot yang signifikan secara statistik (untuk pengeluaran, mortalitas bayi, skor tes yang tinggi secara konsisten) atau apakah peta Anda memberikan cerita yang berbeda jika Anda mengubah cara simbolisasinya?
+            </li>
+        </ul>
+        Alat Temukan Hot Spot akan membantu Anda menjawab pertanyaan tersebut dengan yakin.
+    </p>
+    <p>Bahkan pola spasial acak memiliki beberapa derajat kluster.  Sebagai tambahan, mata dan otak kita secara alami mencoba menemukan pola bahkan ketika pola tersebut sebenarnya tidak ada.  Maka, akan menjadi sulit untuk mengetahui apakah pola pada data Anda merupakan hasil kerja nyata dari proses spasial, atau hanya merupakan hasil kemungkinan acak.  Hal tersebut menjadi alasan mengapa para peneliti dan analis menggunakan metode statistik seperti Temukan Hot Spot (Getis-Ord Gi*) untuk melakukan kuantifikasi pola spasial.  Ketika Anda menemukan pengklusteran secara statistik yang signifikan pada data Anda, maka Anda memiliki informasi yang berharga.  Dengan mengetahui tempat dan waktu pengklusteran terjadi, akan dapat memberikan petunjuk penting tentang proses yang mengakibatkan pola yang Anda lihat.  Dengan mengetahui bahwa perampokan rumah, sebagai contoh, secara konsisten lebih tinggi pada lingkungan tertentu merupakan informasi penting jika Anda akan mendesain strategi pencegahan yang efektif, mengalokasikan sumber daya polisi yang terbatas, memulai program sistem keamanan lingkungan, mengotorisasi investigasi kriminal mendalam, atau mengidentifikasi tersangka potensial.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Pilih layer tempat hot spot akan dihitung</h2></div>
+        <hr/>
+        <div>
+            <p>Layer titik atau area dimana spot panas atau dingin akan ditemukan. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Temukan kluster tinggi dan rendah</h2></div>
+        <hr/>
+        <div>
+            <p>Analisis ini menjawab pertanyaan: Dimanakah nilai tinggi dan rendah terkluster secara spasial?
+            </p>
+            <p>Jika data Anda berupa titik dan Anda memilih  <b>Jumlah Titik</b>, alat ini akan mengevaluasi pengaturan spasial fitur-fitur titik untuk menjawab pertanyaan: Dimanakah titik-titik tersebut terkluster atau tersebar secara tidak terduga?
+            </p>
+            <p>Jika Anda memilih kolom, alat ini akan mengevaluasi pengaturan spasial dari nilai-nilai yang terkait dengan masing-masing fitur untuk menjawab pertanyaan: Dimanakah pengklasteran nilai tinggi dan rendah?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Jumlah titik di dalam</h2></div>
+        <hr/>
+        <div>
+            <p>Defaultnya adalah menghitung titik yang berada dalam sebuah grid jaring yang dibuat oleh alat berdasarkan data titik Anda. Atau, Anda dapat memilih untuk menghitung titik dalam grid heksagon atau menyediakan layer area (biasanya hal ini akan mencerminkan distrik pelaporan administratif seperti sistem sensus, batasan kota, atau daerah) untuk menjawab pertanyaan: Dengan mempertimbangkan jumlah titik yang dihitung pada masing-masing fitur area, apakah ada lokasi dengan kluster spasial yang signifikan secara statistik dengan jumlah titik tinggi atau rendah?   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Tentukan tempat kemungkinan titik-titik berada</h2></div>
+        <hr/>
+        <div>
+            <p>Gambar atau sediakan layer yang menentukan tempat kemungkinan terjadi insiden untuk menjawab pertanyaan: Dalam suatu area, apakah ada lokasi dengan konsentrasi titik yang tinggi atau rendah yang tidak diperkirakan?   
+            </p>
+            <p>Fitur area yang Anda gambar atau fitur pada layer area yang Anda tentukan harus menjelaskan tempat titik kemungkinan akan muncul.  Untuk menggambar area ini, klik tombol  <b>Draw</b> (Gambar) dan klik lokasi pada peta untuk membuat bentuk peta.  Untuk menggambar area tambahan, klik tombol gambar kembali dan klik lokasi pada peta untuk melanjutkan.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Bagi berdasarkan</h2></div>
+        <hr/>
+        <div>
+            <p>Terkadang Anda mungkin ingin menganalisis pola yang perlu dipertimbangkan yang mendasari distribusi. Contoh, jika titik-titik Anda melambangkan kriminal, membaginya dengan total populasi akan menghasilkan analisis kejahatan per kapita dan bukan hanya hitungan kejahatan mentah.  Memilih suatu atribut untuk dibagi sering disebut sebagai normalisasi.
+            </p>
+            <p>Memilih  <i>Populasi Esri</i> akan memperkaya lokasi masing-masing fitur area dengan nilai populasi yang kemudian digunakan sebagai atribut untuk dibagi.  Opsi ini akan menggunakan kredit.
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Kesampingkan Opsi</h2></div>
+        <hr/>
+        <div>
+            <p> Alat ini akan menemukan pengaturan opsional untuk <b>Ukuran Sel</b> dan <b>Pita Jarak</b> standar berdasarkan karakteristik data Anda. Namun, jika Anda memiliki <b>Ukuran Sel</b> tertentu atau <b>Pita Jarak</b> yang masuk akal untuk analisis Anda, <b>Kesampingkan Opsi</b> dapat digunakan untuk menentukan nilai tersebut.
+            </p>
+            <p> <b>Kesampingkan Opsi</b> juga berguna saat menjalankan analisis pada set data yang berbeda, memungkinkan Anda untuk menyimpan <b>Pita Jarak</b> dan <b>Ukuran Sel</b> yang konsisten di antara beberapa set data.  Anda sekarang dapat membandingkan dengan benar hasilnya, contohnya, tingkat obesitas dan diabetes atau bahkan tingkat kejahatan pada dua tahun yang berbeda.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Ukuran Sel</h2></div>
+        <hr/>
+        <div>
+            <p>Ukuran grid sel yang digunakan untuk menghitung jumlah titik di dalamnya.  
+            </p>
+            <p>Saat menggunakan grid heksagon untuk menghitung titik di dalamnya, jarak ini digunakan sebagai tinggi dari heksagon.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Pita Jarak</h2></div>
+        <hr/>
+        <div>
+            <p>Masing-masing fitur dianalisis dalam konteks fitur yang berdekatan berlokasi pada jarak yang Anda tentukan.  Alat ini akan menghitung jarak standar untuk Anda, atau Anda dapat menggunakan opsi ini untuk menentukan jarak tertentu yang masuk akal untuk analisis Anda. 
+            </p>
+            <p>Contoh, jika Anda mempelajari pola komuter dan Anda tahu bahwa rata-rata perjalanan ke tempat kerja adalah 15 mil, contohnya, Anda dapat menggunakan pita jarak 15-mil untuk analisis Anda.
+            </p>
+        </div>
+    </div>
+    <div id="hotSpotsResultLayer">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Beri nama untuk layer yang akan dibuat di  <b>Konten Saya</b> dan tambahkan ke dalam peta.  Layer hasil ini akan memperlihatkan kepada Anda kluster yang signifikan secara statistik dengan nilai tinggi atau rendah atau jumlah titik. Jika nama layer hasil sudah ada, Anda akan diminta untuk memberi nama baru.
+            </p>
+            <p>Menggunakan kotak tarik turun (drop-down box)  <b>Simpan hasil di</b>, Anda dapat menentukan nama folder di <b>Konten Saya</b> tempat hasilnya akan disimpan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

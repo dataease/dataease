@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 18.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
+<g id="Dark_Theme_1_" display="none">
+	<rect x="-488" y="-200" display="inline" fill="#333333" width="544" height="736"/>
+	
+		<rect x="-520" y="-232" display="inline" fill="none" stroke="#808080" stroke-width="0.25" stroke-miterlimit="10" width="612" height="792"/>
+</g>
+<g id="LightTheme" display="none">
+	<rect x="-488" y="-200" display="inline" fill="#F8F8F8" width="544" height="736"/>
+	
+		<rect x="-520" y="-232" display="inline" fill="none" stroke="#808080" stroke-width="0.25" stroke-miterlimit="10" width="612" height="792"/>
+</g>
+<g id="Hover" display="none">
+	<rect x="-488" y="-200" display="inline" fill="#C5E5F9" width="544" height="736"/>
+</g>
+<g id="Selected" display="none">
+	<rect x="-488" y="-200" display="inline" fill="#AADBFA" width="544" height="736"/>
+</g>
+<g id="Icon_Name">
+</g>
+<g id="Icons">
+	<g>
+		<rect fill-rule="evenodd" clip-rule="evenodd" fill="none" width="16" height="16"/>
+		<path fill="#E5D255" d="M16,14.4004002c0,0-3.2002039-1.6015997-8,0c-4.7998037,1.5995998-8,0-8,0L2.1327965,1.5996
+			c0,0,3.2012036,1.0663999,5.8672037,0s5.8671961,0,5.8671961,0L16,14.4004002z"/>
+		<rect x="8" y="4" fill="#6D6E71" width="5" height="5"/>
+		<rect x="9" y="5" fill="#D3EAF9" width="3" height="3"/>
+		<rect x="4" y="8" fill="#6D6E71" width="5" height="5"/>
+		<rect x="5" y="9" fill="#D3EAF9" width="3" height="3"/>
+		<rect x="8" y="8" fill="#6D6E71" width="5" height="5"/>
+		<rect x="9" y="9" fill="#9BC29C" width="3" height="3"/>
+		<path fill="#9BC29C" d="M8,10c0,0-1,0.3125-1,1c0,1-1,0.1602001-1,1h2V10z"/>
+		<rect x="4" y="4" fill="#F4EEC8" width="4" height="4"/>
+		<rect x="2" y="2" fill="#6D6E71" width="5" height="5"/>
+		<rect x="3" y="3" fill="#D3EAF9" width="3" height="3"/>
+		<path fill="#9BC29C" d="M6,3H3v2.8418002c0.2362964-0.0039001,0.4677966-0.0566001,0.6483965-0.2012
+			c0.4063001-0.3261003,0.3604002-0.9297004,0.6836033-1.2070003c0.2216969-0.1894999,0.5761967,0.0703001,0.7597966-0.0938001
+			C5.2411966,4.2069998,5.2870965,3.7832,5.3241963,3.75c0.1328034-0.1191001,0.2735-0.4941001,0.4375-0.6426001
+			C5.8144965,3.0604999,5.9022965,3.0352001,6,3.0156V3z"/>
+	</g>
+</g>
+</svg>

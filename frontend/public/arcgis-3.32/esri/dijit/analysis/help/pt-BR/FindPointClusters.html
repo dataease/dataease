@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Localizar Agrupamentos de Pontos</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="Localizar Agrupamentos de Pontos"></h2>
+        <hr/>
+    <p>Esta ferramenta encontra conjuntos de fei&ccedil;&otilde;es de ponto dentro do ru&iacute;do circundante com base em sua distribui&ccedil;&atilde;o espacial.
+    </p>
+    <p>Se  <b>Utilizar uma extens&atilde;o de mapa atual</b> estiver selecionada, somente as fei&ccedil;&otilde;es na camada de ponto de entrada dentro da extens&atilde;o de mapa atual ser&atilde;o analisadas. Se n&atilde;o selecionada, todas as fei&ccedil;&otilde;es na camada de ponto de entrada ser&atilde;o analisadas, mesmo que estiverem fora da extens&atilde;o de mapa atual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Escolher a camada na qual os agrupamentos serão calculados</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de ponto onde os agrupamentos ser&atilde;o encontrados. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Número mínimo de pontos a ser considerado como um agrupamento</h2></div>
+        <hr/>
+        <div>
+            <p>O n&uacute;mero m&iacute;nimo de fei&ccedil;&otilde;es a ser considerado no agrupamento. Qualquer agrupamento com menos fei&ccedil;&otilde;es que o fornecido ser&aacute; considerado ru&iacute;do. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Limitar o intervalo de pesquisa para (opcional)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>A dist&acirc;ncia m&aacute;xima para considerar fei&ccedil;&otilde;es para fazerem parte do mesmo agrupamento. Se deixar em branco, a ferramenta executar&aacute; HDBSCAN, que utiliza dist&acirc;ncias variadas para separar agrupamentos de densidades variadas do ru&iacute;do mais escasso. Se fornecer um valor, a ferramenta executar&aacute; DBSCAN, que utiliza uma dist&acirc;ncia especificada para separar agrupamentos densos de ru&iacute;do mais escasso.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa.  O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se o nome da camada j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Salvar resultado em</b>, &eacute; poss&iacute;vel especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

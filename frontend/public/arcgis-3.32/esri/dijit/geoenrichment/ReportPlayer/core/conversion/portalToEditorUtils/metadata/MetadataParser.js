@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/conversion/portalToEditorUtils/metadata/MetadataParser","esri/dijit/geoenrichment/promise/all esri/dijit/geoenrichment/utils/JsonXmlConverter ./DataCollectionsCalculatorsParser ./ScriptsCalculatorsParser ./LocatorCalculatorsParser ./map/MapCalculatorsParser ./TradeAreaCalculatorsParser".split(" "),function(e,f,g,h,k,l,m){return{parseMetadataXML:function(d,c,a){a.log&&a.log(d.data);var b=f.parseXml(d.data);if(b&&b.tags)return e([m.parseTradeAreaCalculators(b,
+a),g.parseDataCollectionsCalculators(b,c,a),h.parseScriptsCalculators(b,c,a),k.parseLocatorCalculators(b,c,a)]).then(function(){return l.parseMapCalculators(b,c,a)})}}});

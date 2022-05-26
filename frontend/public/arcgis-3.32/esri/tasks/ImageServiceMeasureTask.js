@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/tasks/ImageServiceMeasureTask","dojo/_base/declare dojo/_base/lang dojo/has ../kernel ../request ../geometry/normalizeUtils ./Task".split(" "),function(a,f,g,k,l,m,n){a=a(n,{declaredClass:"esri.tasks.ImageServiceMeasureTask",constructor:function(d){this._url.path+="/measure";this._handler=f.hitch(this,this._handler)},__msigns:[{n:"execute",c:3,a:[{i:0,p:["fromGeometry","toGeometry"]}],e:2}],_handler:function(d,a,e,c,b){try{this._successHandler([d],"onComplete",e,b)}catch(h){this._errorHandler(h,
+c,b)}},execute:function(a,g,e,c){var b=c.assembly;a=this._encode(f.mixin({},this._url.query,{f:"json"},a.toJson(b&&b[0])));var h=this._handler,d=this._errorHandler;return l({url:this._url.path,content:a,callbackParamName:"callback",load:function(a,b){h(a,b,g,e,c.dfd)},error:function(a){d(a,e,c.dfd)}})},onComplete:function(){}});m._createWrappers(a);g("extend-esri")&&f.setObject("tasks.ImageServiceMeasureTask",a,k);return a});

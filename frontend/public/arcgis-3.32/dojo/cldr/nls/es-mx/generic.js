@@ -1,0 +1,12 @@
+/*
+	Copyright (c) 2004-2016, The JS Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+//>>built
+define("dojo/cldr/nls/es-mx/generic",{"dateFormat-medium":"d MMM, y G","dateFormatItem-GyMMM":"MMM y G","dateFormatItem-GyMMMd":"d MMM y G","dateFormatItem-MMMd":"d MMM","dateFormatItem-MMMEd":"E d MMM","dateFormatItem-MMMMd":"d 'de' MMM","field-year-relative+-1":"el a\u00f1o pasado","field-year-relative+0":"este a\u00f1o","field-year-relative+1":"el a\u00f1o pr\u00f3ximo","field-month-relative+-1":"el mes pasado","field-month-relative+0":"este mes","field-month-relative+1":"el mes pr\u00f3ximo",
+"field-week-relative+-1":"la semana pasada","field-week-relative+0":"esta semana","field-week-relative+1":"la semana pr\u00f3xima","field-day-relative+-2":"antier","field-day-relative+-1":"ayer","field-day-relative+0":"hoy","field-day-relative+1":"ma\u00f1ana","field-day-relative+2":"pasado ma\u00f1ana","field-sun-relative+-1":"el domingo pasado","field-sun-relative+0":"este domingo","field-sun-relative+1":"el domingo pr\u00f3ximo","field-mon-relative+-1":"el lunes pasado","field-mon-relative+0":"este lunes",
+"field-mon-relative+1":"el lunes pr\u00f3ximo","field-tue-relative+-1":"el martes pasado","field-tue-relative+0":"este martes","field-tue-relative+1":"el martes pr\u00f3ximo","field-wed-relative+-1":"el mi\u00e9rcoles pasado","field-wed-relative+0":"este mi\u00e9rcoles","field-wed-relative+1":"el mi\u00e9rcoles pr\u00f3ximo","field-wed-short-relative+-1":"el mi\u00e9r. pasado","field-wed-short-relative+0":"este mi\u00e9r.","field-wed-short-relative+1":"el pr\u00f3ximo mi\u00e9r.","field-thu-relative+-1":"el jueves pasado",
+"field-thu-relative+0":"este jueves","field-thu-relative+1":"el jueves pr\u00f3ximo","field-fri-relative+-1":"el viernes pasado","field-fri-relative+0":"este viernes","field-fri-relative+1":"el viernes pr\u00f3ximo","field-fri-short-relative+-1":"el vier. pasado","field-fri-short-relative+0":"este vier.","field-fri-short-relative+1":"el pr\u00f3ximo vier.","field-sat-relative+-1":"el s\u00e1bado pasado","field-sat-relative+0":"este s\u00e1bado","field-sat-relative+1":"el s\u00e1bado pr\u00f3ximo",
+"field-dayperiod":"a. m./p. m."});

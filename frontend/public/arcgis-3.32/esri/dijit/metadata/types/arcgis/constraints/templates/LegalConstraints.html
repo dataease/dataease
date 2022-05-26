@@ -1,0 +1,42 @@
+<div data-dojo-attach-point="containerNode">
+  <div data-dojo-type="esri/dijit/metadata/form/Element"
+    data-dojo-props="target:'LegConsts',minOccurs:0,showHeader:false">
+    
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'useLimit',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.constraints.useLimit}'">
+      <div data-dojo-type="esri/dijit/metadata/form/InputTextArea"></div>
+    </div>  
+    
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'accessConsts',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.constraints.legal.accessConsts}'">
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'RestrictCd',minOccurs:0,showHeader:false">
+        <div data-dojo-type="esri/dijit/metadata/form/Attribute"
+          data-dojo-props="target:'value',minOccurs:0,showHeader:false">
+          <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputSelectCode"
+            data-dojo-props="codelistType:'MD_RestrictionCode'">
+          </div>
+        </div>
+      </div>
+    </div>  
+    
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'useConsts',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.constraints.legal.useConsts}'">
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'RestrictCd',minOccurs:0,showHeader:false">
+        <div data-dojo-type="esri/dijit/metadata/form/Attribute"
+          data-dojo-props="target:'value',minOccurs:0,showHeader:false">
+          <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputSelectCode"
+            data-dojo-props="codelistType:'MD_RestrictionCode'">
+          </div>
+        </div>
+      </div>
+    </div>  
+    
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'othConsts',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.constraints.legal.othConsts}'">
+      <div data-dojo-type="esri/dijit/metadata/form/InputTextArea"></div>
+    </div>  
+    
+  </div>
+</div>

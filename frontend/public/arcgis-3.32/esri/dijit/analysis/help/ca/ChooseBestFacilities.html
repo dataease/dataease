@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Tria les millors instal·lacions</h2><p/>
+        <h2><img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" alt="Tria les millors instal&middot;lacions"></h2>
+        <hr/>
+    <p>Tria les millors instal&middot;lacions us permet triar les millors ubicacions per a les instal&middot;lacions. L'eina assigna ubicacions amb demanda per a les instal&middot;lacions de manera que es compleixi l'objectiu especificat.
+    </p>
+    <p>Les instal&middot;lacions representen ubicacions que ofereixen algun tipus de servei, com ara parcs de bombers, escoles, biblioteques, botigues o centres de distribuci&oacute;. Les ubicacions de demanda representen ubicacions amb demanda de serveis que ofereixen les instal&middot;lacions, com ara punts d'illa censal que resumeixen la poblaci&oacute; d'una &agrave;rea determinada.
+    </p>
+    <p>L'eina Tria les millors instal&middot;lacions us pot ajudar a respondre preguntes com ara:
+        <ul>
+            <li>En cas d'emerg&egrave;ncia, com es poden assignar les llars al centre d'ajuda correcte quan la quantitat de llits &eacute;s limitada i no s'hauria de superar?
+            </li>
+            <li>Com podeu assignar barris a la biblioteca m&eacute;s propera i trobar el nombre de possibles usuaris als quals presta servei cadascuna? 
+            </li>
+            <li>Com podeu trobar la millor ubicaci&oacute; per a un centre de distribuci&oacute; d'alimentaci&oacute; que minimitzi la durada total del viatge (i, per tant, els costos) per al lliurament a una cadena de botigues d'alimentaci&oacute;?
+            </li>
+            <li>On hauria de situar-se un parc nou per garantir que el m&agrave;xim nombre d'habitants de la ciutat visquin a cinc minuts caminant d'un parc?
+            </li>
+            <li>Quines s&oacute;n les millors ubicacions per a diverses botigues d'animals en un comtat per tal que el 40&nbsp;% dels propietaris de mascotes d'aquest comtat no estiguin a m&eacute;s de deu minuts en cotxe d'una de les botigues?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="goal">
+        <div><h2>Objectiu</h2></div>
+        <hr/>
+        <div>
+            <p>Especifiqueu l'objectiu que s'ha de complir quan s'assignin ubicacions de demanda a les instal&middot;lacions.
+            </p>
+            <p>Amb Tria les millors instal&middot;lacions podeu especificar el tipus de problemes que esteu solucionant: l'objectiu. L'eina est&agrave; optimitzada per oferir una soluci&oacute; per a aquest objectiu concret. Independentment de l'objectiu, s'utilitza el mateix m&egrave;tode subjacent per trobar una soluci&oacute;: la quantitat de demanda d'una determinada ubicaci&oacute; de demanda s'assigna a la instal&middot;laci&oacute; m&eacute;s propera. Els objectius fan variar la manera de gestionar la interacci&oacute; entre la dist&agrave;ncia (o la durada) i la demanda. L'eina t&eacute; en compte la dist&agrave;ncia o la durada del viatge i la quantitat de demanda i, en alguns casos, la capacitat de les instal&middot;lacions. Per exemple, si l'objectiu dona prioritat a minimitzar la durada del viatge, l'eina tamb&eacute; intentar&agrave; maximitzar, de forma secund&agrave;ria, la demanda que s'assigna. De manera similar, si l'objectiu &eacute;s maximitzar la demanda que s'assigna, l'eina minimitzar&agrave; la durada del viatge (i assignar&agrave; ubicacions de demanda a la instal&middot;laci&oacute; m&eacute;s propera en lloc d'assignar una instal&middot;laci&oacute; qualsevol).
+            </p>
+            <p>En funci&oacute; de les dades i la configuraci&oacute; que utilitzeu, &eacute;s possible que diferents objectius generin els mateixos resultats o de semblants. No obstant aix&ograve;, haur&iacute;eu d'especificar l'objectiu m&eacute;s adequat per a la vostra an&agrave;lisi.
+            </p> 
+        </div>
+    </div>
+    <div id="allocateToExistingFacilities">
+        <div><h2>Assigna a instal·lacions existents</h2></div>
+        <hr/>
+        <div>
+            <p>Utilitzeu aquest objectiu si no voleu localitzar instal&middot;lacions noves i voleu assignar la demanda a instal&middot;lacions existents que puguin tenir una capacitat limitada o il&middot;limitada.    
+            </p>
+            <p>Amb aquest objectiu, la demanda s'assigna a les instal&middot;lacions segons la capacitat de la instal&middot;laci&oacute; i la quantitat de demanda de l'&agrave;rea circumdant. La demanda s'assigna a la instal&middot;laci&oacute; m&eacute;s propera fins que s'assoleix la capacitat disponible. Si especifiqueu un interval de viatge m&agrave;xim, qualsevol ubicaci&oacute; de demanda que estigui m&eacute;s enll&agrave; d'aquest interval no s'assignar&agrave; a cap instal&middot;laci&oacute;, encara que no s'hagi assignat tota la demanda.
+            </p> 
+        </div>
+    </div>
+    <div id="minimizeTravel">
+        <div><h2>Minimitza el viatge</h2></div>
+        <hr/>
+        <div>
+            <p>Utilitzeu aquest objectiu si voleu localitzar les instal&middot;lacions de manera que es minimitzi el temps de viatge o la dist&agrave;ncia de viatge total entre les ubicacions de demanda i les instal&middot;lacions.
+            </p>
+            <p>Aquest objectiu sol ser aplicable quan hi ha un viatge entre la instal&middot;laci&oacute; i totes les ubicacions de demanda de forma regular. Per exemple, podr&iacute;eu utilitzar aquest objectiu per minimitzar la dist&agrave;ncia total que recorren les mercaderies des dels centres de distribuci&oacute; fins a les botigues, o b&eacute; per triar una ubicaci&oacute; per a una confer&egrave;ncia de manera que es minimitzi la durada del viatge de tots els assistents.
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverage">
+        <div><h2>Maximitza la cobertura</h2></div>
+        <hr/>
+        <div>
+            <p>Utilitzeu aquest objectiu si voleu maximitzar la quantitat de demanda que es cobreix en una determinada durada o dist&agrave;ncia de les instal&middot;lacions.    
+            </p>
+            <p>Amb aquest objectiu es trien les instal&middot;lacions perqu&egrave; s'assigni la m&agrave;xima quantitat de demanda, de manera que tota la demanda de cada ubicaci&oacute; de demanda s'assigni a la instal&middot;laci&oacute; que tingui m&eacute;s a prop.
+            </p>
+            <p>Per a aquest objectiu &eacute;s necessari un interval de viatge m&agrave;xim limitat. Altrament, &eacute;s possible que tota la demanda s'assigni a una &uacute;nica instal&middot;laci&oacute;. No s'assignaran les ubicacions de demanda que estiguin a m&eacute;s dist&agrave;ncia o temps de qualsevol de les instal&middot;lacions (en aquest cas, es mostraran els llocs on no s'est&agrave; assolint la demanda i els llocs on poden ser necess&agrave;ries m&eacute;s instal&middot;lacions).
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverageWithCapacity">
+        <div><h2>Maximitza la cobertura amb capacitat</h2></div>
+        <hr/>
+        <div>
+            <p>Utilitzeu aquest objectiu si voleu maximitzar la quantitat de demanda que cobreixen les instal&middot;lacions, encara que tinguin una capacitat limitada.    
+            </p>
+            <p>Amb aquest objectiu es trien les instal&middot;lacions perqu&egrave; s'assigni la m&agrave;xima quantitat de demanda sense superar la capacitat de cap instal&middot;laci&oacute;. Tota la demanda de cada ubicaci&oacute; de demanda s'assigna a la instal&middot;laci&oacute; m&eacute;s propera que tingui capacitat disponible (&eacute;s a dir, si el fet d'assignar una ubicaci&oacute; de demanda a una instal&middot;laci&oacute; fa que se superi la capacitat disponible d'aquesta instal&middot;laci&oacute;, la ubicaci&oacute; de demanda no s'assignar&agrave; i nom&eacute;s s'assignar&agrave; una part de la demanda).
+            </p> 
+        </div>
+    </div>
+    <div id="coverAPercentageOfDemand">
+        <div><h2>Cobreix un percentatge de la demanda</h2></div>
+        <hr/>
+        <div>
+            <p>Utilitzeu aquest objectiu si voleu saber quantes instal&middot;lacions necessiteu com a m&iacute;nim per cobrir un determinat percentatge de demanda.
+            </p>
+            <p>Amb aquest objectiu es tria la quantitat m&iacute;nima d'instal&middot;lacions necess&agrave;ries per assolir el percentatge de demanda especificat. Per a una ubicaci&oacute; de demanda que estigui dins de l'interval de viatge m&agrave;xim de dues o m&eacute;s instal&middot;lacions, la demanda es dividir&agrave; proporcionalment entre les instal&middot;lacions en funci&oacute; de la dist&agrave;ncia a cadascuna. Aquest objectiu se sol utilitzar quan les persones poden triar quina instal&middot;laci&oacute; volen visitar i es pressuposa que, en general, visitaran la instal&middot;laci&oacute; m&eacute;s propera (la resta d'aspectes es mantindran).
+            </p>
+            <p>A difer&egrave;ncia d'altres objectius on es trien les instal&middot;lacions i on especifiqueu quantes instal&middot;lacions s'han de seleccionar, amb aquest objectiu es tria una quantitat d'instal&middot;lacions autom&agrave;ticament en funci&oacute; del percentatge de demanda que voleu assolir. Es pressuposa que les instal&middot;lacions no tenen una capacitat limitada.
+            </p> 
+        </div>
+    </div>
+    <div id="measure">
+        <div><h2>Mesura</h2></div>
+        <hr/>
+        <div>
+            <p>Igual que amb altres eines que utilitzen el viatge per a les an&agrave;lisis, podeu especificar si el viatge s'ha de mesurar en dist&agrave;ncia o en temps i tamb&eacute; podeu triar entre diversos modes de viatge, com ara el temps caminant, el temps de conducci&oacute;, la dist&agrave;ncia de conducci&oacute; rural, etc. L'administrador de la vostra organitzaci&oacute; determina els modes de viatge disponibles. Quan utilitzeu el  <b>Temps de conducci&oacute;</b>, el <b>Temps de conducci&oacute; rural</b> o el <b>Temps en cami&oacute;</b>, podeu incloure el tr&agrave;nsit d'una hora del dia o un dia de la setmana espec&iacute;fics.
+            </p>
+            <p> Per assignar amb precisi&oacute; les ubicacions de demanda a les instal&middot;lacions, heu d'especificar si el viatge &eacute;s des de les instal&middot;lacions fins a les ubicacions de demanda (per exemple, des de parcs de bombers fins a les cases) o des de les ubicacions de demanda fins a les instal&middot;lacions (com ara els usuaris cap a les biblioteques). Tria les millors instal&middot;lacions tindr&agrave; en compte la direcci&oacute; del viatge en carrers de sentit &uacute;nic, si podeu girar d'un carrer a un altre, si les interseccions no permeten girar a l'esquerra, etc., en funci&oacute; de si el viatge &eacute;s cap a fora (des de la instal&middot;laci&oacute; fins a les ubicacions de demanda) o cap a dins (des de les ubicacions de demanda fins a les instal&middot;lacions).
+            </p>
+        </div>
+    </div>
+    <div id="demandLocationsLayer">
+        <div><h2>Capa d'ubicacions de demanda</h2></div>
+        <hr/>
+        <div>
+            <p>Entitats de punts que representen ubicacions que tenen demanda per als serveis que ofereixen les instal&middot;lacions. L'eina assigna aquestes ubicacions de demanda a les instal&middot;lacions adequades segons l'objectiu seleccionat.
+            </p>
+            <p>Les ubicacions de demanda tenen associada una quantitat de demanda. Utilitzeu una constant per especificar el valor en cas que totes les ubicacions de demanda tinguin la mateixa demanda. Si la quantitat de demanda varia segons la ubicaci&oacute; de demanda, utilitzeu un camp de la Capa d'ubicacions de demanda per especificar el valor de cada ubicaci&oacute; de demanda.
+            </p>
+            <p>La demanda s'assignar&agrave; a les instal&middot;lacions fins que s'hagi assignat completament, independentment de la dist&agrave;ncia entre les ubicacions de demanda i les instal&middot;lacions. Podeu assignar un interval de viatge m&agrave;xim a la Capa d'ubicacions de demanda per crear un valor l&iacute;mit de dist&agrave;ncia o de temps: qualsevol ubicaci&oacute; de demanda que superi aquest valor l&iacute;mit no s'assignar&agrave;. Utilitzeu una constant per especificar el valor en cas que totes les ubicacions de demanda tinguin el mateix interval de viatge m&agrave;xim. Si l'interval de viatge m&agrave;xim varia segons la ubicaci&oacute; de demanda, utilitzeu un camp de la Capa d'ubicacions de demanda per especificar el valor de cada ubicaci&oacute; de demanda.
+            </p>
+            <p>Si el tipus d'objectiu &eacute;s  <b>Cobreix un percentatge de la demanda</b>, haureu d'especificar el percentatge de demanda m&iacute;nim que voleu que cobreixin les instal&middot;lacions.
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b>, que es troba al final de la llista desplegable. Aquesta opci&oacute; obre una galeria on podeu cercar i seleccionar datasets de diversos or&iacute;gens per u utilitzar-los a l'an&agrave;lisi. 
+            </p>
+            <p>L'eina admet fins a 10.000 entitats a la Capa d'ubicacions de demanda.
+            </p>  
+        </div>
+    </div>
+    <div id="requiredFacilitiesLayer">
+        <div><h2>Capa d'instal·lacions necessàries</h2></div>
+        <hr/>
+        <div>
+            <p>Entitats de punts que representen ubicacions que actuen com a instal&middot;lacions que proporcionen algun tipus de servei. Normalment, les instal&middot;lacions necess&agrave;ries representen ubicacions que ja existeixen. En comparaci&oacute;, les instal&middot;lacions candidates solen representar les ubicacions on es crearan o col&middot;locaran instal&middot;lacions noves. A l'hora d'assignar ubicacions de demanda, l'eina utilitza les instal&middot;lacions de la  <b>Capa d'instal&middot;lacions necess&agrave;ries</b> abans d'utilitzar cap instal&middot;laci&oacute; de la <b>Capa d'instal&middot;lacions candidates</b>.
+            </p>
+            <p>Les instal&middot;lacions necess&agrave;ries poden tenir una capacitat il&middot;limitada (&eacute;s a dir, que poden assolir tota la demanda que se'ls assigna) o poden tenir una capacitat limitada. Si totes les instal&middot;lacions tenen la mateixa capacitat limitada (com ara el nombre de llars a les quals pot prestar servei un parc de bombers: per exemple, 4.000), especifiqueu un valor constant. Si la capacitat varia entre les instal&middot;lacions (com ara la quantitat de places disponibles per als estudiants de primer curs d'un institut), especifiqueu un camp que contingui el valor de capacitat de cada instal&middot;laci&oacute;.
+            </p>
+            <p>L'eina admet fins a 100 entitats a la  <b>Capa d'instal&middot;lacions necess&agrave;ries</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="candidateFacilitiesLayer">
+        <div><h2>Capa d'instal·lacions candidates</h2></div>
+        <hr/>
+        <div>
+            <p>Entitats de punts que representen ubicacions que actuen com a instal&middot;lacions que proporcionen algun tipus de servei. Normalment, les instal&middot;lacions candidates representen les ubicacions on es crearan o col&middot;locaran instal&middot;lacions noves, en contraposici&oacute; a les instal&middot;lacions necess&agrave;ries, que solen representar ubicacions que ja existeixen.
+            </p>
+            <p>Segons l'objectiu de la vostra an&agrave;lisi, haureu d'especificar el nombre d'instal&middot;lacions candidates que es podran triar entre un conjunt de candidats. Si especifiqueu tant les instal&middot;lacions necess&agrave;ries com les candidates, l'eina utilitza les instal&middot;lacions de la  <b>Capa d'instal&middot;lacions necess&agrave;ries</b> abans d'utilitzar cap instal&middot;laci&oacute; de la <b>Capa d'instal&middot;lacions candidates</b>.
+            </p>
+            <p>Les instal&middot;lacions candidates poden tenir una capacitat il&middot;limitada (&eacute;s a dir, que poden assolir tota la demanda que se'ls assigna) o poden tenir una capacitat limitada. Si totes les instal&middot;lacions tenen la mateixa capacitat limitada (com ara el nombre de llars a les quals pot prestar servei un parc de bombers: per exemple, 4.000), especifiqueu un valor constant. Si la capacitat varia entre les instal&middot;lacions (com ara la quantitat de places disponibles per als estudiants de primer curs d'un institut), especifiqueu un camp que contingui el valor de capacitat de cada instal&middot;laci&oacute;.
+            </p>
+            <p>L'eina admet fins a 1.000 entitats a la  <b>Capa d'instal&middot;lacions candidates</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Seleccioneu capes de barrera</h2></div>
+        <hr/>
+        <div>
+            <p> Una o diverses entitats poden actuar com a restriccions temporals (barreres) quan viatgeu per carrers subjacents. Podeu especificar les barreres amb entitats de punt, l&iacute;nia o pol&iacute;gon.
+            </p>
+            <p>Una barrera de punt pot mostrar un arbre caigut, un accident, una l&iacute;nia el&egrave;ctrica fora de servei o qualsevol element que bloquegi completament el tr&agrave;nsit en un punt espec&iacute;fic del carrer. Es pot viatjar pel carrer, per&ograve; no creuar la barrera. Podeu especificar fins a 250 entitats perqu&egrave; actu&iuml;n com a barreres de punt.
+            </p>
+            <p>Una barrera de l&iacute;nia prohibeix viatjar per qualsevol lloc on la barrera s'intersequi amb els carrers. Per exemple, una desfilada o manifestaci&oacute; que bloquegi el tr&agrave;nsit en diversos segments del carrer es pot mostrar amb una barrera de l&iacute;nia. Si el nombre d'entitats de carrer amb qu&egrave; s'intersequen totes les barreres de l&iacute;nia &eacute;s superior a 500, l'eina retornar&agrave; un error.
+            </p>
+            <p>Una barrera de pol&iacute;gon prohibeix viatjar per qualsevol lloc on el pol&iacute;gon s'intersequi amb els carrers. Un dels usos d'aquest tipus de barrera &eacute;s mostrar les inundacions que cobreixen &agrave;rees de la xarxa de carrers i que impedeixen el viatge per carretera. Si el nombre d'entitats de carrer amb qu&egrave; s'intersequen totes les barreres de pol&iacute;gon &eacute;s superior a 2.000, l'eina retornar&agrave; un error.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa.  El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si el nom de la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>La capa de resultats inclour&agrave; una capa per a cadascun dels elements seg&uuml;ents: instal&middot;lacions que tenen demandes assignades, ubicacions de demanda que estan assignades a instal&middot;lacions i l&iacute;nies d'assignaci&oacute; que connecten les ubicacions de demanda amb les instal&middot;lacions que se'ls han assignat. Les l&iacute;nies d'assignaci&oacute; es dibuixen com a l&iacute;nies rectes. Aix&ograve; no obstant, la durada o la dist&agrave;ncia del viatge entre la instal&middot;laci&oacute; i la ubicaci&oacute; de demanda sempre es basa en el mode de viatge que especifiqueu i no utilitza dist&agrave;ncies en l&iacute;nia recta.
+            </p>
+            <p>Mitjan&ccedil;ant el men&uacute; desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta d' <b>El meu contingut</b> on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

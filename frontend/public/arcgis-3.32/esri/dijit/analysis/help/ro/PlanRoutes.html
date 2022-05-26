@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Planificare rute</h2><p/>
+        <h2><img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" alt="Planificaţi rute"></h2>
+        <hr/>
+    <p>Instrumentul Planificare rute stabilește modul de alocare eficientă a operațiilor &icirc;n cadrul unei forțe de muncă mobile.
+    </p>
+    <p>Dvs. furnizați instrumentului un set de opriri și un număr de vehicule care pot ajunge la opririle respective. Instrumentul va aloca vehicule pentru fiecare oprire și va afișa rute prin care se indică modul &icirc;n care fiecare vehicul poate ajunge la fiecare din opririle alocate &icirc;n cel mai scurt timp.
+    </p>
+    <p>Cu ajutorul instrumentului Planificare rute, angajații mobili ajung &icirc;n mai multe locații &icirc;n mai puțin timp, fapt ce conduce la creșterea productivității și a calității serviciilor oferite clienților.
+        <ul>
+            <li>Inspectarea locuințelor, restaurantelor sau șantierelor
+                
+
+            </li>
+            <li>Furnizarea de servicii tehnice, de reparare sau de instalare
+            </li>
+            <li>Livrarea produselor și coletelor de mici dimensiuni
+            </li>
+            <li>Efectuarea de apeluri cu scopul v&acirc;nzării de produse
+            </li>
+            <li>Transportul persoanelor de la reședințele acestora către un eveniment
+            </li>
+        </ul>
+        
+    </p>
+    <p>Rezultatul pentru Rute planificate include un strat tematic de opriri codificate după rutele &icirc;n care sunt alocate, un strat tematic de rute care prezintă cele mai scurte drumuri pentru vizitarea opririlor alocate și, &icirc;n funcție de posibilitate ca vreo oprire să nu poată fi atinsă, un strat tematic de opriri nealocate. 
+    </p>
+    <p>Dacă se bifează  <b>Utilizare extindere curentă hartă</b>, vor fi analizate numai obiectele spațiale care sunt vizibile &icirc;n extinderea curentă a hărții. Dacă nu se bifează, vor fi luate &icirc;n considerare toate obiectele spațiale din stratul tematic introdus, chiar dacă se află &icirc;n afara extinderii curente a hărții.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="stopsLayer">
+        <div><h2>Alegeți stratul tematic de puncte care reprezintă opriri pentru vizite</h2></div>
+        <hr/>
+        <div>
+            <p>Alegeți stratul tematic de puncte la care ar trebui să ajungă rutele (sau vehiculele).  Aceste puncte sunt puncte atribuite sau neatribuite &icirc;n rezultat. 
+            </p>
+            <p>Pe l&acirc;ngă alegerea unui strat tematic din harta dvs., puteţi selecta  <b>Alegere strat tematic de analiză</b>, care se găseşte &icirc;n partea de jos a listei derulante. Această opțiune deschide o galerie &icirc;n care puteți răsfoi și selecta seturi de date din diferite surse pentru a le utiliza &icirc;n analiza dvs. 
+            </p>
+            <p>Instrumentul acceptă p&acirc;nă la 2.000 de obiecte spațiale de intrare. 
+            </p>
+        </div>
+    </div>
+    <div id="travelMode">
+        <div><h2>Mod de deplasare pentru rute</h2></div>
+        <hr/>
+        <div>
+            <p>Alegeți modul de deplasare.  Rutele rezultate vor  urma drumuri sau trasee pietonale și vor respecta regulile &icirc;n vigoare, cum ar fi sensurile unice și interdicțiile de schimbare a direcției &icirc;n cazul deplasării cu autoturismul sau camionul. Modurile de deplasare disponibile sunt determinate de administratorul organizației dvs.  
+            </p>
+        </div>
+    </div>
+    <div id="startLayer">
+        <div><h2>Rutele încep la opriri</h2></div>
+        <hr/>
+        <div>
+            <p>Specificați locația și ora la care vehiculele &icirc;și &icirc;ncep rutele.
+            </p>
+            <p>Cu ajutorul instrumentului Planificare rute, puteți să specificați una sau mai multe locații de pornire pentru vehiculele dvs.
+            </p>
+            <p>C&acirc;nd este specificată o locație punctuală, toate vehiculele pornesc din punctul respectiv, indiferent de numărul de vehicule disponibile. Puteți să alegeți un strat tematic cu un singur punct sau puteți să adăugați un punct pe hartă aleg&acirc;nd opțiunea  <b>Adăugare punct pe hartă</b>, făc&acirc;nd clic pe butonul de editare a punctului adiacent și apoi făc&acirc;nd clic pe hartă. 
+            </p>
+            <p>C&acirc;nd se specifică mai multe locații, fiecare vehicul trebuie să fie asociat cu propriul punct. Numărul de vehicule trebuie să corespundă numărului de puncte din stratul tematic. Alegeți un strat tematic cu mai multe puncte și specificați un c&acirc;mp care identifică &icirc;n mod unic fiecare rută, fiecare vehicul sau fiecare șofer, din lista derulantă  <b>C&acirc;mp ID rută</b>
+            </p>
+            <p>Ora de pornire va fi aceeași pentru toate rutele. Fusul orar pentru ora de plecare este identic cu fusul orar &icirc;n care se află punctul sau punctele de plecare. Prin urmare, asigurați-vă că ora introdusă este ora locală. De exemplu, să presupunem că vă aflați &icirc;n fusul orar aferent orei Pacificului (UTC-8:00), iar vehiculele pe care le direcționați sunt staționate &icirc;n ora standard a regiunii muntoase (UTC-7:00) Dacă ora curentă este 9:30 a.m. PST (10:30 a.m. MST), iar vehiculele dvs. trebuie să-și &icirc;nceapă ruta &icirc;n 30 de minute, dvs. veți stabili ca oră de plecare 11:00 a.m. 
+            </p>
+            <p>Dacă vehiculele &icirc;și &icirc;ncep rutele din fusuri orare diferite, ora de pornire nu poate fi aceeași, ci este necesar să selectați ore diferite. De exemplu, dacă o rută pornește dintr-un punct aflat &icirc;n fusul orar PST și o altă rută pornește dintr-un punct aflat &icirc;n fusul orar MST, iar dvs. introduceți ora 11:00 a.m. ca oră de pornire, ruta din PST va &icirc;ncepe la ora 11:00 a.m. PST, iar ruta din MST va &icirc;ncepe la 11:00 a.m. MST &mdash; ceea ce &icirc;nseamnă o diferență de o oră.
+            </p>
+        </div>
+    </div>
+    <div id="endLayer">
+        <div><h2>Rutele se termină la opriri</h2></div>
+        <hr/>
+        <div>
+            <p>Specificați locația &icirc;n care vehiculele vor finaliza rutele.
+            </p>
+            <p>Puteți configura ca rutele să se termine &icirc;n una din trei locații: 
+                <ul>
+                    <li>aceeași locație de unde au &icirc;nceput rutele, indiferent dacă aceste rute au avut ca origine una sau mai multe locații;
+                    </li>
+                    <li>o locație individuală;
+                    </li>
+                    <li>mai multe locații (adică un punct terminus pentru fiecare rută).
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Bifați  <b>Revenire la plecare</b> &icirc;n cazul &icirc;n care vehiculele &icirc;și &icirc;ncep și &icirc;și termină rutele &icirc;n aceleași locații.
+            </p>
+            <p>Pentru a direcționa toate vehiculele către un punct terminus comun, altul dec&acirc;t punctul de pornire, debifați  <b>Revenire la plecare</b> și apoi adăugați un punct pe hartă sau alegeți un strat tematic care conține exact un punct.
+            </p>
+            <p>Pentru a configura rutele să se termine &icirc;n locații unice, debifați  <b>Revenire la plecare</b> și alegeți un strat tematic care conține mai multe puncte. Numărul de vehicule trebuie să fie egal cu numărul de puncte din stratul tematic ales. &Icirc;n lista derulantă <b>C&acirc;mp ID rută</b>, alegeți un c&acirc;mp care identifică &icirc;n mod unic fiecare rută, fiecare vehicul sau fiecare șofer. Dacă vehiculele pornesc din mai multe locații și sosesc &icirc;n mai multe locații, ID-urile de rute alese pentru straturile tematice cu puncte de plecare și cu puncte de sosire trebuie să corespundă.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Selectare straturi tematice tip barieră</h2></div>
+        <hr/>
+        <div>
+            <p> Unul sau mai multe obiecte spațiale care acționează ca restricții temporare (bariere) atunci c&acirc;nd vă deplasați pe străzile subiacente. Puteți specifica barierele utiliz&acirc;nd obiecte spațiale de tip punct, linie sau poligon.
+            </p>
+            <p>O barieră de tip punct poate reprezenta modelul unui copac căzut, al unui accident, al unui cablu electric căzut sau al oricărui element care blochează complet traficul &icirc;ntr-o anumită poziție de pe stradă. Deplasarea este permisă pe stradă, dar nu &icirc;n afara barierei. Puteți specifica p&acirc;nă la 250 de obiecte spațiale care să acționeze ca bariere tip punct.
+            </p>
+            <p>O barieră tip linie interzice deplasarea &icirc;n orice punct &icirc;n care bariera se intersectează cu străzile. De exemplu, o paradă sau un protest care blochează traficul pe mai multe segmente de stradă pot fi modelate cu o barieră tip linie. Dacă numărul de obiecte spațiale de stradă intersectate de toate barierele tip linie depășește 500, instrumentul returnează o eroare.
+            </p>
+            <p>O barieră tip poligon interzice deplasarea &icirc;n orice punct &icirc;n care poligonul se intersectează cu străzile. Un mod de utilizare a acestui tip de barieră este să se modeleze inundațiile care acoperă suprafețele rețelei de străzi și să se facă imposibilă deplasarea pe traseul respectiv. Dacă numărul de obiecte spațiale de stradă intersectate de toate barierele tip poligon depășește 2000, instrumentul returnează o eroare.
+            </p>
+        </div>
+    </div>
+    <div id="routeCount">
+        <div><h2>Număr maxim de autovehicule de direcționat</h2></div>
+        <hr/>
+        <div>
+            <p>Specificați numărul de vehicule care sunt disponibile pentru a ajunge la opriri. &Icirc;n instrument pot fi selectate p&acirc;nă la  100 de vehicule. 
+            </p>
+            <p>Instrumentul poate găsi o soluție care utilizează mai puține vehicule dec&acirc;t numărul specificat aici, &icirc;n funcție de numărul total de opriri, numărul de opriri pe care &icirc;l permiteți pentru fiecare vehicul, distanța dintre opriri, timpul petrecut la fiecare oprire și orice altă limită pe care o setați cu privire la timpul total pe care un vehicul &icirc;l petrece pe rută.
+            </p>
+        </div>
+    </div>
+    <div id="maxStopsPerRoute">
+        <div><h2>Număr maxim de opriri per autovehicul</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este unul din cei doi parametri care echilibrează volumul de lucru total aferent rutelor. Puteți specifica o valoare cuprinsă &icirc;ntre 1 și  200. 
+            </p>
+            <p>Prin reducerea numărului total de opriri care poate fi alocat fiecărui vehicul, probabilitatea ca fiecare vehicul să aibă alocat același număr de opriri crește. Acest lucru ajută la echilibrarea volumului de lucru pentru fiecare șofer. Există &icirc;nsă dezavantajul că soluția găsită poate fi mai puțin eficientă.
+            </p>
+            <p>Prin mărirea numărului de opriri per vehicul, instrumentul are mai multă libertate și poate găsi soluții mai eficiente. Cu toate acestea, este posibil ca volumul de lucru să fie distribuit inegal &icirc;ntre șoferi și vehicule. Rețineți că puteți echilibra volumul de lucru &icirc;n funcție de timp și &icirc;n funcție de numărul de opriri, prin specificarea unei valori pentru parametrul  <b>Limitare timp total pe rută per vehicul</b>.
+            </p>
+            <p>Următoarele exemple demonstrează efectele limitării numărului maxim de opriri per vehicul sau a duratei totale petrecute de vehicule pe rută. &Icirc;n toate exemplele există șase opriri și două rute, care &icirc;ncep din aceeași locație.
+            </p>
+            <table border="1">
+            <tr>
+                <td> <img src="../images/GUID-820BDC1E-97CB-457F-9235-7105D274AFEB-web.png" alt="Opriri și durate de călătorie echilibrate">
+                </td>
+                <td>
+                    <p>Durate de călătorie și opriri echilibrate per rută:
+                    </p>
+                    <p>Opririle au distanțe mai mult sau mai puțin egale &icirc;ntre ele, astfel că setarea numărului maxim de opriri per vehicul pentru a distribui &icirc;n mod uniform volumul de lucru va avea ca rezultat crearea unor rute care au aproximativ aceeași durată.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-813F72FE-500D-4A4D-A030-B3450F09154B-web.png" alt="Durate de călătorie dezechilibrate">
+                </td>
+                <td>
+                    <p>Număr de opriri echilibrat per rută, dar durate de călătorie dezechilibrate:
+                    </p>
+                    <p>Cinci sau șase opriri sunt grupate &icirc;n apropierea locației de pornire, &icirc;nsă o oprire este stabilită departe și necesită o durată de conducere mult mai mare pentru a fi atinsă. &Icirc;mpărțirea numărului de opriri &icirc;n mod egal &icirc;ntre cele două rute conduce la crearea unor durate de călătorie dezechilibrate.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-082615A2-7F07-49AB-92AF-C82CEB813E6F-web.png" alt="Durate de călătorie echilibrate">
+                </td>
+                <td>
+                    <p>Număr de opriri dezechilibrat per rută, dar durate de călătorie echilibrate:
+                    </p>
+                    <p>Opririle se află &icirc;n aceeași locație ca și &icirc;n graficul precedent, &icirc;nsă prin creșterea numărului maxim de opriri per rută și prin limitarea duratei de călătorie totale per vehicul, duratele de călătorie sunt echilibrate.
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="serviceTimeAtStops">
+        <div><h2>Timp petrecut la fiecare oprire</h2></div>
+        <hr/>
+        <div>
+            <p>Setați durata medie estimată care va fi petrecută la fiecare oprire. De exemplu, dacă programați o zi de lucru pentru inspectori, iar durata de inspecție medie este de 45 de minute, introduceți valoarea  <code>45</code>.
+            </p>
+            <p>Se presupune că durata petrecută la fiecare oprire este identică.
+            </p>
+        </div>
+    </div>
+    <div id="maxTotalRouteTime">
+        <div><h2>Limitați timpul total pe rută per autovehicul</h2></div>
+        <hr/>
+        <div>
+            <p>Specificați perioada de timp maximă pentru parcurgerea unei rute de la punctul pornire la punctul terminus. Această perioadă include durata de călătorie și duratele de timp petrecute la fiecare din opririle planificate de-a lungul rutei. Dacă șoferii nu trebuie să lucreze mai mult dec&acirc;t durata setată pentru ziua respectivă (de exemplu, opt ore), aici puteți specifica această limită de timp.
+            </p>
+            <p>Consultați resursele de asistență pentru  <b>Număr maxim de opriri per vehicul</b> pentru a vedea ce aspecte trebuie avute &icirc;n vedere atunci c&acirc;nd se dorește echilibrarea volumelor de lucru.
+            </p>
+        </div>
+    </div>
+    <div id="resultsLayer">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Numele stratului tematic de obiecte spațiale care va fi creat &icirc;n  <b>Resursele mele</b> și va fi adăugat &icirc;n hartă. Dacă stratul tematic de obiecte spațiale rezultat există deja, vi se va solicita să furnizați un alt nume. Stratul tematic de obiecte spațiale va conține un strat tematic pentru fiecare dintre următoarele: rute, opriri alocate și opriri neatribuite, atunci c&acirc;nd unele opriri introduse nu pot fi alocate niciunei rute.
+            </p>
+            <p>Dacă selectați  <b>Includere straturi tematice de rute</b>, fiecare rută din rezultat este salvată și ca strat tematic de rute. Un strat tematic de rute include toate informațiile pentru o anumită rută, cum ar fi opririle alocate rutei și indicațiile de deplasare. Crearea straturilor tematice de rute este utilă dacă doriți să partajați rutele individuale cu alți membri din organizația dvs. sau să modificați mai mult rutele utiliz&acirc;nd butonul <b>Indicații</b> din aplicația de vizualizare a hărților. Straturile tematice de rute utilizează numele furnizat pentru stratul tematic de obiecte spațiale ca prefix și numele de rută generat ca parte din analiză este adăugat pentru a crea un nume unic pentru fiecare strat tematic de rută.
+            </p>
+            <p>Utiliz&acirc;nd meniul derulant  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care vor fi salvate stratul tematic de obiecte spațiale și straturile tematice de rute, dacă sunt create.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

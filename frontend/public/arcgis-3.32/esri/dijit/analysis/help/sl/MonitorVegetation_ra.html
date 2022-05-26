@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Monitoring vegetacije</h2><p/>
+        <h2><img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" alt="Orodje Monitoring vegetacije za Portal"></h2>
+        <hr/>
+    <p>Orodje izvaja aritmetične operacije na pasovih večpasovnega rastrskega sloja, da razkrije informacije o pokritosti z vegetacijo na &scaron;tudijskem območju.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izberi vhodne podatke</h2></div>
+        <hr/>
+        <div>
+            <p>Izberi večpasovni rastrski sloj. Prepričajte se, da ima vhodni raster na voljo ustrezne pasove.
+            </p> 
+        </div>
+    </div>
+    <div id="vegetationIndexType">
+        <div><h2>Izberi način za monitoring vegetacije</h2></div>
+        <hr/>
+        <div>
+            <p>Izberite metodo za ustvarjanje sloja indeksa vegetacije. Različni indeksi vegetacije lahko pomagajo poudariti določene značilnosti ali zmanj&scaron;ati različne &scaron;ume.
+            </p>
+            <ul>
+                <li>Global Environmental Monitoring Index &mdash; 
+GEMI je nelinearni vegetacijski indeks za globalno spremljanje okolja prek satelitskega slikovja. Podoben je NDVI, vendar je manj občutljiv na atmosferske učinke. Občutljiv je na neobdelana tla, zato ga ni priporočljivo uporabljati na območjih redke ali zmerno goste vegetacije.
+
+                </li>
+                <li>Green Vegetation Index - Landsat TM &mdash; 
+GVI je prvotno oblikovan iz slikovja satelita Landsat MSS, vendar je bil spremenjen za uporabo s slikovjem satelita Landsat TM. Znan je tudi pod imenom indeks zelene vegetacije Landsat TM Tasseled Cap. Ta indeks spremljanja se prav tako lahko uporablja pri slikovju, katerega pasovi imajo enake spektralne značilnosti.
+
+                </li>
+                <li>Modified Soil Adjusted Vegetation Index &mdash; 
+MSAVI2 je vegetacijski indeks, ki sku&scaron;a minimizirati vplive neobdelanih tal metode SAVI.
+
+                </li>
+                <li>Normalized Difference Vegetation Index  &mdash; 
+NDVI je standardizirani indeks, ki vam omogoča ustvarjanje slike, ki prikazuje zelenje ali relativno biomaso. Ta indeks izkori&scaron;ča kontrast med značilnostmi dveh pasov iz večspektralnih rastrov sklopov podatkov: absorpcije klorofila v rdečem pasu in visoke odbojnosti rastlinskih materialov v skoraj infrardečem pasu (NIR).
+
+                </li>
+                <li>Perpendicular Vegetation Index &mdash; 
+PVI je podoben različnostnemu indeksu vegetacije, vendar je občutljiv na atmosferska nihanja. To metodo za primerjavo različnih slik je treba uporabljati samo pri slikah, ki so bile atmosfersko popravljene. To informacijo vam lahko zagotovi va&scaron; ponudnik podatkov.
+
+                </li>
+                <li>Soil-Adjusted Vegetation Index &mdash; 
+SAVI je vegetacijski indeks, ki posku&scaron;a minimizirati vpliv svetlosti tal s pomočjo korekcijskega faktorja svetlosti tal. To se pogosto uporablja v su&scaron;nih regijah, kjer je vegetacijski pokrov nizek.
+
+                </li>
+                <li>Sultan's Formula &mdash; 
+Proces Sultanove formule vzame &scaron;estpasovno 8-bitno sliko in na njej uporabi poseben algoritem, da ustvari tripasovno 8-bitno sliko. Nastala slika poudarja skalne formacije, imenovane ofioliti na obalah. Formula je bila zasnovana na podlagi pasov TM in ETM 3D-prizora satelita Landsat 5 ali 7.
+
+                </li>
+                <li>Transformed Soil-Adjusted Vegetation Index &mdash; 
+Transformed-SAVI je vegetacijski indeks, ki posku&scaron;a minimizirati vplive svetlosti tal ob predpostavki, da ima linija tal poljuben naklon in odsek.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bandIndexes">
+        <div><h2>Določi indekse bližnje infrardečega in rdečega pasu</h2></div>
+        <hr/>
+        <div>
+            <p>Določi pasovne indekse za NIR in rdeče pasove.
+            </p>
+            <p>Vsak satelitski senzor in zračna kamera zajemajo informacije, ki so razčlenjene v pasovne indekse. Vsak pasovni indeks vsebuje informacije za določen del elektromagnetnega spektra. Ta metoda za opazovanje vegetacije zahteva določitev pasovnega indeksa, ki je zajel NIR in rdeče valovne dolžine.
+            </p>
+        </div>
+    </div>
+    <div id="slopeOfSoilLine">
+        <div><h2>Naklon linije tal</h2></div>
+        <hr/>
+        <div>
+            <p>Naklon linije tal. Naklon je približna linearna relacija med NIR-om in rdečimi pasovi na raztresenem grafu.
+            </p>
+            <p>Ta parameter je veljaven samo za metodo transformiranega indeksa vegetacije glede na talni tip.
+            </p>
+        </div>
+    </div>
+    <div id="interceptOfSoilLine">
+        <div><h2>Prestrezanje</h2></div>
+        <hr/>
+        <div>
+            <p>Vrednost NIR, ko je odbojna vrednost rdečega pasu (Red) 0 pri določenih linijah prsti.
+            </p>
+            <p> <code>(a = NIR - sRed)</code> , ko je Red 0.
+            </p> 
+            <p>Ta parameter je veljaven samo za metodo transformiranega indeksa vegetacije glede na talni tip.
+            </p>
+        </div>
+    </div>
+    <div id="greenVegetativeCover">
+        <div><h2>Količina pokrova zelene vegetacije</h2></div>
+        <hr/>
+        <div>
+            <p>Določi količino pokrova zelene vegetacije, ki je zahtevana za metodo SAVI.
+            </p>
+            <p>Veljavne vrednosti so naslednje: 
+
+                <ul>
+                    <li>1 = območja brez pokrova zelene vegetacije
+                        
+ 
+                    </li>
+                    <li>0,5 = območja z zmernim pokrovom zelene vegetacije
+                        
+ 
+                    </li>
+                    <li>0 = območja z visokim pokrovom zelene vegetacije
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="adjustmentFactor">
+        <div><h2>Dejavnik prilagajanja</h2></div>
+        <hr/>
+        <div>
+            <p>Navede faktor prilagoditve, da pomaga minimizirati učinek prsti, kar zahteva metoda transformiranega indeksa vegetacije glede na talni tip. Privzeta vrednost je 0,08.
+            </p>
+            <p>Nizka vrednost pomeni, da ignorirate učinek prsti. Visoka vrednost pomeni, da bo prst vplivala na va&scaron; rezultat.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>Ime sloja, ki bo ustvarjen v odseku  <b>Moja vsebina</b> in dodan na karto. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, bo od vas zahtevano, da vnesete drugo ime.
+            </p>
+            <p>Lahko navedete ime mape v  <b>Moji vsebini</b>, kjer bo rezultat shranjen s pomočjo spustnega menija <b>Shrani rezultat v</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

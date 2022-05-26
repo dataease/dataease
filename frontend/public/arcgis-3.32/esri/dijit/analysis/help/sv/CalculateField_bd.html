@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Beräkna fält</h2><p/>
+        <h2><img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" alt="Ber&auml;kna f&auml;lt"></h2>
+        <hr/>
+    <p> Det h&auml;r verktyget fungerar med ett indatalager f&ouml;r att ber&auml;kna v&auml;rden f&ouml;r ett nytt eller befintligt f&auml;lt. Bygg ett Arcade-uttryck f&ouml;r att ber&auml;kna v&auml;rdena som ska anv&auml;ndas f&ouml;r att fylla i geoobjekten. Om data &auml;r tidsaktiverade och av typen tidspunkt kan du v&auml;lja att bygga uttryck som &auml;r sp&aring;rmedvetna.
+    </p>
+    <p>Anta att du till exempel vill &auml;ndra ett befintligt f&auml;lt med namnet  <i>TotalSales</i>. Du vill att f&auml;ltet ska representeras av summan f&ouml;r den totala f&ouml;rs&auml;ljningen 2016 och 2017. Genom att anv&auml;nda dessa f&auml;lt i uttrycket ber&auml;knar du f&auml;ltv&auml;rdet som <pre>$feature[&quot;Sales2016&quot;] + $feature[&quot;Sales2017&quot;]</pre>.
+    </p>
+    <p>I ett annat exempel kan vi anta att du har GPS-m&auml;tningar som registrerar plats, tid, bussarnas ID och vilken hastighet de k&ouml;r med i en stad. Vi vill skapa ett nytt f&auml;lt med namnet  <i>SpeedFrom3</i> som ber&auml;knar den genomsnittliga hastigheten f&ouml;r de tre senast registrerade GPS-m&auml;tningarna f&ouml;r varje geoobjekt. I den h&auml;r ber&auml;kningen skulle vi anv&auml;nda en sp&aring;rmedveten ber&auml;kning d&auml;r sp&aring;ret &auml;r en buss med ett visst buss-ID.    Ber&auml;kningen f&ouml;r att fastst&auml;lla genomsnittshastigheten f&ouml;r de tre tidigare tidsstegen och det aktuella tidssteget &auml;r <pre>average($track.field[&quot;speed&quot;].history(-4))</pre>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Välj ett lager för att beräkna fältvärden för</h2></div>
+        <hr/>
+        <div>
+            <p>Punkterna, linjerna, omr&aring;dena eller tabellen vilkas f&auml;ltv&auml;rden kommer att ber&auml;knas.  
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager fr&aring;n kartan kan du v&auml;lja  <b>V&auml;lj analyslager</b> l&auml;ngst ned i listrutan f&ouml;r att bl&auml;ddra till ditt inneh&aring;ll efter ett big data-fildelningsdataset eller geoobjektlager.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Beräkna fältvärden för fältet</h2></div>
+        <hr/>
+        <div>
+            <p>Det nya eller befintliga f&auml;ltet vars v&auml;rden kommer att ber&auml;knas samt f&auml;ltets datatyp. Om du ber&auml;knar v&auml;rden f&ouml;r ett f&auml;lt som redan finns beh&ouml;ver du inte matcha datatypen. 
+            </p>
+        </div>
+    </div>
+    <div id="expression">
+        <div><h2>Bygg ett värde för att beräkna fältvärdena</h2></div>
+        <hr/>
+        <div>
+            <p>L&auml;gg till ett uttryck med hj&auml;lp av uttrycksskaparen n&auml;r du vill ber&auml;kna f&auml;ltv&auml;rden. 
+            </p>
+            <p>Anta att vi till exempel vill l&auml;gga till v&auml;rden i ett f&auml;lt med namnet  <i>income</i> och <i>bonus</i>. Det g&ouml;r du genom att l&auml;gga till uttrycket <code>$feature[&quot;income&quot;] + $feature[&quot;bonus&quot;] </code>.
+            </p>
+        </div>
+    </div>
+    <div id="trackInfo">
+        <div><h2>Uttrycket är spårmedvetet</h2></div>
+        <hr/>
+        <div>
+            <p>Ange om uttrycket ska vara sp&aring;rmedvetet. Ett sp&aring;rmedvetet uttryck inneh&aring;ller formatering som       <pre>$track.field[&quot;fieldname&quot;].history(...)</pre>. Sp&aring;rmedvetna uttryck m&aring;ste inneh&aring;lla f&auml;lt f&ouml;r att kunna identifiera enskilda sp&aring;r. Sp&aring;ren kan vara sammansatta av punkter, linjer, omr&aring;den eller tabeller och det enda kravet &auml;r att indata inneh&aring;ller en sp&aring;ridentifierare och att data &auml;r tidsaktiverade med typen tidspunkt.
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analysera data med tidsintervall</h2></div>
+        <hr/>
+        <div>
+            <p>Ange om du vill ber&auml;kna v&auml;rden f&ouml;r dina sp&aring;r genom att anv&auml;nda tidsintervall som segmenterar dina indata f&ouml;r analys. Om du anv&auml;nder tidsintervall m&aring;ste du st&auml;lla in tidsintervallet som du vill anv&auml;nda och eventuellt ocks&aring; referenstiden. Om du inte st&auml;ller in en referenstid anv&auml;nds 1 jan 1970. 
+            </p>
+            <p>Om du till exempel st&auml;ller in tidsgr&auml;nsen till 1 dag, med start kl. 9:00 den 1 januari 1990, kommer varje sp&aring;r att kortas ned kl. 9:00 varje dag och analyseras inom det segmentet. 
+            </p>
+            <p>Att anv&auml;nda tidsintervaller &auml;r ett enkelt s&auml;tt att snabba p&aring; ber&auml;kningstiden, eftersom det snabbt skapar mindre sp&aring;r f&ouml;r analys. Om det verkar vettigt att dela med &aring;terkommande tidsintervall rekommenderas det f&ouml;r behandling av big data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p> Namnet p&aring; lagret som ska skapas.  Om du skriver till en ArcGIS Data Store, sparas dina resultat i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Om du skriver till en big data-fildelning, lagras dina resultat i big data-fildelningen och l&auml;ggs till i dess manifest. Det l&auml;ggs inte till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns misslyckas verktyget.
+            </p>
+            <p>N&auml;r du skriver till   ArcGIS Data Store (relationellt eller rumstempor&auml;rt Big Data-datalager) med listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

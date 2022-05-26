@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/zh-cn/EnrichFromMultiVariableGrid",{choosePointLyrLabel:"\u9009\u62e9\u8981\u4e30\u5bcc\u7684\u70b9\u8981\u7d20",chooseMVgridLyrLabel:"\u9009\u62e9\u4e30\u5bcc\u64cd\u4f5c\u8981\u4f7f\u7528\u7684\u591a\u53d8\u91cf\u683c\u7f51",chooseVariables:"\u9009\u62e9\u8981\u6dfb\u52a0\u7684\u53d8\u91cf",outputLayerName:"\u6765\u81ea ${gridLayer} \u7684\u5df2\u4e30\u5bcc ${inputFeatures}",itemDescription:"\u901a\u8fc7\u5bf9 ${inputFeatures} \u8fd0\u884c\u201c\u4ece\u591a\u53d8\u91cf\u683c\u7f51\u4e30\u5bcc\u201d\u89e3\u51b3\u65b9\u6848\u751f\u6210\u7684\u8981\u7d20\u56fe\u5c42\u3002",
+itemTags:"\u5206\u6790\u7ed3\u679c\uff0c\u4ece\u591a\u53d8\u91cf\u683c\u7f51\u4e30\u5bcc\uff0c${inputFeatures}\uff0c${gridLayer}",itemSnippet:"\u901a\u8fc7\u201c\u4ece\u591a\u53d8\u91cf\u683c\u7f51\u4e30\u5bcc\u201d\u751f\u6210\u7684\u8981\u7d20\u56fe\u5c42\u3002"});

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Beräkna densitet</h2><p/>
+        <h2><img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" alt="Ber&auml;kna densitet"></h2>
+        <hr/>
+    <p>Med verktyget Ber&auml;kna densitet kan du skapa en densitetskarta av punktgeoobjekt genom att sprida ut k&auml;nda antal av n&aring;got fenomen (som representeras som attribut f&ouml;r punkterna) &ouml;ver kartan. Resultatet blir ett lager med omr&aring;den klassificerade fr&aring;n l&auml;gsta till h&ouml;gsta densitet.   
+
+    </p>
+    <p>F&ouml;r punktdata b&ouml;r varje punkt representera platsen f&ouml;r en h&auml;ndelse eller incident, medan resultatlagret representerar antalet incidenter per enhetsomr&aring;de. Ett h&ouml;gre densitetsv&auml;rde p&aring; en ny plats inneb&auml;r att det finns fler punkter n&auml;ra den platsen. I m&aring;nga fall kan resultatlagret tolkas som ett riskomr&aring;de f&ouml;r framtida h&auml;ndelser. Om indatapunkterna till exempel representerar platser f&ouml;r blixtnedslag, kan resultatlagret tolkas som ett riskomr&aring;de f&ouml;r framtida blixtnedslag.
+    </p>
+    <p>Andra exempel p&aring; anv&auml;ndningsomr&aring;den f&ouml;r det h&auml;r verktyget &auml;r bland annat:
+        <ul>
+            <li>Skapa kartor &ouml;ver brottslighet som hj&auml;lper polisen att f&ouml;rdela sina resurser till omr&aring;den med h&ouml;g brottslighet.
+            </li>
+            <li>Ber&auml;kna densitet f&ouml;r sjukhus inom en kommun. Resultatlagret visar omr&aring;den med h&ouml;g och l&aring;g tillg&aring;ng till sjukhus, och den h&auml;r informationen kan anv&auml;ndas f&ouml;r att avg&ouml;ra var nya sjukhus b&ouml;r byggas.
+            </li>
+            <li>Identifiera omr&aring;den d&auml;r risken f&ouml;r skogsbr&auml;nder &auml;r stor baserat p&aring; platsen f&ouml;r tidigare skogsbr&auml;nder.
+            </li>
+            <li>Hitta orter som ligger l&aring;ngt fr&aring;n st&ouml;rre motorv&auml;gar f&ouml;r att kunna planera var nya v&auml;gar b&ouml;r byggas.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Välj ett punktlager som densiteten ska beräknas från</h2></div>
+        <hr/>
+        <div>
+            <p>Det punktlager p&aring; vilket densiteten ska ber&auml;knas.
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager fr&aring;n kartan kan du v&auml;lja  <b>V&auml;lj analyslager</b> l&auml;ngst ned i listrutan f&ouml;r att bl&auml;ddra till ditt inneh&aring;ll efter ett big data-fildelningsdataset eller geoobjektlager.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Välj ett eller flera fält att beräkna densitet från (valfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Ange ett eller flera f&auml;lt som visar antalet incidenter p&aring; respektive plats. Om du till exempel har punkter som representerar st&auml;der, kan du anv&auml;nda ett f&auml;lt som representerar befolkningen i staden som ett antalsf&auml;lt. D&aring; r&auml;knar det resulterande befolkningst&auml;thetslagret med st&ouml;rre befolkningst&auml;thet n&auml;ra st&auml;der med st&ouml;rre befolkning.
+            </p>
+            <p>Densiteten f&ouml;r antalet punkter ber&auml;knas alltid. Om inga f&auml;lt v&auml;ljs, anses varje plats representera ett enda antal.
+            </p>
+        </div>
+    </div>
+    <div id="binType">
+        <div><h2>Välj en lagerplatsform</h2></div>
+        <hr/>
+        <div>
+            <p>Formen p&aring; klasserna som punkterna aggregeras till och som anv&auml;nds f&ouml;r ber&auml;kning av densiteten.
+            </p>
+            <p>Analyser som anv&auml;nder lagringsplatserna  <b>Kvadrat</b> eller <b>Hexagon</b> kr&auml;ver ett projicerat koordinatsystem. Du kan ange <b>Bearbetande koordinatsystem</b> i <b>Analysmilj&ouml;</b>. Om ditt bearbetande koordinatsystem inte &auml;r inst&auml;llt som ett projicerat koordinatsystem, blir du uppmanad att st&auml;lla in det n&auml;r du anv&auml;nder <b>K&ouml;r analys</b> .
+            </p>
+        </div>
+    </div>
+    <div id="binSizing">
+        <div><h2>Välj lagerplatsstorlek för aggregering</h2></div>
+        <hr/>
+        <div>
+            <p>Storleken p&aring; de genererade klasserna. F&ouml;r en kvadratisk lagringsplats motsvarar storleken kvadratens h&ouml;jd. F&ouml;r en hexagon motsvarar storleken hexagonens h&ouml;jd (fr&aring;n parallella sidor).
+            </p>
+        </div>
+    </div>
+    <div id="weight">
+        <div><h2>Välj densitetsviktning att tillämpa</h2></div>
+        <hr/>
+        <div>
+            <p>Vilken typ av viktning som till&auml;mpas p&aring; densitetsber&auml;kningen. Det finns tv&aring; alternativ:
+                <ul>
+                    <li> <b>Enhetlig</b> &ndash; Ber&auml;knar magnituden per omr&aring;de.
+                    </li>
+                    <li> <b>K&auml;rna</b> &ndash; Till&auml;mpar en k&auml;rnfunktion f&ouml;r att passa in en j&auml;mnt avsmalnande yta till varje punkt.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Välj närområdets storlek</h2></div>
+        <hr/>
+        <div>
+            <p>Storleken p&aring; omr&aring;det som anv&auml;nds f&ouml;r att ber&auml;kna densiteten. N&auml;romr&aring;dets storlek m&aring;ste vara st&ouml;rre &auml;n lagerplatsstorleken.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Välj utdataenheter för densitet</h2></div>
+        <hr/>
+        <div>
+            <p>&Ouml;nskade utdataenheter f&ouml;r densitetsv&auml;rdena. Som standard &auml;r detta inst&auml;llt p&aring; kvadratkilometer eller kvadratmiles beroende p&aring; vilka standardenheter som anges i din profil. Om densitetsv&auml;rdena &auml;r mycket sm&aring; kan du &ouml;ka storleken f&ouml;r omr&aring;desenheterna (till exempel kvadratmeter till kvadratkilometer) f&ouml;r att returnera st&ouml;rre v&auml;rden. V&auml;rdena skalanpassas bara till resultatet.  
+
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Beräkna densitet med tidssteg (valfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Om tid &auml;r aktiverat p&aring; indatapunktlagret och det &auml;r av typen tidspunkt, kan du analysera med tidsstegning. Du kan st&auml;lla in tre parametrar n&auml;r du anv&auml;nder tid:
+                <ul>
+                    <li> <b>Tidsstegsintervall</b>
+                    </li>
+                    <li> <b>Hur ofta tidssteget ska upprepas</b>
+                    </li>
+                    <li> <b>Tid som anv&auml;nds till att justera tidssteg till</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Om du till exempel har data som representerar ett &aring;rs tid och du vill analysera dem i veckovisa steg, st&auml;ller du in  <b>Tidsstegsintervall</b> p&aring; <code>1 vecka</code>. 
+            </p>
+            <p>Om du till exempel har data som representerar ett &aring;rs tid och du vill analysera dem med hj&auml;lp av den f&ouml;rsta veckan i m&aring;naden, st&auml;ller du in  <b>Tidsstegsintervall</b> p&aring; <code>1 vecka</code>, <b>Hur ofta tidssteget ska upprepas</b> p&aring; <code>1 m&aring;nad</code> och <b>Tid som anv&auml;nds till att justera tidssteg till</b> p&aring; <code>1 januari, kl. 00:00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Tidsstegsintervall</h2></div>
+        <hr/>
+        <div>
+            <p>Det tidsintervall som anv&auml;nds f&ouml;r att generera tidssteg.  <b>Tidsstegsintervall</b> kan anv&auml;ndas var f&ouml;r sig eller med parametern <b>Hur ofta tidssteget ska upprepas</b> eller <b>Tid som anv&auml;nds till att justera tidssteg till</b>.
+            </p>
+            <p>Om du till exempel vill skapa tidssteg som intr&auml;ffar varje m&aring;ndag fr&aring;n 09:00 till 10:00, st&auml;ller du in  <b>Tidsstegsintervall</b> p&aring; <code>1 timme</code>, <b>Hur ofta tidssteget ska upprepas</b> p&aring; <code>1 vecka</code> och <b>Tid som anv&auml;nds till att justera tidssteg till</b> p&aring; <code>9:00:00 p&aring; en m&aring;ndag</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Hur ofta tidssteget ska upprepas</h2></div>
+        <hr/>
+        <div>
+            <p> Det steg som anv&auml;nds f&ouml;r att ber&auml;kna ett tidssteg. <b>Hur ofta tidssteget ska upprepas</b> kan anv&auml;ndas var f&ouml;r sig, med <b>Tidsstegsintervall</b>, med <b>Referenstid</b> eller med b&aring;de <b>Tidsstegsintervall</b> och <b>Tid som anv&auml;nds till att justera tidssteg till</b>.
+            </p>
+            <p> Om du till exempel vill skapa tidssteg som intr&auml;ffar varje m&aring;ndag fr&aring;n 09:00 till 10:00, st&auml;ller du in <b>Tidsstegsintervall</b> p&aring; <code>1 timme</code>, <b>Hur ofta tidssteget ska upprepas</b> p&aring; <code>1 vecka</code> och <b>Tid som anv&auml;nds till att justera tidssteg till</b> p&aring; <code>9:00:00 p&aring; en m&aring;ndag</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Tid som används till att justera tidssteg till</h2></div>
+        <hr/>
+        <div>
+            <p>Datum och tid som anv&auml;nds f&ouml;r att justera tidsdelar. Tidssteg startar vid och forts&auml;tter bak&aring;t fr&aring;n den h&auml;r tiden. Om ingen referenstid v&auml;ljs justeras tidssteg mot 1 januari 1970. 
+            </p>
+            <p> Om du till exempel vill skapa tidssteg som intr&auml;ffar varje m&aring;ndag fr&aring;n 09:00 till 10:00, st&auml;ller du in <b>Tidsstegsintervall</b> p&aring; <code>1 timme</code>, <b>Hur ofta tidssteget ska upprepas</b> p&aring; <code>1 vecka</code> och <b>Tid som anv&auml;nds till att justera tidssteg till</b> p&aring; <code>9:00:00 p&aring; en m&aring;ndag</code>.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r en tillf&auml;llig parameter f&ouml;r f&ouml;rhandsversionen f&ouml;r att st&auml;lla in den geografiska referensen f&ouml;r bearbetning. M&aring;nga big data-verktyg kr&auml;ver att ett projicerat koordinatsystem anv&auml;nds som geografisk referens f&ouml;r bearbetning. Som standard anv&auml;nder verktyget indatakoordinatsystemet men misslyckas om det &auml;r ett geografiskt koordinatsystem. Ange WKID f&ouml;r att st&auml;lla in ett projicerat koordinatsystem. Till exempel anges  <b>Web Mercator</b> som <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Välj datalager</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-resultat sparas i ett datalager och visas som ett geoobjektlager i  Portal for ArcGIS. I de flesta fall ska resultat sparas i det rumstemporala datalagret och det &auml;r standardinst&auml;llningen. I vissa fall &auml;r det ett bra alternativ att spara resultat i det relationella datalagret. F&ouml;ljande &auml;r anledningar till varf&ouml;r du kanske vill spara resultat i det relationella datalagret: 
+                <ul>
+                    <li>Du kan anv&auml;nda resultaten i portal-till-portal-samarbeten.
+                    </li>
+                    <li>Du kan aktivera synkroniseringsfunktioner med dina resultat.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du b&ouml;r inte anv&auml;nda det relationella datalagret om du f&ouml;rv&auml;ntar dig att dina GeoAnalytics-resultat kommer att &ouml;ka och du beh&ouml;ver anv&auml;nda det rumstemporala big data-lagrets funktioner till att hantera stora m&auml;ngder data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p> Namnet p&aring; lagret som ska skapas.  Om du skriver till en ArcGIS Data Store, sparas dina resultat i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Om du skriver till en big data-fildelning, lagras dina resultat i big data-fildelningen och l&auml;ggs till i dess manifest. Det l&auml;ggs inte till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns misslyckas verktyget.
+            </p>
+            <p>N&auml;r du skriver till   ArcGIS Data Store (relationellt eller rumstempor&auml;rt Big Data-datalager) med listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

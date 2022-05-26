@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Décrire le jeu de données</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="Diagramme de processus D&eacute;crire le jeu de donn&eacute;es"></h2>
+        <hr/>
+    <p>L&rsquo;outil D&eacute;crire le jeu de donn&eacute;es permet un examen plus d&eacute;taill&eacute; de votre jeu de donn&eacute;es. Avant de lancer l&rsquo;analyse sur de volumes de donn&eacute;es importants, utilisez cet outil pour d&eacute;terminer la nature et l&rsquo;emplacement de vos donn&eacute;es en entr&eacute;e. Par d&eacute;faut, les r&eacute;sultats constituent une cha&icirc;ne JSON mettant en &eacute;vidences les descripteurs cl&eacute;s de votre couche en entr&eacute;e et une table d&eacute;taillant les statistiques de synth&egrave;se de chaque champ. 
+    </p>
+    <p>Vous pouvez aussi cr&eacute;er des couches d&rsquo;entit&eacute;s en sortie suppl&eacute;mentaires pour d&eacute;crire davantage vos donn&eacute;es. Les options sont un exemple de couche ou une couche de l&rsquo;&eacute;tendue. Vous pouvez choisir de produire l&rsquo;une ou l&rsquo;autre ou encore les deux.
+    </p>
+    <p>Consid&eacute;rons, par exemple, que vous d&eacute;tenez un partage de fichiers Big Data comportant 15&nbsp;jeux de donn&eacute;es. Chaque jeu de donn&eacute;es comporte 10&nbsp;millions d&rsquo;entit&eacute;s de zone repr&eacute;sentant les immeubles et les maisons des diff&eacute;rentes r&eacute;gions de votre pays. Vous avez pour mission d&rsquo;analyser la r&eacute;gion&nbsp;C, mais vous ignorez quel jeu de donn&eacute;es contient ces entit&eacute;s. Pour identifier le jeu de donn&eacute;es &agrave; utiliser, ex&eacute;cutez l&rsquo;outil D&eacute;crire le jeu de donn&eacute;es et choisissez de cr&eacute;er une couche de l&rsquo;&eacute;tendue afin de rechercher les jeux de donn&eacute;es figurant dans la r&eacute;gion d&rsquo;&eacute;tude.
+    </p>
+    <p>Autre exemple, imaginons que vous deviez effectuer un processus d&rsquo;analyse sur un gros volume de donn&eacute;es. Vous voulez essayer le processus, mais le traitement de la totalit&eacute; du jeu de donn&eacute;es peut exiger plusieurs heures voire plusieurs jours. Au lieu de consacrer du temps et des ressources &agrave; l&rsquo;analyse compl&egrave;te, cr&eacute;ez un exemple de couche pour tester efficacement le processus complet.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choisir le jeu de données à décrire</h2></div>
+        <hr/>
+        <div>
+            <p>Couche contenant les entit&eacute;s tabulaires, surfaciques, lin&eacute;aires ou ponctuelle &agrave; d&eacute;crire, synth&eacute;tiser ou utiliser &agrave; titre d&rsquo;exemple.
+            </p>
+            <p>Outre le fait de choisir une couche de votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante pour parcourir votre contenu et rechercher une couche d&rsquo;entit&eacute;s ou un jeu de donn&eacute;es de partage de fichiers Big Data.
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>Comprendre votre jeu de données en créant un (facultatif)</h2></div>
+        <hr/>
+        <div>
+            <p>Couches descriptives suppl&eacute;mentaires en sortie visant &agrave; am&eacute;liorer la compr&eacute;hension de vos donn&eacute;es Big Data. Vous pouvez choisir de produire en sortie aucune, une ou deux des couches suivantes&nbsp;:
+            </p>
+            <ul>
+                <li> <b>Extent layer (Couche de l&rsquo;&eacute;tendue)</b>&nbsp;: cr&eacute;e une entit&eacute; de zone repr&eacute;sentant l&rsquo;&eacute;tendue de vos entit&eacute;s en entr&eacute;e ou la zone d&rsquo;int&eacute;r&ecirc;t.
+                </li>
+                <li> <b>Sample layer (Exemple de couche)</b>&nbsp;: cr&eacute;e une couche d&rsquo;un sous-ensemble contenant la quantit&eacute; sp&eacute;cifi&eacute;e d&rsquo;entit&eacute;s en entr&eacute;e de votre jeu de donn&eacute;es ou de votre zone d&rsquo;int&eacute;r&ecirc;t.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>Exemple de couche</h2></div>
+        <hr/>
+        <div>
+            <p>Couche en sortie contenant un sous-ensemble des entit&eacute;s issues de votre couche en entr&eacute;e. Si  <b>Sample layer (Exemple de couche)</b> est s&eacute;lectionn&eacute;, vous &ecirc;tes en mesure de sp&eacute;cifier le nombre d&rsquo;entit&eacute;s &agrave; renvoyer dans l&rsquo;exemple de couche. Par d&eacute;faut, 100&nbsp;entit&eacute;s sont renvoy&eacute;es &agrave; titre d&rsquo;exemples dans la couche en sortie.
+            </p>
+            <p>La valeur doit &ecirc;tre sup&eacute;rieure &agrave; z&eacute;ro. Si vous indiquez un nombre sup&eacute;rieur que le nombre total des entit&eacute;s, toutes les entit&eacute;s sont renvoy&eacute;es.
+            </p>
+            <p>Si  <b>Use current map extent (Utiliser l&rsquo;&eacute;tendue courante de la carte)</b> est s&eacute;lectionn&eacute;, l&rsquo;exemple de couche comportera des entit&eacute;s provenant de l&rsquo;&eacute;tendue de la carte.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Couche de l’étendue</h2></div>
+        <hr/>
+        <div>
+            <p>G&eacute;n&eacute;rez une couche d&rsquo;entit&eacute;s contenant une seule &eacute;tendue qui repr&eacute;sente l&rsquo;&eacute;tendue des entit&eacute;s en entr&eacute;e en s&eacute;lectionnant le bouton  <b>Extent layer (Couche de l&rsquo;&eacute;tendue)</b>. Cette propri&eacute;t&eacute; est s&eacute;lectionn&eacute;e par d&eacute;faut.
+            </p>
+            <p>Si  <b>Use current map extent (Utiliser l&rsquo;&eacute;tendue courante de la carte)</b> est s&eacute;lectionn&eacute;, la couche de l&rsquo;&eacute;tendue repr&eacute;sentera l&rsquo;&eacute;tendue visible de la carte.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la couche &agrave; cr&eacute;er. Si vous &eacute;crivez sur une instance ArcGIS Data Store, les r&eacute;sultats seront enregistr&eacute;s dans  <b>My Content (Mon contenu)</b> et ajout&eacute;s &agrave; la carte. Si vous &eacute;crivez sur un partage de fichiers Big Data, les r&eacute;sultats seront enregistr&eacute;s dans le partage de fichiers Big Data et ajout&eacute;s &agrave; son manifeste. Il ne sera pas ajout&eacute; &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, l'outil &eacute;choue.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

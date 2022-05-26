@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Tìm Trọng tâm</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="T&igrave;m Trọng t&acirc;m"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y hoạt động với một lớp c&aacute;c đối tượng đa điểm, đường hoặc v&ugrave;ng để c&oacute; thể x&aacute;c định vị tr&iacute; trung t&acirc;m của từng đối tượng.
+    </p>
+    <p>Nếu  <b>Sử dụng phạm vi bản đồ hiện tại</b> được chọn, th&igrave; chỉ c&aacute;c đối tượng của lớp đa điểm, đường hoặc v&ugrave;ng đầu v&agrave;o nh&igrave;n thấy được trong phạm vi bản đồ hiện tại mới được ph&acirc;n t&iacute;ch. Nếu bỏ chọn, tất cả đối tượng trong lớp đầu v&agrave;o sẽ được ph&acirc;n t&iacute;ch, ngay cả khi ch&uacute;ng ngo&agrave;i phạm vi bản đồ hiện tại.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Chọn lớp chứa các đối tượng sẽ được dùng để tạo trọng tâm</h2></div>
+        <hr/>
+        <div>
+            <p> Lớp đa điểm, đường hoặc v&ugrave;ng sẽ được d&ugrave;ng để x&aacute;c định trọng t&acirc;m.
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp từ bản đồ của bạn, bạn c&oacute; thể chọn  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới c&ugrave;ng trong danh s&aacute;ch xổ xuống. T&ugrave;y chọn n&agrave;y mở ra một thư viện, tại đ&oacute; bạn c&oacute; thể duyệt v&agrave; chọn c&aacute;c bộ dữ liệu từ nhiều nguồn kh&aacute;c nhau để sử dụng trong ph&acirc;n t&iacute;ch của m&igrave;nh. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>Hiển thị cho tôi địa điểm đầu ra</h2></div>
+        <hr/>
+        <div>
+            <p> Khi <b>Ở trọng t&acirc;m thực</b> được chọn (mặc định), gi&aacute; trị đầu ra sẽ trả về vị tr&iacute; thực của trọng t&acirc;m cho từng đối tượng đầu v&agrave;o. Trọng t&acirc;m sẽ được định vị như sau:
+                <ul>
+                    <li>Đối tượng đa điểm &ndash; Trọng t&acirc;m đầu ra sẽ được x&aacute;c định bằng c&aacute;c tọa độ x v&agrave; y trung b&igrave;nh của tất cả c&aacute;c điểm trong đối tượng đa điểm.
+                    </li>
+                    <li>Đối tượng đường &ndash; Trọng t&acirc;m đầu ra sẽ được x&aacute;c định bằng c&aacute;c tọa độ x v&agrave; y trung b&igrave;nh c&oacute; trọng số của c&aacute;c trung điểm của tất cả c&aacute;c ph&acirc;n đoạn đường trong đối tượng đường. Trọng số được x&aacute;c định dựa tr&ecirc;n chiều d&agrave;i của ph&acirc;n đoạn.
+                    </li>
+                    <li>Đối tượng v&ugrave;ng &ndash; Trọng t&acirc;m đầu ra sẽ được x&aacute;c định ở t&acirc;m của v&ugrave;ng đ&oacute;.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Khi  <b>nằm trong đối tượng đầu v&agrave;o</b> được chọn, c&aacute;c đối tượng điểm đầu ra sẽ nằm trong từng đối tượng đầu v&agrave;o hoặc được đối tượng đ&oacute; chứa. C&aacute;c đối tượng điểm tạo ra sẽ xuất hiện như sau:
+                <ul>
+                    <li>Đối tượng đa điểm &ndash; Trọng t&acirc;m đầu ra sẽ tr&ugrave;ng với một trong c&aacute;c điểm trong nh&oacute;m đa điểm.
+                    </li>
+                    <li>Đối tượng đường &ndash; Trọng t&acirc;m đầu ra sẽ nằm tr&ecirc;n đường đ&oacute;. Nếu l&agrave; đường cong, th&igrave; đầu ra sẽ l&agrave; trung điểm của đường. 
+                    </li>
+                    <li>Đối tượng v&ugrave;ng &ndash; Điểm đầu ra sẽ nằm trong đối tượng v&ugrave;ng đ&oacute;.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&acirc;y l&agrave; t&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu t&ecirc;n lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Sử dụng chức năng  <b>Lưu kết quả trong</b> menu thả xuống, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong phần <b>Nội dung của T&ocirc;i</b> nơi sẽ lưu trữ kết quả của bạn.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

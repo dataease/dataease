@@ -1,0 +1,3 @@
+//>>built
+define("dojox/editor/plugins/nls/sv/FindReplace",{findLabel:"S\u00f6k: ",findTooltip:"Skriv s\u00f6ktexten",replaceLabel:"Ers\u00e4tt med:",replaceTooltip:"Skriv ers\u00e4ttningstexten",findReplace:"S\u00f6k och ers\u00e4tt",matchCase:"Matcha gemener/versaler",matchCaseTooltip:"Matcha gemener/versaler",backwards:"Bak\u00e5t",backwardsTooltip:"S\u00f6k bak\u00e5t efter text",replaceAllButton:"Ers\u00e4tt alla",replaceAllButtonTooltip:"Ers\u00e4tt all text",findButton:"S\u00f6k",findButtonTooltip:"S\u00f6k efter texten",
+replaceButton:"Er\u00e4tt",replaceButtonTooltip:"Ers\u00e4tt texten",replaceDialogText:"${0} f\u00f6rekomster har ersatts.",eofDialogText:"Sista f\u00f6rekomsten ${0}",eofDialogTextFind:"hittades",eofDialogTextReplace:"ersattes"});

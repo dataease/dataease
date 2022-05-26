@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Rekonstruuj ścieżki</h2><p/>
+        <h2><img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" alt="Rekonstruuj ścieżki"></h2>
+        <hr/>
+    <p> To narzędzie działa z zawierającą dane czasowe warstwą obiekt&oacute;w punktowych lub powierzchniowych reprezentujących <code>moment</code> w czasie. Najpierw narzędzie ustala przy użyciu identyfikatora to, kt&oacute;re obiekty należą do ścieżki. Ścieżki są porządkowane sekwencyjnie przy użyciu czasu w każdej lokalizacji i przekształcane w linię lub obszar reprezentujący ścieżkę przemieszczania się z biegiem czasu. Opcjonalnie dane wejściowe mogą być buforowane według pola, co spowoduje utworzenie obszaru w każdej lokalizacji. Te buforowane punkty lub obszary wejściowe są następnie sekwencyjnie łączone w celu utworzenia ścieżki w postaci obszaru, kt&oacute;rego szerokość reprezentuje interesujący użytkownika atrybut. Wynikowe ścieżki mają czas rozpoczęcia i czas zakończenia, kt&oacute;re czasowo reprezentują pierwszy i ostatni obiekt ścieżki. Podczas tworzenia ścieżek statystyki dotyczące obiekt&oacute;w wejściowych są obliczane i przypisywane do ścieżki wynikowej. Najbardziej podstawowym obliczeniem statystycznym jest ustalenie liczby punkt&oacute;w przypadających na dany obszar, jednak można obliczyć r&oacute;wnież inne statystyki.
+    </p>
+    <p>Obiekty na warstwach z danymi czasowymi mogą być reprezentowane na jeden z dw&oacute;ch sposob&oacute;w:
+        <ul>
+            <li>Moment &mdash; jeden moment czasu
+            </li>
+            <li>Interwał &mdash; czas rozpoczęcia i zakończenia
+            </li>
+        </ul>
+        
+    </p>
+    <p>Przyjmijmy na przykład, że dysponujesz pomiarami GPS huragan&oacute;w wykonywanymi co 10 minut. W ramach każdego pomiaru GPS rejestrowana jest nazwa huraganu, jego lokalizacja, czas rejestracji i prędkość wiatru. Przy użyciu tych informacji można utworzyć ścieżkę każdego huraganu, kt&oacute;ry będzie identyfikowany za pomocą nazwy. Dla każdego huraganu zostanie wygenerowana ścieżka.  Dodatkowo można będzie wykonać obliczenia statystyczne, takie jaki średnia, maksymalna i minimalna prędkość wiatru dla każdego huraganu lub liczba pomiar&oacute;w w ramach każdej ścieżki.
+    </p>
+    <p>Używając tego samego przykładu, można buforować ścieżki według prędkości wiatru. Każdy pomiar będzie buforowany według pola prędkości wiatru w danej lokalizacji, a buforowane obszary zostaną połączone, tworząc obszarową reprezentację ścieżki, zawierającą także informacje o zmianach prędkości wiatru w trakcie trwania huraganu.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Wybierz obiekty do rekonstrukcji ścieżek</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa punktowa lub powierzchniowa, kt&oacute;ra zostanie zrekonstruowana do postaci ścieżki. Warstwa wejściowa musi zawierać dane czasowe z obiektami reprezentującymi moment w czasie. Ta warstwa musi korzystać z układu wsp&oacute;łrzędnych odwzorowanych lub odniesienie przestrzenne przetwarzania musi zostać skonfigurowane w układzie wsp&oacute;łrzędnych odwzorowanych w oknie  <b>Środowiska analizy</b>, jeśli stosowany jest bufor.
+            </p>
+            <p>Opr&oacute;cz wybrania warstwy z mapy, można wybrać opcję  <b>Wybierz warstwę analizy</b> znajdującą się w dolnej części listy rozwijanej, aby przejść do zasob&oacute;w zestawu danych udostępnionych plik&oacute;w dużych zbior&oacute;w danych lub warstwy obiektowej.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Wybierz jedno lub więcej pól do identyfikacji ścieżek</h2></div>
+        <hr/>
+        <div>
+            <p>Pola reprezentujące identyfikator ścieżki. 
+            </p>
+            <p>Na przykład podczas rekonstruowania ścieżek huragan&oacute;w jako pola ścieżki można użyć nazwy huraganu.
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Wybierz metodę używaną do rekonstrukcji ścieżek</h2></div>
+        <hr/>
+        <div>
+            <p>Metody używane do łączenia ścieżek i stosowania bufora (jeśli jest to możliwe). Używając metody  <b>Płaskie</b>, można szybciej obliczyć wyniki, ale ścieżki nie zostaną zawinięte wok&oacute;ł międzynarodowej linii zmiany daty, a podczas buforowania nie zostanie wzięty pod uwagę rzeczywisty kształt Ziemi. Metoda <b>Geodezyjne</b> zawinie w razie konieczności ścieżki wok&oacute;ł międzynarodowej linii zmiany daty i zastosuje rzeczywisty kształt Ziemi w odniesieniu do bufora geodezyjnego.
+            </p>
+        </div>
+    </div>
+    <div id="bufferField">
+        <div><h2>Utwórz wyrażenie do buforowania obiektów wejściowych (opcjonalnie)</h2></div>
+        <hr/>
+        <div>
+            <p>R&oacute;wnanie używane do obliczania odległości wok&oacute;ł obiekt&oacute;w wejściowych na potrzeby buforowania. To r&oacute;wnanie można wygenerować przy użyciu kalkulatora bufora i podstawowych operacji, takich jak dodawanie, odejmowanie, mnożenie i dzielenie. Wartości są obliczane przy użyciu układu wsp&oacute;łrzędnych analizy. Ta warstwa musi korzystać z układu wsp&oacute;łrzędnych odwzorowanych lub odniesienie przestrzenne przetwarzania musi zostać skonfigurowane w układzie wsp&oacute;łrzędnych odwzorowanych w oknie  <b>Środowiska analizy</b>, jeśli stosowany jest bufor.
+            </p>
+            <p>R&oacute;wnanie w postaci  <code>$feature.windspeed * 1000</code> spowoduje zastosowanie wartości bufora r&oacute;wnej 1000 pomnożonej przez wartość w polu <i>windspeed</i>. W kalkulatorze bufora można użyć więcej niż jednego pola.
+            </p>
+            <p> Można także określić wyrażenie zawierające dane o ścieżkach. Na przykład można obliczyć sumę wartości w polu <i>windspeed</i> dla bieżącego obiektu i dw&oacute;ch wcześniejszych obiekt&oacute;w za pomocą wyrażenia w postaci <code>$track.field(windspeed).history(-3)</code>. Suma bieżącej wartości pola <i>windspeed</i> i dw&oacute;ch wcześniejszych pomiar&oacute;w może być obliczona i buforowana dla każdej lokalizacji.
+            </p>
+        </div>
+    </div>
+    <div id="timeSplit">
+        <div><h2>Wybierz okno czasowe do dzielenia ścieżek (opcjonalnie)</h2></div>
+        <hr/>
+        <div>
+            <p>Czas używany do dzielenia ścieżek. Jeśli okres między wejściowymi punktami lub obszarami jest dłuższy niż okno czasowe, zostaną one podzielone na r&oacute;żne ścieżki.
+            </p>
+            <p>Jeśli zostanie określone okno czasowe i podział odległości, ścieżki będą dzielone przy spełnieniu jednego lub obu warunk&oacute;w. 
+            </p>
+            <p>Wyobraź sobie, że istnieją obiekty punktowe reprezentujące loty, w przypadku kt&oacute;rych polem ścieżki jest identyfikator samolotu. Samolot może wykonać wiele lot&oacute;w, kt&oacute;re będą reprezentowane przez jedną ścieżkę.  Jeśli wiesz, że między lotami występują 1-godzinne przerwy, możesz użyć okna czasowego o wartości  <code>1 godzina</code>, dzięki czemu każdy lot będzie miał przypisaną własną ścieżkę.
+            </p>
+        </div>
+    </div>
+    <div id="splitTracks">
+        <div><h2>Podziel ścieżki (opcjonalnie)</h2></div>
+        <hr/>
+        <div>
+            <p>Ścieżki można dzielić trzema r&oacute;żnymi metodami. Można nie dzielić ścieżek w og&oacute;le albo podzielić je z użyciem wszystkich bądź tylko niekt&oacute;rych metod. 
+            </p>
+            <p>Istnieją następujące sposoby wykonania podziału:
+                <ul>
+                    <li> <b>Na podstawie odległości między elementami wejściowymi</b> &mdash; jeśli odległość między wejściowymi punktami lub obszarami jest większa niż podana, zostaną one podzielone na r&oacute;żne ścieżki. Jeśli na przykład zostanie podana odległość wynosząca 10 kilometr&oacute;w, w&oacute;wczas występujące sekwencyjnie punkty odległe od siebie o więcej niż 10&nbsp;km będą należeć do osobnych ścieżek.
+                    </li>
+                    <li> <b>Na podstawie czasu między elementami wejściowymi</b> &mdash; jeśli przedział czasu między wejściowymi punktami lub obszarami jest dłuższy niż podane okno czasowe, zostaną one podzielone na osobne ścieżki. Mogą na przykład istnieć obiekty punktowe reprezentujące loty, w przypadku kt&oacute;rych polem ścieżki jest identyfikator samolotu. Samolot może wykonać wiele lot&oacute;w, kt&oacute;re będą reprezentowane przez jedną ścieżkę.  Jeśli wiesz, że między lotami występują 1-godzinne przerwy, możesz użyć okna czasowego o wartości <code>1 godzina</code>, dzięki czemu każdy lot będzie miał przypisaną własną ścieżkę.
+                    </li>
+                    <li> <b>W zdefiniowanych przedziałach czasu</b> &mdash; podział w regularnych odstępach czasu, określony przez przedział czasu i czas referencyjny. Jeśli czas referencyjny nie zostanie podany, przyjęty zostanie 1&nbsp;stycznia 1970&nbsp;r. Jeśli na przykład podany zostanie 1&nbsp;rok z czasem referencyjnym 2&nbsp;lutego 1990 roku, godz. 10:00, ścieżki będą dzielone 2&nbsp;lutego 1990 roku o godzinie 10:00, 2&nbsp;lutego 1991 roku o godzinie 10:00 itd. w odstępach jednorocznych.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>W przypadku określenia wielu opcji podziału ścieżki będą dzielone przy spełnieniu jednego lub większej liczby warunk&oacute;w. 
+            </p>
+        </div>
+    </div>
+    <div id="distanceSplit">
+        <div><h2>Wybierz odległość do dzielenia ścieżek (opcjonalnie)</h2></div>
+        <hr/>
+        <div>
+            <p>Odległość używana do dzielenia ścieżek. Jeśli odległość między wejściowymi punktami lub obszarami jest większa niż podział odległości, zostaną one podzielone na r&oacute;żne ścieżki.
+            </p>
+            <p>Jeśli zostanie określone okno czasowe i podział odległości, ścieżki będą dzielone przy spełnieniu jednego lub obu warunk&oacute;w. 
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Dodaj statystyki (opcjonalnie)</h2></div>
+        <hr/>
+        <div>
+            <p> Można obliczyć statystyki dla zsumowanych obiekt&oacute;w.W polach liczbowych można obliczyć następujące wartości:
+                <ul>
+                    <li>Liczba &mdash; zlicza wartości inne niż null.Może być używane w polach liczbowych lub znakowych. Liczba dla wartości [null, 0, 2] wynosi 2.
+                    </li>
+                    <li>Suma &mdash; suma wartości liczbowych w polu. Suma dla wartości [null, null, 3] wynosi 3.
+                    </li>
+                    <li>Średnia &mdash; średnia wartości liczbowych. Średnia dla wartości [0, 2, null] wynosi 1.
+                    </li>
+                    <li>Min &mdash; wartość minimalna w polu liczbowym. Wartość minimalna dla wartości [0, 2, null] wynosi 0. 
+                    </li>
+                    <li>Maks &mdash; wartość maksymalna w polu liczbowym. Wartość maksymalna dla wartości [0, 2, null] wynosi 2.
+                    </li>
+                    <li>Zakres &mdash; zakres pola liczbowego. Zakres jest obliczany przez odjęcie wartości minimalnych od wartości maksymalnej. Zakres dla wartości [0, null, 1] wynosi 1. Zakres dla wartości [null, 4] wynosi 0.
+                    </li>
+                    <li>Wariancja &mdash; wariancja pola liczbowego w ścieżce. Wariancja dla wartości [1] wynosi null. Wariancja dla wartości [null, 1,0,1,1] wynosi 0,25.
+                    </li>
+                    <li>Odchylenie standardowe &mdash; odchylenie standardowe pola liczbowego. Odchylenie standardowe dla wartości [1] wynosi null. Odchylenie standardowe dla wartości [null, 1,0,1,1] wynosi 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>W polach znakowych można obliczyć następujące wartości:
+                <ul>
+                    <li>Liczba &mdash; liczba ciąg&oacute;w znakowych innych niż null.
+                    </li>
+                    <li>Dowolne &mdash; ta statystyka to losowy przykład wartości znakowej w podanym polu.
+                    </li>
+                </ul>
+                Wszystkie statystyki są obliczane na podstawie wartości niepustych. Warstwa wynikowa zawiera nowe pole dla każdego wykonanego obliczenia statystycznego. Dodać można dowolną liczbę statystyk poprzez wybranie atrybutu oraz&nbsp;właściwej operacji statystycznej. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Wybierz aplikację ArcGIS Data Store, w której zostaną zapisane wyniki</h2></div>
+        <hr/>
+        <div>
+            <p>Wyniki analiz geoprzestrzennych są przechowywane w magazynie danych i udostępniane jako warstwa obiektowa w witrynie  Portal for ArcGIS. W większości przypadk&oacute;w wyniki powinny być przechowywane w magazynie danych czasowo-przestrzennych i jest to ustawienie domyślne. W niekt&oacute;rych przypadkach dobrym rozwiązaniem jest zapisanie wynik&oacute;w w relacyjnym magazynie danych. Poniżej podano sytuacje, kt&oacute;re mogą uzasadniać przechowywanie wynik&oacute;w w relacyjnym magazynie danych: 
+                <ul>
+                    <li>Wyniki mogą być używane w ramach kooperacji między portalami.
+                    </li>
+                    <li>Została włączona możliwość synchronizacji wynik&oacute;w.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Nie należy używać relacyjnego magazynu danych, jeśli liczba wynik&oacute;w analiz geoprzestrzennych może się zwiększyć i może być konieczne zastosowanie magazynu dużych zbior&oacute;w danych czasowo-przestrzennych w celu obsłużenia dużych ilości danych.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p> Nazwa warstwy, kt&oacute;ra zostanie utworzona w oknie Moje zasoby. W przypadku zapisywania w ArcGIS Data Store wyniki będą przechowywane w obszarze  <b>Moje zasoby</b> i dodawane do mapy. W przypadku zapisywania w udostępnionym pliku dużych zbior&oacute;w danych wyniki będą przechowywane w udostępnionym pliku dużych zbior&oacute;w danych i dodawane do jego manifestu. Nie będą dodawane do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, działanie narzędzia nie powiedzie się.
+            </p>
+            <p>W przypadku zapisywania w  ArcGIS Data Store (relacyjny magazyn danych lub magazyn dużych zbior&oacute;w danych czasowo-przestrzennych) przy użyciu listy rozwijanej  <b>Zapisz wynik w</b> można określić nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

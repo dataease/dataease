@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Deteksi Insiden</h2><p/>
+        <h2><img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" alt="Deteksi Insiden"></h2>
+        <hr/>
+    <p> Alat ini bekerja dengan layer titik, garis, area, atau tabel yang diaktifkan dengan waktu yang mewakili instan dalam waktu.   Dengan menggunakan fitur yang disusun berurutan, yang disebut jalur, alat ini menentukan fitur mana yang merupakan insiden pilihan. Insiden ditentukan oleh kondisi yang Anda tentukan.
+    </p>
+    <p>Pertama, alat ini menentukan fitur mana yang dimiliki jalur dengan menggunakan satu kolom atau lebih. Menggunakan waktu di setiap fitur, jalur diurutkan secara berurutan dan kondisi insiden diterapkan. Fitur yang memenuhi kondisi insiden awal ditandai sebagai insiden. Anda secara opsional dapat menerapkan kondisi insiden akhir; jika kondisi akhir benar, fitur tidak lagi merupakan insiden.  Hasilnya akan dikembalikan dengan fitur asli&mdash;dengan kolom baru yang mewakili nama insiden&mdash;dan menunjukkan fitur mana yang memenuhi kondisi insiden. Anda dapat mengembalikan semua fitur asli atau hanya fitur yang merupakan insiden.
+    </p>
+    <p>Misalnya, katakanlah Anda memiliki pengukuran GPS badai setiap 10 menit. Setiap ukuran GPS mencatat nama, lokasi, waktu perekaman, dan kecepatan angin dari badai itu. Dengan menggunakan kolom ini, Anda dapat membuat insiden tempat pengukuran apa pun dengan kecepatan angin yang lebih besar dari 208 km/jam adalah insiden yang diberi judul  <code>Bencana</code>. Dengan tidak mengatur kondisi akhir, insiden akan berakhir jika fitur tidak lagi memenuhi kondisi awal (kecepatan angin melambat hingga kurang dari 208).
+    </p>
+    <p>Menggunakan contoh lain, anggap Anda sedang memantau konsentrasi bahan kimia di pasokan air lokal Anda menggunakan kolom bernama  <code>contaminateLevel</code>. Anda tahu bahwa tingkat yang direkomendasikan adalah kurang dari 0,01 mg/L, dan tingkat berbahaya adalah di atas 0,03 mg/L. Untuk mendeteksi insiden dengan nilai di atas 0,03 mg/L adalah insiden dan tetap merupakan insiden sampai tingkat kontaminasi kembali normal, Anda membuat insiden menggunakan kondisi awal <code>contaminateLevel &gt; 0,03</code> dan kondisi akhir <code>contaminateLevel &lt; 0,01</code>. Ini akan menandai setiap urutan dengan nilai melebihi 0,03 mg/L sampai nilai tersebut kembali ke nilai kurang dari 0,01.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pilih layer dari mana insiden akan dideteksi</h2></div>
+        <hr/>
+        <div>
+            <p>Titik, garis, area, atau tabel yang akan digunakan untuk menemukan insiden. Layer input harus diaktifkan waktu dengan fitur yang mewakili suatu instan dalam waktu, serta memiliki satu kolom atau lebih yang dapat digunakan untuk mengidentifikasi jalur.
+            </p>
+            <p>Selain memilih layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> di bawah daftar drop-down untuk menelusuri konten Anda untuk set data atau feature layer berbagi file big data.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Pilih satu atau beberapa kolom untuk mengidentifikasi jalur</h2></div>
+        <hr/>
+        <div>
+            <p>Kolom yang mewakili pengidentifikasi jalur. Anda dapat menggunakan satu kolom atau kolom ganda untuk mewakili nilai jalur unik.
+            </p>
+            <p>Contoh, jika Anda sedang merekonstruksi jalur badai, Anda dapat menggunakan nama badai sebagai kolom jalur.
+            </p>
+        </div>
+    </div>
+    <div id="startConditionExpression">
+        <div><h2>Buat kondisi ekspresi untuk menandakan awal insiden</h2></div>
+        <hr/>
+        <div>
+            <p>Tambahkan suatu kondisi menggunakan pembuat ekspresi untuk menentukan apa yang dimaksud insiden. Jika kondisi yang Anda tentukan benar, fitur tersebut adalah insiden. Jika Anda tidak menentukan kondisi akhir, insiden berakhir ketika kondisi awal tidak lagi benar.
+            </p>
+            <p>Contoh, anggap Anda ingin diberi peringatan saat jumlah kolom  <code>konsentrasi_1</code> dan <code>konsentrasi_2</code> lebih besar dari <code>konsentrasi_3</code>.   Untuk melakukan ini, terapkan kondisi <code>($feature[&quot;konsentrasi_1&quot;] +  $feature[&quot;konsentrasi_2&quot;]) &gt; $feature[&quot;konsentrasi_3&quot;])</code>.
+            </p>
+            <p>Jika Anda tertarik dengan bagaimana konsentrasi berubah seiring waktu, dan ingin diberi tahu saat  <code>konsentrasi_1</code> saat ini lebih besar dari dua pengukuran <code>konsentrasi_2</code> sebelumnya, Anda dapat menggunakan ekspresi seperti <code>$feature[&quot;konsentrasi_1&quot;] &gt; $track.field[&quot;konsentrasi_2&quot;].history(-3,-1)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="endConditionExpression">
+        <div><h2>Buat kondisi ekspresi untuk menandakan akhir insiden (opsional)</h2></div>
+        <hr/>
+        <div>
+            <p>Atau tambahkan kondisi menggunakan pembuat ekspresi untuk menentukan akhir insiden. Jika kondisi akhir yang Anda tentukan benar, fitur tersebut tidak lagi menjadi insiden. Jika Anda tidak menentukan kondisi akhir, insiden berakhir ketika kondisi awal tidak lagi benar.    
+            </p>
+            <p>Contoh, anggap Anda ingin diberi peringatan saat jumlah kolom  <code>konsentrasi_1</code> dan <code>konsentrasi_2</code> lebih besar dari <code>konsentrasi_3</code>, dan Anda ingin insiden berakhir jika <code>konsentrasi_4</code> lebih kecil dari <code>konsentrasi_1</code>. Untuk melakukan ini, terapkan kondisi awal <code>($feature[&quot;konsentrasi_1&quot;] + $feature[&quot;konsentrasi_2&quot;]) &gt; ($join[&quot;pendapatan&quot;] * .20)</code> dan kondisi akhir <code>($feature[&quot;konsentrasi_4&quot;] &lt; $feature[&quot;konsentrasi_1&quot;])</code>.
+            </p>
+            <p>Jika Anda ingin insiden berakhir saat rata-rata  <code>konsentrasi_1</code> saat ini dan empat pengukuran sebelumnya lebih besar dari pengukuran pertama, Anda dapat menggunakan ekspresi seperti <code>$track.field[&quot;konsentrasi_1&quot;].history(-5) &gt; $track.field[&quot;konsentrasi_1&quot;].history(0)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="outputMode">
+        <div><h2>Tampilkan</h2></div>
+        <hr/>
+        <div>
+            <p>Semua metode output akan melampirkan kolom ke fitur asli. Ada dua cara untuk menentukan fitur mana yang dikembalikan:
+                <ul>
+                    <li> <b>Semua fitur</b>&mdash;Ini adalah default. Semua fitur dalam input akan dikembalikan.
+                    </li>
+                    <li> <b>Hanya insiden</b>&mdash;Metode ini hanya akan mengembalikan fitur yang merupakan insiden. Setiap fitur yang tidak dianggap sebagai insiden tidak akan dikembalikan.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analisis data dengan interval waktu (opsional)</h2></div>
+        <hr/>
+        <div>
+            <p>Tentukan jika Anda ingin mendeteksi insiden menggunakan interval waktu yang akan membagi fitur input Anda untuk analisis. Jika Anda menggunakan interval waktu, Anda harus mengatur interval waktu yang ingin Anda gunakan, dan secara opsional mengatur waktu referensi. Jika Anda tidak mengatur waktu referensi, 1 Januari 1970 akan digunakan. 
+            </p>
+            <p>Contohnya, jika Anda mengatur batasan waktu menjadi 1 hari, dimulai pada 9:00 pagi tanggal 1 Januari 1990, maka setiap jalur akan dipotong pada pukul 9:00 pagi setiap hari dan dianalisis dalam segmen itu. 
+            </p>
+            <p>Menggunakan interval waktu adalah cara yang cepat untuk mempercepat waktu komputasi, karena ini membuat jalur yang lebih kecil untuk analisis dengan cepat. Jika membagi berdasarkan interval waktu yang terjadi kembali wajar bagi analisis Anda, ini disarankan untuk pemrosesan big data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p> Nama layer yang akan dibuat.  Jika Anda menulis ke sebuah ArcGIS Data Store, hasil Anda akan disimpan di  <b>Konten Saya</b> dan ditambahkan ke dalam peta. Jika Anda menulis ke berbagi file big data, hasil Anda akan disimpan ke berbagi file big data dan ditambahkan ke manifestasinya. Ini tidak akan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer sudah ada, alat tidak akan berfungsi.
+            </p>
+            <p>Saat menulis ke  ArcGIS Data Store (penyimpanan big data relasional atau spasiotemporal) menggunakan  <b>Simpan hasil di</b> kotak drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> tempat hasil akan disimpan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

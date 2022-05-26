@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Kreiraj vododelnice</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="Kreiraj vododelnice"></h2>
+        <hr/>
+    <p>Ova alatka određuje vododelnicu ili uzvodno drenažno područje za svaku tačku na ulaznom sloju. 
+    </p>
+    <p>Na primer, pretpostavimo da imate tačkaste geoobjekte koji predstavljaju lokacije zagađenja koja se prenosi vodom, a želite da pronađete izvore zagađenja. S obzirom na to da izvor zagađenja mora da bude negde unutar vododelnice uzvodno od tačke, ovu alatku biste koristili za definisanje vododelnica koje sadrže izvore zagađenja.
+    </p>
+    <p>Lokacija ulaznih tačaka je važna. Ako se ne nalaze precizno na slivu, rezultujuće vododelnice mogu da budu veoma male i neupotrebljive za va&scaron;u analizu. Alatka  <b>Pretraži razdaljinu do najbližeg sliva</b> može da se koristi za pode&scaron;avanje lokacije ulaznih tačaka tako da padnu precizno na sliv kako bi se prona&scaron;la vododelnica koja se uliva u tačku koja se nalazi na slivu. Pode&scaron;ene lokacije koje se koriste za pronalaženje vododelnica upisane su u izlazni sloj &ndash; va&scaron;e ulazne tačke nisu izmenjene.
+    </p>
+    <p>Rezultat je grupni sloj koji sadrži dva sloja: vododelnice i pode&scaron;ene tačke koje se koriste za izračunavanje vododelnica.     
+    </p>
+    <p>Rezultujuće vododelnice će imati sve atribute va&scaron;ih ulaznih tačaka, kao i ove dodatne atribute:     
+        <ul>
+            <li> <i>PourPtID</i> &ndash; sadrži vrednost ID-a iz ulazne tačke
+            </li>
+            <li> <i>Area Square Kilometers</i> &ndash; sadrži povr&scaron;inu u kvadratnim kilometrima uzvodne vododelnice
+            </li>
+            <li> <i>Description</i> i <i>DataResolution</i> &ndash; sadrži informacije koje pripadaju hidrolo&scaron;kim podacima koji se koriste za izračunavanje praćenja
+            </li>
+        </ul>
+        
+    </p>
+    <p>Ako je opcija  <b>Koristi trenutni obuhvat mape</b> izabrana, samo oni geoobjekti koji su u trenutnom obuhvatu mape koristiće se za izračunavanje vododelnica. Ako nije izabrana, analiziraće se svi geoobjekti u ulaznom sloju, čak i ako su izvan trenutnog obuhvata mape.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Tačkasti geoobjekti za korišćenje pri izračunavanju vododelnica</h2></div>
+        <hr/>
+        <div>
+            <p>Vododelnica (uzvodno drenažno područje) biće izračunata za svaku tačku.  
+            </p>
+            <p>Pored biranja sloja sa mape, možete da selektujete  <b>Izaberi sloj za analizu</b> koji se nalazi na dnu padajuće liste. Ova opcija otvara galeriju gde možete da pregledate i birate skupove podataka iz raznih izvora za kori&scaron;ćenje u va&scaron;oj analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>Pretraži razdaljinu do najbližeg sliva (opcionalno)</h2></div>
+        <hr/>
+        <div>
+            <p>Ako se va&scaron;e ulazne tačke nalaze daleko od sliva, rezultujuće vododelnice će verovatno biti veoma male i neće biti od koristi u analizi, kao &scaron;to je određivanje uzvodnog izvora zagađenja. U većini slučajeva, želite da se ulazna tačka prilepi za najbliži sliv da biste prona&scaron;li vododelnice koje protiču do tačke koja se ne nalazi na slivu. Da biste prona&scaron;li najbliži sliv, navedite razdaljinu za pretragu. Ako ne navedete razdaljinu za pretragu, alatka će izračunati i koristiti konzervativnu razdaljinu za pretragu.  
+            </p>
+            <p>Da biste koristili tačnu lokaciju ulazne tačke, navedite razdaljinu za pretragu nula.  
+            </p>
+            <p>U svrhe analize, kompanija Esri je unapred izračunala slivove koristeći standardne hidrolo&scaron;ke modele. Ako unutar razdaljine za pretragu nema nijednog sliva, koristiće se lokacija koja sadrži najvi&scaron;u akumulaciju protoka unutar razdaljine za pretragu.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja koji će biti kreiran u  <b>Mom sadržaju</b> i dodat na mapu. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako naziv sloja već postoji, bićete upitani da unesete drugi naziv.
+            </p>
+            <p>Koristeći padajući meni  <b>Sačuvaj rezultat u</b>, možete da navedete ime fascikle u <b>Mom sadržaju</b> u kojoj će rezultat biti sačuvan.
+            </p>
+            <p> Pokretanje ove alatke ne tro&scaron;i kredite.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>判定行進成本路徑為折線</h2><p/>
+        <h2><img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" alt="判定行進成本路徑為折線工具圖例"></h2>
+        <hr/>
+    <p>此工具可計算來源與已知目的地之間的最低成本折線路徑。
+    </p>
+    <p>應用範例包含：
+        <ul>
+            <li>根據建造成本尋找新道路的最佳路線。
+                
+
+            </li>
+            <li>識別從幾個郊區位置（來源）到最近的購物中心（目的地）的路徑。
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>如果勾選 <b>使用目前地圖範圍</b>，則僅分析目前地圖範圍中可見的輸入圖層中的位置。如果未勾選，則分析兩個輸入圖層中的所有位置，包括超出目前地圖範圍的圖徵。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>選擇點陣或圖徵來源圖層以決定路徑來源</h2></div>
+        <hr/>
+        <div>
+            <p>為圖片服務或圖徵服務，可用來識別至最低成本目的地之最低成本路徑的來源儲存格。
+            </p>
+            <p>如果輸入是圖片服務，則輸入包含具備有效值（零是有效值）的儲存格，且必須將剩餘的儲存格指派為 NoData。
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>選擇行進成本點陣圖層</h2></div>
+        <hr/>
+        <div>
+            <p>用來定義阻抗或成本的點陣，以均勻方式穿過每個儲存格。
+            </p>
+            <p>每個儲存格位置上的值表示穿過該儲存格之每單位距離的成本。每個儲存格位置值乘以儲存格解析度，同時也可以補償對角移動來取得穿過儲存格的總成本。
+            </p>
+            <p>成本點陣的值可為整數或浮點數，但不可是負數或零（您不能有負或零成本）。
+            </p>
+        </div>
+    </div>
+    <div id="inputDestinationRasterOrFeatures">
+        <div><h2>輸入目的地點陣或圖徵</h2></div>
+        <hr/>
+        <div>
+            <p>一個輸入，可定義用來計算距離的目的地。圖層可為點陣或圖徵。
+            </p>
+            <p>如果輸入是圖片服務，則輸入包含具備有效值（零是有效值）的儲存格，且必須將剩餘的儲存格指派為 NoData。
+            </p>
+        </div>
+    </div>
+    <div id="outputPolylineName">
+        <div><h2>結果折線圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果已存在該名稱的圖層，系統將提示您提供其他名稱。
+            </p>
+            <p>您可以使用 <b>將結果儲存到</b>下拉式方塊，在 <b>我的內容</b>中指定將儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+    <div id="pathType">
+        <div><h2>選擇要決定的路徑類型</h2></div>
+        <hr/>
+        <div>
+            <p>定義在成本路徑計算中，如何解讀輸入目的地資料上的值和區域。
+            </p>
+            <ul>
+                <li>最佳單一 - 對於輸入目的地資料上的所有儲存格或位置，會從與來源位置之間有最低成本路徑的位置衍生最低成本路徑。這是預設值
+                    
+
+                </li>
+                <li>到每個儲存格 - 對於輸入目的地資料上內含有效值的每個儲存格或位置，將在輸出圖徵服務上決定和儲存最低成本路徑。使用此選項時將分別處理輸入目的地資料的每個儲存格，並為每個來源儲存格決定最低成本路徑。
+                    
+
+                </li>
+                <li>到每個區域 - 對於輸入目的地資料上的每個區域，將在輸出圖徵服務上決定和儲存最低成本路徑。使用此選項時，每個區域的最低成本路徑是從區域中具有最低成本距離權數的儲存格或位置開始。
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
+</html>

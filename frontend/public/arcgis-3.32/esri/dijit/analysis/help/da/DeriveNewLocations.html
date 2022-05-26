@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Udled nye steder</h2><p/>
+        <h2><img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" alt="Udled nye steder"></h2>
+        <hr/>
+    <p>Med dette v&aelig;rkt&oslash;j udledes nye objekter i dit unders&oslash;gelsesomr&aring;de, der opfylder en r&aelig;kke kriterier, som du har angivet. Kriterierne kan v&aelig;re baseret p&aring; attribut-foresp&oslash;rgsler (f.eks. ledige parceller) og rumlige foresp&oslash;rgsler (f.eks. parceller inden for oversv&oslash;mmelseszoner).
+
+    </p>
+    <p>Hvis feltet  <b>Brug aktuel kortudstr&aelig;kning</b> er markeret, er det kun objekterne, der er synlige inden for den aktuelle kortudstr&aelig;kning, der analyseres. Hvis det ikke er markeret, analyseres alle objekter, selv om de er uden for den aktuelle kortudstr&aelig;kning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="Expression">
+        <div><h2>Udled nye steder, der matcher følgende udtryk</h2></div>
+        <hr/>
+        <div>
+            <p>Klik p&aring; knappen  <b>Tilf&oslash;j udtryk</b> for at definere et udtryk. Du kan tilf&oslash;je flere udtryk. N&aring;r du har angivet udtrykkene og klikket p&aring; knappen <b>K&oslash;r analyse</b>, filtreres objekterne i dit analyselag gennem hvert udtryk. Den del af objekterne, der opfylder alle udtryk, skrives til resultatlaget.
+            </p>
+            <p>Der er to grundl&aelig;ggende typer udtryk, du kan oprette: attribut og rumlig. Attributudtryk er foresp&oslash;rgsler om feltv&aelig;rdier, f.eks.  <code>hvor navn er &quot;San Francisco&quot;</code>. Der er fire typer rumlige udtryk:
+                <ul>
+                    <li> <b>inden for en afstand p&aring;</b>: dele af en feature inden for en afstand af en feature i et andet lag. F.eks. find den andel af parceller, der ligger inden for 500 meter fra Los Angeles River.
+                    </li>
+                    <li> <b>indeholder alle</b>: objektet skal indeholde alle dele af et objekt i et andet lag. F.eks. find vandskel, der indeholder alle dele af parceller angivet til industriel brug. Ingen del af parcellen m&aring; ligge uden for vandskellet.
+                    </li>
+                    <li> <b>helt omgivet</b>: objektet skal v&aelig;re helt omgivet af et objekt i et andet lag. F.eks. find skoledistrikter, der er helt omgivet af en bygr&aelig;nse. Ingen del af skoledistriktet m&aring; ligge uden for bygr&aelig;nsen.
+                    </li>
+                    <li> <b>gennemsk&aelig;rer</b>: objektet eller dele af objektet skal overlappe eller gennemsk&aelig;re et objekt i et andet lag. Find f.eks. omr&aring;der med br&aelig;ndt vegetation efter flere brande i en nationalpark. Afbr&aelig;ndte omr&aring;der uden for parkens gr&aelig;nser medtages ikke.
+                    </li>
+                    <li> <b>t&aelig;ttest p&aring;</b>: objektet skal v&aelig;re t&aelig;ttest p&aring; et objekt i et andet lag. Eksempel: Find det gr&oslash;nne omr&aring;de, der er t&aelig;ttest p&aring; hver skole.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Hvert rumligt udtryk har en tilsvarende negation (n&aelig;gtelse), undtagen  <b>t&aelig;ttest p&aring;</b>; <b>ikke inden for en afstand af</b>, <b>indeholder ikke fuldst&aelig;ndigt</b>, <b>ikke helt inde i</b> og <b>gennemsk&aelig;rer ikke</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; det lag, som oprettes i  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis lagnavnet allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Ved hj&aelig;lp af rullemenuen  <b>Gem resultat</b> kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet skal gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

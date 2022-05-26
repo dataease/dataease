@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Acrescentar Dados</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="Diagrama do Fluxo de Trabalho Anexar Dados"></h2>
+        <hr/>
+    <p>Esta ferramenta acrescenta dados a uma camada de fei&ccedil;&atilde;o hospedada existente. Anexar Dados modifica a camada de entrada original e n&atilde;o gera uma nova camada de sa&iacute;da. Voc&ecirc; pode combinar campos com base no nome de campo e tipo de campo, ou voc&ecirc; pode aplicar m&eacute;todos de combina&ccedil;&atilde;o mais avan&ccedil;ados.
+    </p>
+    <p>Os seguintes s&atilde;o exemplos: 
+        <ul>
+            <li>Voc&ecirc; &eacute; funcion&aacute;rio de uma grande seguradora que gera registros de vendas mensalmente. Para o seu relat&oacute;rio anual, os dados mensais devem ser compilados para an&aacute;lise. Para iniciar a an&aacute;lise de vendas, voc&ecirc; pode aproveitar a ferramenta Anexar Dados para atualizar sua camada AnnualReport_2018 assim que seus n&uacute;meros mensais forem disponibilizados. J&aacute; que voc&ecirc; sabe que sua organiza&ccedil;&atilde;o mant&eacute;m um esquema consistente a cada m&ecirc;s, voc&ecirc; pode utilizar o m&eacute;todo de mapeamento de campo padr&atilde;o para adicionar fei&ccedil;&otilde;es de forma eficiente com base no nome e no tipo de campo.
+            </li>
+            <li>Dez grupos ambientais, cada um, coleta centenas de milhares de medi&ccedil;&otilde;es clim&aacute;ticas dentro de sua jurisdi&ccedil;&atilde;o. Estas organiza&ccedil;&otilde;es desejam compilar seus dados para entender melhor os padr&otilde;es regionais e globais. Cada organiza&ccedil;&atilde;o determina o esquema para seu conjunto de dados. Cada um deles especificou diferentes nomes de campo para dados de temperatura e velocidade do vento. Dadas as diferen&ccedil;as do nome de campo entre conjuntos de dados,  o mapeamento de campo pode ser aproveitado para especificar como adicionar medi&ccedil;&otilde;es de temperatura e velocidade do vento aos seus respectivos campos.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Escolher a camada a ser anexada</h2></div>
+        <hr/>
+        <div>
+            <p>As fei&ccedil;&otilde;es de tabela, ponto, linha ou pol&iacute;gono nas quais os dados ser&atilde;o anexados.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>A camada que voc&ecirc; anexar ser&aacute; modificada durante a execu&ccedil;&atilde;o da ferramenta. Antes de prosseguir, garanta que voc&ecirc; deseja modificar esta camada.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista suspensa para procurar por seu conte&uacute;do em uma camada de fei&ccedil;&atilde;o hospedada.
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>Escolher a camada para anexar</h2></div>
+        <hr/>
+        <div>
+            <p>As fei&ccedil;&otilde;es de tabela, ponto, linha ou pol&iacute;gono para anexar &agrave; camada de entrada.
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista suspensa para procurar por seu conte&uacute;do para um conjunto de dados de compartilhamento do arquivo de grandes dados ou camada de fei&ccedil;&atilde;o.
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>Anexar todas as feições ou definir um subconjunto (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Identifica as fei&ccedil;&otilde;es a serem anexadas. Este par&acirc;metro &eacute; opcional.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>Escolher como anexar campos (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica como os campos da camada de anexo s&atilde;o acrescentados na camada de entrada. Por padr&atilde;o, todos os campos de anexo e entrada correspondentes ser&atilde;o anexados. Os campos s&atilde;o uma combina&ccedil;&atilde;o se tiverem o mesmo nome de campo e o mesmo tipo de campo. Opcionalmente, voc&ecirc; pode escolher como os campos s&atilde;o combinados ou calcular as express&otilde;es Arcade para preencher os valores dos campos.
+            </p>
+            <p>Por exemplo, voc&ecirc; tem uma camada de entrada como os campos  <i>field_number</i>, <i>field_string</i>, <i>date_field</i>, <i>unused_field</i> e uma camada de anexo com os campos <i>field_string</i>, <i>field_number</i> e <i>MY_DATE_FIELD</i> .
+                <ul>
+                    <li>Por padr&atilde;o, a ferramenta combinar&aacute;  <i>field_number</i> na camada de entrada para <i>field_number</i> na camada de anexo, e <i>field_string</i> na camada de entrada para <i>field_string</i> na camada de anexo.
+                    </li>
+                    <li>Por padr&atilde;o, os campos  <i>date_field</i> e <i>unused_field</i> da camada de entrada ser&atilde;o preenchidos com valores de <i>null</i> pois eles n&atilde;o t&ecirc;m nenhum campo correspondente na camada de anexo.
+                    </li>
+                    <li>Opcionalmente, voc&ecirc; pode acrescentar valores aos campos que n&atilde;o foram correspondidos automaticamente por padr&atilde;o. Por exemplo,  <i>date_field</i> na camada de entrada pode ser correspondido ao campo de anexo <i>MY_DATE_FIELD</i>. Para fazer isto, utilize o menu suspenso ao lado de <i>date_field</i> na primeira coluna e selecione <i>MY_DATE_FIELD</i> no menu suspenso da segunda coluna.
+                    </li>
+                </ul>
+                 Como outro exemplo, uma camada de entrada tem campos num&eacute;ricos <i>value_1</i>, <i>value_2</i>, <i>value_3</i> e <i>my_Average</i>, e uma camada de anexo tem campos num&eacute;ricos <i>value_1</i>, <i>value_2</i> e <i>value_3</i>.
+                <ul>
+                    <li>Por padr&atilde;o,  <i>value_1</i>, <i>value_2</i> e <i>value_3</i> ser&atilde;o correspondidos e anexados.
+                    </li>
+                    <li>Al&eacute;m do comportamento padr&atilde;o, os valores podem ser calculados para o campo  <i>my_Average</i> . Fa&ccedil;a isto utilizando v&aacute;rios campos e opera&ccedil;&otilde;es matem&aacute;ticas selecionando a op&ccedil;&atilde;o suspensa <b>Express&atilde;o</b> na coluna ao lado de <i>my_Average</i> e construa uma express&atilde;o Arcade personalizada, como <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

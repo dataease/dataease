@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>融合边界</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="融合边界"></h2>
+        <hr/>
+    <p>将重叠区域或共享边界的区域进行合并以形成单个区域。
+    </p>
+    <p>您可以通过指定字段来控制合并哪些边界。例如，如果有一个县图层，并且每个县具有  <i>State_Name</i> 属性，则可以使用 <i>State_Name</i> 属性来融合边界。如果相邻的县具有相同的 <i>State_Name</i> 值，则将它们合并到一起。最终结果是一个州边界图层。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>选择将要融合边界的区域图层</h2></div>
+        <hr/>
+        <div>
+            <p>将要融合的包含区域要素的图层。
+            </p>
+            <p>除了从地图选择图层，您也可以选择下拉列表底部的 <b>选择分析图层</b>。此选项将打开一个库，您可以在其中浏览并选择各种来源的数据集以用于分析。 
+            </p>
+        </div>
+    </div>
+    <div id="DissolveFields">
+        <div><h2>选择融合方法</h2></div>
+        <hr/>
+        <div>
+            <p>在合并区域要素时，可以选择以下两种方法：
+                <ul>
+                    <li> <b>重叠或相邻的区域</b> - 将边界相互重叠的两个或多个区域合并为一个区域。此外，相邻的区域（即它们存在共享边界）将合并为一个区域。
+                    </li>
+                    <li> <b>具有相同字段值的区域</b> - 如果重叠或共享边界的区域具有相同的字段值，则将其合并为一个区域。
+                        <p>例如，如果有一个县图层，并且每个县都具有  <i>State_Name</i> 字段，则可以使用 <i>State_Name</i> 字段来融合边界。如果相邻的县具有相同的 <i>State_Name</i> 值，则将它们合并到一起。最终结果是一个州边界图层。
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>如果选中 <b>使用当前地图范围</b>，则仅融合当前地图范围中可见的输入图层要素。如果未选中，则将融合输入图层中的所有要素，包括超出当前地图范围的要素。
+            </p>
+        </div>
+    </div>
+    <div id="multiPartFeatures">
+        <div><h2>创建多部分要素</h2></div>
+        <hr/>
+        <div>
+            <p>在 ArcGIS 中，对位置或事件的数字表示，此位置或事件具有多个部件，因其引用了一组属性而被定义为一个要素。例如在州图层中，可将夏威夷州看作是一个多部分要素，因为其单独的几何部分均划分为单个州。此布尔参数提供以下两个选项：
+                <ul>
+                    <li>True（选中）：输出服务可以包含多部分要素。
+                    </li>
+                    <li>False（未选中）：输出服务将仅包含单部分要素，并将针对每个部分创建单个要素。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>添加统计数据</h2></div>
+        <hr/>
+        <div>
+            <p>合并区域后，可汇总它们的属性。例如，如果基于  <i>State_Name</i> 来融合各县的边界，并且每个县都具有 <i>Population</i> 字段，则可以计算州的 <i>Population</i> 总和。
+            </p>
+            <p>可用的统计类型有：
+            </p>
+            <ul>
+                <li> <b>总和</b> - 添加指定字段的合计值。
+                    
+
+                </li>
+                <li> <b>平均值</b> - 计算指定字段的平均值。
+                    
+
+                </li>
+                <li> <b>最小值</b> - 查找指定字段中所有记录的最小值。
+                    
+
+                </li>
+                <li> <b>最大值</b> - 查找指定字段中所有记录的最大值。
+                    
+
+                </li>
+                <li> <b>标准 差</b> - 查找指定字段中的值的标准差。
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该图层名称已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>使用 <b>将结果保存在</b>下拉菜单，可以指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

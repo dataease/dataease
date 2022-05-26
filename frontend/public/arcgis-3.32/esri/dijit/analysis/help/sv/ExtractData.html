@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Extrahera data</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="Extrahera data"></h2>
+        <hr/>
+    <p>Med det h&auml;r verktyget kan du v&auml;lja och ladda ned data f&ouml;r en viss aktuell yta. De lager som du markerar l&auml;ggs till i en ZIP-, CSV- eller KMZ-fil.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>Lager att extrahera</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r lager i inneh&aring;llsf&ouml;rteckningen som du kan extrahera geoobjekt fr&aring;n. Lager som har markerats extraheras och inkluderas i den resulterande ZIP- eller CSV-filen.
+            </p>
+            <p>F&ouml;r att ett lager ska visas i listan &ouml;ver lager som ska extraheras m&aring;ste antingen du vara &auml;gare till lagrets data, eller s&aring; m&aring;ste data&auml;garen har m&ouml;jliggjort export av dem. S&aring; h&auml;r aktiverar du export av data som du &auml;r &auml;gare till: 
+                <ul>
+                    <li>&Ouml;ppna objektbeskrivningen f&ouml;r de data det g&auml;ller.
+                    </li>
+                    <li>Klicka p&aring; fliken  <b>Inst&auml;llningar</b>.
+                    </li>
+                    <li>Rulla ned till avsnittet  <b>Exportera data</b>.
+                    </li>
+                    <li>Markera  <b>Till&aring;t andra att exportera till olika format</b>.  Klicka p&aring; <b>Spara</b> n&auml;r du &auml;r klar.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Om analyslagret inneh&aring;ller bilagor b&ouml;r du t&auml;nka p&aring; att bilagorna endast extraheras om utdataformatet &auml;r en filbaserad geodatabas och alternativet  <b>Klipp geoobjekt</b> inte &auml;r markerat.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>Undersökningsområde</h2></div>
+        <hr/>
+        <div>
+            <p>Det omr&aring;de som definierar vilka geoobjekt som ska tas med i ZIP- eller CSV-filen med utdata. Du kan v&auml;lja bland f&ouml;ljande:
+                <ul>
+                    <li>Den aktuella synliga utbredningen f&ouml;r kartan ( <b>Samma som visningsf&ouml;nstret</b>).
+                    </li>
+                    <li>Ett av lagren i inneh&aring;llsf&ouml;rteckningen. Om det valda lagret &auml;r punkt- eller linjegeoobjekt anv&auml;nds lagrets utbredning som unders&ouml;kningsomr&aring;de.
+                    </li>
+                    <li>Rita ett omr&aring;de som definierar unders&ouml;kningsomr&aring;det.
+                    </li>
+                </ul>
+                 Alla geoobjekt som ligger helt inom kartutbredningen extraheras. F&ouml;r geoobjekt som korsar eller sk&auml;r kartutbredningsgr&auml;nsen, men inte ligger helt inom utbredningen, har du tv&aring; alternativ:
+                <ul>
+                    <li> <b>V&auml;lj geoobjekt</b> &ndash; Hela geoobjekt som korsar unders&ouml;kningsomr&aring;dets gr&auml;ns extraheras.
+                    </li>
+                    <li> <b>Klipp geoobjekt</b> &ndash; Endast de delar av geoobjekten som ligger inom unders&ouml;kningsomr&aring;det extraheras.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>Utdataformat</h2></div>
+        <hr/>
+        <div>
+            <p>Format f&ouml;r de data som ska extraheras. N&auml;r du exporterar linje- eller omr&aring;desgeoobjekt till CSV-filer, extraheras endast icke-geografiska attribut. N&auml;r du exporterar punktgeoobjekt extraheras b&aring;de geografiska och icke-geografiska attribut.  
+            </p>
+            <p>Web Mercator 1984-projektionen anv&auml;nds f&ouml;r extraherade data.  F&ouml;r CSV-filer bifogas  <i>Lat</i>- och <i>Long</i>-f&auml;lt till data med koordinater i Web Mercator 1984.
+            </p> 
+            <p>F&ouml;ljande utdataformat st&ouml;ds:
+                <ul>
+                    <li>Kommaavgr&auml;nsat v&auml;rde (CSV) &ndash;  <code>.csv</code> eller <code>.zip</code>
+                    </li>
+                    <li>Filbaserad geodatabas &ndash;  <code>.zip</code>
+                    </li>
+                    <li>KML (Keyhole Markup Language) &ndash;  <code>.kmz</code> eller <code>.zip</code>
+                    </li>
+                    <li>Shapefil &ndash;  <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Filnamn för utdata</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r namnet p&aring; objektet som l&auml;ggs till i  <b>Mitt inneh&aring;ll</b>. Objektets namn bygger p&aring; valt <b>Utdataformat</b>. Om objektet redan finns uppmanas du att ange ett annat namn.
+            </p>
+            <p>Om du anv&auml;nder listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Mező kiszámítása</h2><p/>
+        <h2><img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" alt="Mező kisz&aacute;m&iacute;t&aacute;sa"></h2>
+        <hr/>
+    <p> Ez az eszk&ouml;z egy bemenő r&eacute;tegből sz&aacute;m&iacute;t ki &eacute;rt&eacute;keket egy &uacute;j vagy l&eacute;tező mezőh&ouml;z. Hozzon l&eacute;tre egy Arcade-kifejez&eacute;st a vektoros elemek felt&ouml;lt&eacute;s&eacute;hez haszn&aacute;lt &eacute;rt&eacute;kek kisz&aacute;m&iacute;t&aacute;s&aacute;hoz.   Ha az adatai időb&eacute;lyeggel vannak ell&aacute;tva, &eacute;s az időt&iacute;pusuk azonnali, akkor lehetős&eacute;ge van k&ouml;vet&eacute;s&eacute;rz&eacute;keny kifejez&eacute;sek l&eacute;trehoz&aacute;s&aacute;ra is.
+    </p>
+    <p>Tegy&uuml;k fel p&eacute;ld&aacute;ul, hogy m&oacute;dos&iacute;tani szeretn&eacute; a(z)  <i>TotalSales</i> nevű l&eacute;tező mezőt. Azt szeretn&eacute;, hogy a mező a 2016-os &eacute;s 2017-es teljes &aacute;rbev&eacute;tel &ouml;sszeg&eacute;t mutassa. A kifejez&eacute;sben ezeket a mezőket haszn&aacute;lva a k&ouml;vetkezők&eacute;ppen sz&aacute;m&iacute;that&oacute; ki a mező &eacute;rt&eacute;ke: <pre>$feature[&quot;Sales2016&quot;] + $feature[&quot;Sales2017&quot;]</pre>.
+    </p>
+    <p>Egy m&aacute;sik p&eacute;ld&aacute;t haszn&aacute;lva, tegy&uuml;k fel, hogy GPS seg&iacute;ts&eacute;g&eacute;vel m&eacute;rt &eacute;rt&eacute;kek &aacute;llnak rendelkez&eacute;sre egy v&aacute;rosban k&ouml;zlekedő aut&oacute;buszok helyzet&eacute;ről, időpontj&aacute;r&oacute;l, buszazonos&iacute;t&oacute;j&aacute;r&oacute;l &eacute;s sebess&eacute;g&eacute;ről. Egy &uacute;j mezőt szeretn&eacute;nk l&eacute;trehozni  <i>SpeedFrom3</i> n&eacute;ven, amelyik &aacute;tlagolja az utols&oacute; 3 r&ouml;gz&iacute;tett GPS-m&eacute;r&eacute;s sebess&eacute;g&eacute;t mindegyik vektoros elemhez. Ehhez a sz&aacute;m&iacute;t&aacute;shoz k&ouml;vet&eacute;s&eacute;rz&eacute;keny sz&aacute;m&iacute;t&aacute;st haszn&aacute;ln&aacute;nk, ahol a k&ouml;vet&eacute;st a buszazonos&iacute;t&oacute;val le&iacute;rt busz jelenti.    Az előző 3 időbeli l&eacute;p&eacute;s &eacute;s az aktu&aacute;lis időbeli l&eacute;p&eacute;s &aacute;tlagos sebess&eacute;g&eacute;nek meghat&aacute;roz&aacute;s&aacute;hoz a k&ouml;vetkező sz&aacute;m&iacute;t&aacute;s haszn&aacute;lhat&oacute;: <pre>average($track.field[&quot;speed&quot;].history(-4))</pre>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Válassza ki a réteget, amelyhez ki szeretné számítani a mezőértékeket</h2></div>
+        <hr/>
+        <div>
+            <p>A pontok, vonalak, ter&uuml;letek vagy t&aacute;bl&aacute;zatok, amelyek sz&aacute;m&iacute;tott mező&eacute;rt&eacute;kekkel rendelkeznek majd.  
+            </p>
+            <p>Ahelyett, hogy egy r&eacute;teget v&aacute;laszt a t&eacute;rk&eacute;p&eacute;ről, v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n l&eacute;vő  <b>Eredm&eacute;nyr&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is, ha a saj&aacute;t tartalomban szeretne big data-f&aacute;jlmegoszt&oacute; adathalmazt vagy vektoros r&eacute;teget keresni.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Mezőértékek számítása a mezőhöz</h2></div>
+        <hr/>
+        <div>
+            <p>A sz&aacute;m&iacute;tott &eacute;rt&eacute;kekkel rendelkező, &uacute;j vagy l&eacute;tező mező &eacute;s a mező adatt&iacute;pusa. Ha m&aacute;r l&eacute;tező mezőn sz&aacute;m&iacute;t &eacute;rt&eacute;keket, nincs sz&uuml;ks&eacute;g az adatt&iacute;pus egyeztet&eacute;s&eacute;re. 
+            </p>
+        </div>
+    </div>
+    <div id="expression">
+        <div><h2>Hozzon létre egy kifejezést a mezőértékek kiszámításához</h2></div>
+        <hr/>
+        <div>
+            <p>A mező&eacute;rt&eacute;kek kisz&aacute;m&iacute;t&aacute;s&aacute;hoz adjon hozz&aacute; egy kifejez&eacute;st a kifejez&eacute;sszerkesztő seg&iacute;ts&eacute;g&eacute;vel. 
+            </p>
+            <p>Tegy&uuml;k fel p&eacute;ld&aacute;ul, hogy a(z)  <i>income</i> &eacute;s a(z) <i>bonus</i> nevű mező &eacute;rt&eacute;keit szeretn&eacute;nk hozz&aacute;adni. Ehhez adja hozz&aacute; a k&ouml;vetkező kifejez&eacute;st: <code>$feature[&quot;income&quot;] + $feature[&quot;bonus&quot;] </code>.
+            </p>
+        </div>
+    </div>
+    <div id="trackInfo">
+        <div><h2>A kifejezés követésérzékeny</h2></div>
+        <hr/>
+        <div>
+            <p>Megadhatja, hogy a kifejez&eacute;s k&ouml;vet&eacute;s&eacute;rz&eacute;keny legyen. Egy k&ouml;vet&eacute;s&eacute;rz&eacute;keny kifejez&eacute;s az al&aacute;bbihoz hasonl&oacute; form&aacute;z&aacute;st tartalmaz:  <pre>$track.field[&quot;fieldname&quot;].history(...)</pre>. A k&ouml;vet&eacute;s&eacute;rz&eacute;keny kifejez&eacute;seknek mezőkre van sz&uuml;ks&eacute;g&uuml;k az egyedi k&ouml;vet&eacute;sek azonos&iacute;t&aacute;s&aacute;hoz. A k&ouml;vet&eacute;sek &aacute;llhatnak pontokb&oacute;l, vonalakb&oacute;l, ter&uuml;letekből vagy t&aacute;bl&aacute;kb&oacute;l, &eacute;s csak arra van sz&uuml;ks&eacute;g&uuml;k, hogy a bemenetnek legyen k&ouml;vet&eacute;si azonos&iacute;t&oacute;ja, valamint az adatok időb&eacute;lyeggel legyenek ell&aacute;tva, &eacute;s az időt&iacute;pusuk azonnali legyen.
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Adatokat elemezhet időintervallumokkal</h2></div>
+        <hr/>
+        <div>
+            <p>Adja meg, hogy szeretne-e &eacute;rt&eacute;keket kisz&aacute;m&iacute;tani a k&ouml;vet&eacute;seihez időintervallumok haszn&aacute;lat&aacute;val, amelyek szegment&aacute;lj&aacute;k a bemeneteket az elemz&eacute;shez. Ha időintervallumokat haszn&aacute;l, meg kell adnia a haszn&aacute;lni k&iacute;v&aacute;nt időintervallumot &eacute;s opcion&aacute;lisan a referenciaidőt is. Ha nem ad meg referenciaidőt, akkor a referenciaidő 1970. jan. 1-je lesz. 
+            </p>
+            <p>Ha p&eacute;ld&aacute;ul időhat&aacute;rnak 1 napot ad meg 1990. janu&aacute;r 1-je reggel 9:00 &oacute;rai kezdettel, akkor minden k&ouml;vet&eacute;s minden napra 9:00 &oacute;rakor ker&uuml;l csonkol&aacute;sra &eacute;s elemz&eacute;sre azon szegmensen bel&uuml;l. 
+            </p>
+            <p>Az időintervallumok haszn&aacute;lata gyors m&oacute;dja a sz&aacute;m&iacute;t&aacute;si idő gyors&iacute;t&aacute;s&aacute;nak, mivel gyorsan hoz l&eacute;tre kisebb k&ouml;vet&eacute;seket elemz&eacute;sre. Ha egy ism&eacute;tlődő időintervallummal t&ouml;rt&eacute;nő bont&aacute;s &eacute;szszerű az &ouml;n elemz&eacute;se eset&eacute;n, akkor aj&aacute;nlott big data feldolgoz&aacute;shoz haszn&aacute;lni.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Eredményréteg neve</h2></div>
+        <hr/>
+        <div>
+            <p> A l&eacute;trehozand&oacute; r&eacute;teg neve.  Ha egy ArcGIS Data Store helyre &iacute;r, akkor  eredm&eacute;nyei a  <b>Saj&aacute;t tartalom</b> alatt lesznek elmentve, &eacute;s hozz&aacute; lesznek adva a t&eacute;rk&eacute;phez. Ha egy big data f&aacute;jlmegoszt&oacute;ba &iacute;r, akkor eredm&eacute;nyei a big data f&aacute;jlmegoszt&oacute;ba lesznek elmentve, &eacute;s hozz&aacute; lesznek adva annak jegyz&eacute;kf&aacute;jlj&aacute;hoz. Nem lesznek hozz&aacute;adva a t&eacute;rk&eacute;phez. Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a művelet sikertelen lesz.
+            </p>
+            <p>Ha   ArcGIS Data Store (rel&aacute;ci&oacute;s vagy t&eacute;rbeli-időbeli big data adatt&aacute;rba) &iacute;r az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő mező haszn&aacute;lat&aacute;val, akkor megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

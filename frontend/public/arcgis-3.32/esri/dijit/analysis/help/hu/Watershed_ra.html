@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Vízgyűjtő terület</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="V&iacute;zgyűjtő ter&uuml;lettel kapcsolatos feladat"></h2>
+        <hr/>
+    <p>Ez az eszk&ouml;z az &ouml;sszefoly&aacute;si ter&uuml;letet hat&aacute;rozza meg egy raszter cellahalmaz&aacute;n.
+    </p>
+    <p>A v&iacute;zgyűjtő ter&uuml;let a k&ouml;z&ouml;s kifoly&aacute;si pontba &aacute;raml&aacute;st &ndash; rendszerint v&iacute;z &aacute;raml&aacute;s&aacute;t &ndash; lefoly&aacute;si h&aacute;l&oacute;zatk&eacute;nt seg&iacute;tő, a pontt&oacute;l felv&iacute;zi ir&aacute;nyba elhelyezkedő ter&uuml;let. Lehet egy nagyobb v&iacute;zgyűjtő ter&uuml;let r&eacute;sze, &eacute;s tartalmazhat kisebb v&iacute;zgyűjtő ter&uuml;leteket &uacute;n. r&eacute;szv&iacute;zgyűjtőket.
+    </p>
+    <p>Az egyes v&iacute;zgyűjtő ter&uuml;letek &eacute;rt&eacute;k&eacute;t a bemeneti raszterben vagy vektoros kifoly&aacute;sipont-r&eacute;tegben l&eacute;vő forr&aacute;s &eacute;rt&eacute;k&eacute;ből veszi. Ha a kifoly&aacute;si pont raszteres adathalmaz, alap&eacute;rtelmez&eacute;s szerint a cella&eacute;rt&eacute;keket haszn&aacute;lja. Ha a kifoly&aacute;si pont pontszerű vektoros elemek adathalmaza, az &eacute;rt&eacute;kek a megadott mezőből sz&aacute;rmaznak.
+    </p>
+    <p>A V&iacute;zgyűjtő ter&uuml;let eszk&ouml;z csak D8 bemenő &aacute;raml&aacute;si ir&aacute;ny raszteres r&eacute;teget t&aacute;mogat.
+    </p>
+    <p>A bemeneti kifoly&aacute;sipont-helyek vektoros adatk&eacute;nt t&ouml;rt&eacute;nő megad&aacute;sa eset&eacute;n az alap&eacute;rtelmezett mező az első el&eacute;rhető &eacute;rv&eacute;nyes mező lesz. Ha nem l&eacute;tezik &eacute;rv&eacute;nyes mező, az ObjectID mező (p&eacute;ld&aacute;ul OID vagy FID) lesz az alap&eacute;rtelmez&eacute;s.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>Áramlási irány kiválasztása réteg</h2></div>
+        <hr/>
+        <div>
+            <p>A bemeneti raszter, amely a ki&aacute;raml&aacute;s ir&aacute;ny&aacute;t mutatja az egyes cell&aacute;kb&oacute;l.
+            </p>
+            <p>Az &aacute;raml&aacute;si ir&aacute;ny raszter az &Aacute;raml&aacute;si ir&aacute;ny eszk&ouml;zzel vagy a RasterAnalysisTools szolg&aacute;ltat&aacute;sban tal&aacute;lhat&oacute; FlowDirection feladattal hozhat&oacute; l&eacute;tre, amelyet az alap&eacute;rtelmezett  <b>D8</b> &aacute;raml&aacute;si ir&aacute;ny t&iacute;pussal kell futtatni.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>Bemeneti kifolyási pontok megadása</h2></div>
+        <hr/>
+        <div>
+            <p>A bemeneti kifoly&aacute;sipont-helyek.
+            </p>
+            <p>Raszter eset&eacute;n ez azokat a cell&aacute;kat jelenti, amelyek alapj&aacute;n az &ouml;sszefoly&aacute;si ter&uuml;let vagy v&iacute;zgyűjtő ter&uuml;let meghat&aacute;roz&aacute;sa t&ouml;rt&eacute;nik. Minden olyan cell&aacute;t forr&aacute;sk&eacute;nt haszn&aacute;l, amelynek az &eacute;rt&eacute;ke nem NoData. Pont-t&iacute;pus&uacute; bemenet eset&eacute;n ez azokat a helyeket jelenti, amelyek alapj&aacute;n az &ouml;sszefoly&aacute;si ter&uuml;let vagy v&iacute;zgyűjtő ter&uuml;let meghat&aacute;roz&aacute;sa t&ouml;rt&eacute;nik.
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>Kifolyási pont mező kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>Az a mező, amelynek az &eacute;rt&eacute;keit a kifoly&aacute;si pontokhoz rendelik hozz&aacute;.
+            </p>
+            <p>Ha a bemeneti kifoly&aacute;sipont-r&eacute;teg raszteres, akkor &eacute;rt&eacute;ket haszn&aacute;lt. Ha vektoros, numerikus mezőt haszn&aacute;l. Ha a mező lebegőpontos &eacute;rt&eacute;keket tartalmaz, azokat integerr&eacute; csonkolja.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve. Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az Eredm&eacute;ny ment&eacute;si helye leg&ouml;rd&uuml;lő mezőben megadhatja a  <b>Saj&aacute;t tartalom</b>mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z <b>menti az eredm&eacute;nyt</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

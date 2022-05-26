@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Clasificación y regresión basadas en bosque</h2><p/>
+        <h2><img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" alt="Diagrama del flujo de trabajo de Clasificaci&oacute;n y regresi&oacute;n basadas en bosque"></h2>
+        <hr/>
+    <p>Crea modelos y genera predicciones mediante una adaptaci&oacute;n del algoritmo de bosque aleatorio de Leo Breiman, que es un m&eacute;todo de aprendizaje de m&aacute;quina supervisado. Es posible realizar predicciones para ambas variables de categor&iacute;as (clasificaci&oacute;n) y variables continuas (regresi&oacute;n). Las variables explicativas son campos de la tabla de atributos de las entidades de entrenamiento. La herramienta puede ejecutarse para generar un modelo para evaluar rendimientos, o para generar un modelo y predecir resultados en otros datasets.
+    </p>
+    <p>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Tipo de análisis</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica el modo de funcionamiento de la herramienta. La herramienta puede ejecutarse para entrenar un modelo solo para evaluar rendimientos, o para entrenar un modelo y predecir entidades. Los tipos de predicci&oacute;n son los siguientes:
+                <ul>
+                    <li> <b>Entrenar un modelo para evaluar el rendimiento del modelo</b>: el modelo se entrenar&aacute; y ajustar&aacute; a los datos de entrada. Utilice esta opci&oacute;n para evaluar la precisi&oacute;n de su modelo antes de generar las predicciones en un dataset nuevo. La salida de esta opci&oacute;n ser&aacute; un servicio de entidades con sus datos de entrenamiento ajustados, diagn&oacute;sticos de modelo y una tabla opcional de importancia variable.
+                    </li>
+                    <li> <b>Entrenar un modelo y predecir valores</b>: se generar&aacute;n predicciones o clasificaciones para las entidades. Se deben proporcionar variables explicativas tanto para las entidades de entrenamiento como para las entidades que se desea predecir. La salida de esta opci&oacute;n ser&aacute; un servicio de entidades con sus valores predichos, diagn&oacute;sticos de modelo y una tabla opcional de importancia variable.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="train">
+        <div><h2>Entrenar un modelo para evaluar el rendimiento del modelo</h2></div>
+        <hr/>
+        <div>
+            <p>Utilice este modelo si desea ajustar un modelo e investigue el ajuste.
+            </p>
+            <p>Con esta elecci&oacute;n, el modelo se entrenar&aacute; con una capa de entrada. Utilice esta opci&oacute;n para evaluar la precisi&oacute;n de su modelo antes de generar las predicciones en un dataset nuevo. Esta opci&oacute;n generar&aacute; diagn&oacute;sticos de modelo de salida en la ventana de mensajes y aplicar&aacute; el modelo a sus datos de entrenamiento.
+            </p>
+        </div>
+    </div>
+    <div id="trainAndPredict">
+        <div><h2>Entrenar un modelo y predecir valores</h2></div>
+        <hr/>
+        <div>
+            <p>Utilice este modelo si desea ajustar un modelo y aplique el modelo al dataset para generar predicciones.
+            </p>
+            <p>Se generar&aacute;n predicciones o clasificaciones para las entidades. La salida de esta opci&oacute;n ser&aacute; un servicio de entidades, diagn&oacute;sticos de modelo y una tabla opcional de importancia variable.
+            </p>
+        </div>
+    </div>
+    <div id="inFeatures">
+        <div><h2>Elegir una capa de entrenamiento</h2></div>
+        <hr/>
+        <div>
+            <p>La capa de entidades que contiene la variable que se va a predecir y los campos que se utilizar&aacute;n para generar la predicci&oacute;n.
+            </p>
+            <p>Adem&aacute;s de elegir una capa en el mapa, puede elegir  <b>Elegir capa de an&aacute;lisis</b> en la parte inferior de la lista desplegable para examinar el contenido del dataset o la capa de entidades de un recurso compartido de archivos de big data.
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Elegir una capa para la que predecir valores</h2></div>
+        <hr/>
+        <div>
+            <p>Una capa de entidades que representa las ubicaciones en las que se realizar&aacute;n predicciones. Esta capa de entidades tambi&eacute;n debe contener las variables explicativas proporcionadas como campos que se correspondan con las utilizadas de las entidades de entrenamiento.
+            </p>
+            <p>Adem&aacute;s de elegir una capa en el mapa, puede elegir  <b>Elegir capa de an&aacute;lisis</b> en la parte inferior de la lista desplegable para examinar el contenido del dataset o la capa de entidades de un recurso compartido de archivos de big data.
+            </p>
+        </div>
+    </div>
+    <div id="variablePredict">
+        <div><h2>Elegir el campo que se va a predecir</h2></div>
+        <hr/>
+        <div>
+            <p>El campo de las entidades de entrenamiento que contiene los valores que se desean usar para entrenar el modelo. Este campo contiene valores (de entrenamiento) conocidos de la variable que se usar&aacute; para predecir en ubicaciones desconocidas. Si los valores son de categor&iacute;as (por ejemplo, Arce, Pino, Roble), seleccione la casilla de verificaci&oacute;n  <b>De categor&iacute;as</b>.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Elegir una o más variables explicativas</h2></div>
+        <hr/>
+        <div>
+            <p>Uno o varios campos que representan a las variables explicativas (campos) que ayudan a predecir el valor o la categor&iacute;a de la variable que se va a predecir.  Use la casilla de verificaci&oacute;n de categor&iacute;as en el caso de las variables que representen clases o categor&iacute;as (tales como cobertura de suelo, presencia o ausencia). Especifique la variable como True para cualquiera que represente clases o categor&iacute;as tales como cobertura de suelo, presencia o ausencia, y False si la variable es continua.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfTrees">
+        <div><h2>Número de árboles</h2></div>
+        <hr/>
+        <div>
+            <p>La cantidad de &aacute;rboles que se crear&aacute;n en el modelo. Un mayor n&uacute;mero de &aacute;rboles por lo general dar&aacute; lugar a una predicci&oacute;n de modelo m&aacute;s precisa, pero el modelo tardar&aacute; m&aacute;s en calcularse. El n&uacute;mero predeterminado de &aacute;rboles es de 100.
+            </p>
+        </div>
+    </div>
+    <div id="minimumLeafSize">
+        <div><h2>Tamaño mínimo de hoja</h2></div>
+        <hr/>
+        <div>
+            <p>El n&uacute;mero m&iacute;nimo de observaciones requeridas para conservar una hoja (es decir, el nodo terminal de un &aacute;rbol que no tiene m&aacute;s divisiones). El m&iacute;nimo predeterminado para regresi&oacute;n es 5 y el m&iacute;nimo predeterminado para clasificaci&oacute;n es 1. En el caso de datos muy grandes, si aumenta estos n&uacute;meros se reducir&aacute; el tiempo de ejecuci&oacute;n de la herramienta.
+            </p>
+        </div>
+    </div>
+    <div id="maximumTreeDepth">
+        <div><h2>Profundidad máxima de árbol</h2></div>
+        <hr/>
+        <div>
+            <p>El n&uacute;mero m&aacute;ximo de divisiones que se realizar&aacute;n en un &aacute;rbol. Si se utiliza una profundidad m&aacute;xima grande, se podr&aacute;n crear m&aacute;s divisiones, lo cual puede aumentar las probabilidades de exceso de ajuste en el modelo. El valor predeterminado se basa en datos y depende del n&uacute;mero de &aacute;rboles creados y el n&uacute;mero de variables incluidas.
+            </p>
+        </div>
+    </div>
+    <div id="sampleSize">
+        <div><h2>Datos disponibles por árbol (%)</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica el porcentaje de las entidades de la capa de entrenamiento utilizadas para cada &aacute;rbol de decisi&oacute;n. El valor predeterminado es del 100 por cien de los datos. Las muestras de cada &aacute;rbol se toman aleatoriamente a partir de dos tercios de los datos especificados.
+            </p>
+            <p>Cada &aacute;rbol de decisi&oacute;n del bosque se crea con una muestra o un subconjunto aleatorios (aproximadamente dos tercios) de los datos de entrenamiento disponibles. Si utiliza un porcentaje menor de los datos de entrada para cada &aacute;rbol de decisi&oacute;n, se aumenta la velocidad de la herramienta si los datasets son muy grandes.
+            </p>
+        </div>
+    </div>
+    <div id="randomVariables">
+        <div><h2>Número de variables muestreadas aleatoriamente</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica el n&uacute;mero de variables explicativas utilizadas para crear cada &aacute;rbol de decisi&oacute;n.
+            </p>
+            <p>Cada &aacute;rbol de decisi&oacute;n del bosque se crea con un subconjunto aleatorio de las variables explicativas especificadas. Al aumentar el n&uacute;mero de variables utilizadas en cada &aacute;rbol de decisi&oacute;n, aumentar&aacute;n tambi&eacute;n las probabilidades de exceso de ajuste en el modelo, especialmente si existen una o varias variables dominantes. Una pr&aacute;ctica habitual consiste en utilizar la ra&iacute;z cuadrada del n&uacute;mero total de variables explicativas si la variable que va a predecir es num&eacute;rica, o bien en dividir el n&uacute;mero total de variables explicativas entre 3 si la variable que va a predecir es de categor&iacute;as.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Elegir la forma de concordar campos explicativos</h2></div>
+        <hr/>
+        <div>
+            <p>El modo en que las variables correspondientes de la capa de entrenamiento concordar&aacute;n con las variables de la capa de predicci&oacute;n. Solamente se incluir&aacute;n en la tabla las variables utilizadas en el entrenamiento.
+            </p>
+        </div>
+    </div>
+    <div id="percentageForValidation">
+        <div><h2>Número de ciclos de validación</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica el porcentaje (entre el 0 y el 50 por ciento) de las entidades de la capa de entrenamiento que se deben reservar como el dataset de prueba para la validaci&oacute;n. El modelo se entrenar&aacute; sin este subconjunto aleatorio de datos, y los valores observados para esas entidades se comparar&aacute;n con el valor predicho. El valor predeterminado es del 10 por ciento.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>Este es el nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y se agregar&aacute; al mapa.  El nombre predeterminado se basa en el nombre de la herramienta y el nombre de la capa de entrada. Si la capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Los resultados devueltos depender&aacute;n del tipo de an&aacute;lisis. Si est&aacute; entrenando para evaluar el ajuste del modelo, los resultados contendr&aacute;n una capa del ajuste de los datos de entrenamiento al modelo e informaci&oacute;n de resultado que eval&uacute;a el ajuste del modelo. Si est&aacute; entrenando y prediciendo, los resultados contendr&aacute;n una capa del ajuste de los datos de entrenamiento al modelo, una capa de los resultados predichos e informaci&oacute;n de resultado que eval&uacute;a el ajuste del modelo.
+            </p>
+            <p>En el cuadro desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

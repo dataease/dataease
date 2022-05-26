@@ -1,0 +1,4 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/arcadeProfiles/visualizationProfile","dojo/_base/declare dojo/_base/lang dojo/has ../kernel ../promiseList ../support/expressionUtils ./utils".split(" "),function(a,c,d,e,f,g,h){a=new (a(null,{declaredClass:"esri.arcadeProfiles.VisualizationProfile",initialize:function(a){var b=[];h.hasGeometryOperations(a)&&b.push(g.enableGeometryOperations());return f(b)}}));d("extend-esri")&&c.setObject("arcadeProfiles.visualizationProfile",a,e);return a});

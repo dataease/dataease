@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="aoToolbox">
+        <p>De toolbox Objectanalyse omvat een aantal tools die u kunt openen en gebruiken. Deze taken zijn hieronder gerangschikt in categorie&euml;n; de categorie&euml;n zijn logische groeperingen en hebben geen enkele invloed op de manier waarop de taken worden geopend of gebruikt.
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="largesize">
+        <h2>Gegevens samenvatten</h2>
+        <hr/>
+        <p>Deze tools berekenen totale tellingen, lengtes, gebieden en eenvoudige beschrijvende statistieken van objecten en hun attributen binnen oppervlakken of dicht bij andere objecten.
+            <ul>
+                <li> <b>Punten aggregeren</b> berekent statistieken over punten die binnen specifieke oppervlakken vallen.
+                </li>
+                <li> <b>Objecten koppelen</b> brengt attributen over van &eacute;&eacute;n laag of tabel naar een andere op basis van ruimtelijke en attribuutrelaties.
+                </li>
+                <li> <b>Samenvatten in de buurt van</b> berekent statistieken voor objecten en hun attributen die zich binnen een specifieke afstand bevinden.
+                </li>
+                <li> <b>Samenvatten in</b>  berekent statistieken voor gebiedsobjecten en attributen die elkaar overlappen.
+                </li>
+                <li> <b>Samenvatten centrum en spreiding</b> berekent centrale objecten en richtingsverdelingen.
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="AggregatePointsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Punten aggregeren</h2></td>
+                    <td>
+                    <img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" class="titleImage" alt="Punten aggregeren">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Met behulp van een laag van puntobjecten en een laag van gebiedsobjecten bepaalt deze tool welke punten binnen elk gebied vallen en berekent deze de statistieken voor alle punten binnen elk gebied. Bijvoorbeeld:
+                <ul>
+                    <li>Bereken aan de hand van bepaalde puntlocaties van criminele incidenten het aantal misdrijven per gemeente of ander administratieve regio.
+                    </li>
+                    <li>Zoek de hoogste en laagste inkomsten voor franchiselocaties per staat.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="JoinFeaturesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Objecten koppelen</h2></td>
+                    <td>
+                    <img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" class="titleImage" alt="Objecten koppelen">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Objecten koppelen brengt attributen over van &eacute;&eacute;n laag of tabel naar een andere op basis van ruimtelijke en attribuutrelaties. Bijvoorbeeld:
+                <ul>
+                    <li>Gemeenschappelijke demografische of grensinformatie aan uw incidentdata toevoegen.
+                    </li>
+                    <li>Identificeer de dichtstbijzijnde faciliteiten bij een bekende locatie.
+                    </li>
+                    <li>Bepalen hoe veel woningen in overstromingsgebieden liggen.
+                    </li>
+                    <li>Gedeelde habitats voor verschillende soorten wilde dieren identificeren.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeNearbyTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Samenvatten in de buurt van</h2></td>
+                    <td>
+                    <img src="../images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" class="titleImage" alt="Samenvatten in de buurt van">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Zoekt naar objecten die zich binnen een bepaalde afstand van objecten in de invoerlaag bevinden. De afstand kan worden gemeten langs rechte lijnen of gangbare wegen van een reismodus. Vervolgens kunnen statistieken worden berekend voor de objecten in de buurt. Bijvoorbeeld:
+                <ul>
+                    <li>Bereken de totale populatie binnen vijf minuten van de locatie voor een mogelijke nieuwe winkel.
+                    </li>
+                    <li>Bereken het aantal opritten voor snelwegen binnen vijf minuten van de locatie voor een mogelijke nieuwe winkel en gebruik deze als maatstaf voor de toegankelijkheid van deze winkel.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeWithinTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Samenvatten in</h2></td>
+                    <td>
+                    <img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" class="titleImage" alt="Samenvatten in">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Zoekt naar gebieden (en delen van gebieden) die overlappen tussen twee lagen en berekent statistieken over de overlapping. Bijvoorbeeld:
+                <ul>
+                    <li>Er is een kaartlaag met stroomgebieden en een laag met landgebruikgebieden per type landgebruik; bereken het totale oppervlak van het landgebruiktype voor elk stroomgebied. 
+                    </li>
+                    <li>Vat de gemiddelde waarde van vrije percelen in elke stad samen op basis van een laag met percelen in een provincie en een laag met stadsgrenzen.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeCenterAndDispersionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Samenvatten centrum en spreiding</h2></td>
+                    <td>
+                    <img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" class="titleImage" alt="Samenvatten centrum en spreiding">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Deze tool gebruikt puntobjecten om de centrale functie, het gemiddelde centrum, het middencentrum of de ellips (verdeling) te berekenen. Bijvoorbeeld:
+                <ul>
+                    <li>Aan de hand van een laag blokgroeicentro&iuml;den zou het centrale, naar bevolkingsomvang gewogen object kunnen worden gebruikt om te bepalen welke deel van de stad het meest toegankelijk is voor een podiumkunstencentrum.
+                    </li>
+                    <li>Bij een laag van elandwaarnemingen binnen een park over meerdere jaren, gemiddelde centrum kan worden gebruikt om te zien waar de elanden samenkomen in de zomer en winter.
+                    </li>
+                    <li>Bij een laag brandincidenten kan met het middencentrum de centrale tendens van de branden worden gemeten, zonder te worden be&iuml;nvloed door perifere uitschieters.
+                    </li>
+                    <li>Bij een laag grondwaterputmonsters kan met behulp van een ellips worden bepaald hoe een verontreiniging zich verspreidt.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="EnrichLocationsCategory" class="smallsize">
+        <h2>Data Enrichment</h2>
+        <hr/>
+        <p>Deze tools helpen u om de aard van gebieden te onderzoeken. Gedetailleerde demografische gegevens en statistieken worden geretourneerd voor uw gekozen gebieden. 
+            <ul>
+                <li> <b>Laag verrijken</b> haalt informatie op over de mensen, plaatsen en bedrijven in een bepaald gebied of binnen een bepaalde reistijd of afstand van een locatie.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="EnrichLayerTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Enrich Layer</h2></td>
+                    <td>
+                    <img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" class="titleImage" alt="Laag verrijken">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Haalt informatie op over de mensen, plaatsen en bedrijven in een bepaald gebied of binnen een bepaalde reistijd of afstand van een locatie.
+
+            </p>
+            <br/>
+        </div>
+    <div id="FindLocationsCategory" class="largesize">
+        <h2>Locaties zoeken</h2>
+        <hr/>
+        <p>Deze hulpprogramma's worden gebruikt om functies te identificeren of aan te maken die voldoen aan de criteria die u opgeeft.  Het type criteria hangt af van welk hulpmiddel u gebruikt. Mogelijk zijn uw criteria bijvoorbeeld gebaseerd op ruimtelijke of attribuutquery's, zichtbare gebieden vanaf een gespecificeerde hoogte, stroomafwaartse gebieden voor specifieke afvoerpunten of rijtijden in specifieke verkeersomstandigheden.
+            <ul>
+                <li> <b>Beste voorzieningen kiezen</b> kiest de beste locaties voor voorzieningen door locaties toe te wijzen die vragen naar deze voorzieningen op een manier die voldoet aan een bepaald doel.
+                </li>
+                <li> <b>Viewshed maken</b> maakt gebieden die zichtbaar zijn op basis van locaties die u opgeeft.
+                </li>
+                <li> <b>Stroomgebieden maken</b> maakt stroomgebieden op basis van locaties die u opgeeft.
+                </li>
+                <li> <b>Nieuwe locaties afleiden</b> maakt nieuwe gebieden op basis van locaties in uw onderzoeksgebied die voldoen aan een reeks criteria.
+                </li>
+                <li> <b>Zwaartepunten zoeken</b> zoekt het representatieve centrum (zwaartepunt) voor invoerfuncties.
+                </li>
+                <li> <b>Geschikte locaties zoeken</b> zoekt naar bestaande gebieden in een laag die voldoen aan een reeks criteria.
+                </li>
+                <li> <b>Gelijksoortige locaties zoeken</b> zoekt naar overeenkomende locaties onder een of meer referentielocaties op basis van de criteria die u opgeeft.
+                </li>
+                <li class="PortalOnly"> <b>Locaties Geocoderen uit Tabel</b> converteert adressen uit een tabel in co&ouml;rdinaten. 
+                </li>
+                <li> <b>Stroomafwaarts traceren</b> bepaalt de stromingstrajecten stroomafwaarts van de locaties die u opgeeft.
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="ChooseBestFacilitiesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Beste voorzieningen kiezen</h2></td>
+                    <td>
+                    <img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" class="titleImage" alt="Beste voorzieningen kiezen">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Kiest de beste locaties voor voorzieningen door locaties toe te wijzen die vragen naar deze voorzieningen op een manier die voldoet aan een bepaald doel.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Viewshed maken</h2></td>
+                    <td>
+                    <img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" class="titleImage" alt="Viewshed maken">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Maakt gebieden die zichtbaar zijn op basis van locaties die u opgeeft.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateWatershedsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Stroomgebied maken</h2></td>
+                    <td>
+                    <img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" class="titleImage" alt="Stroomgebied maken">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Maakt stroomgebieden op basis van locaties die u opgeeft.
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveNewLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Nieuwe locaties afleiden</h2></td>
+                    <td>
+                    <img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" class="titleImage" alt="Nieuwe locaties afleiden">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Maakt nieuwe objecten in uw onderzoeksgebied die voldoen aan een reeks door u opgegeven criteria. Deze criteria kunnen gebaseerd zijn op attribuutquery's (bijvoorbeeld percelen die vrij zijn) en ruimtelijke query's (bijvoorbeeld binnen anderhalve kilometer van een rivier). 
+            </p>
+            <br/>
+        </div>
+        <div id="FindCentroidsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Zwaartepunten zoeken</h2></td>
+                    <td>
+                    <img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" class="titleImage" alt="Zwaartepunten zoeken">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Zoekt het representatieve centrum (zwaartepunt) voor elke functie voor meervoudige invoer, lijn of oppervlakte.
+            </p>
+            <br/>
+        </div>
+        <div id="FindExistingLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Bestaande locaties zoeken</h2></td>
+                    <td>
+                    <img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" class="titleImage" alt="Bestaande locaties zoeken">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Selecteert bestaande objecten in uw onderzoeksgebied die voldoen aan een reeks door u opgegeven criteria. Deze criteria kunnen gebaseerd zijn op attribuutquery's (bijvoorbeeld percelen die vrij zijn) en ruimtelijke query's (bijvoorbeeld binnen anderhalve kilometer van een rivier). 
+            </p>
+            <br/>
+        </div>
+        <div id="GeocodeLocationsfromTableTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Geocodeer locaties vanuit tabel</h2></td>
+                    <td>
+                    <img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" class="titleImage" alt="Geocodeer locaties vanuit tabel">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Converteert adressen naar co&ouml;rdinaten. Gebruik deze tool voor adressen in een Excel-spreadsheet of een CSV-bestand.
+            </p>
+            <br/>
+        </div>
+        <div id="FindSimilarLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Gelijksoortige locaties zoeken</h2></td>
+                    <td>
+                    <img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" class="titleImage" alt="Gelijksoortige locaties zoeken">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Zoekt naar locaties die het meest of het minst lijken op een of meer referentielocaties op basis van de criteria die u opgeeft.
+            </p>
+            <br/>
+        </div>
+        <div id="TraceDownstreamTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Stroomafwaarts traceren</h2></td>
+                    <td>
+                    <img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" class="titleImage" alt="Stroomafwaarts traceren">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Bepaalt de stromingstrajecten stroomafwaarts van de locaties die u opgeeft.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="largesize">
+        <h2>Patronen analyseren</h2>
+        <hr/>
+        <p>Deze tools helpen u ruimtelijke patronen in uw gegevens te identificeren, kwantificeren en visualiseren.  
+            <ul>
+                <li> <b>Dichtheid berekenen</b> gebruikt bekende hoeveelheden van een bepaald fenomeen en spreidt deze hoeveelheden over de kaart.
+                </li>
+                <li>Met  <b>Hotspots zoeken</b> wordt statistisch significante clustering in het ruimtelijke patroon van uw gegevens ge&iuml;dentificeerd.
+                </li>
+                <li>De tool  <b>Afwijkingen</b> vinden bepaalt of er sprake is van statistisch significante afwijkingen in het ruimtelijke patroon van uw data.
+                </li>
+                <li>Het  <b>Puntclusters zoeken</b> zoekt clusters van puntfeatures binnen omringend geluid gebaseerd op hun ruimtelijke distributie.
+                </li>
+                <li> <b>Punten interpoleren</b> voorspelt waarden op nieuwe locaties op basis van metingen die worden gevonden in een verzameling van punten.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Dichtheid berekenen</h2></td>
+                    <td>
+                    <img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" class="titleImage" alt="Dichtheid berekenen">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Dichtheidsanalyse gebruikt bekende hoeveelheden van een bepaald fenomeen en spreidt deze hoeveelheden over de kaart. U kunt deze tool bijvoorbeeld gebruik om concentraties van blikseminslagen of tornado's, de toegang tot gezondheidszorgfaciliteiten en bevolkingsdichtheden weer te geven.
+            </p>
+            <br/>
+        </div>
+        <div id="FindHotSpotsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Hotspots zoeken</h2></td>
+                    <td>
+                    <img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" class="titleImage" alt="Hotspots zoeken">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Deze tool maakt een kaart die eventuele statistisch significante ruimtelijke clustering in uw gegevens weergeeft. Gebruik deze tool om onverwachte hotspots (rood) en coldspots (blauw) te zoeken van bijvoorbeeld hoge en lage huizenwaarden, de misdaaddichtheid, slachtoffers van verkeersongevallen, werkloosheid of biodiversiteit.
+            </p>
+            <br/>
+        </div>
+        <div id="FindOutliersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Afwijkingen vinden</h2></td>
+                    <td>
+                    <img src="../images/GUID-2FD18406-6333-45B9-8220-E930C1E154B2-web.png" class="titleImage" alt="Afwijkingen vinden">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Deze tool maakt een kaart met alle statistisch significante clusters en ruimtelijke afwijkingen in uw data. Gebruik deze tool om objecten te identificeren die waarden hebben die aanzienlijk verschillen van de aangrenzende waarden.  U kunt deze tool bijvoorbeeld gebruiken om abnormale uitgavepatronen te zoeken, bepalen waar de scherpste grenzen tussen welvaart en armoede liggen in een studiegebied of bepalen of er provincies in de Verenigde Staten zijn met ongewoon lage levensverwachting t.o.v. de aangrenzende provincies.
+            </p>
+            <br/>
+        </div>
+        <div id="FindPointClustersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Puntclusters zoeken</h2></td>
+                    <td>
+                    <img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" class="titleImage" alt="Puntclusters zoeken">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Deze tool detecteert gebieden waar punten geconcentreerd zijn en waar ze gescheiden worden door gebieden die leeg of schaars zijn. Punten die geen deel uitmaken van een cluster worden aangeduid als ruis.
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Punten interpoleren</h2></td>
+                    <td>
+                    <img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" class="titleImage" alt="Punten interpoleren">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Deze tool voorspelt waarden op nieuwe locaties op basis van metingen die worden gevonden in een verzameling van punten. De tool neemt puntgegevens met waarden op elk punt en retourneert gebieden die worden geclassificeerd op voorspelde waarden. U kunt deze tool bijvoorbeeld gebruiken om neerslagniveaus in een rioleringsgebied te voorspellen op basis van metingen die worden uitgevoerd op afzonderlijke regenmeters.
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="regularsize">
+        <h2>Nabijheid gebruiken</h2>
+        <hr/>
+        <p>  Deze tools helpen u een van de meest gestelde vragen op het gebied van ruimtelijke analyse te beantwoorden: &quot;Wat bevindt zich in de buurt van wat?&quot;
+            <ul>
+                <li> <b>Beginpunten aan bestemmingen koppelen</b> meet de reistijd of afstand tussen paren van beginpunten en bestemmingen.
+                </li>
+                <li> <b>Buffers maken</b> maakt gebieden van gelijke afstand tot objecten.
+                </li>
+                <li> <b>Gebieden op basis van reistijd maken</b> zoekt naar gebieden rondom locaties die binnen een bepaald tijdsbestek kunnen worden bereikt.
+                </li>
+                <li> <b>Dichtstbijzijnde zoeken</b> wordt gebruikt om plaatsen te identificeren die zich het dichtst bij bekende locaties bevinden.
+                </li>
+                <li> <b>Routes plannen</b> bepaalt de beste manier om een wagenpark te routeren zodat ze veel stopplaatsen kunnen bezoeken.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ConnectOriginsToDestinationsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Vertrekpunten en bestemmingen met elkaar verbinden</h2></td>
+                    <td>
+                    <img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" class="titleImage" alt="Vertrekpunten en bestemmingen met elkaar verbinden">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Beginpunten aan bestemmingen koppelen meet de reistijd of afstand tussen paren van beginpunten en bestemmingen. Het hulpmiddel kan afstanden hemelsbreed, afstanden over de weg of reistijden weergeven. Met deze tool kunt u
+            </p>
+            <p>
+                <ul>
+                    <li>De totale afstand berekenen die forensen tussen hun woon- en werkplaats afleggen of de tijd die dit in beslag neemt.
+                    </li>
+                    <li>Meten hoe ver klanten reizen om bij uw winkels te winkelen. Gebruik deze informatie om uw marktbereik te bepalen, met name voor gerichte reclamecampagnes of het kiezen van nieuwe winkellocaties.
+                    </li>
+                    <li>Het verwachte aantal kilometers voor uw wagenpark berekenen. Gebruik achteraf de tool Samenvatten in om de afstand per provincie of andere regio te rapporteren.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>U levert de begin- en eindpunten en de tool geeft een laag terug met routes, inclusief metingen, tussen de gekoppelde beginpunten en bestemmingen.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateBuffersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Buffers maken</h2></td>
+                    <td>
+                    <img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" class="titleImage" alt="Buffers maken">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Een buffer is een gebied dat een bepaalde afstand vanaf een punt-, lijn- of gebiedsobject dekt. 
+            </p>
+            <p>Buffers worden doorgaans gebruikt om gebieden te maken die verder kunnen worden geanalyseerd met andere tools zoals Lagen bovenop plaatsen. Als de vraag bijvoorbeeld luidt &quot;Welke gebouwen bevinden zich binnen anderhalve kilometer van de school?&quot;, dan kunt u het antwoord vinden door een buffer van anderhalve kilometer rond de school te maken en boven op de buffer de laag te plaatsen die voetafdrukken van gebouwen bevat.  Het eindresultaat is een laag met de gebouwen die zich binnen anderhalve kilometer van de school bevinden.  
+            </p>
+            <br/>
+        </div>
+        <div id="CreateDriveTimeAreasTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Gebieden op basis van reistijd maken</h2></td>
+                    <td>
+                    <img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" class="titleImage" alt="Gebieden op basis van reistijd maken">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Een reistijdgebied is een gebied dat kan worden bereikt binnen een bepaalde reisduur of rijafstand. Reistijdgebieden kunnen u helpen bij het beantwoorden van vragen als:
+                <ul>
+                    <li>Waar kan ik heen binnen een reisduur van 30 minuten vanaf hier?
+                    </li>
+                    <li>Waar kan ik heen binnen een reisduur van 30 minuten vanaf hier om 18.00 uur tijdens het spitsuur?
+                    </li>
+                    <li>Welke stadsdelen kan de brandweer binnen vijf minuten bereiken? In hoeverre zou de dekking van de reactietijd bij een brandalarm verbeteren door hier een nieuwe brandweerkazerne te bouwen?
+                    </li>
+                    <li>Welke marktgebieden worden door mijn bedrijf gedekt? Welke gebieden bevinden zich binnen 15 kilometer van mijn winkels?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindNearestTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Dichtstbijzijnde zoeken</h2></td>
+                    <td>
+                    <img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" class="titleImage" alt="Dichtstbijzijnde zoeken">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Meet de reiskosten tussen incidenten en faciliteiten en bepaalt welke het dichtst bij elkaar liggen. Het resultaat is een laag die de beste routes toont tussen incidenten en faciliteiten en bovendien de reiskosten (tijd en afstand) van elke route weergeeft.  U kunt deze tool bijvoorbeeld gebruiken om bij een ongeval het dichtstbijzijnde ziekenhuis te vinden of de dichtstbijzijnde geldautomaat ten opzichte van uw huidige locatie.
+            </p>
+            <br/>
+        </div>
+        <div id="PlanRoutesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Routes plannen</h2></td>
+                    <td>
+                    <img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" class="titleImage" alt="Routes plannen">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>U levert een reeks stopplaatsen en het aantal voertuigen dat beschikbaar is om de stopplaatsen te bezoeken en Routes plannen bepaalt vervolgens hoe u de stopplaatsen effici&euml;nt kunt toewijzen aan de voertuigen en het routeert de voertuigen naar de stopplaatsen.
+            </p>
+            <p>Gebruik deze tool om werk te plannen voor een mobiel team van inspecteurs, beoordelaars, in-home leveranciers van ondersteunende diensten, en anderen; bezorg items op externe locaties of haal ze daar op; of biedt mensen vervoersdiensten aan.
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="largesize">
+        <h2>Data beheren</h2>
+        <hr/>
+        <p>Deze tools worden gebruikt zowel voor het dagelijkse beheer van geografische gegevens als voor het combineren van gegevens v&oacute;&oacute;r de analyse.  
+            <ul>
+                <li> <b>Grenzen oplossen</b> voegt gebieden samen die een gemeenschappelijke grens en een gemeenschappelijke attribuutwaarde hebben.
+                </li>
+                <li> <b>Gegevens exporteren</b> maakt nieuwe datasets door objecten te exporteren van uw bestaande gegevens.
+                </li>
+                <li> <b>Betegelingen genereren</b> maakt betegelingen op basis van de omvang van uw gegevens.
+                </li>
+                <li> <b>Lagen samenvoegen</b> kopieert alle objecten van twee of meer bestaande lagen naar een nieuwe laag.
+                </li>
+                <li> <b>Overlay lagen</b> combineert twee of meer lagen in &eacute;&eacute;n enkele laag. Bij overlay lijkt het alsof u door een stapel kaarten kijkt en &eacute;&eacute;n kaart maakt die alle informatie bevat die in de stapel is gevonden.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="DissolveBoundariesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Grenzen oplossen</h2></td>
+                    <td>
+                    <img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" class="titleImage" alt="Grenzen oplossen">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Gebieden die elkaar overlappen of een gemeenschappelijke grens hebben, worden samengevoegd tot &eacute;&eacute;n gebied.    
+            </p>
+            <p>U kunt bepalen welke grenzen worden samengevoegd door een veld op te geven. Als u bijvoorbeeld een laag met regio's hebt en elke regio een  <i>State_Name</i>-attribuut heeft, kunt u grenzen oplossen op basis van het <i>State_Name</i>-attribuut. Aangrenzende provincies worden samengevoegd als ze dezelfde waarde hebben voor <i>State_Name</i>. Het eindresultaat is een laag met grenzen van provincies.
+            </p>
+            <br/>
+        </div>
+        <div id="ExtractDataTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Gegevens exporteren</h2></td>
+                    <td>
+                    <img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" class="titleImage" alt="Gegevens exporteren">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Maakt een ZIP-bestand, CSV of KMZ van gegevens van uw lagen en een door u opgegeven interessegebied.
+            </p>
+            <p> 
+            </p>
+            <br/>
+        </div>
+        <div id="GenerateTessellationsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Betegeling genereren</h2></td>
+                    <td>
+                    <img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" class="titleImage" alt="Betegeling genereren">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Genereert betegelingen over een studiegebied op basis van de opgegeven vorm en grootte.
+            </p>
+            <br/>
+        </div>
+        <div id="MergeLayersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Lagen samenvoegen</h2></td>
+                    <td>
+                    <img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" class="titleImage" alt="Lagen samenvoegen">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Kopieert objecten van twee of meer bestaande lagen naar een nieuwe kaartlaag, bijvoorbeeld:
+                <ul>
+                    <li>Ik heb drie kaartlagen voor Engeland, Wales en Schotland en ik wil &eacute;&eacute;n kaartlaag van Groot-Brittanni&euml;. 
+                    </li>
+                    <li>Ik heb 12 kaartlagen en elke laag bevat perceelinformatie voor aangrenzende buurtschappen. Ik wil ze samenvoegen tot &eacute;&eacute;n kaartlaag en ik wil alleen de attributen van de 12 invoerlagen behouden met dezelfde naam en van hetzelfde type.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="OverlayLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Overlay lagen</h2></td>
+                    <td>
+                    <img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" class="titleImage" alt="Overlay Layers">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Overlay maakt van twee of meer lagen &eacute;&eacute;n enkele laag. Bij overlay lijkt het alsof u door een stapel kaarten kijkt en &eacute;&eacute;n kaart maakt die alle informatie bevat die in de stapel is gevonden, bijvoorbeeld:
+                <ul>
+                    <li>Welke percelen bevinden zich binnen het 100-jarige overstromingsgebied? (Binnen betekent hierbij hetzelfde als boven op.)
+                          
+                    </li>
+                    <li>Welke wegen bevinden zich binnen welke provincies?
+                    </li>
+                    <li>Welk bodemgebruik ligt boven op welk bodemtype?
+                         
+                    </li>
+                    <li>Welke bronnen bevinden zich binnen verlaten militaire basissen?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

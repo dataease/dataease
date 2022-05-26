@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Вычислить уклон</h2><p/>
+        <h2><img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" alt="Инструмент Вычислить уклон для Portal"></h2>
+        <hr/>
+    <p>Этот инструмент создает поверхность, отображающую уклон по входным данным высот. Уклон представляет скорость изменения высоты для каждой ячейки цифровой модели рельефа (ЦМР).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Выбрать входные данные для вычисления уклона</h2></div>
+        <hr/>
+        <div>
+            <p>Слой высот, по которому будет вычисляться уклон.
+            </p>
+        </div>
+    </div>
+    <div id="zFactor">
+        <div><h2>Задать коэффициент масштабирования высоты</h2></div>
+        <hr/>
+        <div>
+            <p>Введите коэффициент по z.
+            </p>
+            <p>Коэффициент z является коэффициентом масштабирования, используемым для конвертации значений высоты для двух целей:
+ 
+                <ul>
+                    <li>Конвертация единиц измерения высоты (метров, футов...) в единицы измерения горизонтальных координат слоя, это могут быть футы, метры или градусы.
+                        
+  
+                    </li>
+                    <li>Придание визуального эффекта преувеличения рельефа.
+                        
+ 
+                    </li>
+                </ul>
+                
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                </td>
+                <td>
+                    <p>Из футов
+                    </p>
+                </td>
+                <td>
+                    <p>Из метров
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Из футов
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>0.3048
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Из метров
+                    </p>
+                </td>
+                <td>
+                    <p>3.28084
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Имя слоя результата</h2></div>
+        <hr/>
+        <div>
+            <p>Имя слоя, который будет добавлен в  <b>Мои ресурсы</b> и на карту. Имя слоя по умолчанию зависит от имени инструмента и имени входного слоя. Если имя слоя уже используется, появится запрос ввести новое имя.
+            </p>
+            <p>Вы можете указать имя папки в  <b>Моих ресурсах</b>, где будет сохранен результат, с помощью ниспадающего списка <b>Сохранить результат в</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

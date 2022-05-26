@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Tổng kết trong Phạm vi</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Tổng kết trong Phạm vi"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y t&igrave;m c&aacute;c đối tượng (v&agrave; những phần của đối tượng) nằm trong ranh giới của v&ugrave;ng trong lớp đầu v&agrave;o đầu ti&ecirc;n. V&iacute; dụ:
+        <ul>
+            <li>Với một lớp c&aacute;c ranh giới lưu vực v&agrave; một lớp c&aacute;c ranh giới sử dụng đất theo loại h&igrave;nh sử dụng đất, h&atilde;y t&iacute;nh to&aacute;n tổng diện t&iacute;ch c&aacute;c loại đất sử dụng cho từng lưu vực. 
+            </li>
+            <li>Với một lớp thửa đất trong một quận v&agrave; một lớp ranh giới th&agrave;nh phố, h&atilde;y t&iacute;nh gi&aacute; trị trung b&igrave;nh c&aacute;c thửa đất trống trong từng ranh giới th&agrave;nh phố.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Nếu chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b>, th&igrave; chỉ c&aacute;c đối tượng nh&igrave;n thấy trong lớp đầu v&agrave;o v&agrave; lớp cần tổng kết trong phạm vi bản đồ hiện tại mới được ph&acirc;n t&iacute;ch. 
+ Nếu bỏ chọn, tất cả c&aacute;c tổng hợp trong cả lớp đầu v&agrave;o v&agrave; lớp cần tổng hợp sẽ được ph&acirc;n t&iacute;ch, ngay cả khi ch&uacute;ng ở ngo&agrave;i phạm vi bản đồ hiện tại.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Chọn lớp vùng để tổng kết các đối tượng khác trong ranh giới của khu vực đó</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp v&ugrave;ng sẽ được sử dụng để tổng kết c&aacute;c đối tượng nằm trong ranh giới của khu vực đ&oacute;. 
+            </p>
+            <p>Bạn c&oacute; thể lựa chọn giữa lớp v&ugrave;ng bạn đ&atilde; cung cấp hoặc giữa những bin đ&atilde; được tạo ra khi c&ocirc;ng cụ chạy. Khi tạo c&aacute;c bin, đối với bin  <b>H&igrave;nh vu&ocirc;ng</b>, số lượng v&agrave; đơn vị cụ thể sẽ x&aacute;c định chiều cao v&agrave; chiều d&agrave;i của h&igrave;nh vu&ocirc;ng. Đối với <b>H&igrave;nh lục gi&aacute;c</b>, số lượng v&agrave; đơn vị cụ thể sẽ x&aacute;c định khoảng c&aacute;ch giữa c&aacute;c mặt song song.
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp từ bản đồ của bạn, bạn c&oacute; thể chọn  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới c&ugrave;ng trong danh s&aacute;ch xổ xuống. T&ugrave;y chọn n&agrave;y mở ra một thư viện, tại đ&oacute; bạn c&oacute; thể duyệt v&agrave; chọn c&aacute;c bộ dữ liệu từ nhiều nguồn kh&aacute;c nhau để sử dụng trong ph&acirc;n t&iacute;ch của m&igrave;nh. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Chọn lớp để tổng kết</h2></div>
+        <hr/>
+        <div>
+            <p>C&aacute;c đối tượng thuộc lớp n&agrave;y nằm trong ranh giới đối tượng của lớp đầu v&agrave;o b&ecirc;n tr&ecirc;n sẽ được tổng kết. 
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp từ bản đồ của bạn, bạn c&oacute; thể chọn  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới c&ugrave;ng trong danh s&aacute;ch xổ xuống. T&ugrave;y chọn n&agrave;y mở ra một thư viện, tại đ&oacute; bạn c&oacute; thể duyệt v&agrave; chọn c&aacute;c bộ dữ liệu từ nhiều nguồn kh&aacute;c nhau để sử dụng trong ph&acirc;n t&iacute;ch của m&igrave;nh. 
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Thêm số liệu thống kê từ lớp tổng kết</h2></div>
+        <hr/>
+        <div>
+            <p>Bạn c&oacute; thể t&ugrave;y &yacute; t&iacute;nh to&aacute;n thống k&ecirc; cho c&aacute;c thuộc t&iacute;nh số của c&aacute;c điểm thuộc phạm vi ranh giới của c&aacute;c đối tượng. 
+            </p>
+            <p>Hộp chọn  <b>Số lượng điểm</b>, nếu được chọn, sẽ t&iacute;nh to&aacute;n tổng số điểm trong ranh giới từng v&ugrave;ng. Ngo&agrave;i ra, bạn c&oacute; thể t&iacute;nh to&aacute;n số liệu thống k&ecirc; cho c&aacute;c thuộc t&iacute;nh số của c&aacute;c điểm c&oacute; trong ranh giới từng v&ugrave;ng.
+            </p>
+            <ul>
+                <li> <b>Tổng</b>&mdash;Tổng gi&aacute; trị cho trường chỉ định.
+                </li>
+                <li> <b>Trung b&igrave;nh</b>&mdash;Trung b&igrave;nh hoặc b&igrave;nh qu&acirc;n cho trường chỉ định.
+                </li>
+                <li> <b>Tối thiểu</b>&mdash;Gi&aacute; trị nhỏ nhất trong trường chỉ định.
+                </li>
+                <li> <b>Tối đa</b>&mdash;Gi&aacute; trị lớn nhất trong trường chỉ định.
+                </li>
+                <li> <b>Độ lệch chuẩn</b>&mdash;Độ lệch chuẩn đối với c&aacute;c gi&aacute; trị trong trường chỉ định.
+                </li>
+            </ul>
+            
+            <p>Nếu lớp tổng kết kh&ocirc;ng c&oacute; bất kỳ trường số n&agrave;o, dữ liệu thống k&ecirc; bổ sung sẽ kh&ocirc;ng khả dụng.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Thêm số liệu thống kê từ</h2></div>
+        <hr/>
+        <div>
+            <p>Bạn c&oacute; thể t&ugrave;y &yacute; t&iacute;nh to&aacute;n số liệu thống k&ecirc; cho c&aacute;c thuộc t&iacute;nh số của c&aacute;c đường được tổng hợp. 
+            </p>
+            <p>Hộp đ&aacute;nh dấu  <b>Tổng độ d&agrave;i đường b&ecirc;n trong</b>, nếu được chọn, sẽ t&iacute;nh to&aacute;n tổng độ d&agrave;i đường c&oacute; trong ranh giới từng v&ugrave;ng. Ngo&agrave;i ra, bạn c&oacute; thể t&iacute;nh to&aacute;n số liệu thống k&ecirc; cho c&aacute;c thuộc t&iacute;nh số của c&aacute;c đường c&oacute; trong ranh giới từng v&ugrave;ng.
+            </p>
+            <ul>
+                <li> <b>Tổng</b>&mdash;Tổng gi&aacute; trị cho trường chỉ định.
+                </li>
+                <li> <b>Trung b&igrave;nh</b>&mdash;Trung b&igrave;nh hoặc b&igrave;nh qu&acirc;n cho trường chỉ định.
+                </li>
+                <li> <b>Tối thiểu</b>&mdash;Gi&aacute; trị nhỏ nhất trong trường chỉ định.
+                </li>
+                <li> <b>Tối đa</b>&mdash;Gi&aacute; trị lớn nhất trong trường chỉ định.
+                </li>
+                <li> <b>Độ lệch chuẩn</b>&mdash;Độ lệch chuẩn đối với c&aacute;c gi&aacute; trị trong trường chỉ định.
+                </li>
+            </ul>
+            
+            <p>Nếu lớp tổng kết kh&ocirc;ng c&oacute; bất kỳ trường số n&agrave;o, dữ liệu thống k&ecirc; bổ sung sẽ kh&ocirc;ng khả dụng.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Thêm số liệu thống kê từ</h2></div>
+        <hr/>
+        <div>
+            <p>Bạn c&oacute; thể t&ugrave;y &yacute; t&iacute;nh to&aacute;n số liệu thống k&ecirc; cho c&aacute;c thuộc t&iacute;nh số của c&aacute;c v&ugrave;ng được tổng hợp. 
+            </p>
+            <p>Hộp chọn  <b>Tổng diện t&iacute;ch sử dụng</b>, nếu được chọn, sẽ t&iacute;nh to&aacute;n tổng diện t&iacute;ch của đối tượng c&oacute; trong ranh giới từng v&ugrave;ng thuộc lớp đầu v&agrave;o đầu ti&ecirc;n. Ngo&agrave;i ra, bạn c&oacute; thể t&iacute;nh to&aacute;n số liệu thống k&ecirc; cho c&aacute;c thuộc t&iacute;nh số của c&aacute;c đối tượng c&oacute; trong ranh giới từng v&ugrave;ng.
+            </p>
+            <ul>
+                <li> <b>Tổng</b>&mdash;Tổng gi&aacute; trị cho trường chỉ định.
+                </li>
+                <li> <b>Trung b&igrave;nh</b>&mdash;Trung b&igrave;nh hoặc b&igrave;nh qu&acirc;n cho trường chỉ định.
+                </li>
+                <li> <b>Tối thiểu</b>&mdash;Gi&aacute; trị nhỏ nhất trong trường chỉ định.
+                </li>
+                <li> <b>Tối đa</b>&mdash;Gi&aacute; trị lớn nhất trong trường chỉ định.
+                </li>
+                <li> <b>Độ lệch chuẩn</b>&mdash;Độ lệch chuẩn đối với c&aacute;c gi&aacute; trị trong trường chỉ định.
+                </li>
+            </ul>
+            
+            <p>Nếu lớp tổng kết kh&ocirc;ng c&oacute; bất kỳ trường số n&agrave;o, dữ liệu thống k&ecirc; bổ sung sẽ kh&ocirc;ng khả dụng.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Thêm số liệu thống kê từ</h2></div>
+        <hr/>
+        <div>
+            <p>Sau khi chọn một lớp để tổng hợp, bạn c&oacute; thể t&ugrave;y &yacute; t&iacute;nh to&aacute;n số liệu thống k&ecirc; của bất kỳ thuộc t&iacute;nh số n&agrave;o của điểm, đường hoặc v&ugrave;ng trong lớp v&ugrave;ng đầu v&agrave;o. 
+            </p>
+            <ul>
+                <li> <b>Tổng</b>&mdash;Tổng gi&aacute; trị cho trường chỉ định.
+                </li>
+                <li> <b>Trung b&igrave;nh</b>&mdash;Trung b&igrave;nh hoặc b&igrave;nh qu&acirc;n cho trường chỉ định
+                </li>
+                <li> <b>Tối thiểu</b>&mdash;Gi&aacute; trị nhỏ nhất trong trường chỉ định
+                </li>
+                <li> <b>Tối đa</b>&mdash;Gi&aacute; trị lớn nhất trong trường chỉ định
+                </li>
+                <li> <b>Độ lệch chuẩn</b>&mdash;Độ lệch chuẩn đối với c&aacute;c gi&aacute; trị trong trường chỉ định
+                </li>
+            </ul>
+            
+            <p>T&ugrave;y theo loại đối tượng m&agrave; bạn đang tổng kết, bạn c&oacute; thể t&iacute;nh tổng số điểm, tổng chiều d&agrave;i đường hoặc tổng diện t&iacute;ch.
+            </p>
+            <p>Nếu lớp tổng kết kh&ocirc;ng c&oacute; bất kỳ trường số n&agrave;o, dữ liệu thống k&ecirc; bổ sung sẽ kh&ocirc;ng khả dụng.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Chọn trường để nhóm theo</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&acirc;y l&agrave; một thuộc t&iacute;nh của chức năng  <b>Tổng kết</b> c&aacute;c đối tượng m&agrave; bạn c&oacute; thể sử dụng để t&iacute;nh to&aacute;n c&aacute;c số liệu thống k&ecirc; ri&ecirc;ng biệt cho từng gi&aacute; trị thuộc t&iacute;nh duy nhất. 
+ V&iacute; dụ, giả sử đầu v&agrave;o đầu ti&ecirc;n c&oacute; chứa ranh giới th&agrave;nh phố v&agrave; tổng kết của c&aacute;c đối tượng l&agrave; c&aacute;c l&ocirc; đất. 
+ Một trong c&aacute;c thuộc t&iacute;nh của l&ocirc; đất l&agrave; <i>Status</i> c&oacute; chứa hai gi&aacute; trị: ĐỂ TRỐNG v&agrave; Đ&Atilde; D&Ugrave;NG. Để t&iacute;nh to&aacute;n tổng diện t&iacute;ch l&ocirc; đất trống v&agrave; đ&atilde; d&ugrave;ng trong ranh giới c&aacute;c th&agrave;nh phố, sử dụng <i>Status</i> gom nh&oacute;m theo thuộc t&iacute;nh. Số liệu thống k&ecirc; cho từng nh&oacute;m, cũng như số lượng c&aacute;c đối tượng, sẽ được hiển thị trong cửa sổ pop-up.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Thêm thiểu số, đa số</h2></div>
+        <hr/>
+        <div>
+            <p>Hộp đ&aacute;nh dấu n&agrave;y được bật khi bạn chọn một trường để gom nh&oacute;m theo. Nếu bạn muốn t&igrave;m ra c&aacute;c gi&aacute; trị thuộc t&iacute;nh trong mỗi nh&oacute;m l&agrave; thiểu số (chiếm &iacute;t ưu thế nhất) hoặc đa số (chiếm nhiều ưu thế nhất) trong mỗi ranh giới của lớp đầu v&agrave;o đầu ti&ecirc;n, chọn  <b>Th&ecirc;m thiểu số, đa số</b>. Khi bạn chọn <b>Th&ecirc;m thiểu số, đa số</b>, hai trường mới được th&ecirc;m v&agrave;o lớp kết quả của bạn. Nếu bạn cũng chọn <b>Th&ecirc;m tỷ lệ phần trăm</b>, hai trường bổ sung được th&ecirc;m v&agrave;o lớp kết quả chứa tỷ lệ phần trăm c&aacute;c gi&aacute; trị thuộc t&iacute;nh thiểu số v&agrave; đa số trong mỗi nh&oacute;m.
+            </p>
+            <ul>
+                <li>Nếu bạn đang tổng kết c&aacute;c điểm, c&aacute;c gi&aacute; trị thiểu số v&agrave; đa số sẽ được t&iacute;nh to&aacute;n dựa tr&ecirc;n số lượng điểm trong từng v&ugrave;ng bao quanh thuộc lớp khu vực đầu v&agrave;o.  
+                </li>
+                <li>Nếu bạn đang tổng kết c&aacute;c đường, c&aacute;c gi&aacute; trị thiểu số v&agrave; đa số sẽ được t&iacute;nh to&aacute;n dựa tr&ecirc;n độ d&agrave;i của đường trong từng v&ugrave;ng bao quanh thuộc lớp khu vực đầu v&agrave;o.  
+                </li>
+                <li>Nếu bạn đang tổng kết c&aacute;c khu vực, c&aacute;c gi&aacute; trị thiểu số v&agrave; đa số sẽ được t&iacute;nh to&aacute;n dựa tr&ecirc;n c&aacute;c v&ugrave;ng trong từng v&ugrave;ng bao quanh thuộc lớp khu vực đầu v&agrave;o.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Thêm phần trăm</h2></div>
+        <hr/>
+        <div>
+            <p>Hộp chọn n&agrave;y được bật khi bạn chọn một trường để nh&oacute;m theo. Chọn  <b>Th&ecirc;m tỷ lệ phần trăm</b> nếu bạn muốn t&igrave;m tỷ lệ phần trăm của từng gi&aacute; trị thuộc t&iacute;nh tổng từng nh&oacute;m. Một trường mới sẽ được th&ecirc;m v&agrave;o bảng kết quả v&agrave; chứa tỷ lệ phần trăm của từng gi&aacute; trị thuộc t&iacute;nh trong từng nh&oacute;m. Nếu bạn chọn <b>Th&ecirc;m thiểu số, đa số</b>, hai trường bổ sung sẽ được th&ecirc;m v&agrave;o lớp kết quả v&agrave; chứa tỷ lệ phần trăm c&aacute;c gi&aacute; trị thuộc t&iacute;nh thiểu số v&agrave; đa số trong mỗi nh&oacute;m.
+            </p>
+        </div>
+    </div>
+    <div id="ResultLayerName">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&acirc;y l&agrave; t&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu t&ecirc;n lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Sử dụng chức năng  <b>Lưu kết quả trong</b> menu thả xuống, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong phần <b>Nội dung của T&ocirc;i</b> nơi sẽ lưu trữ kết quả của bạn.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

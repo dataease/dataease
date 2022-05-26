@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Atrast punktu klasterus</h2><p/>
+        <h2><img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" alt="Atrast punktu klasterus"></h2>
+        <hr/>
+    <p>Rīks  Atrast punktu klasterus uz apkārtējo &quot;trok&scaron;ņu&quot; fona atrod punktu elementu klasterus, ņemot vērā to telpisko sadalījumu.
+    </p>
+    <p>Piemēram, nevalstiskā organizācija pēta konkrētu kaitēkļu izraisītu slimību. Tās rīcībā ir punktu datu kopa, kas apzīmē mājsaimniecības pētāmajā teritorijā, un daži no &scaron;iem punktiem ir invadēti, bet daži nav. Izmantojot rīku  Atrast punktu klasterus, analītiķis var noteikt inficēto mājsaimniecību datu klasterus, lai palīdzētu atrast teritoriju, kur sākt ārstē&scaron;anu un kaitēkļu iznīcinā&scaron;anu.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izvēlēties slāni, kuram tiks atrasti klasteri</h2></div>
+        <hr/>
+        <div>
+            <p>Punktu slānis, kurā tiks atrasti klasteri. Slāņiem ir jābūt ar projicēto telpisko atskaiti, vai arī apstrādes telpiskā atskaite ir jāiestata uz projicēto koordinātu sistēmu, izmantojot  <b>Analīzes darba vidi</b>.
+            </p>
+            <p>Papildus slāņa izvēlei kartē varat izvēlēties  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta apak&scaron;ā, lai saturā atrastu Big Data koplietojuma datu kopu vai elementu slāni.
+            </p>
+        </div>
+    </div>
+    <div id="clusterMethod">
+        <div><h2>Izvēlieties izmantojam klasteru veidošanas metodi</h2></div>
+        <hr/>
+        <div>
+            <p>Klasteru veido&scaron;anas metode, kas tiks izmantota, lai at&scaron;ķirtu punkta elementu kopas no apkārtējiem traucējumiem. Varat izvēlēties izmantot noteiktu attālumu vai pa&scaron;regulējo&scaron;u klasterē&scaron;anas algoritmu.
+            </p>
+            <p>Definētais attālums (DBSCAN) izmanto norādīto meklē&scaron;anas diapazonu, lai atdalītu blīvus klasterus no vāja trok&scaron;ņa. Definētais attālums (DBSCAN) ir ātrāks, bet ir piemērots tikai tad, ja ir ļoti skaidrs meklē&scaron;anas diapazons, kas labi darbojas, definējot visas kopas, kas var būt pieejamas. Definētais attālums (DBSCAN) atrod klasterus ar līdzīgu blīvumu.
+            </p>
+            <p>Pa&scaron;regulācijai (HDBSCAN) nav jānorāda meklē&scaron;anas diapazons, bet tā ir daudz laikietilpīgāka metode. Pa&scaron;regulējo&scaron;i (HDBSCAN) atrod punktu kopas, kas ir līdzīgas noteiktajam attālumam (DBSCAN), bet izmanto dažādus meklē&scaron;anas diapazonus, kas ļauj veidot kopas ar dažādu blīvumu. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Minimālais punktu skaits, kas uzskatāms par klasteri</h2></div>
+        <hr/>
+        <div>
+            <p>&Scaron;is parametrs tiek izmantots at&scaron;ķirīgi atkarībā no izvēlētās klasterē&scaron;anas metodes:
+            </p>
+            <p>
+                <ul>
+                    <li>Definētais attālums (DBSCAN) &mdash; norāda līdzekļu skaitu, kas jāatrod noteiktā attālumā no punkta, lai &scaron;is punkts sāktu veidot klasteri. Attālums tiek definēts, izmantojot  <b>Ierobežot meklē&scaron;anas diapazonu</b> parametru.
+                    </li>
+                    <li>Pa&scaron;regulējo&scaron;a (HDBSCAN) &ndash; norāda to iezīmju skaitu, kas atrodas blakus katram punktam (ieskaitot pa&scaron;u punktu) un ko ņem vērā, novērtējot blīvumu. &Scaron;is skaitlis ir arī minimālais klastera lielums, kas pieļaujams, izgūstot klasterus.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Ierobežojiet meklēšanas diapazonu līdz</h2></div>
+        <hr/>
+        <div>
+            <p>Izmantojot noteiktu attālumu (DBSCAN), &scaron;is parametrs ir attālums, kurā  <b>jāatrod minimālais punktu skaits,</b> ko uzskata par kopu. &Scaron;is parametrs netiek izmantots, ja kā izmantojamā klasterē&scaron;anas metode tiek izvēlēta pa&scaron;regulācija (HDBSCAN).
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p> Slāņa nosaukums, kas tiks izveidots. Ja rakstāt uz ArcGIS Data Store, rezultāti tiks saglabāti mapē  <b>Mans saturs</b> un pievienoti kartei. Ja rakstā uz lielu datu failu koplietojumu,, rezultāti tiks saglabāti lielajā datu failu koplietojumā un pievienot  tā sarakstam. Tas netiks pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja slānis jau pastāv, rīks nedarbosies.
+            </p>
+            <p>Rakstot uz   ArcGIS Data Store  (relāciju vai telpas un laika lielo datu krātuvi), izmantojot nolaižamo lodziņu  <b>Saglabāt rezultātu,</b> var norādīt mapes nosaukumu mapē <b>Mans saturs,</b> kurā tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

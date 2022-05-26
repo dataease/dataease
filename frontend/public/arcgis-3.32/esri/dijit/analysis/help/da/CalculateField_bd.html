@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Beregn felt</h2><p/>
+        <h2><img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" alt="Beregn felt"></h2>
+        <hr/>
+    <p> Dette v&aelig;rkt&oslash;j arbejder med et input-lag med henblik p&aring; at beregne v&aelig;rdier for et nyt eller et eksisterende felt. Opret et Arcade-udtryk for at beregne de v&aelig;rdier, som objekterne skal udfyldes med.   Hvis dine data er tidsafh&aelig;ngige og tilh&oslash;rer &oslash;jeblikstypen, kan du v&aelig;lge at oprette udtryk, der er sporingsparate.
+    </p>
+    <p>Forestil dig f.eks., at du &oslash;nsker at redigere et eksisterende felt med navnet  <i>TotalSales</i>. Du &oslash;nsker, at feltet skal vise summen af det samlede salg i 2016 og 2017. Ved at benytte disse felter i udtrykket kan du beregne feltv&aelig;rdierne som <pre>$feature[&quot;Sales2016&quot;] + $feature[&quot;Sales2017&quot;]</pre>.
+    </p>
+    <p>Forestil dig &ndash; som et andet eksempel &ndash; at du har GPS-m&aring;linger, der registrerer position, tid, bus-ID og hastigheder for busserne i en by. Vi vil oprette et nyt felt med navnet  <i>SpeedFrom3</i>, der beregner gennemsnitshastigheden for de sidste 3 registrerede GPS-m&aring;linger for hvert objekt. Til denne beregning ville vi benytte en sporingsparat beregning, hvor sporet er en bus, der betegnes med et bus-ID.    Den beregning, der bestemmer gennemsnitshastigheden for de forrige 3 tidstrin og det aktuelle tidstrin, er <pre>average($track.field[&quot;speed&quot;].history(-4))</pre>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vælg det lag, der skal beregnes feltværdier for</h2></div>
+        <hr/>
+        <div>
+            <p>De punkter, linjer, omr&aring;der og tabeller, der beregnes feltv&aelig;rdier for.  
+            </p>
+            <p>Udover at du kan v&aelig;lge et lag i dit kort, kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten for at g&aring; til dit indhold til et big data-fildelingsdatas&aelig;t eller -vektorlag.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Beregn feltværdier for feltet</h2></div>
+        <hr/>
+        <div>
+            <p>Det nye eller eksisterende felt, der beregnes v&aelig;rdier for, samt feltets datatype. Hvis du beregner v&aelig;rdier for et felt, der allerede findes, beh&oslash;ver du ikke at matche datatypen. 
+            </p>
+        </div>
+    </div>
+    <div id="expression">
+        <div><h2>Opret et udtryk for at beregne feltværdierne</h2></div>
+        <hr/>
+        <div>
+            <p>Tilf&oslash;j et udtryk vha. Expression Builder-programmet for at beregne feltv&aelig;rdierne. 
+            </p>
+            <p>Forestil dig f.eks., at vi &oslash;nsker at tilf&oslash;je v&aelig;rdier med navnene <i>income</i> og <i>bonus</i> til et felt. For at g&oslash;re dette skal du tilf&oslash;je udtrykket <code>$feature[&quot;income&quot;] + $feature[&quot;bonus&quot;] </code>.
+            </p>
+        </div>
+    </div>
+    <div id="trackInfo">
+        <div><h2>Udtrykket er sporingsparat</h2></div>
+        <hr/>
+        <div>
+            <p>Angiv, om dit udtryk er sporingsparat. Et sporingsparat udtryk vil indeholde formatering, som f.eks.  <pre>$track.field[&quot;fieldname&quot;].history(...)</pre>. Sporingsparate udtryk kr&aelig;ver felter, der kan identificere individuelle spor. Spor kan best&aring; af punkter, linjer, omr&aring;der eller tabeller, og de kr&aelig;ver kun, at inputtet er forsynet med en sporidentifikator, samt at dataene er tidsafh&aelig;ngige og tilh&oslash;rer &oslash;jeblikstypen.
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analysér data med tidsintervaller</h2></div>
+        <hr/>
+        <div>
+            <p>Angiv, om du vil beregne v&aelig;rdier for dine spor ved hj&aelig;lp af tidsintervaller, som vil segmentere dine input til analyse. Hvis du bruger tidsintervaller, skal du angive det tidsinterval, du vil bruge, og evt. indstille referencetidspunktet. Hvis du ikke angiver et referencetidspunkt, benyttes 1. januar 1970. 
+            </p>
+            <p>Hvis du f.eks. indstiller tidsgr&aelig;nsen til at v&aelig;re 1 dag, der begynder kl. 9.00 den 1. januar 1990, bliver hvert spor afkortet klokken 9:00 for hver dag og analyseret inden for dette segment. 
+            </p>
+            <p>Brug af tidsintervaller er en hurtig m&aring;de at nedbringe beregningstiden, da der hurtigt oprettes mindre spor til analyse. Hvis opsplitning ved et tilbagevendende tidsinterval giver mening for din analyse, anbefales det behandling af big data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; det lag, som oprettes. Hvis du skriver til et ArcGIS Data Store, bliver  dine resultater gemt i  <b>Mit indhold</b> og f&oslash;jet til kortet. Hvis du skriver til en big data-fildeling, bliver dine resultater gemt i big data-fildelingen og f&oslash;jet til dens manifest. De bliver ikke f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil v&aelig;rkt&oslash;jet ikke fungere.
+            </p>
+            <p>N&aring;r du skriver til   ArcGIS Data Store  (relationelt eller spatiotemporalt big data-lager) ved hj&aelig;lp af rullelisten  <b>Gem resultat i </b>, kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

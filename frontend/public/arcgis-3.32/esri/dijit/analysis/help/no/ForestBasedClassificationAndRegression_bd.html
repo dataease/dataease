@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Skogbasert klassifisering og regresjon</h2><p/>
+        <h2><img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" alt="Arbeidsflytdiagrammet Skogbasert klassifisering og regresjon"></h2>
+        <hr/>
+    <p>Oppretter modeller og genererer prediksjoner ved hjelp av en tilpasset versjon av Leo Breimans Random Forest-algoritme, som er en metode for veiledet maskinl&aelig;ring. Prediksjoner kan utf&oslash;res for b&aring;de kategoriske variabler (klassifisering) og kontinuerlige variabler (regresjon). Forklaringsvariabler er felter i attributtabellen til treningsgeoobjekter. Verkt&oslash;yet kan kj&oslash;res for &aring; generere en modell for &aring; vurdere ytelse, eller generere en modell og predikere resultater for andre datasett.
+    </p>
+    <p>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Analysetype</h2></div>
+        <hr/>
+        <div>
+            <p>Angir verkt&oslash;yets driftsmodus. Verkt&oslash;yet kan kj&oslash;res for &aring; trene opp en modell til kun &aring; vurdere ytelse, eller trene opp en modell og predikere for geoobjekter. Prediksjonstypene er f&oslash;lgende:
+                <ul>
+                    <li> <b>Tren opp en modell til &aring; vurdere modellytelse</b> &ndash;&nbsp;En modell trenes opp og tilpasses inndataene. Bruk dette alternativet til &aring; vurdere n&oslash;yaktigheten av modellen du bruker, f&oslash;r du genererer prediksjoner p&aring; et nytt datasett. Resultatet av dette alternativet blir en geoobjekttjeneste for de tilpassede treningsdataene, for modelldiagnostikken og en valgfri tabell med varierende viktighetsgrad.
+                    </li>
+                    <li> <b>Tren opp en modell og prediker verdier</b> &ndash;&nbsp;Prediksjoner eller klassifiseringer genereres for geoobjekter. Forklaringsvariabler m&aring; oppgis for b&aring;de treningsgeoobjektene og for geoobjektene som skal predikeres. Resultatet av dette alternativet blir en geoobjekttjeneste for de predikerte verdiene, for modelldiagnostikken og en valgfri tabell med varierende viktighetsgrad.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="train">
+        <div><h2>Tren opp en modell til å vurdere modellytelse</h2></div>
+        <hr/>
+        <div>
+            <p>Bruk denne modusen hvis du vil tilpasse en modell og unders&oslash;ke tilpasningen.
+            </p>
+            <p>Med dette valget blir modellen trent opp ved hjelp av et inndatalag. Bruk dette alternativet til &aring; vurdere n&oslash;yaktigheten av modellen du bruker, f&oslash;r du genererer prediksjoner p&aring; et nytt datasett. Dette alternativet utarbeider modelldiagnoser i meldingsvinduet og anvender modellen p&aring; treningsdataene.
+            </p>
+        </div>
+    </div>
+    <div id="trainAndPredict">
+        <div><h2>Tren opp en modell og prediker verdier</h2></div>
+        <hr/>
+        <div>
+            <p>Bruk denne modusen hvis du vil tilpasse en modell og anvende modellen p&aring; datasettet for &aring; generere prediksjoner.
+            </p>
+            <p>Prediksjoner eller klassifiseringer genereres for geoobjekter. Resultatet av dette alternativet blir en geoobjekttjeneste, modelldiagnostikk og en valgfri tabell med varierende viktighetsgrad.
+            </p>
+        </div>
+    </div>
+    <div id="inFeatures">
+        <div><h2>Velg treningslag</h2></div>
+        <hr/>
+        <div>
+            <p>Geoobjektlaget som inneholder variabelen som skal predikeres, og feltene som skal brukes til &aring; generere prediksjonen.
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> nederst i rullegardinlisten, for &aring; bla gjennom innholdet p&aring; et fildelingsomr&aring;de for stordata eller et geoobjektlag.
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Velg et lag å predikere verdier for</h2></div>
+        <hr/>
+        <div>
+            <p>Et geoobjektlag som representerer lokasjoner der prediksjoner skal foretas. Dette geoobjektlaget m&aring; ogs&aring; inneholde eventuelle forklaringsvariabler i form av felter som samsvarer med dem som ble brukt fra treningsgeoobjektene.
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> nederst i rullegardinlisten, for &aring; bla gjennom innholdet p&aring; et fildelingsomr&aring;de for stordata eller et geoobjektlag.
+            </p>
+        </div>
+    </div>
+    <div id="variablePredict">
+        <div><h2>Velg feltet som skal predikeres</h2></div>
+        <hr/>
+        <div>
+            <p>Feltet fra treningsgeoobjektene som inneholder verdiene som skal brukes til &aring; trene opp modellen. Dette feltet inneholder kjente (trenings-) verdier av variabelen som skal brukes til &aring; predikere p&aring; ukjente lokasjoner. Hvis verdiene er kategoriske (f.eks. l&oslash;nn, furu, eik), velges avmerkingsboksen  <b>Kategorisk</b>.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Velg én eller flere forklaringsvariabler</h2></div>
+        <hr/>
+        <div>
+            <p>Ett eller flere felter som representerer forklaringsvariablene (felter) som bidrar til &aring; predikere verdien eller kategorien for variabelen som skal predikeres. Bruk avmerkingsboksen Kategorisk for eventuelle variabler som representerer klasser eller kategorier (f.eks. arealdekke eller tilstedev&aelig;relse eller frav&aelig;r). Angi variabelen som sann for hvis den representerer klasser eller kategorier som arealdekke eller tilstedev&aelig;relse eller frav&aelig;r, og som usann hvis variabelen er kontinuerlig.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfTrees">
+        <div><h2>Antall trær</h2></div>
+        <hr/>
+        <div>
+            <p>Antall tr&aelig;r som skal opprettes i modellen. Flere tr&aelig;r resulterer som regel i mer n&oslash;yaktig modellprediksjon, men beregningen av modellen tar lengre tid. Standard antall tr&aelig;r er 100.
+            </p>
+        </div>
+    </div>
+    <div id="minimumLeafSize">
+        <div><h2>Minste bladstørrelse</h2></div>
+        <hr/>
+        <div>
+            <p>Minste antall observasjoner som kreves for &aring; beholde et blad (dvs. siste node p&aring; et tre uten flere oppdelinger). Standard minimum for regresjon er 5, og standarden for klassifisering er&nbsp;1. For sv&aelig;rt store datamengder reduseres verkt&oslash;yets kj&oslash;retid hvis disse tallene forh&oslash;yes.
+            </p>
+        </div>
+    </div>
+    <div id="maximumTreeDepth">
+        <div><h2>Maksimal tredybde</h2></div>
+        <hr/>
+        <div>
+            <p>Det maksimale antallet oppdelinger som kan utf&oslash;res nedover et tre. En stor maksimal dybde gir flere oppdelinger, noe som kan &oslash;ke faren for overtilpassing av modellen. Standarden er datadrevet og avhenger av antall tr&aelig;r som opprettes og antall variabler som inkluderes.
+            </p>
+        </div>
+    </div>
+    <div id="sampleSize">
+        <div><h2>Tilgjengelige data per tre (%)</h2></div>
+        <hr/>
+        <div>
+            <p>Angir prosentandelen av geoobjektene i treningslaget som brukes i hvert beslutningstre. Standarden er 100&nbsp;prosent av dataene. Et utvalg for hvert tre tas vilk&aring;rlig fra to tredjedeler av de angitte dataene.
+            </p>
+            <p>Hvert av beslutningstr&aelig;rne i skogen opprettes ved hjelp av et tilfeldig utvalg (ca. to tredjedeler) av de tilgjengelige treningsdataene. Hvis det brukes en lavere prosentandel inndata for hvert beslutningstre, &oslash;kes verkt&oslash;yets hastighet for sv&aelig;rt store datasett.
+            </p>
+        </div>
+    </div>
+    <div id="randomVariables">
+        <div><h2>Antall tilfeldig utvalgte variabler</h2></div>
+        <hr/>
+        <div>
+            <p>Angir antallet forklaringsvariabler som brukes til &aring; opprette hvert enkelt beslutningstre.
+            </p>
+            <p>Hvert av beslutningstr&aelig;rne i skogen opprettes ved hjelp av en vilk&aring;rlig delmengde av de angitte forklaringsvariablene. Hvis antallet variabler som brukes i hvert enkelt beslutningstre &oslash;kes, &oslash;ker faren for overtilpassing av modellen, spesielt hvis det foreligger &eacute;n eller et par dominerende variabler. En vanlig praksis er &aring; bruke kvadratroten av det totale antallet forklaringsvariabler dersom det er en numerisk variabel som skal predikeres, eller dele det totale antallet forklaringsvariabler p&aring; 3 dersom det er en kategorisk variabel som skal predikeres.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Velg hvordan forklaringsfelter skal samsvare</h2></div>
+        <hr/>
+        <div>
+            <p>Hvordan tilsvarende variabler i treningslaget skal samsvare med variablene i prediksjonslaget. Kun variablene som brukes til trening, blir inkludert i tabellen.
+            </p>
+        </div>
+    </div>
+    <div id="percentageForValidation">
+        <div><h2>Antall kjøringer for validering</h2></div>
+        <hr/>
+        <div>
+            <p>Angir prosentandelen (mellom 0 og 50&nbsp;prosent) av geoobjekter i treningslaget som skal inng&aring; i testdatasettet for validering. Modellen blir trent opp uten denne delmengden med data, og verdiene som observeres for de aktuelle geoobjektene, blir sammenlignet med den predikerte verdien. Standarden er 10&nbsp;prosent.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget allerede finnes, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Resultatene som returneres, vil avhenge av type analyse. Hvis treningens form&aring;l er &aring; vurdere modelltilpassing, vil resultatene inneholde et lag med treningsdata tilpasset modellen og resultatinformasjon som vurderer modelltilpassingen. Hvis det dreier seg om trening og prediksjon, vil resultatene inneholde et lag med treningsdata tilpasset modellen og et lag med predikerte resultater samt resultatinformasjon som vurderer modelltilpassingen.
+            </p>
+            <p>Bruk rullegardinlisten  <b>Lagre resultat i</b> til &aring; angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatene skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

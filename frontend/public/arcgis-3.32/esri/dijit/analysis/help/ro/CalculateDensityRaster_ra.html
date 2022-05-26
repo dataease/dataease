@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Calcul densitate</h2><p/>
+        <h2><img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" alt="Instrument Calcul densitate"></h2>
+        <hr/>
+    <p>Acest instrument creează o hartă de densitate din obiecte spaţiale punctuale sau liniare, răsp&acirc;ndind cantităţi cunoscute ale unui anumit fenomen (reprezentate ca atribute ale punctelor sau liniilor) &icirc;n hartă. Rezultatul este un strat tematic de suprafeţe clasificate de la cea mai puţin densă la cea mai densă.
+    </p>
+    <p>Pentru introducerea punctelor, fiecare punct trebuie să reprezinte locaţia unui eveniment sau incident, iar stratul tematic rezultat reprezintă un număr de incidente pe suprafaţă unitară. O valoare mai mare a densităţii &icirc;ntr-o locaţie nouă denotă faptul că există mai multe puncte &icirc;n apropierea acelei locaţii. &Icirc;n multe cazuri, stratul tematic rezultat poate fi interpretat drept o suprafaţă de risc pentru evenimente viitoare. De exemplu, dacă punctele introduse reprezintă locaţii ale loviturilor de fulgere, stratul tematic rezultat poate fi interpretat drept o suprafaţă de risc pentru viitoare lovituri de fulgere.
+    </p>
+    <p>Pentru introducerea liniilor, suprafaţă de densitate a liniilor reprezintă suma totală a liniilor care se află &icirc;n apropiere de fiecare locaţie. Unităţile valorilor de densitate calculate sunt lungimea liniei pe suprafaţă unitară. De exemplu, dacă liniile reprezintă r&acirc;uri, stratul tematic rezultat va reprezenta lungimea totală a r&acirc;urilor care se află &icirc;n raza de căutare. Acest rezultat poate fi utilizat pentru identificarea zonelor favorabile ducerii animalelor la păscut.
+    </p>
+    <p>Printre posibilităţile de utilizare ale acestui instrument se numără:
+
+        <ul>
+            <li>Crearea unor hărţi de densitate pentru criminalitate &icirc;n vederea ajutării secţiilor de poliţie să aloce resurse adecvate zonelor cu criminalitate ridicată.
+                
+ 
+            </li>
+            <li>Calculul densităţii spitalelor dintr-un judeţ. Stratul tematic rezultat va prezenta zone cu accesibilitate ridicată şi scăzută la spitale, iar aceste informaţii pot fi utilizate pentru a decide dacă să se construiască noi spitale.
+                
+ 
+            </li>
+            <li>Identificarea zonelor cu risc ridicat de incendii forestiere pe baza locaţiilor istorice de incendii forestiere.
+                
+ 
+            </li>
+            <li>Localizarea comunităţilor aflate departe de artere rutiere majore, pentru a planifica unde trebuie construite noi drumuri.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointOrLineFeatures">
+        <div><h2>Alegeţi un strat tematic de puncte sau linii de intrare din care să calculaţi densitatea</h2></div>
+        <hr/>
+        <div>
+            <p>Stratul tematic de puncte sau linii de intrare, care va fi utilizat pentru a calcula stratul tematic de densitate.
+            </p>
+        </div>
+    </div>
+    <div id="countField">
+        <div><h2>Utilizaţi un câmp de numărare</h2></div>
+        <hr/>
+        <div>
+            <p>Furnizaţi un c&acirc;mp, specific&acirc;nd numărul de incidente din fiecare locaţie. De exemplu, dacă aveţi puncte ce reprezintă oraşe, puteţi utiliza un c&acirc;mp care reprezintă populaţia oraşului drept c&acirc;mp de numărare, iar stratul tematic de densitate a populaţiei va calcula densităţile mai mari de populaţie din apropierea oraşelor cu populaţii mai mari.
+            </p>
+            <p>Dacă selecţia implicită utilizată este  <b>Niciuna</b>, atunci fiecare locaţie va fi considerată ca reprezent&acirc;nd un singur număr.
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Căutare distanţă</h2></div>
+        <hr/>
+        <div>
+            <p>Introduceţi o distanţă, specific&acirc;nd c&acirc;nd de departe să se caute &icirc;n vederea găsirii obiectelor spaţiale punctuale sau liniare la calculul valorilor pentru densitate. De exemplu, dacă furnizaţi o distanţă de căutare de 10.000 de metri, densitatea fiecărei locaţii din stratul tematic de ieşire este calculată pe baza obiectelor spaţiale aflate la cel mult 10.000 de metri de locaţie. Orice locaţie care nu are niciun incident pe o rază de 10.000 de metri va primi valoarea zero pentru densitate.
+            </p>
+            <p>Dacă nu este furnizată nicio distanţă, se va calcula o distanţă implicită, pe baza locaţiilor obiectelor spaţiale introduse şi a valorilor din c&acirc;mpul de numărare (dacă este furnizat un c&acirc;mp de numărare).
+            </p>
+        </div>
+    </div>
+    <div id="outputAreaUnits">
+        <div><h2>Unităţi de suprafaţă rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Specificaţi unitatea suprafeţei rezultate. Densitatea este un număr &icirc;mpărţit la suprafaţă, iar acest parametru specifică unitatea de suprafaţă din calculul densităţii.
+            </p>
+            <p>Unităţile de suprafaţă disponibile sunt Mile pătrate, Picioare pătrate, Metri pătraţi şi Kilometri pătraţi.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Dimensiune celulă ieşire</h2></div>
+        <hr/>
+        <div>
+            <p>Dimensiunea celulei şi unitatea de măsură pentru rasterele de ieşire.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic ce va fi creat &icirc;n  <b>Resursele mele</b> şi va fi adăugat pe hartă. Numele implicit se bazează pe numele instrumentului şi numele stratului tematic de intrare. Dacă stratul tematic rezultat există deja, vi se va solicita să furnizaţi un alt nume.
+            </p>
+            <p>Puteți specifica numele folderului &icirc;n  <b>Resursele mele</b> unde se va salva rezultatul folosind caseta drop-down <b>Salvați rezultatele &icirc;n</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

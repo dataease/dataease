@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Find Point Clusters</h2><p/>
+        <h2><img src="./images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" alt="Find Point Clusters"></h2>
+        <hr/>
+    <p>The  Find Point Clusters tool 
+finds clusters of point features within surrounding noise based on their spatial or spatiotemporal distribution.
+    </p>
+    <p>For example, a nongovernmental organization is  studying a particular pest-borne
+disease. It has a point dataset representing households in a
+study area, some of which are infested and some of which are not. By
+using the  Find Point Clusters tool, an analyst can determine clusters of
+infested households to help pinpoint an area to begin treatment and
+extermination of pests.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choose the layer for which clusters will be found</h2></div>
+        <hr/>
+        <div>
+            <p>The point layer in which clusters will be found.  Layers must be in a projected spatial reference or have a processing spatial reference set to a projected coordinate system using  <b>Analysis Environments</b>.
+            </p>
+            <p>In addition to choosing a layer from your map, you can choose  <b>Choose Analysis Layer</b> at the bottom of the drop-down list to browse to your contents for a big data file share dataset or feature layer. You may optionally apply a filter on your input layer or apply a selection on hosted layers added to your map. Filters and selections are only applied for analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="clusterMethod">
+        <div><h2>Choose the clustering method to use</h2></div>
+        <hr/>
+        <div>
+            <p>The clustering method that will be used to distinguish clusters of point features from surrounding noise. You can choose to use a defined distance or self-adjusting clustering algorithm.
+            </p>
+            <p>Defined distance (DBSCAN) uses a specified search range to separate dense clusters from sparser
+noise. Optionally, time can be used to find spatiotemporal clusters using both a search range and search duration. Defined distance (DBSCAN) is faster but is only
+appropriate if there is a very clear search range to use that works
+well to define all clusters that may be present. Defined distance (DBSCAN) finds
+clusters that have similar densities.
+            </p>
+            <p>Self-adjusting (HDBSCAN) does not require a search range to be specified, but it is a more time-consuming method. Self-adjusting (HDBSCAN) finds
+clusters of points similar to defined distance (DBSCAN) but uses varying search ranges,
+allowing for clusters with varying densities.
+
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Minimum number of points to seed a cluster</h2></div>
+        <hr/>
+        <div>
+            <p>This parameter is used differently depending on the clustering method chosen from the following options:
+            </p>
+            <p>
+                <ul>
+                    <li>Defined distance (DBSCAN)&mdash;Specifies the number of features that must be found within a certain distance or distance and duration  of a point for that point to start to form  a cluster. The distance is defined using the  <b>Limit the search range to</b> parameter. If time is used to discover spatiotemporal clusters, the duration is specified using the <b>Limit the search duration to</b> parameter.
+                    </li>
+                    <li>Self-adjusting (HDBSCAN)&mdash;Specifies the number of features neighboring each point (including the point itself) that will be considered when estimating density. This number is also the minimum cluster size allowed when extracting clusters.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Limit the search range to</h2></div>
+        <hr/>
+        <div>
+            <p>When using defined distance (DBSCAN), this parameter is the distance within which the  <b>Minimum number of points to seed a cluster</b> must be found. If the input layer is time-enabled and is of type instant, you can select <b>Use time to find clusters</b> to discover spatiotemporal groups of points in surrounding noise. When using time, the <b>Limit the search duration to</b>    parameter specifies the length of time within which <b>Minimum number of points to seed a cluster</b> must be found in addition to being within the search range. These parameters are not used when self-adjusting (HDBSCAN) is chosen as the clustering method to use.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p> The name of the layer that will be created.  If you are writing to an ArcGIS Data Store, your results will be saved in  <b>My
+Content</b> and added to the map. If you are writing to a big data file share, your results will be stored in the big data file share and added to its manifest. It will not be added to the map. The default name is based on the
+tool name and the input layer name. If the layer already exists, the tool will fail.
+            </p>
+            <p>When writing to   ArcGIS Data Store  (relational or spatiotemporal big data store) using the  <b>Save result in</b> drop-down box, you can specify
+the name of a folder in <b>My Content</b> where the result will be
+saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Sapludināt robežas</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Sapludināt robežas"></h2>
+        <hr/>
+    <p>Teritorijas, kas pārklājas vai kam ir kopīga robeža vai atribūta vērtība, tiek sapludināti, veidojot vienu teritoriju.
+    </p>
+    <p>Jūs varat kontrolēt, kuras robežas tiek apvienotas, norādot lauku. Piemēram, ja jums ir rajonu slānis, un katram slānim ir  <pre>State_Name</pre> atribūts, jūs varat iz&scaron;ķīdināt robežas, lietojot <pre>State_Name</pre> atribūtu. Rajoni tiks sapludināti, ja tiem būs vienāda <pre>State_Name</pre> vērtība. Rezultāts ir novada robežu slānis.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izvēlieties laukumu slāni, kura robežas tiks sapludinātas</h2></div>
+        <hr/>
+        <div>
+            <p>Slānis, kas satur laukuma elementus, kuri tiks sapludināti. 
+            </p>
+            <p>Papildus slāņa izvēlei kartē varat izvēlēties  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta apak&scaron;ā, lai saturā atrastu Big Data koplietojuma datu kopu vai elementu slāni.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveFields">
+        <div><h2>Izvēlieties izšķīdināšanas metodi</h2></div>
+        <hr/>
+        <div>
+            <p>Norāda lauku iz&scaron;ķīdinā&scaron;anai izmantoto metodi.
+            </p>
+            <p>Jūs varat izvēlēties vienu no divām metodēm lai apvienotu laukumu elementus:
+                <ul>
+                    <li> <b>Teritorijas, kas daļēji pārklājas vai atrodas blakus</b>&nbsp;&mdash; divas vai vairākas teritorijas, kuru robežas pārklājas, tiks apvienotas vienā. Papildus, teritorijas, kas atrodas blakus (tas ir, tām ir kopēja robeža), tiks apvienotas vienā.
+                    </li>
+                    <li> <b>Teritorijas ar vienādu lauka vērtību</b>&mdash;Divas vai vairākas teritorijas tiks sapludinātas vienā, ja tām būs vienāda lauka vērtība.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Izveidot vairākdaļu elementus</h2></div>
+        <hr/>
+        <div>
+            <p>Vairākdaļa ir vietas vai objekta attēlojums, kam ir vairākas daļas, attēlojums tiek definēts kā viens elements, jo tas atsaucas uz vienu atribūtu kopu. Piemēram, slānī Havaju &scaron;tatu var uzskatīt par vairākdaļu elementu, jo tā atsevi&scaron;ķās ģeometriskās daļas ir klasificētas kā vienots &scaron;tats.
+            </p>
+            <p> <b>Vairākdaļu funkciju izveide</b> piedāvā divas opcijas:
+                <ul>
+                    <li>Patiess (atzīmēts): izvades serviss var ietvert vairākdaļu elementus.
+                    </li>
+                    <li>Aplams (nav atzīmēts): izvades servisā tiks iekļauti tikai viendaļīgi elementi, un katrai daļai tiks izveidoti atsevi&scaron;ķi elementi. Tā ir noklusējuma vērtība.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Pievienot statistiku (pēc izvēles)</h2></div>
+        <hr/>
+        <div>
+            <p>Kad apgabali ir sapludināti, varat apkopot to atribūtu vērtības ar jēgpilnu statistiku. Piemēram, ja tiek likvidēta robeža starp apgabaliem, pamatojoties uz  <pre>State_Name</pre>, un katram apgabalam ir <i>Population</i> lauks, var aprēķināt summu <pre>Population</pre> &scaron;tatam.
+            </p>
+            <p> Varat aprēķināt apkopoto elementu statistikuJūs varat aprēķināt tālāk norādītās vērtības ciparu laukos.
+                <ul>
+                    <li>Skaits&nbsp;&mdash; aprēķina vērtību skaitu, kas nav nulle. To var izmantot ciparu laukiem un virknēm. [nulle, 0, 2] skaits ir&nbsp;2.
+                    </li>
+                    <li>Summa&nbsp;&mdash; katra lauka skaitlisko vērtību summa. [nulle, nulle, 3] summa ir&nbsp;3.
+                    </li>
+                    <li>Vidējais&nbsp;&mdash; vidējā skaitliskā vērtība. [0, 2, nulle] vidējā vērtība ir&nbsp;1.
+                    </li>
+                    <li>Minimums&nbsp;&mdash; ciparu lauka minimālā vērtība. [0, 2, nulle] minimums ir&nbsp;0. 
+                    </li>
+                    <li>Maksimums&nbsp;&mdash; ciparu lauka maksimālā vērtība. [0, 2, nulle] maksimums ir&nbsp;2.
+                    </li>
+                    <li>Diapazons&nbsp;&mdash; ciparu lauka diapazons. To aprēķina, minimālo vērtību atņemot no maksimālās vērtības. [0, nulle, 1] diapazons ir&nbsp;1. [nulle, 4] diapazons ir&nbsp;0.
+                    </li>
+                    <li>Novirze&nbsp;&mdash; mar&scaron;ruta ciparu lauka novirze. [1] novirze ir nulle. [null, 1, 0, 1, 1] novirze ir 0,25.
+                    </li>
+                    <li>Standarta novirze&nbsp;&mdash; ciparu lauka standarta novirze. [1] standarta novirze ir nulle. [null, 1, 0, 1, 1] standartnovirze ir 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Jūs varat aprēķināt tālāk norādītās vērtības virkņu laukos.
+                <ul>
+                    <li>Skaits&nbsp;&mdash; virkņu, kas nav nulle, skaits.
+                    </li>
+                    <li>Jebkāda. &Scaron;ī statistika ir nejau&scaron;s virknes vērtības paraugs norādītajā laukā.
+                    </li>
+                </ul>
+                Jebkāda statistika tiek aprēķināta no vērtībām, kas nav nulle. Rezultātu slānī ir ietverts jauns lauks par katru aprēķināto statistiku. Jebkurus statistikas datus var pievienot, izvēloties atribūtu un statistikas datus. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p> Slāņa nosaukums, kas tiks izveidots. Ja rakstāt uz ArcGIS Data Store, rezultāti tiks saglabāti mapē  <b>Mans saturs</b> un pievienoti kartei. Ja rakstā uz lielu datu failu koplietojumu,, rezultāti tiks saglabāti lielajā datu failu koplietojumā un pievienot  tā sarakstam. Tas netiks pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja slānis jau pastāv, rīks nedarbosies.
+            </p>
+            <p>Rakstot uz   ArcGIS Data Store  (relāciju vai telpas un laika lielo datu krātuvi), izmantojot nolaižamo lodziņu  <b>Saglabāt rezultātu,</b> var norādīt mapes nosaukumu mapē <b>Mans saturs,</b> kurā tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

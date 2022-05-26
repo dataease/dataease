@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Raster naar object omzetten</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="Tool Raster naar object omzetten"></h2>
+        <hr/>
+    <p>Deze tool converteert een raster naar een objectdataset, als punten, lijnen of polygonen.
+    </p>
+    <p>Met de parameter  <b>Veld kiezen</b> kunt u kiezen welk attribuutgebied van de invoerrasterdataset een attribuut wordt in de outputobjectklasse. Deze parameter is alleen beschikbaar voor integere rasters die extra attributen hebben in de bijbehorende tabel.
+    </p>
+    <p>Het inputraster kan elke celgrootte hebben.
+    </p>
+    <p>Integere rasters kunnen worden geconverteerd naar punt-, lijn- of polygoonobjecten; floating-pointrasters kunnen echter alleen worden omgezet naar puntobjecten.
+    </p>
+    <p>Als  <b>Huidig extent van de kaart gebruiken</b> is aangevinkt, worden alleen de rastercellen die binnen het huidige extent van de kaart zichtbaar zijn, geconverteerd. Als deze optie niet wordt geselecteerd, worden alle cellen in de rasterlaag geconverteerd, ook als ze zich buiten de huidige kaartomvang bevinden. Overweeg dit als de rasterlaag groot is of een zeer hoge resolutie heeft.
+    </p>
+    <p>Gebruiksvoorbeelden van deze tool zijn de volgende:
+ 
+        <ul>
+            <li>Maak polygoonobjecten van een landgebruikclassificatieraster.
+                
+ 
+            </li>
+            <li>Stromen ge&iuml;dentificeerd in een DEM kunnen worden omgezet naar lijnobjecten.
+                
+
+            </li>
+            <li>Een DEM kan worden omgezet naar puntobjecten die kunnen worden gebruikt in een nonraster-gebaseerde workflow.
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Kies rasterlaag om te converteren</h2></div>
+        <hr/>
+        <div>
+            <p>De inputrasterlaag die geconverteerd wordt naar objectlagen.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Veld kiezen</h2></div>
+        <hr/>
+        <div>
+            <p>Zorg voor een veld dat aangeeft welke waarde wordt gebruikt voor de conversie.
+            </p>
+            <p>Het kan een geheel getal of tekstwaarde zijn.
+            </p>
+            <p>Een veld met floating-pointwaarden kan alleen worden gebruikt bij uitvoer naar een puntdataset.
+            </p>
+            <p>De standaardkeuze is om het veld  <i>Value</i> te gebruiken dat de waarde bevat in elke rastercel.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Uitvoertype kiezen</h2></div>
+        <hr/>
+        <div>
+            <p>Kies het uitvoertype tussen punt, lijn of polygoon.
+            </p>
+            <ul>
+                <li>Punt&mdash;Het raster wordt geconverteerd naar een puntdataset.
+                    
+ 
+                </li>
+                <li>Lijn&mdash;Het raster wordt geconverteerd naar een lijnobjectdataset.
+                    
+ 
+                </li>
+                <li>Polygoon&mdash;Het raster wordt geconverteerd naar een polygoonobjectdataset.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>Lijnen of polygonen vereenvoudigen</h2></div>
+        <hr/>
+        <div>
+            <p>Geef aan of de objecten moeten worden vereenvoudigd.
+            </p>
+            <p>Indien aangevinkt (standaard), zullen de lijn- of polygoonobjecten worden gladgestreken voor een ​​meer algemeen resultaat. Als deze optie niet is aangevinkt, volgen de lineaire objecten de celgrenzen van de rasterdataset.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>De naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, wordt u gevraagd een nieuwe naam te geven.
+            </p>
+            <p>U kunt de naam van een map opgeven in  <b>Mijn Content</b>, waar het resultaat wordt opgeslagen met het vervolgkeuzemenu <b>Resultaat opslaan in</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

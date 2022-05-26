@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Spojite ishodišta s odredištima</h2><p/>
+        <h2><img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" alt="Spojite ishodi&scaron;ta s odredi&scaron;tima"></h2>
+        <hr/>
+    <p>Spajanje ishodi&scaron;ta s odredi&scaron;tima mjeri vrijeme putovanja ili udaljenost između dviju točaka. Alat može prijaviti zračne udaljenosti; udaljenosti na temelju načina putovanja, kao &scaron;to su hodanje ili vožnja; ili trajanje puta na temelju načina putovanja. Upotrebom ovog alata možete napraviti sljedeće:
+    </p>
+    <p>
+        <ul>
+            <li>Izračunajte ukupnu udaljenost ili vrijeme za dnevne migracije od kuće do posla.
+            </li>
+            <li>Izmjerite koliko daleko kupci putuju za kupnju u va&scaron;im trgovinama. Upotrijebite ove informacije za izračun va&scaron;eg dosega na trži&scaron;tu, posebice kada ciljate na reklamne kampanje ili birate lokacije za nove trgovine.
+            </li>
+            <li>Izračunajte očekivanu kilometražu putovanja za va&scaron;u flotu vozila. Nakon toga, pokrenite alat Sažmi unutar za prijavljivanje kilometraže po državi ili drugom području.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Vi unosite početne i zavr&scaron;ne točke, a alat vam pruža sloj koji sadrži linije ruta, uključujući mjerenja, između ishodi&scaron;ta i odredi&scaron;ta. 
+    </p>
+    <p>Ako je označena opcija  <b>Upotrijebi trenutačni obuhvat karte</b>, samo će se geoobjekti koji su vidljivi unutar trenutačnog obuhvata karte uzeti u obzir u analizi. Ako opcija nije označena, svi geoobjekti u ulaznom sloju uzet će se u obzir, čak i ako se nalaze izvan trenutačnog obuhvata karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="originsLayer">
+        <div><h2>Izaberite točkasti sloj koji predstavlja lokacije ishodišta</h2></div>
+        <hr/>
+        <div>
+            <p>Izaberite točkasti sloj koji predstavlja ishodi&scaron;te ili ishodi&scaron;ta. Alat podržava do  5 000 ishodi&scaron;ta i  5 000 odredi&scaron;ta. </p>
+            <p>Ako odaberete sloj koji ima točno jedno ishodi&scaron;te, povezat će se sa svim odredi&scaron;tima.
+            </p>
+            <p>Osim odabira sloja iz karte, možete odabrati opciju  <b>Izaberi sloj za analizu</b> koja se nalazi na dnu popisa padajućeg izbornika. Ova opcija otvara galeriju u kojoj možete pretraživati i odabrati skupove podataka iz raznih izvora te ih koristiti u svojoj analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="destinationsLayer">
+        <div><h2>Odaberite sloj odredišta</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite sloj koji predstavlja odredi&scaron;te ili odredi&scaron;ta s kojima bi se ishodi&scaron;ta trebala povezati. Alat podržava do  5 000 ishodi&scaron;ta i  5 000 odredi&scaron;ta. </p>
+            <p>Ako odaberete sloj koji ima točno jedno odredi&scaron;te, sva će se ishodi&scaron;ta povezati s tim odredi&scaron;tem. 
+            </p>
+            <p>Ako postoji jedno ishodi&scaron;te i mnogo odredi&scaron;ta, alat povezuje ishodi&scaron;te sa svim odredi&scaron;tima.
+            </p>
+            <p>Osim odabira sloja iz karte, možete odabrati opciju  <b>Izaberi sloj za analizu</b> koja se nalazi na dnu popisa padajućeg izbornika. Ova opcija otvara galeriju u kojoj možete pretraživati i odabrati skupove podataka iz raznih izvora te ih koristiti u svojoj analizi. 
+            </p>
+            <p> Ako postoji mnogo ishodi&scaron;ta i mnogo odredi&scaron;ta, trebate imati dva polja koja opisuju parove ishodi&scaron;ta i odredi&scaron;ta: <b>ID polje za ishodi&scaron;ta</b> i <b>Odgovarajuće ID polje za odredi&scaron;ta</b>. Alat povezuje parove ishodi&scaron;ta i odredi&scaron;ta tijekom analize. Na primjer, zamislite da imate dva ishodi&scaron;ta s vrijednostima ID polja <code>Rosie</code> i <code>Harold</code> i dva odredi&scaron;ta s istim vrijednostima ID-ja. Ishodi&scaron;te <code>Rosie</code> povezat će se s odredi&scaron;tem <code>Rosie</code>, a <code>Harold</code> će se povezati s <code>Haroldom</code>. Neće se izvr&scaron;iti nikakva druga povezivanja ili mjerenja.
+            </p>
+            <p>Ako postoji jednak broj ishodi&scaron;ta i odredi&scaron;ta, vrijednosti ID-ja moraju biti jedinstvene unutar svakog sloja; primjerice, sloj odredi&scaron;ta ne može imati dvije vrijednosti  <code>Rosie</code>. Vrijednosti u slojevima ishodi&scaron;ta i odredi&scaron;ta moraju se točno podudarati za stvaranje parova; <code>Harold</code> se neće povezati s vrijednosti koja je pogre&scaron;no napisana kao &scaron;to je <code>Harodl</code>. 
+            </p>
+            <p>Alat također podržava povezivanje svakog ishodi&scaron;ta s vi&scaron;e odredi&scaron;ta ili svako odredi&scaron;te s vi&scaron;e ishodi&scaron;ta. U tim slučajevima i dalje morate imati dva polja koja opisuju parove ishodi&scaron;te-odredi&scaron;te. Međutim, samo jedan od slojeva (sloj ishodi&scaron;ta ili odredi&scaron;ta) mora posjedovati vrijednosti za jedinstveni ID.
+            </p>
+        </div>
+    </div>
+    <div id="measurementType">
+        <div><h2>Izmjeri</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Izaberite hoćete li povezati ishodi&scaron;ta s odredi&scaron;tima na temelju udaljenosti zračne linije ili načina putovanja. Izlazne rute pratit će ceste ili staze i po&scaron;tovati primjenjiva pravila, kao &scaron;to su jednosmjerne ulice i nezakonita skretanja prilikom vožnje ili vožnje kamiona. Dostupne načine putovanja određuje administrator va&scaron;e organizacije.  
+            </p>
+            <p>Kada odaberete  <b>vrijeme vožnje</b>, <b>vrijeme vožnje ruralnim područjem</b> ili <b>vrijeme vožnje kamionom</b>, možete izmjeriti vrijeme vožnje.
+                <ul>
+                    <li>
+                        <p>Odznačite opciju  <b>Upotrijebi promet</b> za pronalaženje najbržih ruta na temelju fiksnih brzina.
+                        </p>
+                        <p>Ovo je opcija koju možete odabrati ako želite općenito mjerenje vremena vožnje, no ne nužno izračun na temelju prometnih uvjeta za određeno vrijeme polaska.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Označite opciju  <b>Upotrijebi promet</b> kako biste prona&scaron;li najbrže rute na temelju zadanog početnog vremena i promjenjivih prometnih uvjeta. Ako odaberete i opciju <b>Promet uživo</b>, vrijeme polaska od ishodi&scaron;ta postavlja se na trenutačno vrijeme, a trenutačne i predviđene brzine prometa referencirane su od senzora i sadržaja kako bi se stvorile rute. Predviđene brzine prometa računaju se referenciranjem brzina prometa uživo, prija&scaron;njih brzina i trenutačnih događaja kao &scaron;to je vrijeme. Brzine prometa predviđaju 12 sati unaprijed pa možete pomaknuti klizač za postavljanje vremena polaska unaprijed do  12 sati. </p>
+                        <p>Upotrijebite ove postavke za promet uživo da biste saznali vrijeme vožnje ako krenete odmah, ako krenete za jedan sat itd.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Ako označite opciju  <b>Upotrijebi promet</b> i izaberete opciju <b>Promet na temelju tipičnih uvjeta za</b> dan i vrijeme, alat pronalazi najbrže rute na temelju prosjeka prija&scaron;njih brzina u intervalima od pet minuta kroz uobičajeni tjedan. Rezultati uključuju promet, no isključuju utjecaj trenutačnih prometnih uvjeta i događaja koji se mogu znatno razlikovati od norme.
+                        </p>
+                        <p>Možete upotrijebiti postavke za povijest prometa da biste pitali, primjerice, &bdquo;Koliko dugo obično treba do ovih odredi&scaron;ta kada se kreće u 11:30 ujutro u srijedu?&rdquo;
+                        </p>
+                        <p>Vrijeme koje postavite referira se na vremensku zonu u kojoj se nalaze ishodi&scaron;ta. Stoga, ako postavite vrijeme na 8:00 ujutro i imate dva ishodi&scaron;ta, jedan u New York Cityju i jedan u Los Angelesu, najbliže rute generirat će se za vrijeme polaska u 8:00 ujutro. Istočno vrijeme i 8:00 ujutro. Pacifičko vrijeme.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Imajte na umu da kako vozilo vozi dalje od ishodi&scaron;ta, vrijeme prolazi i mijenjaju se prometni uvjeti. Alat Spojite ishodi&scaron;ta s odredi&scaron;tima uzima u obzir ove varijacije kada označite  <b>Upotrijebi promet</b>. Međutim, ne podržavaju sve regije promet. Kliknite na poveznicu <b>Vidi dostupnost</b> na alatu da biste saznali nudi li se u va&scaron;em radnom području.
+            </p>
+            <p> <b>Vrijeme vožnje kamionom</b> može upotrijebiti dinamične brzine putovanja na temelju prometa, ali samo do zakonskog ograničenja brzine kamiona. Na primjer, ako je dinamična brzina za ulicu na temelju prometa uživo 65 milja na sat, ali je brzina kamiona za tu ulicu 55 milja na sat, u izračunu će se upotrijebiti 55 milja na sat za tu ulicu.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Odaberite slojeve ograničenja</h2></div>
+        <hr/>
+        <div>
+            <p> Jedan ili vi&scaron;e geoobjekata koji funkcioniraju kao privremena ograničenja (barijere) kad se krećete odgovarajućim ulicama. Možete navesti ograničenja upotrebom točkastih, linijskih ili poligonalnih geoobjekata.
+            </p>
+            <p>Točkasto ograničenje može predstavljati sru&scaron;eno stablo, nesreću, sru&scaron;eni dalekovod ili bilo &scaron;to &scaron;to u potpunosti blokira promet na određenom mjestu u ulici. Kretanje je dopu&scaron;teno po ulici, ali ne kroz ograničenje. Možete navesti do 250 geoobjekata koji će funkcionirati kao točkasta ograničenja.
+            </p>
+            <p>Linijsko ograničenje sprječava kretanje svugdje gdje ograničenje presijeca ulice. Na primjer, povorka ili prosvjed koji zaustavljaju promet kroz nekoliko dijelova ulica mogu se modelirati pomoću linijskog ograničenja. Ako broj geoobjekata na ulici koji presijecaju linijska ograničenja prema&scaron;uje 500, alat će javiti da je do&scaron;lo do pogre&scaron;ke.
+            </p>
+            <p>Poligonsko ograničenje sprječava kretanje svugdje gdje poligon presijeca ulice. Ova vrsta ograničenja može se upotrijebiti za modeliranje poplavljenih područja ulične mreže gdje kretanje cestom nije moguće. Ako broj geoobjekata na ulici koji presijecaju poligonska ograničenja prema&scaron;uje 2000, alat će javiti da je do&scaron;lo do pogre&scaron;ke.
+            </p>
+        </div>
+    </div>
+    <div id="routeShape">
+        <div><h2>Oblik rute</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite oblik rute koja povezuje svako ishodi&scaron;te s njegovim odredi&scaron;tem kada se upotrebljava način putovanja:
+            </p>
+            <ul>
+                <li> <b>Prati ulice</b> - Oblik se temelji na osnovnoj mreži ulica. Ova je opcija najbolja kada želite stvoriti rute između ishodi&scaron;ta i odredi&scaron;ta.
+                </li>
+                <li> <b>Ravna linija</b> - Oblik je ravna linija koja povezuje par ishodi&scaron;te-odredi&scaron;te. Ova je opcija najbolja kada želite stvoriti dijagrame oblika &bdquo;paukove mreže&ldquo; ili želite linije (npr. kako biste prikazali koje trgovine kupci posjećuju).
+                </li>
+            </ul>
+            
+            <p>Najbolja ruta između ishodi&scaron;ta i pripadajućeg odredi&scaron;ta uvijek se izračunava na temelju načina putovanja, bez obzira koji je oblik rute odabran.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Naziva sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja geoobjekata koji će se stvoriti u dijelu  <b>Moj sadržaj</b> i dodati karti. Ako sloj geoobjekata već postoji, od vas će se tražiti da unesete drugi naziv. Sloj geoobjekata sadržavat će sloj za svaku od sljedećih stavki: rute, nedodijeljena ishodi&scaron;ta i nedodijeljena odredi&scaron;ta kad neka ishodi&scaron;ta nije moguće povezati s odredi&scaron;tima.
+            </p>
+            <p>Ako odaberete  <b>Uključi slojeve rute</b>, svaka ruta iz rezultata također se sprema kao sloj rute. Sloj rute uključuje sve informacije za određenu rutu poput stajali&scaron;ta dodijeljenih ruti kao i upute za vožnju. Stvaranje slojeva rute korisno je ako želite podijeliti pojedinačne rute s drugim članovima va&scaron;e organizacije ili dodatno izmijeniti rute uz pomoć opcije <b>Upute za vožnju</b> u pregledniku karte. Slojevi rute upotrebljavaju naziv namijenjen sloju geoobjekta kao prefiks i naziv generiran kao dio analize koji se dodaje da bi se stvorio jedinstveni naziv za svaki sloj rute.
+            </p>
+            <p>Maksimalni broj slojeva rute koji se može stvoriti je  1.000. Ako rezultat sadrži vi&scaron;e od  1.000 ruta i označeno je  <b>Uključi slojeve rute</b>, alat će stvoriti samo izlaznu uslugu geoobjekata.
+            </p>
+            <p>Upotrebom padajućeg izbornika  <b>Spremi rezultat u</b> možete odrediti naziv mape u dijelu <b>Moj sadržaj</b> gdje će se spremiti sloj geoobjekata i slojevi rute ako se stvore.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/it/ClassifyObjectsUsingDeepLearning",{toolDefine:"Classifica oggetti usando l'apprendimento profondo",inputFeaturesLabel:"Scegli feature layer per gli oggetti (opzionale)",outputLayerName:"${layername}_classifiedObjects",modelLabel:"Scegli il modello di apprendimento profondo usato per classificare gli oggetti",modelArgsLabel:"Specifica gli argomenti del modello di apprendimento profondo",classLabelFieldLabel:"Definisci il nome campo di etichetta classe (opzionale)",
+processingModeLabel:"Modalit\u00e0 di elaborazione",processAsMosaicLabel:"Elabora come immagine a mosaico",processAsItemsLabel:"Elabora tutti gli elementi raster separatamente",queryModelArgsMsg:"Interrogazione argomenti modello in corso...",valueLabel:"Valore",nameLabel:"Nome",analysisLayerLabel:"Scegli l'immagine usata per classificare gli oggetti",itemDescription:"Image service di analisi generato da Classifica oggetti usando apprendimento profondo",itemTags:"Risultato dell'analisi raster, Classifica oggetti usando apprendimento profondo, ${layername}",
+itemSnippet:"Image service di analisi generato da Classifica oggetti usando apprendimento profondo"});

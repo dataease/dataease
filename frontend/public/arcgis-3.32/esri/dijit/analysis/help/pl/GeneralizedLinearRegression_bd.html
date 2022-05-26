@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Generalizowana regresja liniowa</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="Diagram procedury wykonywania zadań generalizowanej regresji liniowej"></h2>
+        <hr/>
+    <p>Przeprowadza generalizowaną regresję liniową (Generalized Linear Regression, GLR) w celu generowania prognoz lub modelowania zmiennej zależnej w kontekście jej relacji z zestawem zmiennych objaśniających. To narzędzie umożliwia dopasowywanie modeli ciągłych (Gaussa), binarnych (logistycznych) i dyskretnych (Poissona).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Rodzaj analizy</h2></div>
+        <hr/>
+        <div>
+            <p>Określa tryb działania narzędzia. Narzędzie można uruchomić wyłącznie w celu wytrenowania modelu służącego do oceny wydajności lub w celu wytrenowania modelu i prognozowania obiekt&oacute;w. Istnieją następujące typy prognozowania:
+                <ul>
+                    <li> <b>Dopasowanie modelu w celu oceny wydajności modelu</b> &mdash; dopasowanie modelu i jego zastosowanie do danych wejściowych. Ta opcja służy do oceny dokładności modelu przed wygenerowaniem prognoz dotyczących nowego zestawu danych oraz do objaśnienia relacji i czynnik&oacute;w wpływających na prognozowaną zmienną. Danymi wynikowymi w przypadku tej opcji są usługa obiektowa z dopasowanymi danymi i diagnostyka modelu.
+                    </li>
+                    <li> <b>Dopasowanie modelu i prognozowanie wartości</b> &mdash; generowanie prognoz lub klasyfikacji dla obiekt&oacute;w wejściowych i obiekt&oacute;w prognozy. Zmienne objaśniające należy podać zar&oacute;wno dla obiekt&oacute;w prognozy, jak i obiekt&oacute;w do prognozowania. Danymi wynikowymi w przypadku tej opcji są usługa obiektowa modelu dopasowanego do danych wejściowych, usługa obiektowa wartości prognozowanych i diagnostyka modelu.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>Dopasowanie modelu w celu oceny wydajności modelu</h2></div>
+        <hr/>
+        <div>
+            <p>Ten tryb służy do dopasowywania modelu i badania jego dopasowania.
+            </p>
+            <p>W przypadku tej opcji model jest trenowany z użyciem warstwy wejściowej. Ta opcja służy do oceny dokładności modelu przed wygenerowaniem prognoz dotyczących nowego zestawu danych. Opcja powoduje wygenerowanie diagnostyki modelu i zastosowanie modelu do danych treningowych.
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>Dopasowanie modelu i prognozowanie wartości</h2></div>
+        <hr/>
+        <div>
+            <p>Ten tryb umożliwia dopasowanie modelu oraz jego zastosowanie do zestawu danych w celu wygenerowania prognoz.
+            </p>
+            <p>Prognozy i klasyfikacje generowane są dla obiekt&oacute;w. Danymi wynikowymi w przypadku tej opcji są usługa obiektowa, diagnostyka modelu oraz opcjonalna tabela istotności zmiennych.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>Wybierz warstwę, na podstawie której ma zostać wygenerowany model</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa obiekt&oacute;w punktowych, liniowych, powierzchniowych lub tabelarycznych zawierająca zmienne zależne i objaśniające.
+            </p>
+            <p>Opr&oacute;cz wybrania warstwy z mapy, można wybrać opcję  <b>Wybierz warstwę analizy</b> znajdującą się w dolnej części listy rozwijanej, aby przejść do zasob&oacute;w zestawu danych udostępnionych plik&oacute;w dużych zbior&oacute;w danych lub warstwy obiektowej.
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>Wybierz pole do modelowania</h2></div>
+        <hr/>
+        <div>
+            <p>Pole liczbowe zawierające obserwowane wartości, kt&oacute;re mają być modelowane, oraz typ modelowanych wartości. Istnieją trzy typy wartości, kt&oacute;re można modelować
+                <ul>
+                    <li>Ciągły &mdash; reprezentuje wartości ciągłe. Używany jest model gaussowski, a narzędzie wykonuje zwykłą regresję najmniejszych kwadrat&oacute;w.
+                    </li>
+                    <li>Binarny &mdash; reprezentuje wartości obecności lub nieobecności. Muszą to być jedynki i zera. Używanym modelem jest regresja logistyczna.
+                    </li>
+                    <li>Liczba &mdash; reprezentuje wartości dyskretne i zdarzenia, na przykład liczbę przestępstw, przypadki chor&oacute;b lub wypadki drogowe. Używanym modelem jest regresja Poissona. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Wybierz warstwę, dla której mają być generowane prognozy</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa z obiektami reprezentującymi lokalizacje, w kt&oacute;rych mają być obliczane wartości szacunkowe. Każdy obiekt w tym zestawie danych powinien zawierać wartości dla wszystkich zmiennych objaśniających. Wartości zmiennej zależnej dla tych obiekt&oacute;w będą szacowane z użyciem modelu skalibrowanego dla danej warstwy wejściowej.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Wybierz pola objaśniające</h2></div>
+        <hr/>
+        <div>
+            <p>Jedno lub większa liczba p&oacute;l reprezentujących zmienne objaśniające (pola), kt&oacute;re ułatwiają prognozowanie wartości. Tylko pola liczbowe będą widoczne.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Wybierz sposób dopasowywania pól objaśniających</h2></div>
+        <hr/>
+        <div>
+            <p>Spos&oacute;b, w jaki odpowiednie zmienne w warstwie wejściowej są dopasowywane do zmiennych w warstwie prognozowania. W tabeli będą uwzględnione tylko zmienne używane podczas generowania modelu. Można używać tylko wartości liczbowych. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p> Nazwa warstwy, kt&oacute;ra zostanie utworzona w oknie Moje zasoby. W przypadku zapisywania w ArcGIS Data Store wyniki będą przechowywane w obszarze  <b>Moje zasoby</b> i dodawane do mapy. W przypadku zapisywania w udostępnionym pliku dużych zbior&oacute;w danych wyniki będą przechowywane w udostępnionym pliku dużych zbior&oacute;w danych i dodawane do jego manifestu. Nie będą dodawane do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, działanie narzędzia nie powiedzie się.
+            </p>
+            <p>Zwracane wyniki zależą od typu analizy. W przypadku oceny dopasowania modelu wyniki będą zawierać warstwę danych treningowych dopasowaną do modelu i informacje o wynikach oceny dopasowania modelu. W przypadku dopasowywania i prognozowania wyniki będą zawierać warstwę danych wejściowych dopasowaną do modelu, warstwę prognozowanych wynik&oacute;w oraz informacje o wynikach oceny dopasowania modelu.
+            </p>
+            <p>W przypadku zapisywania w  ArcGIS Data Store (relacyjny magazyn danych lub magazyn dużych zbior&oacute;w danych czasowo-przestrzennych) przy użyciu listy rozwijanej  <b>Zapisz wynik w</b> można określić nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

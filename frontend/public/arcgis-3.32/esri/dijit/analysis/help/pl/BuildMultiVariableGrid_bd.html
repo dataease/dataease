@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Buduj siatkę wielu wartości</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="Diagram procedury wykonywania zadań narzędzia Dołącz dane"></h2>
+        <hr/>
+    <p>Narzędzie Buduj siatkę wielu wartości działa na jednej lub większej liczbie warstw obiekt&oacute;w punktowych, liniowych lub poligonowych. To narzędzie generuje siatkę prostokątnych lub sześciokątnych koszy i oblicza wartości dla dowolnego kosza w oparciu o bliskość poszczeg&oacute;lnych warstw wejściowych. Te wartości mogą obejmować następujące zmienne: 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>Odległość do najbliższego</b> &mdash; odległość od dowolnego kosza do najbliższego obiektu
+            </li>
+            <li> <b>Atrybut najbliższego</b> &mdash; wartość pola obiektu najbliższego względem dowolnego kosza
+            </li>
+            <li> <b>Podsumowanie pobliskich</b> &mdash; określona statystyka wszystkich obiekt&oacute;w w odległości od każdego kosza
+            </li>
+            <li> <b>Podsumowanie przecinających się</b> &mdash; określona statystyka wszystkich obiekt&oacute;w przecinających dowolny kosz
+            </li>
+        </ul>
+        
+    </p>
+    <p>Do warstwy wynikowej zostaną dołączone tylko wyszczeg&oacute;lnione zmienne. Te zmienne pomagają lepiej zrozumieć bliskość i rozkład danych. Te wyniki ułatwiają udzielanie odpowiedzi w następujących sytuacjach:
+        <ul>
+            <li>Korzystając z r&oacute;żnych warstw infrastruktury transportu określ, kt&oacute;ra część miasta jest najsłabiej dostępna dla os&oacute;b korzystających z transportu publicznego.
+            </li>
+            <li>Korzystając z warstw dr&oacute;g wodnych, takich jak jeziora i rzeki, określ nazwę akwenu najbliższego względem dowolnej lokalizacji na terenie Stan&oacute;w Zjednoczonych.
+            </li>
+            <li>Korzystając z warstwy dochod&oacute;w gospodarstw domowych określ te obszary na terenie Stan&oacute;w Zjednoczonych, dla kt&oacute;rych zr&oacute;żnicowanie dochod&oacute;w w promieniu 80 km jest największe.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Wybierz typy koszy, które zostaną użyte do zbudowania siatki wielu wartości</h2></div>
+        <hr/>
+        <div>
+             
+            <p>Typy i rozmiary koszy, kt&oacute;re zostaną użyte do zbudowania siatki wielu wartości. Dla opcji  <b>Prostokąt</b> podane wartości i jednostki określają wysokość i szerokość prostokąta. Dla opcji <b>Sześciokąt</b> podana wartość i jednostka określa odległość między r&oacute;wnoległymi krawędziami.
+            </p>
+            <p>Podczas wykonywania tej analizy używane są kosze i wymagany jest układ wsp&oacute;łrzędnych odwzorowanych.  <b>Układ wsp&oacute;łrzędnych przetwarzania</b> można skonfigurować w oknie <b>Środowiska analizy</b>. Jeśli układ wsp&oacute;łrzędnych przetwarzania nie zostanie skonfigurowany jako układ wsp&oacute;łrzędnych odwzorowanych, podczas <b>uruchamiania analizy</b> zostanie wyświetlony monit informujący o konieczności wykonania tej czynności.
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>Wybierz wejściowe warstwy i zmienne, które mają zostać dołączone do siatki</h2></div>
+        <hr/>
+        <div>
+            <p>Kliknij przycisk dodawania ( <b>+</b>), aby otworzyć okno <b>Dodawanie zmiennych</b> i dodać warstwę uwzględnianą w analizach. W oknie <b>Dodawanie zmiennych</b> wybierz warstwę wejściową i skonfiguruj zmienne, kt&oacute;re będą obliczane dla danej warstwy wejściowej.
+            </p>
+            <p>Po wybraniu i skonfigurowaniu obliczanych zmiennych warstwa będzie wyświetlana w oknie narzędzia na liście razem z pozostałymi wybranymi warstwami. Kliknij przycisk edycji dla dowolnej warstwy, aby otworzyć okno  <b>Dodawanie zmiennych</b> i wyświetlić listę wszystkich zmiennych skonfigurowanych dla tej warstwy. Kliknij przycisk usuwania dla dowolnej warstwy, aby usunąć tę warstwę i wszystkie powiązane zmienne do uwzględniania w analizach.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>Dodawanie zmiennych</h2></div>
+        <hr/>
+        <div>
+            <p>To okno umożliwia wyb&oacute;r warstwy wejściowej i konfigurowanie zmiennych obliczanych dla tej warstwy wejściowej. Aby rozpocząć, w menu rozwijanym  <b>Wybierz warstwę wejściową</b> wybierz warstwę punktową, poligonową lub liniową, kt&oacute;ra ma być uwzględniana w analizach.
+            </p>
+            <p>Opr&oacute;cz wybrania warstwy z mapy, można wybrać opcję  <b>Wybierz warstwę analizy</b> znajdującą się w dolnej części listy rozwijanej, aby przejść do zasob&oacute;w zestawu danych udostępnionych plik&oacute;w dużych zbior&oacute;w danych lub warstwy obiektowej.
+            </p>
+            <p>Po dokonaniu wyboru warstwy wejściowej kliknij przycisk  <b>Dodaj zmienną</b>, aby otworzyć edycję nowej zmiennej. Należy podać unikalną nazwę dla każdej zmiennej. Stanie się ona nazwą pola utworzonego w tabeli atrybut&oacute;w warstwy wynikowej.
+            </p>
+            <p>W menu rozwijanym wybierz typ dodawanej zmiennej. Każdy typ zmiennej musi zostać skonfigurowany przy użyciu unikalnego zestawu parametr&oacute;w, przy czym wymagane jest określenie wszystkich parametr&oacute;w.
+            </p>
+            <p>Po dodaniu wszystkich wymaganych zmiennych dla wybranej warstwy, kliknij przycisk  <b>Dodaj</b>, aby zapisać zmienne.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p> Nazwa warstwy, kt&oacute;ra zostanie utworzona w oknie Moje zasoby. W przypadku zapisywania w ArcGIS Data Store wyniki będą przechowywane w obszarze  <b>Moje zasoby</b> i dodawane do mapy. W przypadku zapisywania w udostępnionym pliku dużych zbior&oacute;w danych wyniki będą przechowywane w udostępnionym pliku dużych zbior&oacute;w danych i dodawane do jego manifestu. Nie będą dodawane do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, działanie narzędzia nie powiedzie się.
+            </p>
+            <p>W przypadku zapisywania w  ArcGIS Data Store (relacyjny magazyn danych lub magazyn dużych zbior&oacute;w danych czasowo-przestrzennych) przy użyciu listy rozwijanej  <b>Zapisz wynik w</b> można określić nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

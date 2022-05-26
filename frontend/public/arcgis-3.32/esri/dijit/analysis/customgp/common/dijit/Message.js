@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/customgp/common/dijit/Message","dojo/_base/declare dojo/_base/lang dojo/_base/html dojo/keys dojo/on ./Popup dojo/i18n!../nls/main".split(" "),function(c,b,a,d,e,f,g){return c(f,{baseClass:"jimu-popup jimu-message",declaredClass:"esri.dijit.analysis.customgp.common.dijit.Message",type:"message",message:"",autoHeight:!0,maxWidth:350,maxHeight:180,postMixInProperties:function(){this.content=this.message},_createTitleNode:function(){this.titleLabel&&(this.titleNode=a.create("div",
+{"class":"title"},this.domNode),this.titleLabeNode=a.create("span",{"class":"title-label jimu-float-leading",innerHTML:this.titleLabel||"\x26nbsp"},this.titleNode),this.closeBtnNode=a.create("div",{"class":"close-btn jimu-float-trailing"},this.titleNode),this.own(e(this.closeBtnNode,"click",b.hitch(this,this.close))))},_preProcessing:function(){0===this.buttons.length&&this.buttons.push({label:g.common.ok,key:d.ENTER,onClick:b.hitch(this,this.close)})},_increaseZIndex:function(){a.setStyle(this.domNode,
+"zIndex",501);a.setStyle(this.overlayNode,"zIndex",500)}})});

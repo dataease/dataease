@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/et/BuildMultiVariablesList",{chooseInputLayer:"Valige sisendkiht",addAVar:"Lisa muutuja",distToNearest:"Kaugus l\u00e4hima objektini",attrOfInterest:"L\u00e4hima objekti atribuut",summaryNearby:"L\u00e4hima objekti kokkuv\u00f5te",summaryIntersecting:"L\u00f5ikuva objekti kokkuv\u00f5te",distToNearestLabel:"Kaugus salve keskpunktist sisendkihis l\u00e4hima objektini",attrOfInterestLabel:"M\u00e4\u00e4ratud v\u00e4lja v\u00e4\u00e4rtus sisendkihi l\u00e4himast objektist",
+summaryNearbyLabel:"Statistiline n\u00e4itaja, mis on arvutatud k\u00f5igi objektide kohta, mis asuvad salve keskpunktist m\u00e4\u00e4ratud kaugusel",summaryIntersectingLabel:"Statistik, mis on arvutatud k\u00f5igi salvega l\u00f5ikuvate objektide kohta",maxDistancefromCtr:"Maksimumkaugus salve keskpunktist",fieldToIncude:"Kaasatav v\u00e4li",statstoCalculate:"Arvutatav statistik",summFeatuesWithin:"Summeeri objektid vahemikus",layerChangeWarnMsg:"Sisendkihi muutmise korral eemaldatakse selle sisendkihi jaoks lisatud muutujad",
+validationErrorMsg:"Enne uue muutuja lisamist lahendage valideerimisega seotud t\u00f5rked",atleastOneVarMsg:"Lisage sellele valitud kihile v\u00e4hemalt \u00fcks muutuja"});

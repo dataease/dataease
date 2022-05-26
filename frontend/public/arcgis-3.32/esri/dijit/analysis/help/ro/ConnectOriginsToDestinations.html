@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Conectare origini cu destinații</h2><p/>
+        <h2><img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" alt="Conectare origini cu destinații"></h2>
+        <hr/>
+    <p>Conectare origini la destinații măsoară durata de călătorie sau distanța dintre perechi de puncte. Instrumentul poate raporta distanțe &icirc;n linie dreaptă, distanțe &icirc;n funcție de modul de deplasare (cum ar fi deplasarea pe jos sau cu autovehicule) și durate de călătorie &icirc;n funcție de modul de deplasare. Utiliz&acirc;nd acest instrument, puteți efectua următoarele:
+    </p>
+    <p>
+        <ul>
+            <li>Calculați distanța sau timpul total pentru călătoriile de acasă la serviciu al navetiștilor.
+            </li>
+            <li>Puteți măsura c&acirc;t de departe călătoresc clienții pentru a ajunge la magazinele dvs. Utilizați aceste informații pentru a defini anvergura pieței, &icirc;n special atunci c&acirc;nd vizați anumite piețe prin campanii publicitare sau atunci c&acirc;nd alegeți locații pentru magazine noi.
+            </li>
+            <li>Calculați consumul estimat pentru călătoriile efectuate de flota dvs. de vehicule. După aceea, executați instrumentul Sumarizare &icirc;n interior pentru a raporta consumul &icirc;n funcție de stat sau altă regiune.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Dvs. introduceți punctele de plecare și de sosire, iar instrumentul va realiza un strat tematic care conține liniile rutelor (inclusiv măsurătorile) &icirc;ntre perechile de origini și destinații. 
+    </p>
+    <p>Dacă se bifează  <b>Utilizare extindere curentă hartă</b>, vor fi analizate numai obiectele spațiale care sunt vizibile &icirc;n extinderea curentă a hărții. Dacă nu se bifează, vor fi luate &icirc;n considerare toate obiectele spațiale din stratul tematic introdus, chiar dacă se află &icirc;n afara extinderii curente a hărții.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="originsLayer">
+        <div><h2>Alegerea stratului tematic de puncte care reprezintă locațiile originilor</h2></div>
+        <hr/>
+        <div>
+            <p>Alegeți stratul tematic de puncte care reprezintă originea sau originile. Instrumentul acceptă p&acirc;nă la  5.000 de origini și p&acirc;nă la  5.000 de destinații. </p>
+            <p>Dacă alegeți un strat tematic care conține exact o origine, va fi conectat cu toate destinațiile.
+            </p>
+            <p>Pe l&acirc;ngă alegerea unui strat tematic din harta dvs., puteţi selecta  <b>Alegere strat tematic de analiză</b>, care se găseşte &icirc;n partea de jos a listei derulante. Această opțiune deschide o galerie &icirc;n care puteți răsfoi și selecta seturi de date din diferite surse pentru a le utiliza &icirc;n analiza dvs. 
+            </p>
+        </div>
+    </div>
+    <div id="destinationsLayer">
+        <div><h2>Alegerea stratului tematic cu destinații</h2></div>
+        <hr/>
+        <div>
+            <p>Alegeți stratul tematic care reprezintă destinația sau destinațiile care vor fi conectate cu originile. Instrumentul acceptă p&acirc;nă la  5.000 de origini și p&acirc;nă la  5.000 de destinații. </p>
+            <p>Dacă alegeți un strat tematic care conține exact o destinație, toate originile vor fi conectate cu destinația respectivă. 
+            </p>
+            <p>Dacă există o singură origine și mai multe destinații, instrumentul va conecta originile cu fiecare dintre destinații.
+            </p>
+            <p>Pe l&acirc;ngă alegerea unui strat tematic din harta dvs., puteţi selecta  <b>Alegere strat tematic de analiză</b>, care se găseşte &icirc;n partea de jos a listei derulante. Această opțiune deschide o galerie &icirc;n care puteți răsfoi și selecta seturi de date din diferite surse pentru a le utiliza &icirc;n analiza dvs. 
+            </p>
+            <p> Dacă există mai multe origini şi mai multe destinaţii, vor trebui să existe două c&acirc;mpuri care să descrie perechile origine-destinaţie: <b>c&acirc;mpul ID &icirc;n origini</b> şi <b>c&acirc;mpul ID corespunzător din destinaţii</b>. Instrumentul va conecta perechile origine-destinație &icirc;n timpul analizei. De exemplu, imaginaţi-vă că aveţi două origini cu valorile c&acirc;mpurilor ID <code>Rosie</code> şi <code>Harold</code> şi două destinaţii cu aceleaşi valori ale c&acirc;mpurilor ID. Originea <code>Rosie</code> va fi conectată la destinaţia <code>Rosie</code>, iar originea <code>Harold</code> va fi conectată la destinaţia <code>Harold</code>. Nu sunt realizate alte conexiuni sau măsurători.
+            </p>
+            <p>Dacă există aceleași numere de origini și destinații, valorile ID trebuie să fie unice &icirc;n cadrul fiecărui strat tematic; de exemplu, stratul tematic cu destinații nu poate avea două valori  <code>Rosie</code>. Valorile din straturile tematice cu origini şi destinaţii trebuie să corespundă exact pentru a putea forma perechi; <code>Harold</code> nu se va putea conecta la o valoare scrisă incorect, precum <code>Harodl</code>. 
+            </p>
+            <p>De asemenea, instrumentul acceptă conectarea fiecărei origini la mai mult de o destinație sau fiecare destinație la mai mult de o origine. &Icirc;n astfel de cazuri, tot este necesar să existe două c&acirc;mpuri care să descrie perechile origine-destinație. Cu toate acestea, doar unul dintre straturile tematice (stratul tematic cu origini sau stratul tematic cu destinații) trebuie să aibă valori ID unice.
+            </p>
+        </div>
+    </div>
+    <div id="measurementType">
+        <div><h2>Măsurare</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Alegeți dacă doriți să conectați originile la destinații folosind distanța &icirc;n linie dreaptă sau un mod de deplasare. Rutele rezultate vor urma drumuri sau trasee pietonale și vor respecta regulile &icirc;n vigoare, cum ar fi sensurile unice și interdicțiile de schimbare a direcției &icirc;n cazul deplasării cu autoturismul sau camionul. Modurile de deplasare disponibile sunt determinate de administratorul organizației dvs.  
+            </p>
+            <p>Dacă alegeți  <b>Timp de condus</b>, <b>Timp de condus &icirc;n mediul rural</b> sau <b>Timp de deplasare cu camionul</b>, beneficiați de opțiuni pentru modul de măsurare a timpului de condus.
+                <ul>
+                    <li>
+                        <p>Debifați  <b>Utilizare trafic</b> pentru a găsi cea mai rapidă rută bazată pe viteze fixe.
+                        </p>
+                        <p>Aceasta este opțiunea de ales dacă doriți o măsurătoare generală pentru timpul de condus, nu una calculată utiliz&acirc;nd condițiile de trafic dinamice pentru o anumită oră de pornire.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Bifați  <b>Utilizare trafic</b> pentru a găsi cele mai rapide rute &icirc;n funcție de o anumită oră de pornire sau de condițiile de trafic dinamice. Dacă se alege și opțiunea <b>Trafic &icirc;n timp real</b>, ora de pornire de la origini este setată la ora curentă, iar viteza curentă și cea prevăzută pentru trafic sunt preluate de la senzori și fluxuri pentru a crea rutele. Vitezele prevăzute pentru trafic sunt calculate prin luarea &icirc;n considerare a vitezelor traficului &icirc;n timp real, a vitezelor istorice și a evenimentelor curente, cum ar fi buletinul meteo. Vitezele traficului sunt prezise pentru următoarele 12 ore. &Icirc;n consecință, puteți deplasa glisorul pentru a seta ora de pornire cu p&acirc;nă la  12 ore &icirc;n avans. </p>
+                        <p>Utilizați aceste setări pentru traficul &icirc;n timp real pentru a afla duratele de condus dacă se pleacă acum, dacă se pleacă peste o oră și așa mai departe.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Dacă se bifează  <b>Utilizare trafic</b> și se alege <b>Trafic &icirc;n funcție de condițiile normale pentru</b> o zi și o oră, instrumentul găsește cele mai rapide rute pe baza vitezei medii istorice pentru fiecare interval de cinci minute de pe parcursul unei săptăm&acirc;ni obișnuite. Rezultatele includ traficul, &icirc;nsă elimină influența condițiilor și evenimentelor de trafic curente, care pot să difere semnificativ față de standard.
+                        </p>
+                        <p>Puteţi utiliza aceste setări de trafic istorice pentru a &icirc;ntreba, de exemplu, &bdquo;C&acirc;t timp ar dura &icirc;n general pentru a ajunge la aceste destinaţii, dacă pornesc la ora 11:30 a.m. &icirc;ntr-o zi de miercuri?&rdquo;
+                        </p>
+                        <p>Ora pe care o setați este evaluată pe fusul orar &icirc;n care se află originile. Prin urmare, dacă setați ora la 8:00 a.m. și aveți două origini, una &icirc;n New York și alta &icirc;n Los Angeles, rutele vor fi generate pentru plecarea la 8:00 a.m. ora Coastei de Est și, respectiv, 8:00 a.m. ora Pacificului.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Rețineți că, pe măsură ce un vehicul se &icirc;ndepărtează de origine, timpul se scurge și condițiile de trafic se modifică. Instrumentul Conectare origini la destinații ține cont de aceste variații c&acirc;nd bifați  <b>Utilizare trafic</b>; cu toate acestea, nu &icirc;n toate regiunile este acceptată opțiunea pentru trafic. Faceți clic pe linkul <b>Vizualizare disponibilitate</b> de pe instrument pentru a afla dacă această opțiune este disponibilă &icirc;n zona care vă interesează.
+            </p>
+            <p> <b>Timpul de deplasare cu camionul</b> poate utiliza viteze de deplasare dinamice pe baza traficului, dar numai p&acirc;nă la limita legală de viteză a vehiculului. De exemplu, dacă viteza dinamică pentru o stradă, pe baza traficului &icirc;n timp real, este de 65 de mile pe oră, dar limita de viteză a vehiculului pentru strada respectivă este de 55 de mile pe oră, calculul va utiliza 55 de mile pe oră pentru strada respectivă.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Selectare straturi tematice tip barieră</h2></div>
+        <hr/>
+        <div>
+            <p> Unul sau mai multe obiecte spațiale care acționează ca restricții temporare (bariere) atunci c&acirc;nd vă deplasați pe străzile subiacente. Puteți specifica barierele utiliz&acirc;nd obiecte spațiale de tip punct, linie sau poligon.
+            </p>
+            <p>O barieră de tip punct poate reprezenta modelul unui copac căzut, al unui accident, al unui cablu electric căzut sau al oricărui element care blochează complet traficul &icirc;ntr-o anumită poziție de pe stradă. Deplasarea este permisă pe stradă, dar nu &icirc;n afara barierei. Puteți specifica p&acirc;nă la 250 de obiecte spațiale care să acționeze ca bariere tip punct.
+            </p>
+            <p>O barieră tip linie interzice deplasarea &icirc;n orice punct &icirc;n care bariera se intersectează cu străzile. De exemplu, o paradă sau un protest care blochează traficul pe mai multe segmente de stradă pot fi modelate cu o barieră tip linie. Dacă numărul de obiecte spațiale de stradă intersectate de toate barierele tip linie depășește 500, instrumentul returnează o eroare.
+            </p>
+            <p>O barieră tip poligon interzice deplasarea &icirc;n orice punct &icirc;n care poligonul se intersectează cu străzile. Un mod de utilizare a acestui tip de barieră este să se modeleze inundațiile care acoperă suprafețele rețelei de străzi și să se facă imposibilă deplasarea pe traseul respectiv. Dacă numărul de obiecte spațiale de stradă intersectate de toate barierele tip poligon depășește 2000, instrumentul returnează o eroare.
+            </p>
+        </div>
+    </div>
+    <div id="routeShape">
+        <div><h2>Traiectorie de rută</h2></div>
+        <hr/>
+        <div>
+            <p>Selectați traiectoria rutei care conectează fiecare origine la destinația acesteia atunci c&acirc;nd utilizați modul de deplasare:
+            </p>
+            <ul>
+                <li> <b>Urmărire străzi</b> - Traiectoria este bazată pe rețeaua de străzi subiacentă. Aceasta este cea mai bună opțiune atunci c&acirc;nd doriți să generați rutele &icirc;ntre origini și destinații.
+                </li>
+                <li> <b>Linie dreaptă</b> - Traiectoria este o linie dreaptă care conectează perechea origine-destinație. Aceasta este cea mai bună opțiune atunci c&acirc;nd doriți să generați diagrame de tip p&acirc;nză de păianjen sau rutele cele mai scurte (de exemplu, pentru a indica magazinele frecventate de clienți).
+                </li>
+            </ul>
+            
+            <p>Cea mai bună rută dintre o origine și destinația corespunzătoare este calculată &icirc;ntotdeauna pe baza modului de deplasare, indiferent de traiectoria de rută aleasă.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Numele stratului tematic de obiecte spațiale care va fi creat &icirc;n  <b>Resursele mele</b> și va fi adăugat &icirc;n hartă. Dacă stratul tematic de obiecte spațiale rezultat există deja, vi se va solicita să furnizați un alt nume. Stratul tematic de obiecte spațiale va conține un strat tematic pentru fiecare dintre următoarele: rute, origini neatribuite și destinații neatribuite, atunci c&acirc;nd unele origini nu pot fi conectate cu destinațiile acestora.
+            </p>
+            <p>Dacă selectați  <b>Includere straturi tematice de rute</b>, fiecare rută din rezultat este salvată și ca strat tematic de rute. Un strat tematic de rute include toate informațiile pentru o anumită rută, cum ar fi opririle alocate rutei și indicațiile de deplasare. Crearea straturilor tematice de rute este utilă dacă doriți să partajați rutele individuale cu alți membri din organizația dvs. sau să modificați mai mult rutele utiliz&acirc;nd butonul <b>Indicații</b> din aplicația de vizualizare a hărților. Straturile tematice de rute utilizează numele furnizat pentru stratul tematic de obiecte spațiale ca prefix și numele de rută generat ca parte din analiză este adăugat pentru a crea un nume unic pentru fiecare strat tematic de rută.
+            </p>
+            <p>Numărul maxim de straturi tematice de rute care pot fi create este de  1.000. Dacă rezultatul conține mai mult de  1.000 de rute și opțiunea  <b>Includere straturi tematice de rute</b> este bifată, instrumentul va crea doar serviciul de obiecte spațiale de ieșire.
+            </p>
+            <p>Utiliz&acirc;nd meniul derulant  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care vor fi salvate stratul tematic de obiecte spațiale și straturile tematice de rute, dacă sunt create.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

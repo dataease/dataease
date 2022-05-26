@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Converter Raster para Feição</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="Ferramenta Converter Raster para Fei&ccedil;&atilde;o"></h2>
+        <hr/>
+    <p>Esta ferramenta converte um raster para um conjunto de dados raster, como pontos, linhas ou pol&iacute;gonos.
+    </p>
+    <p>O par&acirc;metro  <b>Escolher campo</b> permite a voc&ecirc; escolher qual campo de atributo do conjunto de dados raster de entrada se tornar&aacute; um atributo na classe de fei&ccedil;&atilde;o de sa&iacute;da. Este par&acirc;metro est&aacute; dispon&iacute;vel somente para rasters inteiros que t&ecirc;m atributos adicionais na tabela associada.
+    </p>
+    <p>O raster de entrada pode ter qualquer tamanho de c&eacute;lula.
+    </p>
+    <p>Os rasters inteiros podem ser convertidas em fei&ccedil;&otilde;es de ponto, linha ou pol&iacute;gono; por&eacute;m, rasters de ponto flutuantes podem ser convertidos somente em fei&ccedil;&otilde;es de ponto.
+    </p>
+    <p>Se  <b>Utilizar extens&atilde;o de mapa atual</b> estiver selecionada, somente as c&eacute;lulas de raster que s&atilde;o vis&iacute;veis dentro da extens&atilde;o de mapa atual ser&atilde;o convertidas. Se n&atilde;o selecionada, todas as c&eacute;lulas na camada de entrada ser&atilde;o convertidas, mesmo que estiverem fora da extens&atilde;o de mapa atual. Tome nota disto se a camada de raster for grande ou tiver uma resolu&ccedil;&atilde;o muito alta.
+    </p>
+    <p>Utilizar casos para esta ferramenta inclui o seguinte:
+ 
+        <ul>
+            <li>Criar fei&ccedil;&otilde;es de pol&iacute;gono a partir de um raster de classifica&ccedil;&atilde;o de uso do solo.
+                
+ 
+            </li>
+            <li>Os fluxos identificados em um DEM podem ser convertidos em fei&ccedil;&otilde;es de linha.
+                
+
+            </li>
+            <li>Um DEM pode ser convertido em fei&ccedil;&otilde;es de ponto que podem ser utilizadas em um fluxo de trabalho baseado em elementos diferentes do raster
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Escolher camada raster para converter</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de raster de entrada que ser&aacute; convertida em camadas de fei&ccedil;&atilde;o.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Escolher campo</h2></div>
+        <hr/>
+        <div>
+            <p>Forne&ccedil;a um campo que especifica qual valor ser&aacute; utilizado para a convers&atilde;o.
+            </p>
+            <p>Pode ser qualquer valor de texto ou inteiro.
+            </p>
+            <p>Um campo contendo valores de ponto flutuante pode ser utilizado somente se a sa&iacute;da for para um conjunto de dados de ponto.
+            </p>
+            <p>A escolha padr&atilde;o &eacute; utilizar o campo  <i>Value</i> , que cont&eacute;m o valor em cada c&eacute;lula de raster.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Escolher tipo de saída</h2></div>
+        <hr/>
+        <div>
+            <p>Escolha o tipo de sa&iacute;da entre ponto, linha ou pol&iacute;gono.
+            </p>
+            <ul>
+                <li>Ponto&mdash;O raster ser&aacute; convertido em um conjunto de dados de ponto.
+                    
+ 
+                </li>
+                <li>Linha&mdash;O raster ser&aacute; convertido em um conjunto de dados de fei&ccedil;&atilde;o de linha.
+                    
+ 
+                </li>
+                <li>Pol&iacute;gono&mdash;O raster ser&aacute; convertido em um conjunto de dados de fei&ccedil;&atilde;o de pol&iacute;gono.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>Simplificar linhas ou polígonos</h2></div>
+        <hr/>
+        <div>
+            <p>Especifique se as fei&ccedil;&otilde;es devem ser simplificadas.
+            </p>
+            <p>Se selecionada (o padr&atilde;o), as fei&ccedil;&otilde;es de linha ou pol&iacute;gono ser&atilde;o suavizadas para produzir um resultado mais generalizado. Se esta op&ccedil;&atilde;o n&atilde;o estiver selecionada, as fei&ccedil;&otilde;es ineares seguir&atilde;o os limites da c&eacute;lula do conjunto de dados raster.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>O nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se a camada j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>Voc&ecirc; pode especificar o nome de uma pasta em  <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo utilizando a caixa suspensa <b>Salvar resultados em</b> .
+            </p>
+        </div>
+    </div>
+</div>
+</html>

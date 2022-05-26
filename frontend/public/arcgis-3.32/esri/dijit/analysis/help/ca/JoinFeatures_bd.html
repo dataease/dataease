@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Uneix les entitats</h2><p/>
+        <h2><img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" alt="Uneix les entitats"></h2>
+        <hr/>
+    <p>L'eina Uneix les entitats funciona amb dues capes. Uneix les entitats uneix els atributs d'una entitat amb una altra en funci&oacute; de les relacions espacials, temporals i d'atributs, o b&eacute; d'una combinaci&oacute; de totes tres. L'eina determina totes les entitats d'entrada que compleixen les condicions d'uni&oacute; especificades i uneix la segona capa d'entrada amb la primera. De manera opcional, podeu unir les entitats amb les entitats coincidents o resumir les entitats coincidents.
+    </p>
+    <p>Uneix les entitats es pot aplicar a punts, l&iacute;nies, &agrave;rees i taules. Una uni&oacute; temporal requereix que les dades d'entrada tinguin la funci&oacute; de temps habilitada, i una uni&oacute; espacial necessita que les dades tinguin una geometria. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Trieu una capa de destí</h2></div>
+        <hr/>
+        <div>
+            <p>Capa que tindr&agrave; els atributs de la capa d'uni&oacute; afegits a la seva taula.
+            </p>
+            <p>Per a l'an&agrave;lisi amb la relaci&oacute; espacial de tipus  <b>A prop</b> es necessita un sistema de coordenades projectades. Podeu definir l'opci&oacute; de <b>Sistema de coordenades de processament</b> a <b>Entorns d'an&agrave;lisi</b>. Si el sistema de coordenades de processament no est&agrave; definit en un sistema de coordenades projectades, se us demanar&agrave; que el definiu quan utilitzeu <b>Executa l'an&agrave;lisi</b> .
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b> al final de la llista desplegable per cercar al vostre contingut una capa d'entitats o un dataset de recursos compartits de fitxers de dades massives.
+            </p>
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>Trieu la capa per unir a la capa de destí</h2></div>
+        <hr/>
+        <div>
+            <p>Capa d'uni&oacute; amb els atributs que s'afegiran a la capa de dest&iacute;.
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b> al final de la llista desplegable per cercar al vostre contingut una capa d'entitats o un dataset de recursos compartits de fitxers de dades massives.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Trieu una operació d'unió</h2></div>
+        <hr/>
+        <div>
+            <p>Determina com es gestionen les unions entre la capa de destinaci&oacute; i la d'uni&oacute; a la sortida si es detecta que diverses entitats d'uni&oacute; tenen la mateixa relaci&oacute; amb la capa que s'uneix. Hi ha dues operacions d'uni&oacute; per triar:
+                <ul>
+                    <li> <b>Uneix un a un</b>: aquesta opci&oacute; resumeix totes les entitats coincidents amb cadascuna de les entitats que s'uneix.
+                    </li>
+                    <li> <b>Uneix un a diversos</b>: aquesta opci&oacute; uneix totes les entitats coincidents amb la capa d'uni&oacute;.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Per exemple, suposem que voleu trobar supermercats en un radi de 2 quil&ograve;metres d'un mercat agr&iacute;cola.   En aquest cas, la capa d'uni&oacute; t&eacute; una &uacute;nica entitat que representa un mercat agr&iacute;cola, i la capa d'uni&oacute; representa les botigues d'alimentaci&oacute; locals i t&eacute; atributs com ara el total de vendes anuals. Mitjan&ccedil;ant l'eina Uneix les entitats, veureu que hi ha cinc botigues d'alimentaci&oacute; que compleixen aquests criteris. Si heu especificat la operaci&oacute; d'uni&oacute;  <b>Uneix un a diversos</b>, obtindreu cinc entitats al resultat, on cada fila representa el mercat agr&iacute;cola i un supermercat. Si heu especificat una relaci&oacute; <b>Uneix un a un</b>, obtindreu una entitat que representar&agrave; el mercat agr&iacute;cola i la informaci&oacute; resumida dels supermercats &mdash;per exemple, el recompte (2)&mdash; i altres estad&iacute;stiques opcionals, com ara la suma de les vendes anuals.
+            </p>
+        </div>
+    </div>
+    <div id="joinOptions">
+        <div><h2>Seleccioneu una o diverses unions</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica l'opci&oacute; d'uni&oacute; utilitzada. Podeu aplicar un, dos o tres dels tipus d'uni&oacute; seg&uuml;ents: 
+                <ul>
+                    <li> <b>Espacial</b>: utilitza una relaci&oacute; espacial especificada per unir entitats. Cal que totes dues capes tinguin una geometria.
+                    </li>
+                    <li> <b>Temporal</b>: utilitza una relaci&oacute; temporal per unir entitats. Cal que ambdues capes tinguin la funci&oacute; de temps habilitada.
+                    </li>
+                    <li> <b>Atribut</b>: uneix entitats en funci&oacute; de camps que s&oacute;n iguals.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Trieu una relació espacial</h2></div>
+        <hr/>
+        <div>
+            <p>Relaci&oacute; espacial que determinar&agrave; si les entitats s'uniran entre si. Les relacions disponibles seg&uuml;ents dependran dels tipus de geometria (punts, polil&iacute;nies o pol&iacute;gons) que s'utilitzin com a entitats d'entrada:
+                <ul>
+                    <li> <b>S'interseca</b>: les entitats es confrontaran si s'intersequen entre si.
+                    </li>
+                    <li> <b>&Eacute;s igual a</b>: les entitats es confrontaran si tenen la mateixa geometria.
+                    </li>
+                    <li> <b>A prop</b>: les entitats es confrontaran si es troben a la dist&agrave;ncia m&agrave;xima especificada entre si. La capa de destinaci&oacute; s'ha de trobar en un sistema de coordenades projectades o ha de tenir la refer&egrave;ncia espacial de processament definida en un sistema de coordenades projectades mitjan&ccedil;ant els <b>entorns d'an&agrave;lisi</b> si s'utilitza una relaci&oacute; espacial <b>A prop</b>.
+                    </li>
+                    <li> <b>Cont&eacute;</b>: les entitats es confrontaran si la capa de destinaci&oacute; es troba a les entitats d'uni&oacute;.
+                    </li>
+                    <li> <b>Dins</b>: les entitats es confrontaran si la capa de destinaci&oacute; es troba dins de les entitats d'uni&oacute;.
+                    </li>
+                    <li> <b>Toca</b>: les entitats es confrontaran si tenen un l&iacute;mit que toca l'entitat de destinaci&oacute;.
+                    </li>
+                    <li> <b>Creua</b>: les entitats es confrontaran si tenen un contorn que les creua.
+                    </li>
+                    <li> <b>Superposa</b>: les entitats es confrontaran si se superposen.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearSpatial">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            <p> Especifica el radi aplicat a una relaci&oacute; espacial A prop.
+            </p>
+            <p>Per exemple, si teniu un dataset que representa una central nuclear i un dataset que representa resid&egrave;ncies, podeu establir una dist&agrave;ncia nearSpatial d'un quil&ograve;metre per trobar les cases que es troben a un radi d'un quil&ograve;metre de la central nuclear.
+            </p> 
+        </div>
+    </div>
+    <div id="temporalRelationship">
+        <div><h2>Trieu una relació temporal</h2></div>
+        <hr/>
+        <div>
+            <p>Relaci&oacute; temporal que determinar&agrave; si les entitats s'uniran entre si. Aquesta opci&oacute; nom&eacute;s est&agrave; disponible si la funci&oacute; de temps est&agrave; habilitada en ambdues capes, i les relacions disponibles depenen del tipus de temps (instant o interval) utilitzat per a les entitats d'entrada. Les relacions temporals disponibles s&oacute;n les seg&uuml;ents:
+                <ul>
+                    <li> <b>Compleix</b>: les entitats es confrontaran si la primera entitat compleix amb la segona.
+                    </li>
+                    <li> <b>Complert per</b>: les entitats es confrontaran si la segona entitat compleix amb la primera.
+                    </li>
+                    <li> <b>Superposa</b>: les entitats es confrontaran si la primera entitat se superposa a la segona.
+                    </li>
+                    <li> <b>Superposat per</b>: les entitats es confrontaran si la segona entitat se superposa a la primera.
+                    </li>
+                    <li> <b>Durant</b>: les entitats es confrontaran si la primera entitat t&eacute; lloc durant la segona.
+                    </li>
+                    <li> <b>Cont&eacute;</b>: les entitats es confrontaran si la primera entitat cont&eacute; la segona.
+                    </li>
+                    <li> <b>&Eacute;s igual a</b>: les entitats es confrontaran si la primera entitat &eacute;s igual a la segona.
+                    </li>
+                    <li> <b>Finalitza</b>: les entitats es confrontaran si la primera entitat finalitza la segona.
+                    </li>
+                    <li> <b>Finalitzat per</b>: les entitats es confrontaran si la segona entitat finalitza la primera.
+                    </li>
+                    <li> <b>Inicia</b>: les entitats es confrontaran si la primera entitat inicia la segona.
+                    </li>
+                    <li> <b>Iniciat per</b>: les entitats es confrontaran si la segona entitat inicia la primera.
+                    </li>
+                    <li> <b>S'interseca</b>: les entitats es confrontaran si les hores s'intersequen el m&eacute;s m&iacute;nim.
+                    </li>
+                    <li> <b>A prop</b>: les entitats es confrontaran si es troben a prop l'una de l'altra, subjecte a un temps especificat.
+                    </li>
+                    <li> <b>A prop abans</b>: les entitats es confrontaran si la primera entitat t&eacute; lloc abans que la segona i en el temps especificat.
+                    </li>
+                    <li> <b>A prop despr&eacute;s</b>: les entitats es confrontaran si la primera entitat t&eacute; lloc despr&eacute;s que la segona i en el temps especificat.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearTemporal">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            
+            <p>Especifica el radi temporal aplicat a una relaci&oacute; temporal A prop. Una relaci&oacute; temporal A prop inclou les opcions  <b>A prop</b>, <b>A prop abans</b> i <b>A prop despr&eacute;s</b>.
+            </p>
+            <p>Per exemple, si teniu una capa d'incidents n&agrave;utics i una capa de recorreguts GPS d'un hurac&agrave;, podeu observar els incidents n&agrave;utics a una dist&agrave;ncia especificada dels recorreguts de l'hurac&agrave; en l'espai (1 quil&ograve;metre) i el temps (5 hores). El resultat seran incidents n&agrave;utics units als huracans que s'han produ&iuml;t alhora en l'espai i el temps.
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>Trieu els camps que es confrontaran</h2></div>
+        <hr/>
+        <div>
+            <p>Confronta els valors d'un camp d'una capa amb els valors d'un camp d'una altra capa. 
+            </p>
+            <p>Per exemple, si teniu una capa geogr&agrave;fica de tot el comtat amb les adreces residencials (que  <i>ZIP</i>inclou un camp ) i un dataset en taules d'informaci&oacute; demogr&agrave;fica i de salut per codi postal (que inclou un camp anomenat <i>HEALTHZIP</i>), podeu unir el dataset de salut amb les dades residencials fent coincidir els camps <i>ZIP</i> i <i>HEALTHZIP</i>. Obtindreu una capa de resid&egrave;ncies amb les dades de salut corresponents.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Afegeix estadístiques (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Calcula les estad&iacute;stiques sobre les entitats unides si l'operaci&oacute; d'uni&oacute; &eacute;s  <b>Uneix un a un</b>. Per defecte es calcularan totes les estad&iacute;stiques.
+            </p>
+            <p>Podeu calcular les estad&iacute;stiques sobre les entitats que s'han resumit. Als camps num&egrave;rics, podeu calcular el seg&uuml;ent: 
+                <ul>
+                    <li>Recompte: calcula el nombre de valors no nuls. Es pot utilitzar a les cadenes o als camps num&egrave;rics. El recompte de [nul, 0, 2] &eacute;s 2.
+                    </li>
+                    <li>Suma: suma dels valors num&egrave;rics d'un camp. La suma de [nul, nul, 3] &eacute;s 3.
+                    </li>
+                    <li>Mitjana: mitjana dels valors num&egrave;rics. La mitjana de [0, 2, nul] &eacute;s 1.
+                    </li>
+                    <li>M&iacute;nim: valor m&iacute;nim d'un camp num&egrave;ric. El m&iacute;nim de [0, 2, nul] &eacute;s 0. 
+                    </li>
+                    <li>M&agrave;xim: valor m&agrave;xim d'un camp num&egrave;ric. El valor m&agrave;xim de [0, 2, nul] &eacute;s 2.
+                    </li>
+                    <li>Interval: interval d'un camp num&egrave;ric. Es calcula com els valors m&iacute;nims restats del m&agrave;xim. L'interval de [0, nul, 1] &eacute;s 1. L'interval de [nul, 4] &eacute;s 0.
+                    </li>
+                    <li>Vari&agrave;ncia: vari&agrave;ncia d'un camp num&egrave;ric en un recorregut. La vari&agrave;ncia de [1] &eacute;s nul. La vari&agrave;ncia de [nul, 1,0,1,1] &eacute;s 0,25.
+                    </li>
+                    <li>Desviaci&oacute; est&agrave;ndard: desviaci&oacute; est&agrave;ndard d'un camp num&egrave;ric. La desviaci&oacute; est&agrave;ndard de [1] &eacute;s nul. La desviaci&oacute; est&agrave;ndard de [nul, 1,0,1,1] &eacute;s 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Als camps de cadena, podeu calcular el seg&uuml;ent:
+                <ul>
+                    <li>Recompte: nombre de cadenes no nul&middot;les.
+                    </li>
+                    <li>Qualsevol: aquesta estad&iacute;stica &eacute;s una mostra aleat&ograve;ria del valor d'una cadena al camp especificat.
+                    </li>
+                </ul>
+                Totes les estad&iacute;stiques es calcularan sobre valors no nuls. La capa resultant contindr&agrave; un camp nou per a cada estad&iacute;stica calculada. Per afegir qualsevol nombre d'estad&iacute;stiques, podeu triar un atribut i una estad&iacute;stica.
+            </p>
+            <p>Totes les estad&iacute;stiques es calcularan sobre valors no nuls. La capa resultant contindr&agrave; un camp nou per a cada estad&iacute;stica calculada. Per afegir qualsevol nombre d'estad&iacute;stiques, podeu triar un atribut i una estad&iacute;stica.
+            </p>
+        </div>
+    </div>
+    <div id="joinCondition">
+        <div><h2>Crea una expressió amb la qual unir entitats (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Aplica una condici&oacute; als camps especificats. Nom&eacute;s s'uniran les entitats amb camps que compleixin aquestes condicions.
+            </p>
+            <p>Per exemple, si voleu aplicar una uni&oacute; a un dataset nom&eacute;s per a les entitats on  <i>health_spending</i> sigui superior al 20&nbsp;% de <i>income</i>, apliqueu una condici&oacute; d'uni&oacute; de <code>$target[&quot;health_spending&quot;] &gt; ($join[&quot;income&quot;] * .20)</code> amb el camp <i>health_spending</i> del primer dataset (el dataset al qual s'han unit les entitats) i el camp <i>income</i> del segon dataset (dataset que s'uneix).
+            </p>
+            <p>Les condicions d'uni&oacute; es poden aplicar mitjan&ccedil;ant la calculadora d'expressions.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Trieu un magatzem de dades</h2></div>
+        <hr/>
+        <div>
+            <p>Els resultats del GeoAnalytics s'emmagatzemen en un magatzem de dades i s'exposen com una capa d'entitats al  Portal for ArcGIS. En la majoria dels casos, conv&eacute; emmagatzemar els resultats en un magatzem de dades espaciotemporal, que &eacute;s l'opci&oacute; per defecte. En alguns casos, desar els resultats al magatzem de dades relacional &eacute;s una bona opci&oacute;. A continuaci&oacute; teniu alguns motius pels quals &eacute;s bona idea desar els resultats al magatzem de dades relacional: 
+                <ul>
+                    <li>Podeu utilitzar els resultats en la col&middot;laboraci&oacute; de portal a portal.
+                    </li>
+                    <li>Podeu habilitar les funcions de sincronitzaci&oacute; amb els vostres resultats.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>No &eacute;s recomanable fer servir un magatzem de dades relacionals si espereu que els resultats del GeoAnalytics augmentin i necessiteu utilitzar les funcions del magatzem de dades massives espaciotemporals per gestionar grans quantitats de dades.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la capa que es crear&agrave;.  Si esteu escrivint en un ArcGIS Data Store, els resultats es desaran a  <b>El meu contingut</b> i s'afegiran al mapa. Si esteu escrivint en un recurs compartit de fitxers de dades massives, els resultats s'emmagatzemaran en aquest recurs i s'afegiran al seu manifest. No s'afegiran al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, l'eina no funcionar&agrave;.
+            </p>
+            <p>Si escriviu a l' ArcGIS Data Store (magatzem de dades massives relacional o espaciotemporal) mitjan&ccedil;ant el quadre desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta a <b>El meu contingut</b>, on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

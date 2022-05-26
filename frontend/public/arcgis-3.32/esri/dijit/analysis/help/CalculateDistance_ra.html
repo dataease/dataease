@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Calculate Distance</h2><p/>
+        <h2><img src="./images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="Calculate Distance"></h2>
+        <hr/>
+    <p>This tool calculates Euclidean distance, direction, and allocation from a single source or set of sources.
+    </p>
+    <p>Example applications include answering questions such as the following:
+
+        <ul>
+            <li>What is the distance to the closest town?
+                
+
+            </li>
+            <li>What is the distance to the closest road?
+                
+
+            </li>
+            <li>What is the distance to the closest water source?
+            </li>
+        </ul>
+        
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only those features in the input layer that are visible within the current map extent will be analyzed. If unchecked, all features in the input layer will be analyzed, even if they are outside the current map display extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Choose raster or feature location layer to calculate the distance to</h2></div>
+        <hr/>
+        <div>
+            <p>The layer that defines the sources to which the distance will be calculated. The layer can be an image service or a feature service.
+            </p>
+            <p>For an image service, the input type can be integer or floating point.
+            </p>
+            <p>For a feature service, the input can be point, line, or polygon.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Maximum distance to calculate</h2></div>
+        <hr/>
+        <div>
+            <p>The maximum distance to be calculated. For example, if you provide a value of 10,000 meters, the Euclidian distance will be calculated from the source locations out to that value (distance).
+            </p>
+            <p>If no value is provided, the distance will be calculated out to the defined extent.
+            </p>
+            <p>The available units are Kilometers, Meters, Miles, and Feet.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Output Cell Size</h2></div>
+        <hr/>
+        <div>
+            <p>The cell size and unit for the output rasters.
+            </p>
+            <p>The units can be kilometers, meters, miles, or feet.
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>Result distance layer name</h2></div>
+        <hr/>
+        <div>
+            <p>The name of the layer that will be created in  <b>My Content</b> and added to the map. The default name is based on the tool name and the input layer name. If the layer already exists, you will be prompted to provide another name.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>Result direction layer name</h2></div>
+        <hr/>
+        <div>
+            <p>The name of the layer that will be created in  <b>My Content</b>. You must provide a name that does not currently exist in <b>My Content</b>.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>Result Allocation layer name</h2></div>
+        <hr/>
+        <div>
+            <p>The name of the layer that will be created in  <b>My Content</b>. You must provide a name that does not currently exist in <b>My Content</b>.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>Choose allocation field</h2></div>
+        <hr/>
+        <div>
+            <p>A field on the input source layer that holds the values that define each source. It can be an integer or a string field of the source dataset.
+            </p>
+            <p>The default is  <i>Value</i>. If using a feature service and no <i>Value</i> field is available, then the first available integer or string field will be used. If no valid fields exist, the ObjectID field (for example, OID or FID, depending on the type of feature input) will be used.
+            </p>
+        </div>
+    </div>
+    <div id="inputBarrierRasterOrFeatures">
+        <div><h2>Choose raster or feature layer to represent barriers</h2></div>
+        <hr/>
+        <div>
+            <p>The dataset that defines the barriers. 
+            </p>
+            <p>For an image service, the input type can be integer or floating point.  Any cells that have a value (including zero) will be treated as a barrier, any cells that are NoData will not be treated as a barrier.
+            </p>
+            <p>For a feature service, the input can be point, line, or polygon.
+            </p>
+        </div>
+    </div>
+    <div id="distanceMethod">
+        <div><h2>Distance method</h2></div>
+        <hr/>
+        <div>
+            <p>Determines whether to calculate the distance using a planar (flat earth) or a geodesic (ellipsoid) method.
+            </p>
+            <ul>
+                <li> <b>Planar</b>&mdash;The calculation will be performed on a projected flat plane using a 2D Cartesian coordinate system. This is the default method.
+                    
+
+                </li>
+                <li> <b>Geodesic</b>&mdash;Distances are calculated on the ellipsoid. Therefore, regardless of input or output projection, the results do not change.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="outputBackDirectionName">
+        <div><h2>Result back direction layer name</h2></div>
+        <hr/>
+        <div>
+            <p>The name of the layer that will be created in  <b>My Content</b>. You must provide a name that does not currently exist in <b>My Content</b>.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

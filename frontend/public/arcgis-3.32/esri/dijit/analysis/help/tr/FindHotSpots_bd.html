@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Etkin Noktaları Bulma</h2><p/>
+        <h2><img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" alt="Etkin Nokta Bul"></h2>
+        <hr/>
+    <p>Etkin Nokta Bul aracı, verinizin mekansal modelinde istatistiksel a&ccedil;ıdan &ouml;nemli bir k&uuml;melenme olup olmadığını belirleyecektir. 
+        <ul>
+            <li>Noktalarınız (su&ccedil; olayları, ağa&ccedil;lar veya trafik kazaları) ger&ccedil;ekten k&uuml;melenmiş durumda mı?  Nasıl emin olabilirsiniz?
+            </li>
+            <li>Ger&ccedil;ekten istatistiksel a&ccedil;ıdan &ouml;nemli etkin nokta buldunuz mu ya da haritanız, sembolize edilme şeklini değiştirdiğinizde farklı bir şey mi anlatıyor?
+            </li>
+        </ul>
+        Etkin Nokta Bul Aracı bu sorulara g&uuml;venle cevap vermenize yardımcı olacaktır.
+    </p>
+    <p>Rastgele mekansal yapılarda bile bir dereceye kadar k&uuml;melenme g&ouml;r&uuml;l&uuml;r.  Bunun yanı sıra, ortada yapı bulunmasa da, g&ouml;zlerimiz ve beynimiz doğal olarak varmış gibi bunları arar.  Sonu&ccedil;ta verilerinizdeki yapıların ger&ccedil;ek mekansal s&uuml;re&ccedil;lerin sonu&ccedil;ları olarak mı yoksa yalnızca rastgele mi ortaya &ccedil;ıktığının anlaşılması zordur.  İşte bu nedenle araştırmacılar ve analistler mekansal yapıları sayısallaştırmak i&ccedil;in Etkin Noktaları Bul (Getis-Ord Gi*) gibi istatistiksel y&ouml;ntemleri kullanır. Verilerinizde istatistiksel olarak anlamlı k&uuml;melenme belirlediğinizde, elinizde &ouml;nemli bilgiler var demektir.  K&uuml;melenmenin nerede ve ne zaman oluştuğunun bilinmesi, g&ouml;rd&uuml;ğ&uuml;n&uuml;z yapıları kullanan s&uuml;re&ccedil;ler hakkında &ouml;nemli ipu&ccedil;ları sağlayabilir.  &Ouml;rneğin, konut b&ouml;lgelerindeki hırsızlıkların belirli komşu b&ouml;lgelerde s&uuml;rekli bi&ccedil;imde daha y&uuml;ksek olduğunun bilinmesi; etkili &ouml;nlem stratejilerinin tasarlanması, sınırlı g&uuml;venlik g&uuml;c&uuml; kaynaklarının atanması, komşu b&ouml;lgeleri izleme programlarının hayata ge&ccedil;irilmesi, ayrıntılı kriminal araştırmaların y&uuml;r&uuml;t&uuml;lmesi veya potansiyel ş&uuml;phelilerin belirlenmesi gereken durumlarda hayati &ouml;neme sahiptir.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Etkin noktaların hesaplanacağı katmanı seçin.</h2></div>
+        <hr/>
+        <div>
+            <p>Etkin olan ve olmayan noktaların bulunacağı nokta katmanı.
+            </p>
+            <p>Bu analiz kutu kullanır ve izd&uuml;ş&uuml;ml&uuml; bir koordinat sistemi gerektirir.  <b>İşlem koordinat sistemini</b> <b>Analiz Ortamları</b> i&ccedil;inden ayarlayabilirsiniz. 
+ İşlem koordinat sisteminiz izd&uuml;ş&uuml;ml&uuml; bir koordinat sistemine ayarlanmamış ise, <b>Analizi &Ccedil;alıştır</b> dığınızda bu ayarlamayı yapmanız istenir.
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;ebileceğiniz gibi, a&ccedil;ılan listenin en altından  <b>Analiz Katmanını Se&ccedil;</b> &ouml;gesini belirleyerek b&uuml;y&uuml;k veri dosya paylaşımı veri k&uuml;mesi veya detay katmanı i&ccedil;eriğinize g&ouml;z atabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Yüksek ve düşük kümelenmeleri bul</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Bu analiz şu soruyu yanıtlamaktadır: Y&uuml;ksek ve d&uuml;ş&uuml;k değerler mekansal olarak nerede k&uuml;meleniyor?
+            </p>
+            <p>Verileriniz nokta ise ve  <b>Nokta Sayısı</b> se&ccedil;eneğini belirlerseniz, bu ara&ccedil; nokta detaylarının mekansal d&uuml;zenlemesini değerlendirerek şu soruyu yanıtlar: Noktaların beklenmedik şekilde k&uuml;melendiği veya dağıldığı yerler neresidir?
+            </p>
+            <p>Bir alan se&ccedil;erseniz, bu ara&ccedil; her detayla ilişkilendirilen değerlerin mekansal d&uuml;zenlemesini değerlendirerek şu soruyu yanıtlar: Y&uuml;ksek ve d&uuml;ş&uuml;k değerler nerede k&uuml;meleniyor?
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Birleştirme için kutu boyutunu seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Girdi noktalarınızın analiz edilmesi i&ccedil;in kullanılacak kare kutuları oluşturmak i&ccedil;in kullanılan mesafe.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Zaman adımlarını kullanarak etkin noktaları bul (isteğe bağlı)</h2></div>
+        <hr/>
+        <div>
+            <p>Nokta katmanında zaman etkinleştirilmişse ve t&uuml;r&uuml; de anlık ise, zaman adımlarını kullanarak analiz yapabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Zaman adımı aralığı</h2></div>
+        <hr/>
+        <div>
+            <p>Zaman adımı oluşturmak i&ccedil;in kullanılan zaman aralığı. Zaman, girdi verilerinin başlangı&ccedil; veya bitiş saati olabileceği gibi, belirtilen bir başvuru saatine de ayarlanabilir.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Zaman adımı aralığı</h2></div>
+        <hr/>
+        <div>
+            <p>Zaman adımı oluşturmak i&ccedil;in kullanılan zaman aralığı. Zaman, girdi verilerinin başlangı&ccedil; veya bitiş saati olabileceği gibi, belirtilen bir başvuru saatine de ayarlanabilir.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStepAlignment">
+        <div><h2>Zaman adımlarını düzenleme biçimini belirle</h2></div>
+        <hr/>
+        <div>
+            <p>Zaman adımlarının d&uuml;zenlenme bi&ccedil;imini se&ccedil;in. Zaman adımları &uuml;&ccedil; şekilde d&uuml;zenlenir:
+                <ul>
+                    <li> <b>Başlangı&ccedil; Saati</b>; zaman adımları zaman i&ccedil;indeki ilk detayla belirlenir.
+                    </li>
+                    <li> <b>Bitiş Saati</b>; zaman adımları zaman i&ccedil;indeki son detayla belirlenir.
+                    </li>
+                    <li> <b>Referans Saati</b>; zaman adımları belirtilen bir saatle belirlenir.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Zaman adımlarının düzenleneceği referans saat</h2></div>
+        <hr/>
+        <div>
+            <p>Zaman adımlarını belirlemek i&ccedil;in kullanılan tarih ve saat.
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Etkin nokta hesaplamaları için yakınlık boyutunu seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Etkin nokta hesaplamalarında kullanılan komşuluk b&ouml;lgesini belirlemek i&ccedil;in kullanılan mesafe. Her kutunun en az bir komşuya sahip olmasını sağlamak i&ccedil;in komşuluk b&ouml;lgesi değeri kutu boyutundan daha b&uuml;y&uuml;k olmalıdır. Her kutu analiz edilir ve komşu kutularla karşılaştırılır.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Bu, mekansal referansı ayarlamak amacıyla &ouml;n s&uuml;r&uuml;m i&ccedil;in ge&ccedil;ici bir parametredir. B&uuml;y&uuml;k veri ara&ccedil;larının pek &ccedil;oğu, işlem i&ccedil;in mekansal referans olarak izd&uuml;ş&uuml;mlendirilmiş bir koordinat sisteminin kullanılmasını gerektirir. Varsayılan olarak, ara&ccedil; girdi koordinat sistemini kullanır, ancak bu bir coğrafi koordinat sistemi olduğunda &ccedil;alışmaz. İzd&uuml;ş&uuml;mlendirilmiş bir koordinat sistemi ayarlamak i&ccedil;in WKID girin. &Ouml;rneğin,  <b>Web Mercator</b> değeri, <code>3857</code>olarak girilebilir.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Sonuçların kaydedileceği bir ArcGIS Data Store seçin</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics sonu&ccedil;ları,  bir veri deposunda saklanır ve  Portal for ArcGIS i&ccedil;inde bir detay katmanı olarak yansıtılır. Pek &ccedil;ok durumda sonu&ccedil;ların mekan-zamansal b&uuml;y&uuml;k veri deposuna depolanması gerekir ve bu varsayılan ayardır. Bazı durumlarda, sonu&ccedil;ların ilişkisel veri deposuna kaydedilmesi iyi bir se&ccedil;enektir. Sonu&ccedil;ların ilişkisel veri deposuna  saklanmasını isteyebileceğiniz nedenler aşağıda sunulmuştur: 
+                <ul>
+                    <li>Bu sonu&ccedil;ları, portaldan-portala işbirliğinde kullanabilirsiniz.
+                    </li>
+                    <li>Sonu&ccedil;larınızı eşzamanlama &ouml;zellikleriyle etkinleştirebilirsiniz.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>GeoAnalytics sonu&ccedil;larınızın artmasını bekliyorsanız, ilişkisel veri deposunu kullanmamalı ve b&uuml;y&uuml;k miktarda veri s&ouml;z konusu olduğunda bunları işlemek i&ccedil;in mekan-zamansal b&uuml;y&uuml;k veri deposunun avantajından yararlanmalısınız.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> Oluşturulacak katmanın adı. Bir ArcGIS Data Store&lsquo;a yazdığınızda, sonu&ccedil;larınız  <b>İ&ccedil;eriğime</b> kaydedilir ve haritaya eklenir. Bir b&uuml;y&uuml;k veri dosya paylaşımına yazdığınızda,  sonu&ccedil;larınız b&uuml;y&uuml;k veri dosya paylaşımı i&ccedil;ine kaydedilir ve   manifestosuna eklenir.  haritaya eklenmez. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Detay katmanı zaten varsa ara&ccedil; &ccedil;alışmaz.
+            </p>
+            <p>Bu sonu&ccedil; katmanı size y&uuml;ksek ya da d&uuml;ş&uuml;k değer ya da nokta hesabının istatistiksel olarak &ouml;nemli k&uuml;melerini g&ouml;sterecektir. Sonu&ccedil; katmanı adı zaten mevcutsa, bunu yeniden adlandırmanız istenir.
+            </p>
+            <p> ArcGIS Data Store&lsquo;a yazarken (ilişkisel ya da mekan-zamansal b&uuml;y&uuml;k veri deposu)  <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır kutusunu kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Izračunaj polje</h2><p/>
+        <h2><img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" alt="Izračunaj polje"></h2>
+        <hr/>
+    <p> Ova alatka radi sa ulaznim slojem radi izračunavanja vrednosti za novo ili postojeće polje. Izradite Arcade izraz da izračunate vrednosti kojima ćete popuniti geoobjekte.   Ako su va&scaron;i podaci vremenski omogućeni i čiji je vremenski tip trenutak, možete opciono da izradite izraze koji su usklađeni sa stazom.
+    </p>
+    <p>Na primer, recimo da želite da izmenite postojeće polje koje se zove  <i>TotalSales</i>. Želite da polje bude predstavljeno zbirom ukupnih prodaja u 2016. i 2017. Kori&scaron;ćenjem tih polja u izrazu izračunavate vrednost polja kao <pre>$feature[&quot;Sales2016&quot;] + $feature[&quot;Sales2017&quot;]</pre>.
+    </p>
+    <p>Koristeći drugi primer, pretpostavimo da imate GPS merenja koja beleže lokaciju, vreme, ID oznaku autobusa i brzinu autobusa u gradu. Želimo da kreiramo novo polje koje se zove  <i>SpeedFrom3</i> koje računa prosek brzine poslednja 3 zabeležena GPS merenja za svaki geoobjekat. Za ovo izračunavanje bismo koristili izračunavanje usklađeno sa stazom, gde je staza autobus označen ID oznakom autobusa.    Izračunavanje za određivanje prosečne brzine prethodna 3 vremenska koraka i trenutnog vremenskog koraka je <pre>average($track.field[&quot;speed&quot;].history(-4))</pre>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Odaberite sloj za koji treba izračunati vrednosti polja</h2></div>
+        <hr/>
+        <div>
+            <p>Tačke, linije, oblasti ili tabela čije će vrednosti polja biti izračunate.  
+            </p>
+            <p>Kao dodatak odabiru sloja iz mape, možete da odaberete  <b>Izaberi sloj za analizu</b> na dnu padajuće liste da biste potražili deljeni skup podataka za datoteke sa velikim podacima ili sloj geoobjekta u svojim sadržajima.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Izračunaj vrednosti polja za polje</h2></div>
+        <hr/>
+        <div>
+            <p>Novo ili postojeće polje čije će vrednosti biti izračunate i tip podataka tog polja. Ako izračunavate vrednosti na polju koje već postoji, nije potrebno da usklađujete tip podataka. 
+            </p>
+        </div>
+    </div>
+    <div id="expression">
+        <div><h2>Izradite izraz za izračunavanje vrednosti polja</h2></div>
+        <hr/>
+        <div>
+            <p>Dodajte izraz pomoću alatke za izradu izraza kako biste izračunali vrednosti polja. 
+            </p>
+            <p>Na primer, pretpostavimo da želimo da dodamo vrednosti polja nazvanog  <i>income</i> i <i>bonus</i>. Da biste to učinili, dodajte izraz <code>$feature[&quot;income&quot;] + $feature[&quot;bonus&quot;] </code>.
+            </p>
+        </div>
+    </div>
+    <div id="trackInfo">
+        <div><h2>Izraz je usklađen sa stazom</h2></div>
+        <hr/>
+        <div>
+            <p>Navedite da li je va&scaron; izraz usklađen sa stazom. Izraz koji je usklađen sa stazom će uključiti formatiranje poput  <pre>$track.field[&quot;fieldname&quot;].history(...)</pre>. Izrazi koji su usklađeni sa stazom zahtevaju da polja identifikuju pojedinačne staze. Staze mogu da se sastoje od tačaka, linija, oblasti ili tabela i zahtevaju da ulaz ima identifikator staza i da su podaci vremenski omogućeni i čiji je vremenski tip trenutak.
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analizirajte podatke sa vremenskim intervalima</h2></div>
+        <hr/>
+        <div>
+            <p>Navedite ako želite da izračunate vrednosti za svoje staze kori&scaron;ćenjem vremenskih intervala koje će segmentirati va&scaron;e ulaze za analizu. Ako koristite vremenske intervale, morate da podesite vremenski interval koji želite da koristite i opciono podesite referentno vreme. Ako ne podesite referentno vreme, koristiće se 1. januar 1970. 
+            </p>
+            <p>Na primer, ako podesite da vremenska granica bude 1 dan, počev&scaron;i od 9:00 AM 1. januara 1990, tada će svaka traka biti skraćena u 9:00 za svaki dan i analizirana u okviru tog segmenta. 
+            </p>
+            <p>Kori&scaron;ćenje vremenskih intervala je brz način za ubrzavanje vremena izračunavanja, jer brzo kreira manje staze za analizu. Ako deljenje vremenskim intervalom koji se ponavlja ima smisla za va&scaron;u analizu, ono se preporučuje za obradu velikih podataka.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p> Ime sloja koji će se kreirati. Ako vr&scaron;ite upis u ArcGIS Data Store, va&scaron;i rezultati će se čuvati u  <b>Mom sadržaju</b> i biće dodati na mapu. Ako vr&scaron;ite upis u deljeni resurs za datoteke sa velikim podacima, va&scaron;i rezultati će se čuvati u deljenom resursu za datoteke sa velikim podacima i biti dodati u njegov manifest. On neće biti dodat na mapu. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako sloj već postoji, alatka će otkazati.
+            </p>
+            <p>Prilikom upisa u  ArcGIS Data Store (skladi&scaron;te relacionih ili prostorno-vremenskih velikih podataka) koristeći padajuće polje  <b>Sačuvaj rezultat u</b>, možete da navedete ime fascikle u <b>Mom sadržaju</b> gde će rezultat biti sačuvan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

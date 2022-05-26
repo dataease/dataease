@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Crea Buffer</h2><p/>
+        <h2><img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" alt="Crea Buffer"></h2>
+        <hr/>
+    <p>Un buffer &egrave; un'area che copre una data distanza da una feature puntuale, lineare o areale. 
+    </p>
+    <p>I buffer sono generalmente utilizzati per creare aree che possono essere analizzate pi&ugrave; a fondo con altri strumenti. Ad esempio, se la domanda &egrave; &quot;Quali edifici si trovano nel raggio di 1 chilometro dalla scuola?&quot;, &egrave; possibile trovare la risposta creando un buffer di 1 chilometro intorno alla scuola e sovrapponendo tale buffer al layer che contiene le aree occupate dagli edifici. Il risultato finale &egrave; un layer di edifici che si trovano a meno di 1 chilometro dalla scuola.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Scegliere il layer a cui applicare il buffer</h2></div>
+        <hr/>
+        <div>
+            <p>La feature puntuali, lineari o areali da includere nel buffer. I layer di input devono essere in un sistema di coordinate proiettate o il riferimento spaziale di elaborazione deve essere impostato su un sistema di coordinate proiettate utilizzando gli  <b>Ambienti di analisi</b>.
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> alla base dell'elenco a discesa per cercare un dataset di condivisione file Big Data o un feature layer.
+            </p>
+        </div>
+    </div>
+    <div id="bufferType">
+        <div><h2>Selezionare il tipo di layer da applicare</h2></div>
+        <hr/>
+        <div>
+            <p>Esistono tre modi per specificare la dimensione del buffer per le feature di input: 
+                <ul>
+                    <li>Specificare una distanza applicabile a tutte le feature.
+                    </li>
+                    <li>Specificare un campo nel layer di input che contiene il valore della distanza. &Egrave; possibile utilizzare un campo stringa o un campo numerico. Se non &egrave; definita un'unit&agrave; lineare, verranno utilizzate le unit&agrave; del riferimento spaziale. Se si utilizza un sistema di coordinate geografiche, il campo senza unit&agrave; sar&agrave; espresso in metri. 
+                    </li>
+                    <li>Creare un'espressione con pi&ugrave; campi e operatori matematici. Ad esempio, eseguire il buffer di 10 volte il valore di un campo denominato  <i>wind_speed</i>, aggiungere l'espressione <i>$feature[&quot;wind_speed&quot;] x 10</i>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Selezionare il metodo di buffer</h2></div>
+        <hr/>
+        <div>
+            <p>&Egrave; possibile scegliere di utilizzare un metodo  <b>Planare</b> o un metodo <b>Geodetico</b>. Il metodo <b>Planare</b> pu&ograve; essere pi&ugrave; veloce ed &egrave; adatto per l'analisi locale su dati proiettati. Il metodo <b>Geodetico</b> &egrave; adatto per aree di grandi dimensioni e per qualunque sistema di coordinate geografiche.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveOption">
+        <div><h2>Selezionare il tipo di metodo di dissolvenza</h2></div>
+        <hr/>
+        <div>
+            <p>Opzioni per specificare il metodo di dissolvenza.   Se si sceglie un metodo di dissolvenza, si avr&agrave; la possibilit&agrave; di creare aree multiparte o monoparte e sar&agrave; possibile calcolare le statistiche in base ai campi forniti.
+                <ul>
+                    <li> <b>Tutto</b>: verranno dissolte tutte le feature. Se sono consentite feature multiparte, tutte le feature verranno dissolte in una singola feature. Se non sono consentite feature multiparte, verranno dissolte le feature adiacenti o sovrapposte.
+                    </li>
+                    <li> <b>Campi</b>: verranno dissolte le feature che condividono lo stesso campo specificato o una combinazione di campi specificata. Se sono consentite feature multiparte, tutte le feature con lo stesso campo verranno dissolte in una singola feature. Se non sono consentite feature multiparte, verranno dissolte le feature adiacenti o sovrapposte con lo stesso valore di campo.
+                    </li>
+                    <li> <b>Nessuno</b>: non verr&agrave; dissolta alcuna feature.  Questa &egrave; l'impostazione predefinita.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Consenti feature multiparte</h2></div>
+        <hr/>
+        <div>
+            <p>Opzione per specificare se il risultato sar&agrave; costituito da feature monoparte o multiparte. 
+
+            </p>
+            <p>
+                <ul>
+                    <li>Selezionato: i risultati dell'analisi conterranno feature multiparte.   
+                    </li>
+                    <li>Deselezionato: i risultati dell'analisi conterranno feature monoparte. Questa &egrave; l'impostazione predefinita.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Aggiungi statistiche (facoltativo)</h2></div>
+        <hr/>
+        <div>
+            <p> &Egrave; possibile calcolare le statistiche su feature riepilogate. Su campi numerici &egrave; possibile calcolare quanto segue:
+                <ul>
+                    <li>Conteggio: calcola il numero di valori nonnull. Pu&ograve; essere utilizzato su campi o stringhe numeriche. Il conteggio di [null, 0, 2] &egrave; 2.
+                    </li>
+                    <li>Somma: la somma dei valori numerici in un campo. La somma di [null, null, 3] &egrave; 3.
+                    </li>
+                    <li>Media: la media di valori numerici. La media di [0, 2, null] &egrave; 1.
+                    </li>
+                    <li>Min: il valore minimo di un campo numerico. Il minimo di [0, 2, null] &egrave; 0. 
+                    </li>
+                    <li>Max: il valore massimo di un campo numerico. Il valore massimo di [0, 2, null] &egrave; 2.
+                    </li>
+                    <li>Intervallo: l'intervallo di un campo numerico. Questo viene calcolato come i valori minimi sottratti dal valore massimo. L'intervallo di [0, null, 1] &egrave; 1. L'intervallo di [null, 4] &egrave; 0.
+                    </li>
+                    <li>Varianza: la varianza di un campo numerico in una traccia. La varianza di [1] is null. La varianza di [null, 1,0,1,1] &egrave; 0,25.
+                    </li>
+                    <li>Deviazione standard: la deviazione standard di un campo numerico. La deviazione standard di [1] &egrave; null. La deviazione standard di [null, 1,0,1,1] &egrave; 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Su campi stringa &egrave; possibile calcolare quanto segue:
+                <ul>
+                    <li>Conteggio: il numero di stringhe nonnull.
+                    </li>
+                    <li>Qualsiasi: questa statistica &egrave; un esempio casuale di un valore stringa nel campo specificato.
+                    </li>
+                </ul>
+                Tutte le statistiche vengono calcolate su valori non null. Il layer risultante includer&agrave; un nuovo campo per ogni statistica calcolata. &Egrave; possibile aggiungere un numero qualsiasi di statistiche scegliendo un attributo e una statistica. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Scegliere un ArcGIS Data Store in cui salvare i risultati</h2></div>
+        <hr/>
+        <div>
+            <p>I risultati di GeoAnalytics sono memorizzati in un data store ed esposti come un feature layer in  Portal for ArcGIS. Nella maggior parte dei casi, i risultati devono essere memorizzati nello Spatiotemporal Data Store e questa &egrave; l'impostazione predefinita. In alcuni casi,, il salvataggio dei risultati nel Data Store relazionale &egrave; un'ottima opzione. Di seguito sono memorizzate le ragioni per memorizzare i risultati nel Data Store relazionale: 
+                <ul>
+                    <li>&Egrave; possibile utilizzare i risultati in una collaborazione tra portali.
+                    </li>
+                    <li>&Egrave; possibile abilitare funzionalit&agrave; di sincronizzazione con i risultati.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Non utilizzare il Data Store relazionale se si prevede un incremento dei risultati GeoAnalytics ed &egrave; necessario sfruttare le funzionalit&agrave; dello Spatiotemporal Big Data Store per gestire grandi quantit&agrave; di dati.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p> Il nome del layer che verr&agrave; creato.  Se si scrive su un ArcGIS Data Store, i risultati saranno salvati in  <b>I miei contenuti</b> e aggiunti alla mappa. Se si scrive su una condivisione file Big Data, i risultati saranno memorizzati nella condivisione file Big Data e aggiunti al suo Manifest. Non saranno aggiunti alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, lo strumento non verr&agrave; eseguito.
+            </p>
+            <p>Quando si scrive su  ArcGIS Data Store (data store relazionale o Spatiotemporal Big Data Store) usando la casella a discesa  <b>Salva risultato in</b>, &egrave; possibile specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

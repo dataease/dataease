@@ -1,0 +1,14 @@
+.#{$theme-name} {
+  .dijitToolbarRtl {
+    .dijitButtonNode {
+      .dijitIcon {
+        margin: 0;
+      }
+    }
+    .dijitTextBox {
+      margin-left: $padding-base-horizontal;
+      margin-right: inherit;
+    }
+  }
+}
+

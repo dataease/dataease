@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Tổng kết Raster Trong phạm vi</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="C&ocirc;ng cụ Tổng kết Raster Trong phạm vi"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ tổng kết một raster dựa tr&ecirc;n c&aacute;c khu vực (v&ugrave;ng) được x&aacute;c định bởi lớp đầu v&agrave;o đầu ti&ecirc;n.
+    </p>
+    <p>Một số ứng dụng mẫu bao gồm:
+    </p>
+    <p>
+        <ul>
+            <li>Với một lớp c&aacute;c ranh giới lưu vực v&agrave; một lớp c&aacute;c ranh giới sử dụng đất theo loại h&igrave;nh sử dụng đất, h&atilde;y t&iacute;nh to&aacute;n tổng diện t&iacute;ch c&aacute;c loại đất sử dụng cho từng lưu vực.
+                
+
+            </li>
+            <li>Với một lớp thửa đất trong một quận v&agrave; một lớp ranh giới th&agrave;nh phố, h&atilde;y t&iacute;nh gi&aacute; trị trung b&igrave;nh c&aacute;c thửa đất trống trong từng ranh giới th&agrave;nh phố.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Nếu chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b>, th&igrave; chỉ c&aacute;c đối tượng nh&igrave;n thấy trong lớp đầu v&agrave;o v&agrave; lớp cần tổng kết trong phạm vi bản đồ hiện tại mới được ph&acirc;n t&iacute;ch. Nếu bỏ chọn, tất cả c&aacute;c tổng hợp trong cả lớp đầu v&agrave;o v&agrave; lớp cần tổng hợp sẽ được ph&acirc;n t&iacute;ch, ngay cả khi ch&uacute;ng ở ngo&agrave;i phạm vi bản đồ hiện tại.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Chọn lớp khu vực để tóm tắt lớp raster trong ranh giới đã xác định</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp x&aacute;c định ranh giới của khu vực hoặc v&ugrave;ng sẽ được tổng kết.
+            </p>
+            <p>Lớp c&oacute; thể l&agrave; raster hoặc dữ liệu đối tượng. Đối với raster, c&aacute;c v&ugrave;ng được x&aacute;c định theo tất cả vị tr&iacute; trong đầu v&agrave;o c&oacute; c&ugrave;ng gi&aacute; trị &ocirc;. C&aacute;c khu vực kh&ocirc;ng cần liền kề.
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>Chọn trường để xác định ranh giới</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&acirc;y l&agrave; thuộc t&iacute;nh của lớp sẽ được sử dụng để x&aacute;c định ranh giới của c&aacute;c khu vực.
+            </p>
+            <p>V&iacute; dụ: giả sử lớp đầu v&agrave;o đầu ti&ecirc;n x&aacute;c định ranh giới đơn vị quản l&yacute; với c&aacute;c thuộc t&iacute;nh x&aacute;c định khu vực, quận v&agrave; ID thửa đất của mỗi đơn vị. Bạn cũng c&oacute; một lớp raster x&aacute;c định chỉ mục đa dạng sinh học cho mỗi vị tr&iacute;. Với trường đ&atilde; chọn, bạn c&oacute; thể quyết định t&iacute;nh to&aacute;n đa dạng sinh học trung b&igrave;nh ở cấp địa phương, quận hoặc khu vực.
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>Chọn lớp raster để tóm tắt</h2></div>
+        <hr/>
+        <div>
+            <p>C&aacute;c &ocirc; raster trong lớp n&agrave;y sẽ được tổng kết theo khu vực (v&ugrave;ng) c&oacute; chứa ch&uacute;ng.
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>Chọn số liệu thống kê để tính toán</h2></div>
+        <hr/>
+        <div>
+            <p>Khi bạn chọn một lớp để tổng kết, bạn c&oacute; thể t&ugrave;y chọn t&iacute;nh to&aacute;n số liệu thống k&ecirc; của bất kỳ thuộc t&iacute;nh số n&agrave;o của c&aacute;c điểm, đường hoặc khu vực trong lớp khu vực đầu v&agrave;o.
+            </p>
+            <p>Khi trường được chọn l&agrave; số nguy&ecirc;n, c&aacute;c loại số liệu thống k&ecirc; sẵn c&oacute; l&agrave; Trung b&igrave;nh, Đa số, Tối đa, B&igrave;nh qu&acirc;n, Tối thiểu, Thiểu số, Phạm vi, Độ lệch ti&ecirc;u chuẩn, Tổng số v&agrave; Sự đa dạng.
+            </p>
+            <p>Nếu trường l&agrave; điểm nổi, c&aacute;c t&ugrave;y chọn l&agrave; Trung b&igrave;nh, Tối đa, Tối thiểu, Phạm vi, Độ lệch ti&ecirc;u chuẩn v&agrave; Tổng số.
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>Bỏ qua các giá trị thiếu trong tính toán</h2></div>
+        <hr/>
+        <div>
+            <p>Nếu bạn chọn bỏ qua c&aacute;c gi&aacute; trị thiếu, chỉ c&aacute;c &ocirc; c&oacute; gi&aacute; trị trong lớp được tổng kết sẽ được sử dụng để x&aacute;c định gi&aacute; trị đầu ra cho khu vực đ&oacute;. Nếu kh&ocirc;ng, nếu tại bất kỳ vị tr&iacute; n&agrave;o trong một khu vực c&oacute; c&aacute;c gi&aacute; trị thiếu, c&oacute; thể coi l&agrave; kh&ocirc;ng đủ th&ocirc;ng tin để thực hiện t&iacute;nh to&aacute;n thống k&ecirc; cho tất cả c&aacute;c &ocirc; trong v&ugrave;ng đ&oacute; v&agrave; khu vực đ&oacute; sẽ nhận một gi&aacute; trị rỗng (Kh&ocirc;ng c&oacute; dữ liệu) trong đầu ra.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>T&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Bạn c&oacute; thể chỉ định t&ecirc;n của một thư mục trong  <b>Nội dung của t&ocirc;i</b> m&agrave; tại đ&oacute; kết quả sẽ được lưu bằng c&aacute;ch sử dụng hộp xổ xuống <b>Lưu kết quả v&agrave;o</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

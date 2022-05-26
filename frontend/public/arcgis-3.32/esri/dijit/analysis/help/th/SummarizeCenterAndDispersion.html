@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>สรุปศูนย์กลางและการกระจาย</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="สรุปศูนย์กลางและการกระจาย"></h2>
+        <hr/>
+    <p>เครื่องมือนี้จะค้นหาฟีเจอร์ศูนย์กลางและการกระจายแบบมีทิศทาง
+ซึ่งสามารถนำมาใช้เพื่อตอบคำถามต่าง ๆ เช่น:
+        <ul>
+            <li>ศูนย์กลางอยู่ที่ใด
+            </li>
+            <li>ฟีเจอร์ใดที่ฟีเจอร์ือื่น ๆ ทั้งหมดเข้าถึงได้มากที่สุด
+            </li>
+            <li>ฟีเจอร์ต่าง ๆ จะกระจาย บีบอัดหรือรวมได้ด้วยวิธีการใด
+            </li>
+            <li>มีแนวโน้มที่กำหนดทิศทางหรือไม่
+            </li>
+        </ul>
+        
+    </p>
+    <p>หากเลือกใช้  <b>ใช้ขอบเขตแผนที่ปัจจุบัน</b> จะทำการวิเคราะห์เฉพาะฟีเจอร์ในชั้นข้อมูลอินพุทที่มองเห็นได้ภายในขอบเขตแผนที่ปัจจุบันเท่านั้น หากไม่เลือก ข้อมูลทั้งหมดในชั้นข้อมูลการนำเข้าจะถูกนำมาวิเคราะห์ ถึงแม้ว่าข้อมูลเหล่านั้น จะอยู่นอกขอบเขตแผนที่ปัจจุบัน
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>เลือกชั้นข้อมูลที่จะอธิบาย</h2></div>
+        <hr/>
+        <div>
+            <p>ชั้นข้อมูลจุด เส้น หรือพื้นที่ ซึ่งจะใช้ในการค้นหาฟีเจอร์ศูนย์กลางและการกระจายแบบมีทิศทาง
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>ประเภทการสรุป</h2></div>
+        <hr/>
+        <div>
+            <p>วิธีการสรุปศูนย์กลางและการกระจาย 
+            </p>
+            <ul>
+                <li>ฟีเจอร์ศูนย์กลาง - ระบุฟีเจอร์ที่อยู่ตรงกลางมากที่สุดภายในชุดข้อมูล
+                </li>
+                <li>ศูนย์กลางเฉลี่ย - ระบุศูนย์กลางทางภูมิศาสตร์ (หรือศูนย์กลางของการกระจุกตัว) ของชุดของฟีเจอร์
+                </li>
+                <li>ศูนย์กลางมัธยฐาน - ระบุตำแหน่งที่ร่นระยะห่างโดยรวมของ Euclidean ไปยังฟีเจอร์ในชุดข้อมูลให้เหลือน้อยที่สุด
+                </li>
+                <li>วงรี - สร้างวงรีค่าเบี่ยงเบนมาตรฐานเพื่อสรุปคุณลักษณะเชิงพื้นที่ของฟีเจอร์ทางภูมิศาสตร์: แนวโน้มศูนย์กลาง การกระจาย และแนวโน้มแบบมีทิศทาง วงรีอาจมีขนาดเป็นค่าเบี่ยงเบนมาตรฐาน 1, 2 หรือ 3
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>น้ำหนักโดย (ไม่บังคับ)</h2></div>
+        <hr/>
+        <div>
+            <p>ฟิลด์นี้นำมาใช้ถ่วงน้ำหนักสถานที่ตามความสำคัญที่เกี่ยวข้อง 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>จัดกลุ่มตาม (ทางเลือก)</h2></div>
+        <hr/>
+        <div>
+            <p>ฟิลด์นี้นำมาใช้เพื่อจัดกลุ่มฟีเจอร์สำหรับการคำนวณแยกกันของฟีเจอร์ศูนย์กลางหรือการกระจาย 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>ชื่อของชั้นข้อมูลผลลัพธ์</h2></div>
+        <hr/>
+        <div>
+            <p>เป็นชื่อชั้นข้อมูลที่จะถูกสร้างใน <b>เนื้อหาของฉัน</b> และเพิ่มเข้าไปในแผนที่ ชื่อเริ่มต้นจะขึ้นอยู่กับชื่อเครื่องมือและชื่อชั้นข้อมูลอินพุท ถ้าชื่อชั้นข้อมูลนี้มีอยู่แล้ว คุณจะถูกขอให้ตั้งชื่อใหม่
+            </p>
+            <p>ใช้  <b>บันทึกผลลัพธ์ใน</b> เมนูแบบเลื่อนลง เพื่อระบุชื่อของโฟล์เดอร์ใน <b>เนื้อหาของฉัน</b> เมื่อบันทึกผล
+            </p>
+        </div>
+    </div>
+</div>
+</html>

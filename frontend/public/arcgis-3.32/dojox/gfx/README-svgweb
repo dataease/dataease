@@ -1,0 +1,98 @@
+NOTICE of 3rd party code included
+=================================
+For ease of testing, latest SVGWeb release is included, see
+dojox/gfx/tests/svgweb/README for details.
+
+
+============================================================
+Enable or disable the SVGWeb with dojo gfx
+------------------------------------------------------------
+
+The function is only enabled when SVGWeb JS is included and the gfx renderer is
+'svg'. If either SVGWeb is not available or the renderer is not 'svg', dojox.gfx
+works as usual.
+
+To enable SVGWeb with dojo gfx:
+
+1. Include SVGWeb JS at the FIRST of all your javascripts
+
+	<meta name="svg.render.forceflash" content="true"/>
+	<script src="<path>/svgweb/src/svg.js" data-path="<path>/svgweb/src"></script>
+
+2. Force 'svg' renderer with the 'forceGfxRenderer' config
+
+	<script src="<path>/dojo/dojo.js" djConfig="forceGfxRenderer:'svg'"></script>
+
+
+============================================================
+Test dojo gfx + SVGWeb
+------------------------------------------------------------
+
+All SVGWeb-specific tests are in dojox/gfx/tests/svgweb.
+
+============================================================
+GFX Performance Test Status
+------------------------------------------------------------
+
+Runs dojo gfx performance tests on IE7 with different renderers, compare their
+performance. The result so far is
+
+    * Silverlight is the fastest: 27,546 ms;
+    * Tuned SVGWeb is the 2nd place: 38,690 ms, almost 3 times faster than
+	  before
+    * VML is the slowest: 50,250 ms
+
+
+============================================================
+GFX Functional Test Status
+------------------------------------------------------------
+
+Summary / General findings
+
+    * Pass rate 83%, 25 out of 30 pass
+    * The behavior is very consistent on IE & FF
+    * Transformation of Text is not working
+    * Line style is not working
+    * getTextWidth() does not work, see svgweb bug 417
+    * IE7 has memory issue, see svgweb bug 418 (IE8 seems fine)
+
+PASS test.roundrect.html
+PASS test_arc.html
+PASS test_bezier.html
+PASS test_decompose.html
+PASS test_destroy.html
+PASS test_fill.html
+
+FAIL test_fx.html: mostly works, except for the transformation of text (svgweb bug 158)
+
+PASS test_fx_shapes.html
+PASS test_gfx.html
+PASS test_gradient.html: works, but performance is slow due to the creation of a lot of shapes; using suspendRedraw() helps, but not much; current time is 8.5 seconds on IE7, 3 seconds on FF 3.5
+PASS test_group1.html: partly works, but rect highlight change has problem (svgweb bug 296)
+PASS test_group2.html: works, with source changed from 'dijit.byId()' to 'dojo.byId()'
+PASS test_image1.html
+PASS test_image2.html: picture shows, but move and transform has serious problem (svgweb bug 296)
+
+FAIL test_image3.html: picture shows, but move and transform has serious problem (svgweb bug 427, 436)
+
+PASS test_image4.html
+PASS test_image5.html: still image gets cropped after dragging, but mostly it's working (svgweb bug 244)
+PASS test_linearGradient.html
+
+FAIL test_linestyle.html: not work (svgweb bug 65)
+
+PASS test_pattern.html
+PASS test_poly.html
+PASS test_resize.html
+PASS test_setPath.html
+PASS test_tbbox.html: output drawing is incorrect (svgweb bug 296)
+
+FAIL test_text.html: text shows, but the rotation still fails (svgweb bug 158)
+
+FAIL test_textpath.html: not work (svgweb bug 169)
+
+PASS test_transform.html: output drawing is incorrect (svgweb bug 296)
+PASS test_utils.html
+PASS test_vectortext_draw.html
+PASS test_vectortext_load.html: functionally, this works, but very very slow; Reduced the test case to print just 26 chars, in FF it takes 30+ seconds, in IE7 it's more than a minute...
+

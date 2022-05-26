@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Konvertuj geoobjekat u raster</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="Alat za konvertovanje geoobjekta u raster"></h2>
+        <hr/>
+    <p>Ovaj alat konvertuje geoobjekte u rasterski skup podataka.
+    </p>
+    <p>Svaka klasa podataka koja sadrži tačkaste, linijske ili poligonalne geoobjekte može da se konvertuje u rasterski skup podataka.
+    </p>
+    <p>Sredi&scaron;te ćelije se koristi za odlučivanje vrednosti piksela izlaznog rastera.
+    </p>
+    <p>Tip ulaznog polja određuje tip izlaznog rastera. Ako je polje celobrojno, izlazni raster će biti celobrojni; ako je sa pokretnim zarezom, izlazni rezultati će biti sa pokretnim zarezom.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Odaberite sloj geoobjekta za konvertovanje</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj ulaznog geoobjekta za konvertovanje u rasterski skup podataka.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Odaberite polje</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite polje koje će se koristiti za dodelu vrednosti izlaznom rasteru.
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Veličina izlazne ćelije</h2></div>
+        <hr/>
+        <div>
+            <p>Veličina ćelije i jedinica za izlazne rastere.
+            </p>
+            <p>Dostupne jedinice su milje, stope, kilometri i metri. Podrazumevane su stope.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će biti kreiran u  <b>Mom sadržaju</b> i dodat mapi. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako sloj već postoji, bićete upitani da unesete drugi naziv.
+            </p>
+            <p>Možete da navedete ime fascikle u  <b>Mom sadržaju</b> gde će rezultat biti sačuvan kori&scaron;ćenjem padajućeg polja <b>Sačuvaj rezultat u</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

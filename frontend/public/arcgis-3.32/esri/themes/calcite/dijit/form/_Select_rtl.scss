@@ -1,0 +1,15 @@
+.#{$theme-name} {
+  .dijitSelectRtl {
+    .dijitButtonContents {
+      border-left: 0;
+      border-right: 1px;
+    }
+    // Error state
+    &.dijitSelectError {
+      .dijitButtonContents {
+        padding-left: 0;
+        padding-right: $padding-base-horizontal;
+      }
+    }
+  }
+}

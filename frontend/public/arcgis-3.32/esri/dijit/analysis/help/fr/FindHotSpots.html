@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Trouver des points chauds</h2><p/>
+        <h2><img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" alt="Rechercher les points chauds"></h2>
+        <hr/>
+    <p> L'outil Trouver des points chauds d&eacute;termine si le mod&egrave;le spatial de vos donn&eacute;es pr&eacute;sente des agr&eacute;gations statistiquement significatives.
+        <ul>
+            <li>Vos points (d&eacute;lits, arbres, accidents de la circulation) sont-ils r&eacute;ellement agr&eacute;g&eacute;s&nbsp;? Comment en &ecirc;tre certain&nbsp;?
+            </li>
+            <li>Avez-vous vraiment d&eacute;couvert un hot spot statistiquement significatif (d&eacute;penses, mortalit&eacute; infantile, r&eacute;sultats d'examens &eacute;lev&eacute;s homog&egrave;nes) ou votre carte donnerait-elle des r&eacute;sultats diff&eacute;rents en modifiant sa symbolisation&nbsp;?
+            </li>
+        </ul>
+        L'outil Rechercher les points chauds vous aide &agrave; trouver la r&eacute;ponse &agrave; ces questions en toute confiance.
+    </p>
+    <p>M&ecirc;me les mod&egrave;les spatiaux al&eacute;atoires pr&eacute;sentent un certain degr&eacute; d'agr&eacute;gation. En outre, nos yeux et notre cerveau tentent naturellement d'identifier des mod&egrave;les m&ecirc;me si aucun n'existe. Par cons&eacute;quent, il peut &ecirc;tre difficile de savoir si les mod&egrave;les de vos donn&eacute;es sont le r&eacute;sultat de processus spatiaux r&eacute;els en cours ou s'ils d&eacute;coulent simplement du hasard. C'est pourquoi les chercheurs et les analystes utilisent des m&eacute;thodes statistiques, telles que Trouver des points chauds (Getis-Ord Gi*) pour quantifier les mod&egrave;les spatiaux. La r&eacute;alisation d'une agr&eacute;gation statistiquement significative sur vos donn&eacute;es permet d'obtenir des informations pr&eacute;cieuses. Le fait de savoir o&ugrave; et quand l'agr&eacute;gation se produit peut fournir des indications importantes sur les processus qui favorisent les mod&egrave;les auxquels vous assistez. Par exemple, savoir que le nombre de cambriolages r&eacute;sidentiels est plus &eacute;lev&eacute; dans certains quartiers constitue une information cl&eacute; si vous devez mettre en place des strat&eacute;gies de pr&eacute;vention efficaces, allouer des ressources polici&egrave;res limit&eacute;es, initier des programmes de surveillance de quartier, autoriser des enqu&ecirc;tes criminelles approfondies ou identifier des suspects potentiels.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Choisissez la couche pour laquelle les points chauds seront calculés</h2></div>
+        <hr/>
+        <div>
+            <p>La couche ponctuelle ou surfacique dans laquelle les points chauds et froids seront recherch&eacute;s. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Rechercher des grappes de valeurs élevées et faibles</h2></div>
+        <hr/>
+        <div>
+            <p>Cette analyse r&eacute;pond &agrave; la question suivante&nbsp;: o&ugrave; les valeurs &eacute;lev&eacute;es et faibles s'agr&egrave;gent-elles spatialement&nbsp;?
+            </p>
+            <p>Si vos donn&eacute;es sont des points et que vous choisissez  <b>Nombre de points</b>, cet outil &eacute;value l'organisation spatiale des entit&eacute;s ponctuelles pour r&eacute;pondre &agrave; la question&nbsp;: o&ugrave; trouve-t-on les points agr&eacute;g&eacute;s de mani&egrave;re inattendue ou dispers&eacute;s de mani&egrave;re inattendue&nbsp;?
+            </p>
+            <p>Si vous choisissez un champ, cet outil &eacute;value l'organisation spatiale des valeurs associ&eacute;es &agrave; chaque entit&eacute; pour r&eacute;pondre &agrave; la question&nbsp;: o&ugrave; se trouve l'agr&eacute;gation des valeurs &eacute;lev&eacute;es et faibles&nbsp;?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Comptabiliser les points dans</h2></div>
+        <hr/>
+        <div>
+            <p>Le comportement par d&eacute;faut consiste &agrave; comptabiliser les points qui se trouvent dans une grille de quadrillage cr&eacute;&eacute;e par l'outil en fonction de vos donn&eacute;es ponctuelles. Vous pouvez &eacute;galement comptabiliser des points au sein d'une grille hexagonale ou indiquer une couche surfacique (qui refl&egrave;te g&eacute;n&eacute;ralement des quartiers administratifs, tels que des secteurs de recensement, des limites municipales ou des comt&eacute;s) pour r&eacute;pondre &agrave; cette question&nbsp;: &eacute;tant donn&eacute; le nombre de points comptabilis&eacute;s au sein de chaque entit&eacute; surfacique, est-ce qu'il existe des emplacements pr&eacute;sentant une agr&eacute;gation spatiale statistiquement significative de nombres de points &eacute;lev&eacute;s ou faibles&nbsp;?   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Définir où des points sont possibles</h2></div>
+        <hr/>
+        <div>
+            <p>Dessinez ou fournissez une couche qui d&eacute;finit l'endroit o&ugrave; des incidents sont possibles pour r&eacute;pondre &agrave; la question suivante&nbsp;: au sein des zones, existe-t-il des emplacements qui pr&eacute;sentent des concentrations de points anormalement &eacute;lev&eacute;es ou faibles&nbsp;?   
+            </p>
+            <p>Les entit&eacute;s surfaciques que vous dessinez ou les entit&eacute;s dans la couche surfacique que vous sp&eacute;cifiez doivent d&eacute;finir l'emplacement o&ugrave; les points peuvent se produire. Pour dessiner ces zones, cliquez sur le bouton  <b>Dessin</b>, puis sur un emplacement sur la carte pour cr&eacute;er une forme surfacique.  Pour dessiner d'autres zones, cliquez &agrave; nouveau sur ce bouton, puis sur un emplacement sur la carte pour continuer.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Diviser par</h2></div>
+        <hr/>
+        <div>
+            <p>Vous pouvez parfois &ecirc;tre amen&eacute; &agrave; analyser des mod&egrave;les qui tiennent compte des distributions sous-jacentes. Par exemple, si vos points repr&eacute;sentent des d&eacute;lits, la division par la population totale entra&icirc;ne une analyse des d&eacute;lits par habitant et non une comptabilisation brute des d&eacute;lits.  La normalisation consiste &agrave; identifier l'attribut en fonction duquel effectuer la division.
+            </p>
+            <p>Si vous choisissez  <i>Population Esri</i>, chaque entit&eacute; surfacique est enrichie &agrave; l'aide des valeurs de population, qui seront ensuite utilis&eacute;es comme attribut pour la division.  Cette option utilise des cr&eacute;dits.
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Options de remplacement</h2></div>
+        <hr/>
+        <div>
+            <p> L'outil identifie les param&egrave;tres optimaux pour les valeurs par d&eacute;faut <b>Taille de cellule</b> et <b>Canal de distance</b> en fonction des caract&eacute;ristiques de vos donn&eacute;es. Toutefois, si vous avez une valeur <b>Taille de cellule</b> ou <b>Canal de distance</b> en particulier qui est pertinente pour votre analyse, vous pouvez utiliser les <b>options de remplacement</b> pour d&eacute;finir ces valeurs.
+            </p>
+            <p>Les  <b>options de remplacement</b> sont &eacute;galement utiles lorsque vous ex&eacute;cutez l'analyse sur diff&eacute;rents jeux de donn&eacute;es. Cela permet d'assurer la coh&eacute;rence des valeurs <b>Canal de distance</b> et <b>Taille de cellule</b> sur plusieurs jeux de donn&eacute;es.  Vous pouvez ensuite comparer les r&eacute;sultats de mani&egrave;re appropri&eacute;e, par exemple les taux d'ob&eacute;sit&eacute; et de diab&egrave;te ou m&ecirc;me les taux de criminalit&eacute; sur deux ann&eacute;es diff&eacute;rentes.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Taille de cellule</h2></div>
+        <hr/>
+        <div>
+            <p>Taille des cellules de grille au sein desquelles comptabiliser les points.  
+            </p>
+            <p>Lorsque vous comptabilisez les points au sein d'une grille hexagonale, cette distance sert de hauteur des polygones.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Canal de distance</h2></div>
+        <hr/>
+        <div>
+            <p>Chaque entit&eacute; est analys&eacute;e dans le contexte de ces entit&eacute;s voisines se trouvant &agrave; la distance que vous sp&eacute;cifiez.  L'outil calcule automatiquement une distance par d&eacute;faut ou vous pouvez utiliser cette option pour d&eacute;finir une distance donn&eacute;e qui est pertinente pour votre analyse. 
+            </p>
+            <p>Par exemple, si vous &eacute;tudiez la migration quotidienne de travailleurs et que vous savez que le trajet moyen jusqu'au lieu de travail est de 15&nbsp;km, par exemple, un canal de distance de 15&nbsp;km convient pour votre analyse.
+            </p>
+        </div>
+    </div>
+    <div id="hotSpotsResultLayer">
+        <div><h2>Nom de la couche résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Donnez un nom &agrave; la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte.  Cette couche de r&eacute;sultat vous pr&eacute;sente les grappes statistiquement significatives des valeurs &eacute;lev&eacute;es et faibles ou des nombres de points. Si le nom de la couche de r&eacute;sultats existe d&eacute;j&agrave;, vous devez renommer la couche.
+            </p>
+            <p>La zone de liste d&eacute;roulante  <b>Enregistrer le r&eacute;sultat dans</b> vous permet de sp&eacute;cifier le nom d'un dossier dans <b>Mon contenu</b> o&ugrave; le r&eacute;sultat sera enregistr&eacute;.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

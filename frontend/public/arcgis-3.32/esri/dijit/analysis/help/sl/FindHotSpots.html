@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Najdi vroče točke</h2><p/>
+        <h2><img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" alt="Najdi vroče točke"></h2>
+        <hr/>
+    <p> Orodje Najdi vroče točke bo določilo, ali obstaja statistično značilno gručenje v prostorskem vzorcu va&scaron;ih podatkov.
+        <ul>
+            <li>So va&scaron;e točke (kazniva dejanja, drevesa, prometne nesreče) resnično gručene? Ste res prepričani?
+            </li>
+            <li>Ste res odkrili statistično značilno vročo točko (v potro&scaron;nji, smrtnosti novorojenčkov, stalno visokih rezultatih preizkusov) ali pa bi va&scaron;a karta pripovedovala drugačno zgodbo, če bi spremenili simbologijo?
+            </li>
+        </ul>
+        Orodje Najdi vročo točko vam bo pomagalo z gotovostjo odgovoriti na ta vpra&scaron;anja.
+    </p>
+    <p>Celo naključni prostorski vzorci prikazujejo določeno stopnjo gručenja. Poleg tega sku&scaron;ajo na&scaron;e oči in možgani naravno poiskati vzorce tudi tam, kjer ne obstajajo. Posledično je težko vedeti, ali so vzorci v va&scaron;ih podatkih rezultat resničnih prostorskih procesov ali so zgolj naključni. Zato raziskovalci in analitiki uporabljajo statistične metode, kot je Najdi vroče točke (Getis-Ord Gi*), za količinsko opredelitev prostorskih vzorcev. Ko v svojih podatkih najdete statistično značilno gručenje, imate dragocene informacije. Vedeti kje in kdaj pride do gručenja, lahko zagotavlja pomembne informacije o procesih, ki povzročajo vzorce, ki jih vidite. Če je znano, na primer, da se vlomi v stanovanja značilno pogosteje dogajajo v določenih četrtih, je to ključna informacija, če želite oblikovati učinkovite strategije preprečevanja, dodeliti omejene policijske vire, zagnati program četrtnih straž, odobriti poglobljene kriminalistične preiskave ali prepoznati morebitne osumljence.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Izberi sloj, za katerega bodo izračunane vroče točke</h2></div>
+        <hr/>
+        <div>
+            <p>Točkovni ali poligonski sloj, v katerem bodo iskane vroče in hladne točke. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Najdi visoke in nizke gruče</h2></div>
+        <hr/>
+        <div>
+            <p>Ta analiza poda odgovar na vpra&scaron;anje: Kje poteka prostorsko gručenje visokih in nizkih vrednosti?
+            </p>
+            <p>Če so va&scaron;i podatki točke in izberete  <b>&Scaron;tetje točk</b>, bo to orodje ocenilo prostorsko razporeditev točkovnih geoobjektov za odgovor na vpra&scaron;anje: Kje so točke nepričakovano gručene ali razpr&scaron;ene?
+            </p>
+            <p>Če izberete polje, bo to orodje ocenilo prostorsko razporeditev vrednosti, povezanih s posameznim geoobjektom za odgovor na vpra&scaron;anje: Kje se gručijo visoke in nizke vrednosti?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Štetje točk znotraj</h2></div>
+        <hr/>
+        <div>
+            <p>Privzeto je &scaron;tetje točk znotraj ribje mreže, ki jo je ustvarilo orodje na podlagi va&scaron;ih točkovnih podatkov. Druga možnost je, da izberete &scaron;tetje točk znotraj &scaron;esterokotne mreže ali navedete poligonski sloj (običajno bi to bile administrativne prostorske enote, kot so, meje naselij in občin, statistične regije ali volilni okraji) za odgovor na vpra&scaron;anje: Ali glede na &scaron;tevilo pre&scaron;tetih točk znotraj posameznega poligonskega geoobjekta obstajajo lokacije s statistično značilnim prostorskim gručenjem visokega ali nizkega &scaron;tevila točk?   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Določi, kje so možne točke</h2></div>
+        <hr/>
+        <div>
+            <p>Nari&scaron;ite ali navedite sloj, ki določa, kje so možni incidenti za odgovor na vpra&scaron;anje: Ali obstajajo lokacije znotraj območij z nepričakovano visoko ali nizko koncentracijo točk?   
+            </p>
+            <p>Poligonski geoobjekti, ki jih nari&scaron;ete, ali geoobjekti v poligonskem sloju, ki ga navedete, morajo določati, kjer bi se točke lahko pojavile. Za risanje teh poligonov kliknite gumb  <b>Nari&scaron;i</b> in kliknite lokacijo na karti, da ustvarite obliko poligona. Za risanje dodatnih poligonov kliknite gumb Nari&scaron;i in kliknite lokacijo na karti za nadaljevanje.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Razdeli po</h2></div>
+        <hr/>
+        <div>
+            <p>Včasih boste morda želeli analizirati vzorce, ki upo&scaron;tevajo osnovne porazdelitve. Na primer, če va&scaron;e točke predstavljajo zločine, bi deljenje s celotnim prebivalstvom prineslo analizo zločinov na prebivalca namesto &scaron;tevilo storjenih zločinov. Izbira atributa za deljenje z nečim se pogosto imenuje normalizacija.
+            </p>
+            <p>Izbira možnosti  <i>Esri Prebivalstvo</i> bo obogatilo posamezen poligonski geoobjekt s podatki o prebivalstvu, kar bo nato uporabljeno kot atribut za deljenje z nečim. Ta možnost bo porabljala kredite.
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Možnosti preglasitve</h2></div>
+        <hr/>
+        <div>
+            <p> Orodje bo poiskalo optimalne nastavitve privzetih vrednosti za <b>Velikost celice</b> in <b>Pas razdalje</b> na podlagi značilnosti va&scaron;ih podatkov. Če imate posebno <b>Velikost celice</b> ali <b>Razdalja pasu</b>, ki je smiseln za va&scaron;o analizo, lahko za nastavitev teh vrednosti uporabite <b>Možnosti preglasitve</b>.
+            </p>
+            <p> <b>Možnosti preglasitve</b> so uporabne tudi pri izvajanju analize z različnimi sklopi podatkov, saj vam omogočijo ohranitev enake <b>Razdalje pasu</b> in <b>Velikosti celice</b> po več sklopih podatkov. Nato lahko ustrezno primerjate rezultate, na primer debelosti in stopenj diabetesa ali celo stopenj kriminalitete za dve različni leti.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Velikost celice</h2></div>
+        <hr/>
+        <div>
+            <p>Velikost mrežnih celic, uporabljenih za &scaron;tetje točk znotraj.  
+            </p>
+            <p>Ko uporabljate &scaron;esterokotno mrežo za &scaron;tetje točk znotraj, se ta razdalja uporablja kot vi&scaron;ina &scaron;esterokotnika.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Razdalja pasu</h2></div>
+        <hr/>
+        <div>
+            <p>Vsak geoobjekt je analiziran znotraj konteksta tistih sosednjih geoobjektov, ki se nahajajo znotraj navedene razdalje.Orodje bo izračunalo privzeto razdaljo za vas ali pa boste to možnost lahko uporabili za določitev razdalje, ki je smiselna za va&scaron;o analizo. 
+            </p>
+            <p>Na primer, če preučujete vzorce voženj dnevnih migrantov in veste, da je povprečna razdalja poti v službo 24 kilometrov, boste za svojo analizo morda želeli uporabiti pas razdalje 24 kilometrov.
+            </p>
+        </div>
+    </div>
+    <div id="hotSpotsResultLayer">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>Navedite ime sloja, ki bo ustvarjen v  <b>Moji vsebini</b> in dodan na karto. Ta sloj z rezultati vam bo pokazal statistično značilne gruče visokih in nizkih vrednosti ali &scaron;tevilo točk. Če ime sloja z rezultati že obstaja, boste morali vnesti drugo ime.
+            </p>
+            <p>S pomočjo spustnega menija  <b>Shrani rezultat v</b> lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

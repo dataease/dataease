@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Régression linéaire généralisée</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="Diagramme de processus R&eacute;gression lin&eacute;aire g&eacute;n&eacute;ralis&eacute;e"></h2>
+        <hr/>
+    <p>Effectue une r&eacute;gression lin&eacute;aire g&eacute;n&eacute;ralis&eacute;e (GLR) en vue de g&eacute;n&eacute;rer des pr&eacute;visions ou de mod&eacute;liser une variable d&eacute;pendante en fonction de sa relation &agrave; un ensemble de variables explicatives. Cet outil permet d&rsquo;adapter des mod&egrave;les continus (gaussiens), binaires (logistiques) et totaux (Poisson).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Type d'analyse</h2></div>
+        <hr/>
+        <div>
+            <p>Sp&eacute;cifie le mode op&eacute;ratoire de l&rsquo;outil. L&rsquo;outil peut &ecirc;tre ex&eacute;cut&eacute; pour entra&icirc;ner un mod&egrave;le &agrave; la seule fin d&rsquo;&eacute;valuer ses performances ou pour entra&icirc;ner un mod&egrave;le et pr&eacute;voir les entit&eacute;s. Les types de pr&eacute;vision sont les suivantes&nbsp;:
+                <ul>
+                    <li> <b>Fit a model to assess model performance (Ajuster un mod&egrave;le pour &eacute;valuer les performances du mod&egrave;le)</b>&nbsp;: un mod&egrave;le est ajust&eacute; et appliqu&eacute; aux donn&eacute;es en entr&eacute;e. Utilisez cette option pour &eacute;valuer l&rsquo;exactitude de votre mod&egrave;le avant de g&eacute;n&eacute;rer des pr&eacute;visions pour un nouveau jeu de donn&eacute;es ou comprendre les relations et les indicateurs de la variable pr&eacute;vue. La sortie de cette option prendra la forme d&rsquo;un service d&rsquo;entit&eacute;s de vos donn&eacute;es ajust&eacute;es et de diagnostics relatifs au mod&egrave;le.
+                    </li>
+                    <li> <b>Fit a model and predict values (Ajuster un mod&egrave;le et pr&eacute;voir les valeurs)</b>&nbsp;: les pr&eacute;visions ou les classifications seront g&eacute;n&eacute;r&eacute;es pour les entit&eacute;s en entr&eacute;e et les entit&eacute;s de pr&eacute;vision. Des variables explicatives doivent &ecirc;tre fournies pour les entit&eacute;s de pr&eacute;vision et les entit&eacute;s &agrave; pr&eacute;voir. La sortie de cette option prendra la forme d&rsquo;un service d&rsquo;entit&eacute;s de votre mod&egrave;le ajust&eacute; &agrave; vos donn&eacute;es en entr&eacute;e, d&rsquo;un service d&rsquo;entit&eacute;s des valeurs pr&eacute;vues et de diagnostics relatifs au mod&egrave;le.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>Ajuster un modèle pour évaluer les performances du modèle</h2></div>
+        <hr/>
+        <div>
+            <p>Utilisez ce mode si vous voulez ajustez un mod&egrave;le et &eacute;tudier l&rsquo;ajustement.
+            </p>
+            <p>Avec ce choix, le mod&egrave;le sera entra&icirc;n&eacute; &agrave; l&rsquo;aide d&rsquo;une couche en entr&eacute;e. Utilisez cette option pour &eacute;valuer l&rsquo;exactitude de votre mod&egrave;le avant de g&eacute;n&eacute;rer des pr&eacute;visions pour un nouveau jeu de donn&eacute;es. Cette option g&eacute;n&egrave;re des diagnostics relatifs au mod&egrave;le et applique le mod&egrave;le &agrave; vos donn&eacute;es d&rsquo;entra&icirc;nement.
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>Ajuster un modèle et prévoir les valeurs</h2></div>
+        <hr/>
+        <div>
+            <p>Utilisez ce mode si vous voulez ajustez un mod&egrave;le et appliquer le mod&egrave;le au jeu de donn&eacute;es pour g&eacute;n&eacute;rer des pr&eacute;visions.
+            </p>
+            <p>Les pr&eacute;visions ou les classifications seront g&eacute;n&eacute;r&eacute;es pour les entit&eacute;s. La sortie de cette option prendra la forme d&rsquo;un service d&rsquo;entit&eacute;s, de diagnostics relatifs au mod&egrave;le et d&rsquo;une table facultative de l&rsquo;importance des variables.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>Choisir une couche pour générer un modèle</h2></div>
+        <hr/>
+        <div>
+            <p>Couche contenant les entit&eacute;s tabulaires, surfaciques, lin&eacute;aires ou ponctuelle &agrave; d&eacute;crire, synth&eacute;tiser ou utiliser &agrave; titre d&rsquo;exemple.
+            </p>
+            <p>Outre le fait de choisir une couche de votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante pour parcourir votre contenu et rechercher une couche d&rsquo;entit&eacute;s ou un jeu de donn&eacute;es de partage de fichiers Big Data.
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>Choisir le champ à modéliser</h2></div>
+        <hr/>
+        <div>
+            <p>Champ num&eacute;rique contenant les valeurs observ&eacute;es que vous souhaitez mod&eacute;liser et type de valeur que vous mod&eacute;lisez. Il est possible de mod&eacute;liser trois types de valeurs
+                <ul>
+                    <li>Continu&nbsp;: repr&eacute;sente les valeurs continues. Le mod&egrave;le utilis&eacute; est le mod&egrave;le gaussien&nbsp;; l&rsquo;outil proc&egrave;de &agrave; une r&eacute;gression des moindres carr&eacute;s ordinaires.
+                    </li>
+                    <li>Binaire&nbsp;: repr&eacute;sente les valeurs de pr&eacute;sence ou d&rsquo;absence. Il doit s&rsquo;agir de 1s et 0s. Le mod&egrave;le utilis&eacute; est la r&eacute;gression de type logistique.
+                    </li>
+                    <li>Total&nbsp;: repr&eacute;sente les &eacute;v&eacute;nements discrets, par exemple le nombre de d&eacute;lits, de maladies et d&rsquo;accident de la route. Le mod&egrave;le utilis&eacute; est la r&eacute;gression Poisson. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Choisir une couche pour prévoir les valeurs pour</h2></div>
+        <hr/>
+        <div>
+            <p>Couche avec des entit&eacute;s repr&eacute;sentant les localisations pour lesquelles des estimations doivent &ecirc;tre calcul&eacute;es. Chaque entit&eacute; de ce jeu de donn&eacute;es doit contenir des valeurs pour toutes les variables explicatives sp&eacute;cifi&eacute;es. La variable d&eacute;pendante pour ces entit&eacute;s sera estim&eacute;e &agrave; l&rsquo;aide du mod&egrave;le calibr&eacute; pour la couche en entr&eacute;e.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Choisir les champs explicatifs</h2></div>
+        <hr/>
+        <div>
+            <p>Un ou plusieurs champs repr&eacute;sentant les variables explicatives (champs) qui aident &agrave; pr&eacute;voir la valeur. Seuls les champs num&eacute;riques sont visibles.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Choisir l’appariement des champs explicatifs</h2></div>
+        <hr/>
+        <div>
+            <p>Fa&ccedil;on dont les variables correspondantes dans la couche en entr&eacute;e seront appari&eacute;es aux variables dans la couche de pr&eacute;vision. Seules les variables utilis&eacute;es pendant la g&eacute;n&eacute;ration du mod&egrave;le seront incluses dans la table. Seules les valeurs num&eacute;riques peuvent &ecirc;tre utilis&eacute;es. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la couche &agrave; cr&eacute;er. Si vous &eacute;crivez sur une instance ArcGIS Data Store, les r&eacute;sultats seront enregistr&eacute;s dans  <b>My Content (Mon contenu)</b> et ajout&eacute;s &agrave; la carte. Si vous &eacute;crivez sur un partage de fichiers Big Data, les r&eacute;sultats seront enregistr&eacute;s dans le partage de fichiers Big Data et ajout&eacute;s &agrave; son manifeste. Il ne sera pas ajout&eacute; &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, l'outil &eacute;choue.
+            </p>
+            <p>Les r&eacute;sultats renvoy&eacute;s d&eacute;pendront du type d&rsquo;analyse. Si vous utilis&eacute; l&rsquo;ajustement pour &eacute;valuer l&rsquo;ajustement du mod&egrave;le, les r&eacute;sultats contiendront une couche des donn&eacute;es en entr&eacute;e ajust&eacute;es au mod&egrave;le et des informations relatives &agrave; l&rsquo;ajustement du mod&egrave;le. Si vous utilis&eacute; l&rsquo;ajustement et la pr&eacute;vision, les r&eacute;sultats contiendront une couche des donn&eacute;es en entr&eacute;e ajust&eacute;es au mod&egrave;le, une couche des r&eacute;sultats pr&eacute;vus et des informations relatives &agrave; l&rsquo;ajustement du mod&egrave;le.
+            </p>
+            <p>Lors de l&rsquo;&eacute;criture sur  ArcGIS Data Store (r&eacute;pertoire de donn&eacute;es relationnelles ou spatio-temporelles) via la zone de liste d&eacute;roulante  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>, vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> o&ugrave; le r&eacute;sultat sera enregistr&eacute;.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

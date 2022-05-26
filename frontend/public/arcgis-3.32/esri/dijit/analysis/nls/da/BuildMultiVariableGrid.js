@@ -1,0 +1,4 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/da/BuildMultiVariableGrid",{binsLabel:"V\u00e6lg den type beholdere, der skal bruges til at oprette multi-variabel-gitteret",layersAttrLabel:"V\u00e6lg de inputlag og variabler, som du vil medtage i gitteret",itemDescription:"Vektorlag, der genereres efter k\u00f8rsel af v\u00e6rkt\u00f8jet Opret multivariabel-gitter.",itemTags:"Analyseresultat, Opret multivariabel-gitter",itemSnippet:"Vektorlag, der genereres af v\u00e6rkt\u00f8jet Opret multivariabel-gitter",addVariables:"Tilf\u00f8j variabler"});

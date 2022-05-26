@@ -1,0 +1,37 @@
+@import "variables.less";
+@import "../common/RadioButton.less";
+.mblRadioButton {
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 999px;
+  background-image: none;
+  background-color: transparent;
+  -webkit-tap-highlight-color: none;
+  .mblRadioButton-styles;
+}
+.mblRadioButtonChecked,
+.mblRadioButton:checked {
+  background-image: none;
+  &::after {
+    position: absolute;
+    content: "";
+    width: 0.65em;
+    height: 0.65em;
+    top: 0.17em;
+    left: 0.17em;
+    
+    border-style: none;
+    background-color: @holo-checkbox-tick-color;
+    border-radius: 1em;
+
+    .mblRadioButtonChecked-after-styles;
+  }
+  &.mblRadioButtonSelected {
+    background-image: none;
+    box-shadow: 0px 0px 1px 4px @holo-checkbox-checked-color inset;
+    &::after {
+      .mblRadioButtonChecked-Selected-after-styles;
+      
+    }
+  } 
+}

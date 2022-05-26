@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/ro/ClipLayer",{inputLayerLabel:"Alege\u021bi obiectele spa\u021biale de ata\u0219at",filterSelectLabel:"Ata\u0219a\u021bi toate obiectele spa\u021biale sau defini\u021bi un subset (op\u021bional)",targetArea:"Alege\u021bi zona \u00een care dori\u021bi ata\u0219area",outputLayerName:"Ata\u0219a\u021bi ${inputLayerName} la ${clipLayerName}",itemDescription:"Prin executarea solu\u021biei Ata\u0219are, a fost generat un strat tematic de obiecte spa\u021biale. Obiectele spa\u021biale din ${inputLayerName} au fost ata\u0219ate la ${clipLayerName}.",
+itemTags:"Rezultat analiz\u0103, Ata\u0219are strat tematic, ${inputLayerName}, ${clipLayerName}, ${outputLayerGeometry}",itemSnippet:"Strat tematic de obiecte spa\u021biale generat din Ata\u0219are strat tematic"});

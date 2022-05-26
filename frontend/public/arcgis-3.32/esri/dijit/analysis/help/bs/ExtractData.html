@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Izdvoji podatke</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="Izdvoji podatke"></h2>
+        <hr/>
+    <p>Ovim alatom možete odabrati i preuzeti podatke za određeno područje interesa. Slojevi koje odaberete dodat će se datotekama ZIP, CSV ili KMZ.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>Slojevi za izdvajanje</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo su slojevi u va&scaron;oj tablici sadržaja iz koje možete izdvojiti geoobjekte. Označeni slojevi izdvajaju se i uključuju u dobivenu ZIP ili CSV datoteku.
+            </p>
+            <p>Da bi se sloj pojavio na popisu slojeva za izdvajanje, morate posjedovati podatke ili vam vlasnik podataka mora omogućiti izvoz podataka. Za omogućivanje izvoza podataka koje posjedujete: 
+                <ul>
+                    <li>Otvorite opis stavke podataka.
+                    </li>
+                    <li>Kliknite karticu  <b>Postavke</b>.
+                    </li>
+                    <li>Pomaknite se prema dolje do dijela  <b>Izvoz podataka</b>.
+                    </li>
+                    <li>Provjerite funkciju  <b>Omogućite drugima izvoz u drugačije formate</b>. Kliknite <b>Spremi</b> kad ste gotovi.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ako va&scaron; sloj za analizu sadrži privitke, imajte na umu da će se privitci izdvojiti samo ako je izlazni format geobaza podataka i ako nije označena opcija  <b>Izreži geoobjekte</b>.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>Radno područje</h2></div>
+        <hr/>
+        <div>
+            <p>Poligon koji određuje koji će se geoobjekti uključiti u izlaznu ZIP ili CSV datoteku. Možete odabrati među sljedećim:
+                <ul>
+                    <li>Trenutačni vidljivi obuhvat va&scaron;e karte ( <b>Isto kao zaslon</b>).
+                    </li>
+                    <li>Jedan od slojeva iz va&scaron;e tablice sadržaja. Ako odabrani sloj sadrži točkaste ili linijske geoobjekte, obuhvat sloja upotrijebit će se kao radno područje.
+                    </li>
+                    <li>Nacrtajte poligon za određivanje radnog područja.
+                    </li>
+                </ul>
+                 Svi geoobjekti koji su potpuno unutar obuhvata karte. Za geoobjekte koji prelaze preko ili presijecaju granicu obuhvata karte, ali nisu potpuno unutar obuhvata, imate dvije opcije:
+                <ul>
+                    <li> <b>Odaberi geoobjekte</b> &mdash; izdvojit će se cijeli geoobjekti koji sijeku granicu radnog područja.
+                    </li>
+                    <li> <b>Izreži geoobjekte</b>&mdash; izdvojit će se samo oni dijelovi geoobjekata koji su unutar radnog područja.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>Format izlaznih podataka</h2></div>
+        <hr/>
+        <div>
+            <p>Format podataka koji će se izdvojiti. Kada izdvajate linijske ili poligonalne geoobjekte u CSV datoteke, izdvajaju se samo neprostorni atributi. Prilikom izdvajanja točkastih geoobjekata, izdvajaju se prostorni i neprostorni atributi.  
+            </p>
+            <p>Izdvojeni podaci koristit će se projekcijom Web Mercator 1984. Za CSV datoteke polja  <i>Lat</i> i <i>Long</i> priložit će se podacima s koordinatama u Web Mercatoru 1984.
+            </p> 
+            <p>Podržani su sljedeći izlazni formati:
+                <ul>
+                    <li>Vrijednost odvojena zarezom (CSV) &ndash;  <code>.csv</code> ili <code>.zip</code>
+                    </li>
+                    <li>Geobaza podataka &ndash;  <code>.zip</code>
+                    </li>
+                    <li>Keyhole Markup Language (KML) &ndash;  <code>.kmz</code> ili <code>.zip</code>
+                    </li>
+                    <li>Shapefile &ndash;  <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Naziv izlazne datoteke</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv stavke koja će se dodati u  <b>Moj sadržaj</b>. Naziv stavke temelji se na odabranom <b>Format izlaznih podataka</b>. Ako stavka već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Upotrebom padajućeg izbornika  <b>Spremi rezultat u</b> možete odrediti naziv mape u dijelu <b>Moj sadržaj</b> gdje će se spremiti rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

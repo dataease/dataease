@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Utwórz widoczność</h2><p/>
+        <h2><img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" alt="Utw&oacute;rz Widoczność"></h2>
+        <hr/>
+    <p>Za pomocą narzędzia Utw&oacute;rz widoczność można tworzyć obszary, 
+z&nbsp;kt&oacute;rych obserwator widzi obiekty znajdujące się na ziemi. Punkty analizy obserwatora mogą przedstawiać albo obserwator&oacute;w (np. ludzi na ziemi albo obserwator&oacute;w w wieży pożarowej) albo obserwowane obiekty (takie jak turbiny wiatrowe, wieże ciśnień, pojazdy lub inni ludzie). Obszary wynikowe to obszary, z kt&oacute;rych obserwatorzy mogą zobaczyć obserwowane obiekty i odwrotnie: obserwowane obiekty mogą widzieć obserwator&oacute;w.
+    </p>
+    <p>Zar&oacute;wno 
+obserwatorzy, jak i obserwowane obiekty, mogą znajdować się na wysokości nad powierzchnią ziemi. Wysokości te są wykorzystywane przy określaniu widoczności. Na przykład, widoczność obliczona dla 122-metrowych turbin wiatrowych i os&oacute;b o wzroście 180&amp;'A0;cm stojących na ziemi będzie przeważnie większa niż widoczność obliczona dla 60-metrowych turbin i os&oacute;b o wzroście 180&amp;'A0;cm.
+    </p>
+    <p>Należy pamiętać, że podczas obliczania widoczności 
+nie są uwzględniane przeszkody, np. drzewa lub budynki. Należy przyjmować, że obliczenia przeprowadzane są na otwartym terenie, na kt&oacute;rym nie znajduje się nic poza obserwatorem i obserwowanymi obiektami.
+    </p>
+    <p>Warstwa wynikowa zawiera obiekty powierzchniowe przedstawiające widoczne obszary. W polu  <i>Frequency</i> rejestrowana jest liczba punkt&oacute;w obserwatora, z kt&oacute;rych widoczny jest każdy obszar. Na przykład jeśli istnieje pięć punkt&oacute;w wejściowych reprezentujących obserwacyjne wieże pożarowe, a pole <i>Frequency</i> ma wartości od jeden do pięciu, to obszary o wartości jeden są widoczne tylko z jednej wieży, a obszary o wartości pięć są widoczne ze wszystkich wież. Warstwa wynikowa zawiera r&oacute;wnież pole <i>DEMResolution</i>, kt&oacute;re zapisuje rozdzielczość numerycznego modelu terenu (DEM) użytego do wyznaczania widoczności.
+    </p>
+    <p>Jeśli zaznaczono opcję  <b>Użyj bieżącego zasięgu mapy</b>, analizowane będą tylko punkty obserwator&oacute;w w&nbsp;bieżącym zasięgu mapy. Jeśli opcja ta nie jest zaznaczona, przeanalizowane zostaną wszystkie punkty obserwator&oacute;w w warstwie wejściowej, nawet jeśli znajdują się one poza bieżącym zasięgiem mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Obiekty punktowe reprezentujące lokalizacje obserwacyjne</h2></div>
+        <hr/>
+        <div>
+            <p>Obiekty punktowe używane jako lokalizacje obserwator&oacute;w. 
+            </p>
+            <p>Poza wybraniem warstwy na mapie można wybrać opcję  <b>Wybierz warstwę analizy</b> dostępną w dolnej części menu rozwijanego. Wybranie tej opcji spowoduje otwarcie galerii, w kt&oacute;rej można wyszukać i wybrać zestawy danych pochodzące z r&oacute;żnych źr&oacute;deł w celu użycia ich podczas przeprowadzania analiz. 
+            </p>
+        </div>
+    </div>
+    <div id="ObserverHeight">
+        <div><h2>Wysokość lokalizacji obserwacyjnych</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to wysokość nad powierzchnią ziemi Twoich lokalizacji obserwator&oacute;w. Domyślnie przyjmuje się przeciętny wzrost człowieka.  
+            </p>
+        </div>
+    </div>
+    <div id="TargetHeight">
+        <div><h2>Wysokość innych obiektów na ziemi</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to wysokość obiekt&oacute;w lub os&oacute;b na ziemi używanych do ustalenia widoczności. Wynikowa widoczność to obszary, na kt&oacute;rych punkt obserwatora może widzieć inne obiekty. Może być r&oacute;wnież odwrotnie; inne obiekty mogą widzieć punkt obserwatora. 
+            </p>
+            <p>
+                <ul>
+                    <li>Jeżeli Tw&oacute;j punkt obserwatora przedstawia turbiny wiatrowe i&nbsp;chcesz określić, skąd osoby stojące na ziemi mogą zobaczyć turbiny, wprowadź przeciętny wzrost człowieka (około 180&nbsp;cm). Wynikiem będą te obszary, na kt&oacute;rych osoba stojąca na ziemi może zobaczyć turbiny wiatrowe.
+                    </li>
+                    <li>Jeżeli Tw&oacute;j punkt obserwatora przedstawia obserwacyjne wieże pożarowe i chcesz określić, z kt&oacute;rych wież można zobaczyć słup dymu o wysokości co najmniej 6 metr&oacute;w, wpisz wysokość 6 metr&oacute;w. Wynikiem będą obszary, na kt&oacute;rych z obserwacyjnej wieży pożarowej można zobaczyć słup dymu o wysokości co najmniej 6 metr&oacute;w.
+                    </li>
+                    <li>Jeżeli Tw&oacute;j punkt obserwatora przedstawia malownicze okolice przy drogach oraz ścieżkach i chcesz określić, skąd można zobaczyć turbiny wiatrowe o wysokości co najmniej 120 metr&oacute;w, wpisz wysokość 120 metr&oacute;w. Wynikiem będą te obszary, na kt&oacute;rych osoba stojąca w malowniczym miejscu może zobaczyć turbinę wiatrową o wysokości co najmniej 120 metr&oacute;w.
+                    </li>
+                    <li>Jeżeli Twoje punkty obserwator&oacute;w przedstawiają malownicze okolice i chcesz określić, jaką część obszaru mogą zobaczyć osoby stojące na nich, wpisz zero. Wynikiem będą obszary, kt&oacute;re można zobaczyć z malowniczego miejsca.  
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="MaximumDistance">
+        <div><h2>Maksymalna odległość widoczności</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to maksymalna odległość, na kt&oacute;rej kończy się wyznaczanie widocznych obszar&oacute;w. Nie wiadomo, czy poza tą odległością punkty obserwator&oacute;w oraz inne obiekty mogą widzieć się nawzajem. Duże wartości zwiększają czas obliczeń. Maksymalna dopuszczalna wartość to 50&nbsp;kilometr&oacute;w.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to nazwa warstwy, kt&oacute;ra zostanie utworzona w zakładce  <b>Moje zasoby</b> i zostanie dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli ta nazwa warstwy już istnieje, wyświetlona zostanie prośba o podanie innej nazwy.
+            </p>
+            <p>Używając menu rozwijanego  <b>Zapisz wynik w</b>, można wskazać nazwę folderu na stronie <b>Moje zasoby</b>, w kt&oacute;rym zostanie zapisany wynik.
+            </p>
+            <p> Uruchomienie tego narzędzia nie powoduje wykorzystania kredyt&oacute;w.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

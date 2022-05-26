@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Gelijksoortige locaties zoeken</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="Gelijksoortige locaties zoeken"></h2>
+        <hr/>
+    <p>Op basis van de criteria die u opgeeft meet de tool Gelijksoortige locaties zoeken de overeenkomst van locaties in uw kandidaat-zoeklaag met een of meer referentielocaties. Deze tool kan vragen beantwoorden als
+        <ul>
+            <li>Welke van uw winkels komen het meeste overeen met uw toppresteerders met betrekking tot klantprofielen?
+            </li>
+            <li>Uitgaande van kenmerken van dorpen die het zwaarst getroffen zijn door de ziekte, welke andere dorpen lopen een groot risico?
+            </li>
+        </ul>
+        Om dergelijke vragen te beantwoorden, levert u de referentielocaties, de kandidaat-zoeklocaties en de velden die de criteria voorstellen die u wilt vergelijken. De eerste invoerlaag moet uw referentie of benchmarklocaties bevatten.  Dat kan bijvoorbeeld een laag zijn die uw best presterende winkels bevat, of de dorpen die het zwaarst getroffen zijn door een ziekte. Vervolgens geeft u de laag op die uw kandidaat-zoeklocaties bevat. Dat kunnen al uw winkels zijn, of alle andere dorpen. Ten slotte bepaalt u een of meer velden die u voor de meetovereenkomsten wilt gebruiken. De tool Gelijksoortige locaties zoeken rangschikt vervolgens alle kandidaat-zoeklocaties naar hun overeenkomst met uw referentielocaties over alle door u geselecteerde velden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Kies laag met de referentielocaties</h2></div>
+        <hr/>
+        <div>
+            <p>De punten-, lijnen- of gebiedslaag met de te vergelijken referentielocaties. 
+            </p>
+            <p>Naast het kiezen van een laag uit uw kaart, kunt u  <b>Analyselaag kiezen</b> selecteren onderaan de vervolgkeuzelijst. Met deze optie wordt een galerij geopend waarin u kunt bladeren naar en datasets van verschillende bronnen kunt selecteren die u in uw analyse kunt gebruiken. 
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>U kunt alle locaties gebruiken of een selectie maken</h2></div>
+        <hr/>
+        <div>
+            <p>Gebruik indien nodig de keuzeknoppen om de referentielocaties te bepalen. Als de invoerlaag bijvoorbeeld alle locaties bevat - zowel de referentielocaties als de kandidaat-zoeklocaties - moet u een van de selectietools gebruiken om de referentielocaties te identificeren. Als u twee aparte lagen maakt, een met de referentielocaties en de andere met alle kandidaat-zoeklocaties, hoeft u geen selectie te maken. 
+            </p>
+            <p>Als er meer dan &eacute;&eacute;n referentielocatie is, wordt een enkele locatie gemaakt door de gemiddelde waarden te bepalen voor alle velden die gebruikt worden om de overeenkomsten te analyseren.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>Zoek gelijksoortige locaties in</h2></div>
+        <hr/>
+        <div>
+            <p>De kandidaat-zoeklocaties in deze laag worden gerangschikt van meest naar minst overeenkomend. De overeenkomst is gebaseerd op hoe sterk elke locatie overeenkomt met de referentielocatie binnen de door u opgegeven velden. 
+            </p>
+            <p>Naast het kiezen van een laag uit uw kaart, kunt u  <b>Analyselaag kiezen</b> selecteren onderaan de vervolgkeuzelijst. Met deze optie wordt een galerij geopend waarin u kunt bladeren naar en datasets van verschillende bronnen kunt selecteren die u in uw analyse kunt gebruiken. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>Baseer de gelijkenis op</h2></div>
+        <hr/>
+        <div>
+            <p>De velden die u selecteert, worden de criteria die gebruikt worden om overeenkomsten te evalueren. Als u bijvoorbeeld een bevolking en inkomstenveld kiest, zullen de kandidaat-zoeklocaties met de laagste (beste) rangschikking degene zijn met overeenkomstige bevolkings- en inkomenswaarden als uw referentielocaties. 
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>Laat zien</h2></div>
+        <hr/>
+        <div>
+            <p>U kunt alle kandidaat-zoeklocaties gerangschikt zien van meest overeenkomend naar minst overeenkomend of u kunt het aantal resultaten opgeven dat u wilt zien. 
+                <ul>
+                    <li> <b>Alle locaties van meest tot minst overeenkomend</b> - alle objecten in de kandidaat-zoeklaag worden in de resultaatlaag opgenomen in volgorde van rangschikking
+                    </li>
+                    <li> <b>Het aantal geretourneerde locaties</b> - u bepaalt hoeveel van de meest overeenkomende kandidaten in de resultaatlaag worden opgenomen. De standaardinvoer is 1.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>Geef een naam op voor de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De resultaatlaag bevat de referentielocaties en het aantal gerangschikte kandidaat-zoeklocaties die u hebt opgegeven. Als de resultaatlaag al bestaat, wordt u gevraagd er een nieuwe naam aan te geven.
+            </p>
+            <p>Als u in de vervolgkeuzelijst  <b>Resultaat opslaan</b> gebruikt, kunt u de naam opgeven van een map in <b>Mijn Content</b> waarin het resultaat wordt opgeslagen.
+            </p>  
+        </div>
+    </div>
+</div>
+</html>

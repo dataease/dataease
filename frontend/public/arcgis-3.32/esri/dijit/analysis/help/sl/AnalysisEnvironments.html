@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Nastavitve okolja analiz na Portalu</h2><p/>
+        <h2></h2>
+        <hr/>
+    <p>  Nastavitve okolja za analizo v Portal for ArcGIS in  ArcGIS Online. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="overwriteResult">
+        <div><h2>Prepiši sloj z rezultati</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Določa, ali je treba prepisati obstoječe sloje. Če je to obkljukano in sloj z enakim imenom že obstaja v va&scaron;i vsebini, bo ta prepisan.
+            </p>
+            <p>
+                <ul>
+                    <li>Obkljukano &ndash; Če sloj z enakim imenom že obstaja v va&scaron;i vsebini, bo ta prepisan. Izhodni sloj bo prikazan v istem koordinatnem sistemu kot vhodni sloj.
+                    </li>
+                    <li>Odkljukano &ndash; Če vneseno ime sloja z rezultati že obstaja, bo pri&scaron;lo do napake. Zato morate sloj z rezultati pred izvajanjem orodja preimenovati. To je privzeto.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="closeAnalysisWidget">
+        <div><h2>Po zagonu analize zapri pripomoček</h2></div>
+        <hr/>
+        <div>
+            <p>Določa, ali analizno pogovorno okno ostane odprto in omogočeno med procesiranjem orodja. Ta nastavitev vam bo omogočila, da spremenite svoje analizne parametre, medtem ko se izvaja prej&scaron;nje analizno opravilo. Analiza je ponavljajoč se proces, ki vam pri odprtem pogovornem oknu orodja omogoča spreminjanje parametrov in ponovitev va&scaron;e analize.
+            </p>
+            <p>
+                <ul>
+                    <li>Obkljukano &ndash; Pogovorno okno analiznega orodja se bo zaprlo in poudarek bo vrnjen na vsebino. To je privzeto
+                    </li>
+                    <li>Odkljukano &ndash; Pogovorno okno analiznega orodja bo ostalo odprto in omogočeno.   
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="storeAnalysisResults">
+        <div><h2>Shrani rezultate analize kot gostujoče geoobjektne sloje</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Določa, ali bo sloj z rezultati, ustvarjen iz va&scaron;e analize, zbirka geoobjektov ali gostujoč geoobjektni sloj. 
+            </p>
+            <p>
+                <ul>
+                    <li>Obkljukano &ndash; Rezultati va&scaron;e analize bodo ustvarili gostujoč geoobjektni sloj in element bo ustvarjen v va&scaron;i vsebini. To je privzeto.
+                    </li>
+                    <li>Odkljukano &ndash; Rezultati va&scaron;e analize bodo ustvarili zbirko geoobjektov.     
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputCoordinateSystem">
+        <div><h2>Izhodni koordinatni sistem</h2></div>
+        <hr/>
+        <div>
+            <p>Določa koordinatni sistem sloja z rezultati za rastrsko analizo.    
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Enako kot vnos</b> &ndash; Izhodni sloj va&scaron;e analize bo prikazan v istem koordinatnem sistemu kot vhodni sloj. To je privzeto.
+                    </li>
+                    <li> <b>Kot je navedeno</b> &ndash; Rezultat va&scaron;e analize bo prikazan v izbranem koordinatnem sistemu. Ko je izbrana ta možnost, kliknite gumb globusa, da izberete s seznama znanih koordinatnih sistemov, ali dodajte WKID koordinatnega sistema v določeno polje.
+                    </li>
+                    <li> <b>Sloj
+&lt;name&gt;</b>&ndash; Rezultat va&scaron;e analize bo prikazan v istem koordinatnem sistemu kot obstoječi sloj, ki ga boste izbrali v svoji spletni karti.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingCoordinateSystem">
+        <div><h2>Koordinatni sistem procesiranja</h2></div>
+        <hr/>
+        <div>
+            <p>Določa koordinatni sistem, ki ga bo med izvajanjem uporabljala va&scaron;a analiza GeoAnalytics.   
+            </p>
+            <p>Za GeoAnalytics nekatere analize zahtevajo, da se procesiranje izvede v projeciranem koordinatnem sistemu. Katero koli orodje, ki uporablja združevanje podatkov ali linearne enote, zahteva projeciran koordinatni sistem. 
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Enako kot vnos</b> &ndash; Va&scaron;a analiza bo obdelana v istem koordinatnem sistemu kot vhodni sloj. To je privzeto.
+                    </li>
+                    <li> <b>Kot je navedeno</b> &ndash; Va&scaron;a analiza bo prikazana v izbranem koordinatnem sistemu. Ko je izbrana ta možnost, kliknite gumb globusa, da izberete s seznama znanih projiciranih koordinatnih sistemov, ali dodajte WKID koordinatnega sistema v določeno polje.
+                    </li>
+                    <li> <b>Sloj
+&lt;name&gt;</b> &ndash; Va&scaron;a analiza bo prikazana v istem koordinatnem sistemu kot obstoječi sloj, ki ga boste izbrali v svoji spletni karti.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingExtent">
+        <div><h2>Obseg procesa</h2></div>
+        <hr/>
+        <div>
+            <p>Določa obseg ali mejo, ki bo uporabljena med izvajanjem analize. Vsi vhodni geoobjekti, ki so v celoti znotraj ali ki sekajo določen obseg, bodo uporabljeni v analizi.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Privzeto</b> &ndash; Obseg orodja.
+                    </li>
+                    <li> <b>Kot je navedeno</b> &ndash; Obseg je določen s koordinatami, ki jih boste navedli.
+                    </li>
+                    <li> <b>Sloj
+&lt;name&gt;</b> &ndash; Obseg, ki bo uporabljen za procesiranje va&scaron;e analize, bo enak kot prostorski obseg obstoječega sloja, ki ga boste izbrali v svoji spletni karti. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="snapRaster">
+        <div><h2>Privlači raster</h2></div>
+        <hr/>
+        <div>
+            <p>Prilagodi obseg izhodnega rastrskega sloja, tako da se ujema s poravnavo celic določenega sloja  <b>Magneti raster</b> v rastrski analizi.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Velikost celice</h2></div>
+        <hr/>
+        <div>
+            <p>Določa velikost ali ločljivost celice, ki bo uporabljena za ustvarjanje izhodnega rastrskega sloja v rastrski analizi. Privzeta izhodna ločljivost je določena z največjo velikostjo celice vhodnega rastrskega sloja.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Minimum vnosov</b> &ndash; Uporabite najmanj&scaron;o velikost celice vseh vhodnih slojev.
+                    </li>
+                    <li> <b>Maksimum vnosov</b> &ndash; Uporabite največjo velikost celice vseh vhodnih slojev. To je privzeto.
+                    </li>
+                    <li> <b>Kot je navedeno</b> &ndash; Določite &scaron;tevilsko vrednost, da nastavite velikost celice. Če je to izbrano, je privzeta vrednost 1.
+                    </li>
+                    <li> <b>Sloj &lt;name&gt;</b> &ndash; Nastavite velikost celice za izbran rastrski sloj.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="mask">
+        <div><h2>Maska</h2></div>
+        <hr/>
+        <div>
+            <p>Določa sloj, ki se bo uporabljal za določanje va&scaron;ega interesnega območja v rastrski analizi. Samo tiste celice, ki padejo znotraj maske analize, bodo upo&scaron;tevane pri izvajanju analize.
+            </p>
+            <ul>
+                <li>Maska je lahko bodisi rastrski bodisi geoobjektni sloj.
+                </li>
+                <li>Če je maska analize raster, bodo vse celice, ki imajo vrednost, upo&scaron;tevane pri določanju maske. Celice v rastru maske, ki so brez podatkov, bodo smatrane, da so izven maske in bodo brez podatkov tudi v sloju z rezultati analize. 
+                </li>
+                <li>Če je maska analize geoobjektni sloj, bo ob izvedbi interno pretvorjena v raster. Iz tega razloga poskrbite, da sta
+
+ <b>Velikost celice</b> in <b>Magneti raster</b> pravilno nastavljena za va&scaron;o analizo.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Shramba podatkov</h2></div>
+        <hr/>
+        <div>
+            <p>Rezultati GeoAnalytics so lahko shranjeni v  ArcGIS Data Store in prikazani kot geoobjektni sloj v  Portal for ArcGIS ali v konfigurirani delitvi datotek velikih podatkov. 
+            </p>
+            <p>Pri shranjevanju rezultata v  ArcGIS Data Store je treba rezultate v večini primerov shraniti v shrambo časovno-vremenskih podatkov. To je privzeto. V nadaljevanju so razlogi, zakaj bi morda želeli shraniti rezultate v relacijsko shrambo podatkov: 
+                <ul>
+                    <li>Za uporabo va&scaron;ih rezultatov pri sodelovanju portal z portalom
+                    </li>
+                    <li>Da omogočite zmožnost sinhronizacije z va&scaron;imi rezultati
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Relacijske shrambe podatkov ne smete uporabljati, če pričakujete, da se bodo va&scaron;i rezultati GeoAnalytics povečali in želite izkoristiti zmožnosti velike prostorsko-časovne shrambe podatkov za obdelavo velikih količin podatkov. 
+            </p>
+        </div>
+    </div>
+    <div id="parallelProcessingFactor">
+        <div><h2>Dejavnik vzporednega procesiranja</h2></div>
+        <hr/>
+        <div>
+            <p>Distribuira analizo na več instancah storitve rastrskega procesiranja. 
+            </p>
+            <p>Orodja, ki upo&scaron;tevajo okolje  <b>Dejavnika vzporednega procesiranja</b>, vam omogočajo nadzor &scaron;tevila instanc storitve rastrskega procesiranja, ki jih je mogoče uporabiti za procesiranje va&scaron;ih podatkov.
+            </p>
+            <p>Če orodje ne upo&scaron;teva  <b>Tipa procesorja</b> ali če je okolje <b>Tipa procesorja</b> nastavljeno na <b>CPU</b>, okolje <b>Dejavnika vzporednega procesiranja</b> nadzoruje instance storitve rastrskega procesiranja (CPU). Če je <b>Tip procesorja</b> nastavljen na <b>GPU</b>, okolje <b>Dejavnika vzporednega procesiranja</b> nadzoruje &scaron;tevilo instanc GPU rastrskega procesiranja.
+            </p> 
+            <p>Z nastavitvijo  <b>Dejavnika vzporednega procesiranja</b> lahko zahtevate &scaron;tevilo vzporednih izvajalnikov, ki jih rastrski analitični slikovni strežnik uporablja za procesiranje enega opravila rastrske analize. Če pa skupno &scaron;tevilo vzporednih procesov presega maksimalno &scaron;tevilo instanc storitve rastrskega procesiranja (CPU ali GPU), bodo dodatni vzporedni procesi dodani v čakalno vrsto.
+            </p>
+            <p>Če  <b>Dejavnik vzporednega procesiranja</b> ni določen, kar naj bi bilo privzeto, bo orodje uporabilo 80 odstotkov maksimalnega &scaron;tevila instanc storitve rastrskega procesiranja. Kot dejavnik vzporednega procesiranja je lahko določeno celo &scaron;tevilo ali odstotek.
+            </p>
+        </div>
+    </div>
+    <div id="processorType">
+        <div><h2>Tip procesorja</h2></div>
+        <hr/>
+        <div>
+            <p>Orodja, ki upo&scaron;tevajo okolje  <b>Tipa procesorja</b>, vam omogočajo, da izberete, kje in kako želite procesirati svoje podatke. Svoje podatke lahko procesirate s CPU-jem ali GPU-jem strežni&scaron;kega računalnika. Če je okolje <b>Tipa procesorja</b> prazno, bo orodje za procesiranje podatkov uporabilo CPU. To je privzeto.
+            </p> 
+            <p>Procesiranje s CPU-jem je mogoče paralelizirati na več jedrih in instancah, kot jih lahko obravnava  <b>Dejavnik vzporednega procesiranja</b>.
+            </p>
+            <p>GPU-ji so učinkoviti pri procesiranju grafik in slik, saj so zaradi svoje zelo vzporedne strukture učinkoviti pri procesiranju velikih blokov podatkov na ponavljajoč se način. Orodja rastrske analize, ki upo&scaron;tevajo to okolje, lahko distribuirajo svoje opravilo na instance GPU-ja na več strežni&scaron;kih računalnikov za rastrsko analizo, kot jih lahko obravnava  <b>Dejavnik vzporednega procesiranja</b>.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>GPU</b> &ndash; Podatki bodo procesirani z grafično procesno enoto.
+                    </li>
+                    <li> <b>CPU</b> &ndash; Podatki bodo procesirani s centralno procesno enoto računalnika.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

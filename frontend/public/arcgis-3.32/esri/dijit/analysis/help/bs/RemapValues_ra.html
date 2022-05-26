@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Ponovno kartiraj vrijednosti</h2><p/>
+        <h2><img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" alt="Ponovno kartiraj vrijednosti za Portal"></h2>
+        <hr/>
+    <p>Ovaj vam alat omogućuje da promijenite ili ponovno klasificirate vrijednosti piksela podataka rastera. Vrijednosti piksela ponovno se kartiraju određivanjem raspona vrijednosti piksela za rezultate vrijednosti piksela. Rezultat vrijednost piksela može biti važeća vrijednost ili vrijednost bez podataka, &scaron;to su pikseli koji nemaju povezanu poznatu vrijednost.
+    </p>
+    <p>Ako je označena opcija  <b>Upotrijebi trenutačni obuhvat karte</b>, ponovno će se kartirati samo ćelije koje su vidljive u trenutačnom obuhvatu karte. Ako opcija nije označena, obradit će se sve ćelije u rasteru, čak i ako se nalaze izvan trenutačnog obuhvata karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Unos podataka</h2></div>
+        <hr/>
+        <div>
+            <p>Ulazni podaci čije će se vrijednosti ponovno kartirati.
+            </p>
+        </div>
+    </div>
+    <div id="RemapList">
+        <div><h2>Ponovno kartiraj vrijednosti piksela u nove vrijednosti</h2></div>
+        <hr/>
+        <div>
+            <p>Unesite raspon vrijednosti određivanjem minimalne i maksimalne vrijednosti, zatim dodijelite rezultat vrijednosti ili vrijednost bez podataka u naznačeni raspon.
+            </p>
+            <p>Za ponovno kartiranje novog raspona vrijednosti kliknite na  <b>Dodaj</b>, čime se dodaje novi red. Kliknite na pojedine vrijednosti za uređivanje tablice raspona i ponovno kartiranje željene vrijednosti. Kada odredite raspone vrijednosti, dva su važna pravila koja se primjenjuju:
+                <ul>
+                    <li>Minimalna vrijednost u rasponu je uključujuća, a maksimalna vrijednost je isključujuća.
+                    </li>
+                    <li>Redovi u tablici obrađuju se od vrha do dna.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Tablica u nastavku prikazuje da je minimalna vrijednost uključena u rezultat, ali maksimalna vrijednost nije uključena u rezultat.
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>20
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;19
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+                <td>
+                    <p>51
+                    </p>
+                </td>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Redoslijed raspona naznačenih u tablici također je važan. Prvo se obrađuje gornji redak tablice, zatim se obrađuje red u nastavku. Dvije tablice u nastavku prikazuju kako isti rasponi vrijednosti daju različite rezultate zbog redoslijeda redaka u tablici.
+            </p> 
+            <p>Tablica u nastavku prikazuje izlaznu vrijednost kada se brojčano posloži prvi stupac:
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;14
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>15&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Tablica u nastavku prikazuje kako će različiti redoslijed redova dati različite izlazne vrijednosti:
+            </p> 
+            <table border="1">
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Oba se pravila primjenjuju za preslagivanje vrijednosti. Budući da se svaki red obrađuje s vrha prema dnu, ove vrijednosti imaju prednost pri određivanju rezultata, čak i kada se upotrebljavaju isti rasponi.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će se stvoriti u stavci  <b>Moj sadržaj</b> i dodati karti. Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako sloj već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Možete odrediti naziv mape u  <b>Mojem sadržaju</b> gdje će se rezultat spremiti pomoću padajućeg izbornika <b>Spremi rezultat u</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

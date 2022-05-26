@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Attribute zusammenfassen</h2><p/>
+        <h2><img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" alt="Diagramm des Werkzeugs &quot;Attribute zusammenfassen&quot;"></h2>
+        <hr/>
+    <p> Mit diesem Werkzeug werden alle &uuml;bereinstimmenden Werte in einem oder mehreren Feldern zusammengefasst und Statistiken f&uuml;r sie berechnet. Die einfachste Statistik ist die Anzahl der zusammengefassten Features, Sie k&ouml;nnen aber auch erweiterte Statistiken berechnen.
+    </p>
+    <p>Angenommen, Sie verf&uuml;gen &uuml;ber Punkt-Features von Ladenstandorten mit einem Feld, das den  <i>DISTRICT_MANAGER_NAME</i> darstellt, und Sie m&ouml;chten die Umsatzzahlen f&uuml;r Kaffee nach Manager zusammenfassen. Sie k&ouml;nnen das Feld <i>DISTRICT_MANAGER_NAME</i> als Feld f&uuml;r die Zusammenf&uuml;hrung ausw&auml;hlen, sodass alle Datenzeilen, die einzelne Manager darstellen, zusammengefasst werden. Dies bedeutet, dass alle Ladenstandorte, die von <pre>Manager1</pre> geleitet werden, in einer Zeile mit berechneter Summenstatistik zusammengefasst werden. In diesem Fall werden Statistiken wie die Anzahl der L&auml;den und die Summe der <i>TOTAL_SALES</i> f&uuml;r alle L&auml;den, die von <pre>Manager1</pre> geleitet werden, und f&uuml;r alle anderen Manager berechnet, die im Feld <i>DISTRICT_MANAGER_NAME</i> aufgef&uuml;hrt sind.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Die zusammenfassende Eingabe auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Der Layer enth&auml;lt die Felder, die zusammengefasst werden.  
+            </p>
+            <p>Sie k&ouml;nnen nicht nur einen Layer aus der Karte ausw&auml;hlen, sondern auch unten in der Dropdown-Liste die Option  <b>Analyse-Layer ausw&auml;hlen</b> ausw&auml;hlen, um zu Ihren Inhalten f&uuml;r ein Big-Data-Dateifreigabe-Dataset bzw. -Feature-Layer zu navigieren.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Wählen Sie aus, wie die Daten zusammengefasst werden sollen</h2></div>
+        <hr/>
+        <div>
+            <p>Zum Zusammenfassen der Daten gibt es zwei M&ouml;glichkeiten:
+                <ul>
+                    <li> <b>Alle Features in einem einzelnen Feature</b>: Berechnet Statistiken f&uuml;r alle Features.
+                    </li>
+                    <li> <b>Nach Feldern</b>: Gruppiert Features nach Werten in bestimmten Feldern.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Als Beispiel sei angenommen, Sie verwenden ein Dataset aus B&auml;umen, das das Feld  <i>treetype</i> f&uuml;r die Baumart mit den Werten <code>Maple</code>, <code>Fir</code> und <code>Pine</code> f&uuml;r Ahorn, Tanne und Kiefer und das Feld <i>treeheight</i> f&uuml;r die Baumh&ouml;he enth&auml;lt, und Sie m&ouml;chten den Mittelwert von <i>treeheight</i> f&uuml;r die mittlere Baumh&ouml;he ermitteln. Wenn Sie alle Features in einem einzelnen Feature zusammenfassen, k&ouml;nnen Sie die mittlere Baumh&ouml;he aller B&auml;ume ermitteln, um einen Mittelwert zu erhalten. Wenn Sie nach dem Feld <i>treeheight</i> zusammenfassen, erhalten Sie einen Mittelwert f&uuml;r Ahornb&auml;ume, einen Mittelwert f&uuml;r Tannenb&auml;umes und einen Mittelwert f&uuml;r Kiefernb&auml;ume.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Statistiken hinzufügen (optional)</h2></div>
+        <hr/>
+        <div>
+            <p> Sie k&ouml;nnen f&uuml;r Features, die zusammengefasst wurden, Statistiken berechnen.F&uuml;r numerische Felder sind folgende Berechnungen m&ouml;glich:
+                <ul>
+                    <li>Anzahl: Berechnet die Anzahl der Nicht-NULL-Werte.Sie kann f&uuml;r numerische Felder oder Zeichenfolgen verwendet werden. Die Anzahl von [NULL, 0, 2] betr&auml;gt 2.
+                    </li>
+                    <li>Summe: Die Summe der numerischen Werte in einem Feld. Die Summe von [NULL, NULL, 3] betr&auml;gt 3.
+                    </li>
+                    <li>Mittelwert: Der Mittelwert der numerischen Werte. Der Mittelwert von [0, 2, NULL] betr&auml;gt 1.
+                    </li>
+                    <li>Min: Der Minimalwert eines numerischen Feldes. Der Minimalwert von [0, 2, NULL] betr&auml;gt 0. 
+                    </li>
+                    <li>Max: Der Maximalwert eines numerischen Feldes. Der Maximalwert von [0, 2, NULL] betr&auml;gt 2.
+                    </li>
+                    <li>Bereich: Der Bereich eines numerischen Feldes. Dieser wird durch die Subtraktion der Minimalwerte vom Maximalwert berechnet. Der Bereich von [0, NULL, 1] lautet 1. Der Bereich von [NULL, 4] lautet 0.
+                    </li>
+                    <li>Varianz: Die Varianz eines numerischen Feldes in einer Spur. Die Varianz von [1] betr&auml;gt Null. Die Varianz von [NULL, 1,0,1,1] betr&auml;gt 0,25.
+                    </li>
+                    <li>Standardabweichung: Die Standardabweichung eines numerischen Feldes. Die Standardabweichung von [1] ist Null. Die Standardabweichung von [NULL, 1,0,1,1] ist 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>F&uuml;r Zeichenfolgenfelder sind folgende Berechnungen m&ouml;glich:
+                <ul>
+                    <li>Anzahl: Die Anzahl der Nicht-NULL-Werte.
+                    </li>
+                    <li>Beliebig: Diese Statistik ist eine auf dem Zufallsprinzip basierende Stichprobe eines Zeichenfolgenwertes im angegebenen Feld.
+                    </li>
+                </ul>
+                Alle Statistiken werden f&uuml;r Nicht-NULL-Werte berechnet. Der resultierende Layer enth&auml;lt ein neues Feld f&uuml;r jede berechnete Statistik. Jede Anzahl von Statistiken kann durch Auswahl eines Attributs und einer Statistik ausgew&auml;hlt werden. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Data Store auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-Ergebnisse werden in einem Data Store gespeichert und als Feature-Layer in  Portal for ArcGIS dargestellt. In den meisten F&auml;llen sollten Ergebnisse im Data Store vom Typ &quot;spatiotemporal&quot; gespeichert werden, was gleichzeitig die Standardeinstellung ist. Manchmal empfiehlt es sich auch, Ergebnisse im Data Store vom Typ &quot;relational&quot; zu speichern. Die folgenden Gr&uuml;nde sprechen daf&uuml;r, die Ergebnisse im Data Store vom Typ &quot;relational&quot; zu speichern: 
+                <ul>
+                    <li>Sie k&ouml;nnen die Ergebnisse in portal&uuml;bergreifender Zusammenarbeit verwenden.
+                    </li>
+                    <li>Sie sind in der Lage, Synchronisierungsfunktionen mit Ihren Ergebnissen zu aktivieren.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p> Der Name des Layers, der erstellt wird.  Wenn Sie in einen ArcGIS Data Store schreiben, werden Ihre Ergebnisse in  <b>Eigene Inhalte</b> gespeichert und der Karte hinzugef&uuml;gt. Wenn Sie in eine Big-Data-Dateifreigabe schreiben, werden Ihre Ergebnisse in der Big-Data-Dateifreigabe gespeichert und  ihrem Manifest hinzugef&uuml;gt. Sie werden nicht der Karte hinzugef&uuml;gt. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, kann das Werkzeug nicht ausgef&uuml;hrt werden.
+            </p>
+            <p>Wenn Sie &uuml;ber das Dropdown-Feld  <b>Ergebnis speichern in</b> in ArcGIS Data Store (Big Data Store vom Typ &quot;relational&quot; oder &quot;spatiotemporal&quot;) schreiben, k&ouml;nnen Sie den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert wird.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

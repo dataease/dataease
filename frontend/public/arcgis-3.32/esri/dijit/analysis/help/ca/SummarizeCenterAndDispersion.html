@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Resumir centre i dispersió</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="Resumir centre i dispersi&oacute;"></h2>
+        <hr/>
+    <p>Aquesta eina troba les entitats centrals i les distribucions direccionals.
+Pot utilitzar-se per respondre preguntes com ara:
+        <ul>
+            <li>On &eacute;s el centre?
+            </li>
+            <li>Quines entitats s&oacute;n les m&eacute;s accessibles des de totes les altres entitats?
+            </li>
+            <li>Quin &eacute;s el grau de dispersi&oacute;, compactaci&oacute; o integraci&oacute; de les entitats?
+            </li>
+            <li>Hi ha tend&egrave;ncies direccionals?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si l'opci&oacute;  <b>Utilitza l'extensi&oacute; del mapa actual</b> est&agrave; seleccionada, nom&eacute;s s'analitzaran les entitats de la capa d'entrada que siguin visibles dins de l'extensi&oacute; del mapa actual.  Si l'opci&oacute; est&agrave; desactivada, s'analitzaran totes les entitats de la capa d'entrada, encara que estiguin fora de l'extensi&oacute; de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Trieu una capa per descriure</h2></div>
+        <hr/>
+        <div>
+            <p>Capa de punts, l&iacute;nies o &agrave;rees que s'utilitzar&agrave; per trobar les entitats centrals i les distribucions direccionals.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>Tipus de resum</h2></div>
+        <hr/>
+        <div>
+            <p>El m&egrave;tode utilitzat per resumir el centre i la dispersi&oacute;. 
+            </p>
+            <ul>
+                <li>Entitat central: identifica l'entitat amb la ubicaci&oacute; m&eacute;s centralitzada d'una capa de punts.
+                </li>
+                <li>Centre mitj&agrave;: identifica el centre geogr&agrave;fic (o centre de concentraci&oacute;) d'un conjunt d'entitats.
+                </li>
+                <li>Centre mitj&agrave;: identifica la ubicaci&oacute; que minimitza la dist&agrave;ncia euclidiana general a les entitats d'un dataset.
+                </li>
+                <li>El&middot;lipse: crea el&middot;lipses de desviaci&oacute; est&agrave;ndard per resumir les caracter&iacute;stiques espacials de les entitats geogr&agrave;fiques (tend&egrave;ncia central, dispersi&oacute; i tend&egrave;ncies direccionals). Les el&middot;lipses es poden mesurar com 1, 2 o 3 desviacions est&agrave;ndard.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>Pondera per (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Camp utilitzat per ponderar ubicacions d'acord amb la seva import&agrave;ncia relativa. 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>Agrupa per (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Camp utilitzat per agrupar entitats per a c&agrave;lculs diferents d'entitats centrals o dispersi&oacute;. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa.  El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si el nom de la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Mitjan&ccedil;ant el men&uacute; desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta d' <b>El meu contingut</b> on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

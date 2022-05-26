@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>래스터를 피처로 변환</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="래스터를 피처로 변환 도구"></h2>
+        <hr/>
+    <p>이 도구는 래스터를 포인트, 라인 또는 폴리곤 등의 피처 데이터셋으로 변환합니다.
+    </p>
+    <p> <b>필드 선택</b> 매개변수를 통해 입력 래스터 데이터셋의 속성 필드 중 결과 피처 클래스의 속성으로 사용될 필드를 선택할 수 있습니다. 이 매개변수는 연관된 테이블에 추가 속성이 있는 정수 래스터에 대해서만 사용할 수 있습니다.
+    </p>
+    <p>입력 래스터의 셀 크기는 다양할 수 있습니다.
+    </p>
+    <p>정수 래스터는 포인트, 라인 또는 폴리곤 피처로 변환할 수 있지만 부동 소수점 래스터는 포인트 피처로만 변환됩니다.
+    </p>
+    <p> <b>현재 맵 범위 사용</b>을 선택한 경우 현재 맵 범위 내에 표시된 래스터 셀만 변환되고, 선택하지 않으면 현재 맵 범위 외부에 있더라도 래스터 레이어의 모든 셀이 변환됩니다. 래스터 레이어가 대형이거나 고해상도인 경우 이 점에 유의하세요.
+    </p>
+    <p>이 도구의 용도는 다음과 같습니다.
+ 
+        <ul>
+            <li>토지 이용 분류 래스터에서 폴리곤 피처를 생성합니다.
+                
+ 
+            </li>
+            <li>DEM에서 식별된 스트림을 라인 피처로 변환할 수 있습니다.
+                
+
+            </li>
+            <li>DEM을 비래스터 기반의 워크플로에서 사용할 수 있는 포인트 피처로 변환할 수 있습니다.
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>변환할 래스터 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>피처 레이어로 변환될 입력 래스터 레이어입니다.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>필드 선택</h2></div>
+        <hr/>
+        <div>
+            <p>변환에 사용될 값을 지정하는 필드를 제공합니다.
+            </p>
+            <p>임의의 정수 또는 텍스트 값이 사용될 수 있습니다.
+            </p>
+            <p>부동 소수점 값이 포함된 필드는 결과가 포인트 데이터셋으로 변환되는 결과일 경우에만 사용할 수 있습니다.
+            </p>
+            <p>각 래스터 셀의 값을 포함하는  <i>Value</i> 필드가 기본 선택입니다.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>결과 유형 선택</h2></div>
+        <hr/>
+        <div>
+            <p>결과 유형을 포인트, 라인 또는 폴리곤 중에서 선택합니다.
+            </p>
+            <ul>
+                <li>포인트 - 래스터가 포인트 데이터셋으로 변환됩니다.
+                    
+ 
+                </li>
+                <li>라인 - 래스터가 라인 피처 데이터셋으로 변환됩니다.
+                    
+ 
+                </li>
+                <li>폴리곤 - 래스터가 폴리곤 피처 데이터셋으로 변환됩니다.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>라인 또는 폴리곤 단순화</h2></div>
+        <hr/>
+        <div>
+            <p>피처를 단순화할지를 지정합니다.
+            </p>
+            <p>이 옵션을 선택하면(기본 설정) 라인 또는 폴리곤 피처가 단순한 모양으로 부드럽게 처리되어 더욱 간략화된 결과가 만들어집니다. 선택하지 않으면 선형 피처가 래스터 데이터셋의 셀 경계를 따르게 됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에 생성되고 맵에 추가되는 레이어의 이름입니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어가 이미 있는 경우 다른 이름을 입력하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 상자를 사용하여 결과가 저장될 <b>내 콘텐츠</b>에서 폴더 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

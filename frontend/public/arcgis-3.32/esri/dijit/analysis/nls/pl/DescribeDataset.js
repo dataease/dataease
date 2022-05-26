@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/pl/DescribeDataset",{inputLayerLabel:"Wybierz zestaw danych do opisania",describeDataLabel:"Uzyskaj informacje o danych, tworz\u0105c (opcjonalnie)",sampleLayer:"Przyk\u0142adowa warstwa",extentLayer:"Warstwa zasi\u0119gu",noOfFeaturesLabel:"Liczba obiekt\u00f3w do uwzgl\u0119dnienia",outputLayerName:"Nazwa warstwy wynikowej",resultName:"Opisz dane w warstwie ${layerName}",itemDescription:"Warstwa obiektowa wygenerowana w wyniku uruchomienia narz\u0119dzia Opisz zestaw danych w warstwie ${layerName}. ",
+itemTags:"Wynik analizy, Opisz zestaw danych, ${layerName}",itemSnippet:"Warstwa obiektowa wygenerowana w wyniku u\u017cycia narz\u0119dzia Opisz zestaw danych."});

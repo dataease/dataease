@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Regressão Linear Generalizada</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="Diagrama do fluxo de trabalho Regress&atilde;o Linear Generalizada"></h2>
+        <hr/>
+    <p>Executa Regress&atilde;o Linear Generalizada (GLR) para gerar previs&otilde;es ou modela uma vari&aacute;vel dependente em termos de sua rela&ccedil;&atilde;o com um conjunto de vari&aacute;veis explanat&oacute;rias. Esta ferramenta pode ser utilizada para ajustar os modelos cont&iacute;nuos (Gaussiano), bin&aacute;rio (log&iacute;stica) e contagem (Poisson).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Tipo de Análise</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica o modo de opera&ccedil;&atilde;o da ferramenta. A ferramenta pode ser executada para treinar um modelo para avaliar somente o desempenho ou treinar um modelo e prever fei&ccedil;&otilde;es. Os tipos de previs&atilde;o s&atilde;o os seguintes:
+                <ul>
+                    <li> <b>Ajustar um modelo para avaliar o desempenho do modelo</b>&mdash;Um modelo ser&aacute; ajustado e aplicado aos dados de entrada. Utilize esta op&ccedil;&atilde;o para avaliar a precis&atilde;o do seu modelo antes de gerar previs&otilde;es em um novo conjunto de dados ou entender os relacionamentos e os direcionadores da sua vari&aacute;vel prevista. A sa&iacute;da desta op&ccedil;&atilde;o ser&aacute; um servi&ccedil;o da fei&ccedil;&atilde;o dos seus dados ajustados e diagn&oacute;sticos do modelo.
+                    </li>
+                    <li> <b>Ajustar um modelo e prever valores</b>&mdash; Previs&otilde;es ou classifica&ccedil;&otilde;es ser&atilde;o geradas para fei&ccedil;&otilde;es de entrada e fei&ccedil;&otilde;es de predi&ccedil;&atilde;o. Vari&aacute;veis explanat&oacute;rias devem ser fornecidas para as fei&ccedil;&otilde;es de predi&ccedil;&atilde;o e as fei&ccedil;&otilde;es a serem previstas. A sa&iacute;da desta op&ccedil;&atilde;o ser&aacute; um servi&ccedil;o da fei&ccedil;&atilde;o do seu modelo ajustado aos dados de entrada, um servi&ccedil;o da fei&ccedil;&atilde;o de valores previstos e diagn&oacute;sticos do modelo.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>Ajustar um modelo para avaliar o desempenho do modelo</h2></div>
+        <hr/>
+        <div>
+            <p>Utilize este modo se voc&ecirc; deseja ajustar um modelo e investigar o ajuste.
+            </p>
+            <p>Com esta op&ccedil;&atilde;o, o modelo ser&aacute; treinado utilizando uma camada de entrada. Utilize esta op&ccedil;&atilde;o para avaliar a precis&atilde;o do seu modelo antes de gerar previs&otilde;es em um novo conjunto de dados. Esta op&ccedil;&atilde;o produzir&aacute; diagn&oacute;sticos de modelo e aplicar&aacute; o modelo aos seus dados de treinamento.
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>Ajustar um modelo e prever valores</h2></div>
+        <hr/>
+        <div>
+            <p>Utilize este modo se voc&ecirc; deseja ajustar um modelo e aplicar o modelo ao conjunto de dados para gerar previs&otilde;es.
+            </p>
+            <p>Previs&otilde;es ou classifica&ccedil;&otilde;es ser&atilde;o geradas para fei&ccedil;&otilde;es. A sa&iacute;da desta op&ccedil;&atilde;o ser&aacute; um servi&ccedil;o da fei&ccedil;&atilde;o, diagn&oacute;stico de modelo e uma tabela opcional de import&acirc;ncia da vari&aacute;vel.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>Escolha uma camada da qual gerar um modelo</h2></div>
+        <hr/>
+        <div>
+            <p>A camada que cont&eacute;m fei&ccedil;&otilde;es de ponto, linha, &aacute;rea ou tabular que cont&ecirc;m as vari&aacute;veis dependentes e explanat&oacute;rias.
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista suspensa para procurar por seu conte&uacute;do para um conjunto de dados de compartilhamento do arquivo de grandes dados ou camada de fei&ccedil;&atilde;o.
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>Escolha o campo para modelo</h2></div>
+        <hr/>
+        <div>
+            <p>O campo num&eacute;rico que cont&eacute;m os valores observados a serem modelados e o tipo de valor que voc&ecirc; est&aacute; modelando. H&aacute; tr&ecirc;s tipos de valores que voc&ecirc; pode modelar
+                <ul>
+                    <li>Cont&iacute;nuo&mdash;Representa valores cont&iacute;nuos. O modelo utilizado &eacute; Gaussiano e a ferramenta executa a regress&atilde;o de m&iacute;nimos quadrados ordin&aacute;rios.
+                    </li>
+                    <li>Bin&aacute;rio&mdash;Represente valores de presen&ccedil;a ou aus&ecirc;ncia. Estes devem ser 1s e 0s. O modelo utilizado &eacute; Regress&atilde;o de Log&iacute;stica.
+                    </li>
+                    <li>Contagem&mdash;Representa eventos discretos e representa, por exemplo, contagens de crimes, incidentes de doen&ccedil;as ou acidentes de tr&acirc;nsito. O modelo utilizado &eacute; Regress&atilde;o de Poisson. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Escolha uma camada para prever valores para</h2></div>
+        <hr/>
+        <div>
+            <p>Uma camada com fei&ccedil;&otilde;es que representam locais onde as estimativas devem ser calculadas. Cada fei&ccedil;&atilde;o neste conjunto de dados deve conter valores para todas as vari&aacute;veis explanat&oacute;rias especificadas. A vari&aacute;vel dependente para estas fei&ccedil;&otilde;es ser&aacute; estimada utilizando o modelo calibrado para a camada de entrada.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Escolha os campos explanatórios</h2></div>
+        <hr/>
+        <div>
+            <p>Um ou mais campos representando as vari&aacute;veis explanat&oacute;rias (campos) que ajudam a prever o valor. Somente campos num&eacute;ricos estar&atilde;o vis&iacute;veis.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Escolha como os campos explanatórios são correspondidos</h2></div>
+        <hr/>
+        <div>
+            <p>Como as vari&aacute;veis correspondentes na camada de entrada corresponder&atilde;o &agrave;s vari&aacute;veis na camada de previs&atilde;o. Somente as vari&aacute;veis utilizadas na gera&ccedil;&atilde;o do modelo ser&atilde;o inclu&iacute;das na tabela. Somente valores num&eacute;ricos podem ser utilizados. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p> O nome da camada que ser&aacute; criada.  Se voc&ecirc; estiver gravando em um ArcGIS Data Store, seus resultados ser&atilde;o salvos em  <b>Meu Conte&uacute;do</b> e adicionados no mapa. Se voc&ecirc; estiver gravando em um compartilhamento do arquivo de grandes dados, seus resultados ser&atilde;o armazenados compartilhamento do arquivo de grandes dados  e adicionados em seu   manifesto. N&atilde;o ser&atilde;o adicionados no mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se a camada j&aacute; existe, a ferramenta falhar&aacute;.
+            </p>
+            <p>Os resultados retornados depender&atilde;o do tipo de an&aacute;lise. Se voc&ecirc; estiver ajustado para avaliar o ajuste do modelo, os resultados conter&atilde;o uma camada de dados de entrada adequados ao modelo e informa&ccedil;&otilde;es de resultado que avaliam o ajuste do modelo. Se voc&ecirc; estiver ajustando e prevendo, os resultados conter&atilde;o uma camada dos dados de entrada ajustados ao modelo, uma camada de resultados previstos e informa&ccedil;&otilde;es de resultado que avaliam o ajuste do modelo.
+            </p>
+            <p>Ao gravar no  ArcGIS Data Store  (armazenamento de grandes dados de espa&ccedil;o-tempo ou relacional) utilizando a caixa suspensa  <b>Salvar resultados em</b> , voc&ecirc; pode especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

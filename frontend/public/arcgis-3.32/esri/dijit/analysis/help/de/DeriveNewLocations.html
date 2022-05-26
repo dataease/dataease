@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Neue Positionen ableiten</h2><p/>
+        <h2><img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" alt="Neue Positionen ableiten"></h2>
+        <hr/>
+    <p>Mit diesem Werkzeug werden neue Features im Untersuchungsgebiet abgeleitet, die den angegebenen Kriterien entsprechen. Diese Kriterien k&ouml;nnen auf Attributabfragen (beispielsweise unbebaute Flurst&uuml;cke) und r&auml;umlichen Abfragen (beispielsweise Flurst&uuml;cke in Hochwassergebieten) basieren.
+
+    </p>
+    <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur die Features analysiert, die in der aktuellen Kartenausdehnung sichtbar sind.  Wenn diese Option deaktiviert ist, werden alle Features analysiert, auch diejenigen, die sich au&szlig;erhalb der aktuellen Kartenausdehnung befinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="Expression">
+        <div><h2>Neue Positionen ableiten, die mit den folgenden Ausdrücken übereinstimmen</h2></div>
+        <hr/>
+        <div>
+            <p>Klicken Sie auf die Schaltfl&auml;che  <b>Ausdruck hinzuf&uuml;gen</b>, um einen Ausdruck zu definieren.  Sie k&ouml;nnen mehrere Ausdr&uuml;cke hinzuf&uuml;gen. Nachdem Sie die Ausdr&uuml;cke eingegeben und auf die Schaltfl&auml;che <b>Analyse ausf&uuml;hren</b> geklickt haben, werden die Features im Analyse-Layer anhand der einzelnen Ausdr&uuml;cke gefiltert.  Die Teile der Features, die allen Ausdr&uuml;cken entsprechen, werden in den Ergebnis-Layer geschrieben.
+            </p>
+            <p>Es gibt zwei grundlegende Arten von Ausdr&uuml;cken, die erstellt werden k&ouml;nnen; &quot;Attribut&quot; und &quot;r&auml;umlich&quot;. Attributausdr&uuml;cke sind Abfragen von Feldwerten, z.&nbsp;B.  <code>mit dem Namen 'San Francisco'</code>.  Es gibt vier Arten von r&auml;umlichen Ausdr&uuml;cken:
+                <ul>
+                    <li> <b>in einer Entfernung von</b>: Teile eines Features in einer Entfernung von einem Feature eines anderen Layers.  Suchen Sie beispielsweise die Teile von Flurst&uuml;cken, die sich innerhalb einer Entfernung von 500&nbsp;Metern vom Los Angeles River befinden.
+                    </li>
+                    <li> <b>enth&auml;lt vollst&auml;ndig</b>: das Feature muss ein Feature eines anderen Layers vollst&auml;ndig enthalten.  Suchen Sie beispielsweise Wassereinzugsgebiete, die Flurst&uuml;cke f&uuml;r industrielle Fl&auml;chennutzung vollst&auml;ndig enthalten. Kein Teil des Flurst&uuml;cks darf sich au&szlig;erhalb des Wassereinzugsgebiets befinden.
+                    </li>
+                    <li> <b>vollst&auml;ndig innerhalb von</b>: das Feature muss vollst&auml;ndig von einem Feature eines anderen Layers umgeben sein.  Suchen Sie beispielsweise Schulbezirke, die sich vollst&auml;ndig innerhalb einer Stadtgrenze befinden. Kein Teil des Schulbezirks darf au&szlig;erhalb der Stadtgrenze liegen.
+                    </li>
+                    <li> <b>Schneidet</b>: das Feature oder Teile des Features m&uuml;ssen &uuml;berlappen oder ein Feature in einem anderen Layer schneiden.  Beispielsweise die Suche nach Fl&auml;chen mit verbrannter Vegetation nach mehreren Br&auml;nden in einem Nationalpark. Verbrannte Fl&auml;chen au&szlig;erhalb der Grenze des Nationalparks werden nicht einbezogen.
+                    </li>
+                    <li> <b>in der N&auml;he von</b>: das Feature muss einem Feature eines anderen Layers am n&auml;chsten liegen. Bestimmen Sie beispielsweise die Gr&uuml;nfl&auml;che, die verschiedenen Schulen am n&auml;chsten liegt.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Mit Ausnahme von  <b>in der N&auml;he von</b> verf&uuml;gt jeder r&auml;umliche Ausdruck &uuml;ber eine entsprechende Negation: <b>nicht in einer Entfernung von</b>, <b>enth&auml;lt nicht vollst&auml;ndig</b>, <b>nicht vollst&auml;ndig innerhalb von</b> und <b>schneidet nicht</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird.  Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer-Name bereits vorhanden ist, werden Sie dazu aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>&Uuml;ber das Dropdown-Men&uuml;  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert werden soll.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

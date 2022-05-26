@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Spoji geoobjekte</h2><p/>
+        <h2><img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" alt="Spoji geoobjekte"></h2>
+        <hr/>
+    <p>Orodje Spoji geoobjekte deluje z dvema slojema. Spoji geoobjekte bo spojilo atribute od enega geoobjekta do drugega na podlagi prostorskih, časovnih in atributnih relacij ali kombinacije teh treh relacij. Orodje določa vse vhodne geoobjekte, ki izpolnjujejo navedene pogoje spajanja, in spaja drugi vhodni sloj s prvim. Po želji lahko spojite vse geoobjekte z ujemajočimi se geoobjekti ali povzamete ujemajoče se geoobjekte.
+    </p>
+    <p>Spoji geoobjekte se lahko uporablja za točke, linije, poligone in tabele. Časovno spajanje zahteva, da so vhodni podatki časovno omogočeni, prostorsko spajanje pa zahteva, da imajo va&scaron;i podatki geometrijo. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Izberi ciljni sloj</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj, ki bo imel atribute s spojitvenega sloja, dodane v njegovo tabelo.
+            </p>
+            <p>Analiza, ki uporablja prostorsko relacijo  <b>V bližini</b>, zahteva projiciran koordinatni sistem. <b>Procesni koordinatni sistem</b> lahko nastavite v <b>okoljih analize</b>. Če va&scaron; delovni koordinatni sistem ni nastavljen na projiciran koordinatni sistem, bo to od vas zahtevano, ko boste <b>Zagnali analizo</b> .
+            </p>
+            <p>Poleg izbire sloja s svoje karte lahko na dnu spustnega seznama izberete  <b>Izberi sloj za analizo</b>, da po svoji vsebini poi&scaron;čete delitev datotek velikih podatkov ali geoobjektni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>Izberi sloj za spajanje k ciljnemu sloju</h2></div>
+        <hr/>
+        <div>
+            <p>Spojitveni sloj z atributi, ki bo dodan k ciljnemu sloju.
+            </p>
+            <p>Poleg izbire sloja s svoje karte lahko na dnu spustnega seznama izberete  <b>Izberi sloj za analizo</b>, da po svoji vsebini poi&scaron;čete delitev datotek velikih podatkov ali geoobjektni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Izberi operacijo spajanja</h2></div>
+        <hr/>
+        <div>
+            <p>Določa, kako bodo obravnavani spoji med ciljnimi in spojitvenimi sloji pri izhodu, če bo več spojitvenih geoobjektov imelo enako relacijo s slojem, h kateremu so spojeni. Na voljo sta dve operaciji spajanja, med katerima lahko izbirate:
+                <ul>
+                    <li> <b>Spoji enega z enim</b> &ndash; Ta možnost povzema vse ujemajoče se geoobjekte s posameznimi geoobjekti, h katerim so spojeni.
+                    </li>
+                    <li> <b>Spoji enega z mnogimi</b> &ndash; Ta možnost spoji vse ujemajoče se geoobjekte s spojitvenim slojem.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Na primer, recimo, da ste želeli poiskati trgovine na razdalji 2 kilometrov od tržnice. V tem primeru ima ciljni sloj en geoobjekt, ki predstavlja tržnico, spojitveni sloj pa predstavlja lokalne trgovine z živili, ter ima atribute, kot je skupna letna prodaja. S pomočjo orodja Spoji geoobjekte najdete teh pet trgovin z živili, ki izpolnjujejo kriterije. Če ste navedli način spajanja  <b>Spoji enega z mnogimi</b>, boste v rezultati imeli pet geoobjektov, vsaka vrstica pa predstavlja tržnico in trgovino. Če ste navedli relacijo <b>Spoji enega z enim</b>, boste imeli en geoobjekt, ki predstavlja tržnico, in povzete informacije trgovin, kot so &scaron;tevilo (2) in druge statistike, kot je znesek letne prodaje.
+            </p>
+        </div>
+    </div>
+    <div id="joinOptions">
+        <div><h2>Izberi en ali več spojev</h2></div>
+        <hr/>
+        <div>
+            <p>Navede uporabljeno možnost spajanja. Uporabite lahko enega, dva ali tri od naslednjih tipov spajanja: 
+                <ul>
+                    <li> <b>Prostorski</b> &ndash; Uporablja določeno prostorsko relacijo za spajanje geoobjektov. To zahteva, da imata oba sloja geometrijo.
+                    </li>
+                    <li> <b>Časovno</b> &ndash; Uporablja časovno relacijo za spajanje geoobjektov. To zahteva, da je v obeh slojih omogočen čas.
+                    </li>
+                    <li> <b>Atribut</b> &ndash; Spoji geoobjekte na podlagi enakih polj.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Izberite prostorsko relacijo</h2></div>
+        <hr/>
+        <div>
+            <p>Prostorska relacija, ki bo določila, če so geoobjekti spojeni med seboj. Naslednje razpoložljive relacije so odvisne od tipa geometrije (točka, polilinija ali poligon), ki bo uporabljena kot vhodni geoobjekti:
+                <ul>
+                    <li> <b>Seka</b> &ndash; Geoobjekti bodo povezani, če se med seboj sekajo.
+                    </li>
+                    <li> <b>Enako</b> &ndash; Geoobjekti se bodo ujemali, če imajo enako geometrijo.
+                    </li>
+                    <li> <b>V bližini</b> &ndash; Geoobjekti se bodo ujemali, če so medsebojno na navedeni razdalji. Ciljni sloj mora biti v projiciranem koordinatnem sistemu ali pa mora biti delovni koordinatni sistem nastavljen na projicirani koordinatni sistem z uporabo <b>Analiz okolij</b>, če je uporabljena prostorska relacija <b>V bližini</b>.
+                    </li>
+                    <li> <b>Vsebuje</b> &ndash; Geoobjekti se bodo ujemali, če spojeni geoobjekti vsebujejo ciljni sloj.
+                    </li>
+                    <li> <b>Znotraj</b> &ndash; Geoobjekti se bodo ujemali, če je ciljni sloj v spojenih geoobjektih.
+                    </li>
+                    <li> <b>Se dotika</b> &ndash; Geoobjekti se bodo ujemali, če se njihova meja dotika ciljnega geoobjekta.
+                    </li>
+                    <li> <b>Prečka</b> &ndash; Geoobjekti se bodo ujemali, če je njihovo obrobo mogoče prečkati.
+                    </li>
+                    <li> <b>Prekriva se</b> &ndash; Geoobjekti bodo spojeni, če se prekrivajo.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearSpatial">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            <p> Določa polmer, uporabljen pri prostorski relaciji V bližini.
+            </p>
+            <p>Na primer, če ste imeli sklop podatkov, ki predstavlja jedrsko elektrarno, in sklop podatkov, ki predstavlja stanovanja, ste lahko nastavili razdaljo nearSpatial na 1 kilometer in poiskali hi&scaron;e, ki se nahajajo na razdalji 1 kilometer od jedrske elektrarne.
+            </p> 
+        </div>
+    </div>
+    <div id="temporalRelationship">
+        <div><h2>Izberite časovno relacijo</h2></div>
+        <hr/>
+        <div>
+            <p>Časovna relacija, ki bo določila, če so geoobjekti medsebojno spojeni. Ta možnost je na voljo samo, če je v obeh slojih omogočen čas, razpoložljiva relacija pa je odvisna od tipa časa (trenutek v času ali interval), uporabljenega za vhodne geoobjekte. Razpoložljive časovne relacije so naslednje:
+                <ul>
+                    <li> <b>Srečuje</b> &ndash; Geoobjekti se bodo ujemali, če bo prvi geoobjekt srečal drugega.
+                    </li>
+                    <li> <b>Bo srečan</b> &ndash; Geoobjekti se bodo ujemali, če bo drugi geoobjekt srečal prvega.
+                    </li>
+                    <li> <b>Prekriva</b> &ndash; Geoobjekti se bodo ujemali, če bo prvi geoobjekt prekril drugega.
+                    </li>
+                    <li> <b>Bo prekrit s/z</b> &ndash; Geoobjekti se bodo ujemali, če bo drugi geoobjekt prekril prvega.
+                    </li>
+                    <li> <b>Med</b> &ndash; Geoobjekti se bodo ujemali, če bo prvi geoobjekt med drugim.
+                    </li>
+                    <li> <b>Vsebuje</b> &ndash; Geoobjekti se bodo ujemali, če bo prvi geoobjekt vseboval drugega.
+                    </li>
+                    <li> <b>Je enak</b> &ndash; Geoobjekti se bodo ujemali, če bo prvi geoobjekt enak drugemu.
+                    </li>
+                    <li> <b>Zaključuje</b> &ndash; Geoobjekti se bodo ujemali, če bo prvi geoobjekt zaključil drugega.
+                    </li>
+                    <li> <b>Je zaključen</b> &ndash; Geoobjekti se bodo ujemali, če bo drugi geoobjekt zaključil prvega.
+                    </li>
+                    <li> <b>Začenja</b> &ndash; Geoobjekti se bodo ujemali, če bo prvi geoobjekt začel drugega.
+                    </li>
+                    <li> <b>Je začet</b> &ndash; Geoobjekti se bodo ujemali, če bo drugi geoobjekt začel prvega.
+                    </li>
+                    <li> <b>Seka</b> &ndash; Geoobjekti se ujemajo , če čas seka vse.
+                    </li>
+                    <li> <b>V bližini</b> &ndash; Geoobjekti bodo spojeni, če so medsebojno v bližini, kar je določeno z navedenim časom.
+                    </li>
+                    <li> <b>V bližini pred</b> &ndash; Geoobjekti se bodo ujemali, če je prvi geoobjekt pred drugim geoobjektom in v navedenem času.
+                    </li>
+                    <li> <b>V bližini po</b> &ndash; Geoobjekti se bodo ujemali, če je prvi geoobjekt po drugem geoobjektu in v navedenem času.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearTemporal">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            
+            <p>Določa časovni polmer, uporabljen pri prostorski relaciji V bližini. Časovna relacija V bližini vsebuje  <b>V bližini</b>, <b>V bližini pred</b> in <b>V bližini po</b>.
+            </p>
+            <p>Na primer, če imate sloj incidentov na morju in sloj GPS-poti orkanov, lahko poi&scaron;čete incidente na morju na določeni razdalji od poti orkanov tako v prostoru (1 kilometer) kot v času (5 ur). Posledično bi pri&scaron;lo do spajanja incidentov na morju z orkani, ki so si prostorsko in časovno blizu.
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>Izberi polja za ujemanje</h2></div>
+        <hr/>
+        <div>
+            <p>Poveže vrednosti v polju iz enega sloja z vrednostim v polju iz drugega sloja. 
+            </p>
+            <p>Na primer, če ste imeli geografski sloj stanovanjskih naslovov cele države (vključno s poljem  <i>ZIP</i> in tabelarni sklop podatkov zdravstvene demografije po po&scaron;tni &scaron;tevilki (polje, poimenovano <i>HEALTHZIP</i>), bi lahko združili sklop zdravstvenih podatkov s stanovanjskimi podatki tako, da bi povezali polje <i>ZIP</i> s poljem <i>HEALTHZIP</i>. Rezultat tega bi bil sloj stanovanj z ustreznimi zdravstvenimi podatki.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Dodaj statistiko (izbirno)</h2></div>
+        <hr/>
+        <div>
+            <p>Izračuna statistiko na spojenih geoobjektih, če je operacija spajanja  <b>Spoji enega z enim</b>. Vsa statistika bo privzeto izračunana.
+            </p>
+            <p>Statistiko lahko izračunate na povzetih geoobjektih. Pri &scaron;tevilskih polji lahko izračunate naslednje: 
+                <ul>
+                    <li>&Scaron;tetje &ndash; Izračuna &scaron;tevilo nepraznih vrednosti. Uporabljeno je lahko za  &scaron;tevilska ali besedilna polja. &Scaron;tetje za [null, 0, 2] je 2.
+                    </li>
+                    <li>Vsota &ndash; vsota &scaron;tevilskih vrednosti v polju. Vsota [null, null, 3] je 3.
+                    </li>
+                    <li>Srednja vrednost &ndash; srednja vrednost &scaron;tevilčnih vrednosti. Srednja vrednost za [0, 2, null] je 1.
+                    </li>
+                    <li>Minimum &ndash; minimalna vrednost &scaron;tevilskega polja. Minimum za [0, 2, null] je 0. 
+                    </li>
+                    <li>Maksimum &ndash; maksimalna vrednost &scaron;tevilskega polja. Maksimalna vrednost za [0, 2, null] je 2.
+                    </li>
+                    <li>Razpon &ndash; razpon &scaron;tevilskega polja. Izračuna se tako, da se minimalne vrednosti od&scaron;tejejo od maksimalne vrednosti. Razpon za [0, null, 1] je 1. Razpon za [null, 4] je 0.
+                    </li>
+                    <li>Varianca &ndash; varianca &scaron;tevilskega polja v sledi. Varianca za [1] je brez vrednosti. Varianca za [null, 1,0,1,1] je 0,25.
+                    </li>
+                    <li>Standardni odklon &ndash; standardni odklon &scaron;tevilskega polja. Standardni odklon za [1] je brez vrednosti. Standardni odklon [brez vrednosti, 1,0,1,1] je 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Pri besedilnih polji lahko izračunate naslednje:
+                <ul>
+                    <li>&Scaron;tetje &ndash; &scaron;tevilo nizov, ki imajo neničelno vrednost.
+                    </li>
+                    <li>Kateri koli &ndash; ta statistika je naključni vzorec besedilne vrednosti v navedenem polju.
+                    </li>
+                </ul>
+                Vsa statistika bo izračunana na neničelnih vrednostih. Sloj z rezultati bo vseboval nova polja za vsako izračunano statistiko. Z izbiro atributov in statistik je mogoče dodati katerokoli statistiko.
+            </p>
+            <p>Vsa statistika bo izračunana na neničelnih vrednostih. Sloj z rezultati bo vseboval nova polja za vsako izračunano statistiko. Z izbiro atributov in statistik je mogoče dodati katerokoli statistiko.
+            </p>
+        </div>
+    </div>
+    <div id="joinCondition">
+        <div><h2>Izdelaj izraz za spajanje geoobjektov (izbirno)</h2></div>
+        <hr/>
+        <div>
+            <p>Uporabi pogoj za navedena polja. Spojeni bodo samo geoobjekti s polji, ki izpolnjujejo te pogoje.
+            </p>
+            <p>Na primer, če želite uporabiti spajanje za sklop podatkov samo za tiste geoobjekte, pri katerih je  <i>health_spending</i> večja kot 20 odstotkov <i>income</i>, uporabite pogoj spajanja <code>$target[&quot;health_spending&quot;] &gt; ($join[&quot;income&quot;] * .20)</code> z uporabo polja <i>health_spending</i> from iz prvega sklopa podatkov (geoobjektni sloji so spojeni k) in polje <i>income</i> iz drugega sklopa podatkov (sklop podatkov, ki je spojen).
+            </p>
+            <p>Spojitveni pogoji se lahko uporabljajo s pomočjo kalkulatorja izrazov.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Izberite shrambo podatkov</h2></div>
+        <hr/>
+        <div>
+            <p>Rezultati GeoAnalytics so shranjeni v shrambo podatkov in prikazani kot geoobjektni sloj v  Portal for ArcGIS. V večini primerov je treba rezultate shraniti v prostorsko-časovno shrambo podatkov, kar je privzeto. V nekaterih primerih je dobra možnost hramba podatkov v relacijskih shrambi podatkov. V nadaljevanju so navedeni razlogi, zakaj bi morda želeli shraniti rezultate v relacijsko shrambo podatkov: 
+                <ul>
+                    <li>Rezultate lahko uporabite za sodelovanjeprekportala.
+                    </li>
+                    <li>Pri rezultatih lahkoomogočite možnosti sinhronizacije.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Relacijske shrambe podatkov ne smete uporabljati, če pričakujete, da se bodo va&scaron;i rezultati GeoAnalytics povečali in želite izkoristiti možnosti velike prostorsko-časovne shrambe podatkov za obdelavo velikih količin podatkov.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p> To je ime sloja, ki bo ustvarjen. Če zapisujete v ArcGIS Data Store, bodo va&scaron;i rezultati shranjeni v  <b>Moji vsebini</b> in dodani na karto. Če zapisujete v delitev datotek velikih podatkov, bodo va&scaron;i rezultati shranjeni v delitev datotek velikih podatkov in dodani v njen manifest. Ne bodo dodani v skupino. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, orodje ne bo uspe&scaron;no.
+            </p>
+            <p>Ko zapisujete v  ArcGIS Data Store (relacijsko ali prostorsko-časovno shrambo velikih podatkov) s pomočjo spustnega menija  <b>Shrani rezultat v</b>, lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

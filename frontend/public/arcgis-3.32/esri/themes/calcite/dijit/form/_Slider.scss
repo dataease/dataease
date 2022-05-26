@@ -1,0 +1,285 @@
+// Slider 
+// 
+// Styling Slider mainly includes styling the Slider progress bar (dijitSliderProgressBar)
+// 
+// Slider progress bar:
+// 1. Slider progress bar (default styling): 
+//    .dijitSliderProgressBarH - progress bar at the middle of horizontal slider
+//    .dijitSliderLeftBumper - bar at the left of horizontal slider
+//    .dijitSliderRightBumper - bar at the right of horizontal slider
+//    .dijitSliderProgressBarV - progress bar at the middle of vertical slider
+//    .dijitSliderTopBumper - bar at the top of vertical slider
+//    .dijitSliderBottomtBumper - bar at the bottom of vertical slider
+// 
+// 2. hovered Slider progress bar (ie, mouse hover on progress bar)
+//    .dijitSliderHover .dijitSliderProgressBarH(horizontal) - hovered bar style: background, border
+// 
+// 3. focused Slider progress bar (ie, mouse focused on progress bar)
+//    .dijitSliderFocused .dijitSliderProgressBarH(horizontal) - focus bar style: background, border
+// 
+// 4. disabled/read-only Slider progress bar 
+//    .dijitSliderDisabled .dijitSliderProgressBarH(horizontal) - bar styles when slider is disabled
+// 
+// 
+// Slider Thumbs:
+// 1. Slider Thumbs (default styling): 
+//    .dijitSliderImageHandleH / .dijitSliderImageHandleV - styles for the controller on the progress bar
+// 
+// 2. hovered Slider Thumbs (ie, mouse hover on slider thumbs)
+//    .dijitSliderHover .dijitSliderImageHandleH - hovered controller style
+// 
+// 3. focused Slider progress bar (ie, mouse focused on slider thumbs)
+//    .dijitSliderFocused .dijitSliderImageHandleV - focused controller style
+// 
+// 
+// Slider Increment/Decrement Buttons:
+// 1. Slider Increment/Decrement Buttons (default styling): 
+//    .dijitSliderDecrementIconH - decrement icon which lies at the left of horizontal slider
+//    .dijitSliderIncrementIconH - increment icon which lies at the right of horizontal slider
+//    .dijitSliderDecrementIconV - decrement icon which lies at the bottom of vertical slider
+//    .dijitSliderIncrementIconV - increment icon which lies at the top of vertical slider
+// 
+// 2. hovered Slider Increment/Decrement Buttons (mouse hover on the icons)
+//    .dijitSliderHover .dijitSliderDecrementIconH - for background, border
+// 
+// 3. active Slider Increment/Decrement Buttons (mouse down on the icons)
+//    .dijitSliderActive .dijitSliderIncrementIconV - for background, border
+// 
+// 4. disabled/read-only Slider Increment/Decrement Buttons
+//    .dijitSliderDisabled .dijitSliderDecrementIconH - styles for the icons in disabled slider
+//    .dijitSliderReadOnly .dijitSliderIncrementIconV - styles for the icons in read-only slider
+//
+.#{$theme-name} {
+  .dijitSliderBar {
+    border-style: solid;
+    outline: 1px;
+  }
+  .dijitRuleLabelsContainer {
+    color: $slider-label-color;
+    font-size: $slider-label-font-size;
+  }
+  // Horizontal Slider
+  // --------------------------------------------------
+  .dijitSliderBarContainerH {
+    padding: $slider-padding 0;
+  }
+  .dijitRuleLabelsContainerH {
+    padding: 0;
+  }
+  .dijitSliderBarH,
+  .dijitSliderBumperH {
+    height: $slider-bar-width;
+  }
+  .dijitSliderBumperH {
+    width: 0;
+  }
+  .dijitSlider {
+    .dijitSliderLeftBumper {
+      border: 0 none;
+      margin-left: $slider-bar-spacing;
+    }
+    .dijitSliderRightBumper {
+      border: 0 none;
+      margin-right: $slider-bar-spacing;
+    }
+    .dijitSliderProgressBarH,
+    .dijitSliderLeftBumper {
+      border: 0 none;
+      background-color: $slider-progressbar-bg;
+      @include transition(all .1s ease);
+    }
+    .dijitSliderRemainingBarH,
+    .dijitSliderRightBumper {
+      border: 0 none;
+      background-color: $slider-remainingbar-bg;
+    }
+  }
+  // Hover state
+  .dijitSliderHover {
+    .dijitSliderProgressBarH,
+    .dijitSliderLeftBumper {
+      background-color: darken($slider-progressbar-bg, 10%);
+    }
+  }
+  // Focus state
+  .dijitSliderFocused {
+    .dijitSliderProgressBarH,
+    .dijitSliderLeftBumper {
+      background-color: darken($slider-progressbar-bg, 10%);
+    }
+  }
+  // Vertical Slider
+  // --------------------------------------------------
+  .dijitSliderBarContainerV {
+    padding: 0 $slider-padding;
+  }
+  .dijitRuleLabelsContainerV {
+    padding: 0;
+  }
+  .dijitSliderBarV,
+  .dijitSliderBumperV {
+    width: $slider-bar-width;
+  }
+  .dijitSliderBumperV {
+    height: 0;
+  }
+  .dijitSlider {
+    .dijitSliderTopBumper {
+      border: 0 none;
+      margin-top: $slider-bar-spacing;
+      margin-bottom: -2px;
+    }
+    .dijitSliderBottomBumper {
+      border: 0 none;
+      margin-bottom: $slider-bar-spacing;
+    }
+    .dijitSliderProgressBarV,
+    .dijitSliderBottomBumper {
+      border: 0 none;
+      background-color: $slider-progressbar-bg;
+    }
+    .dijitSliderRemainingBarV,
+    .dijitSliderTopBumper {
+      border: 0 none;
+      background-color: $slider-remainingbar-bg;
+    }
+  }
+  // Hover state
+  .dijitSliderHover {
+    .dijitSliderProgressBarV,
+    .dijitSliderBottomBumper {
+      background-color: darken($slider-progressbar-bg, 10%);
+    }
+  }
+  // Focus state
+  .dijitSliderFocused {
+    .dijitSliderProgressBarV,
+    .dijitSliderBottomBumper {
+      background-color: darken($slider-progressbar-bg, 10%);
+    }
+  }
+  // Thumbs
+  // --------------------------------------------------
+  .dijitSliderImageHandle {
+    background-color: $slider-thumb-bg;
+    border: 0;
+    width: 10px;
+    height: 8px;
+    position: absolute;
+    @include box-sizing(border-box);
+    cursor: col-resize;
+    &:after {
+      content: "";
+      display: block;
+      width: 0;
+      height: 0;
+      border-width: 5px 5px 0;
+      border-style: solid;
+      border-color: $slider-thumb-bg transparent transparent;
+      position: relative;
+      bottom: -8px;
+    }
+  }
+  // Horizontal
+  .dijitSliderImageHandleH {
+    top: -5px;
+  }
+  // Vertical
+  .dijitSliderImageHandleV {
+    top: -6px;
+    right: 1px;
+    margin-top: 0;
+    width: 8px;
+    height: 10px;
+    cursor: row-resize;
+    &:after {
+      border-width: 5px 0 5px 5px;
+      border-style: solid;
+      border-color: transparent transparent transparent $slider-thumb-bg;
+      right: -8px;
+      bottom: auto;
+    }
+  }
+  // Increment/Decrement Buttons
+  // --------------------------------------------------
+  .dijitSliderDecrementIconH,
+  .dijitSliderIncrementIconH,
+  .dijitSliderDecrementIconV,
+  .dijitSliderIncrementIconV {
+    @extend .dijitButtonNode;
+    width: $slider-button-width;
+    height: $slider-button-height;
+    padding: 0;
+  }
+  .dijitSliderIncrementIconH,
+  .dijitSliderIncrementIconV,
+  .dijitSliderDecrementIconH,
+  .dijitSliderDecrementIconV {
+    @include dijit-icons;
+    padding: 0;
+    font-size: $slider-button-icon-size;
+    line-height: $slider-button-height / $slider-button-icon-size;
+    &:before {
+      @include icon-get-content(esri-icon-plus);
+    }
+    .dijitSliderButtonInner {
+      display: none;
+    }
+  }
+  .dijitSliderDecrementIconH,
+  .dijitSliderDecrementIconV {
+    &:before {
+      @include icon-get-content(esri-icon-minus);
+    }
+  }
+  // Ruler
+  // --------------------------------------------------
+  .dijitRuleContainerH {
+    height: $slider-ruler-height;
+  }
+  .dijitRuleContainerV {
+    width: $slider-ruler-height;
+  }
+  .dijitRuleMark {
+    border: 0 none;
+  }
+  .dijitRuleMarkH {
+    border-right: 1px solid $slider-ruler-color;
+  }
+  .dijitRuleMarkV {
+    border-top: 1px solid $slider-ruler-color;
+  }
+  .dijitRuleLabelContainerH {
+    margin-top: $slider-ruler-padding;
+    margin-bottom: $slider-ruler-padding;
+  }
+  .dijitRuleLabelContainerV {
+    margin-left: $slider-ruler-padding;
+    margin-right: $slider-ruler-padding;
+  }
+  // Alternate sliders
+  // --------------------------------------------------
+  .dijitSlider {
+    // Primary appears as blue
+    &.slider-primary {
+      @include slider-variant($slider-primary-bg, $slider-thumb-primary-color);
+    }
+    // Success appears as green
+    &.slider-success {
+      @include slider-variant($slider-success-bg, $slider-thumb-success-color);
+    }
+    // Info appears as light blue
+    &.slider-info {
+      @include slider-variant($slider-info-bg, $slider-thumb-info-color);
+    }
+    // Warning appears as orange
+    &.slider-warning {
+      @include slider-variant($slider-warning-bg, $slider-thumb-warning-color);
+    }
+    // Danger appears as red
+    &.slider-danger {
+      @include slider-variant($slider-danger-bg, $slider-thumb-danger-color);
+    }
+  }
+}
+

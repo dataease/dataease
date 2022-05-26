@@ -1,0 +1,149 @@
+
+// Esri Brand Colors
+$Brand_Blue_100:    #b9e0f7;
+$Brand_Blue_150:    #00b9f2;
+$Brand_Blue_200:    #007ac2;
+$Brand_Blue_250:    #004575;
+
+$Brand_Yellow_100:  #ffec4f;
+
+$Brand_Orange_100:  #f89927;
+$Brand_Orange_150:  #f36f20;
+$Brand_Orange_200:  #da4d1e;
+
+$Brand_Red_100:     #de2900;
+
+$Brand_Green_100:   #d1e391;
+$Brand_Green_150:   #aad04b;
+$Brand_Green_200:   #35ac46;
+$Brand_Green_250:   #2a7433;
+
+$Brand_Purple_100:  #dfcce3;
+$Brand_Purple_150:  #b279b4;
+$Brand_Purple_200:  #8f499c;
+$Brand_Purple_250:  #6b1978;
+
+$Brand_Brown_100:   #ecdcb9;
+$Brand_Brown_150:   #be9969;
+$Brand_Brown_200:   #7b4f1c;
+$Brand_Brown_250:   #523b20;
+
+$Brand_Gray_100:    #b4b4b4;
+$Brand_Gray_150:    #969696;
+$Brand_Gray_200:    #6e6e6e;
+$Brand_Gray_250:    #464646;
+
+// Calcite Core Colors Dark
+$Calcite_Blue_100: 	     #1a4866;
+$Calcite_Blue_150: 	     #1d5d8c;
+$Calcite_Blue_200: 	     #3b8fc3;
+$Calcite_Blue_250: 	     #419ed9;
+$Calcite_Blue_a100: 	 #45a7e6;
+$Calcite_Blue_a150: 	 #60b7f0;
+$Calcite_Blue_a200: 	 #6ec1f5;
+$Calcite_Blue_a250: 	 #7dc8fa;
+$Calcite_Yellow_100: 	 #796916;
+$Calcite_Yellow_150: 	 #a28a00;
+$Calcite_Yellow_200: 	 #bda727;
+$Calcite_Yellow_250: 	 #ccb736;
+$Calcite_Yellow_a100: 	 #d6bd2a;
+$Calcite_Yellow_a150: 	 #e3c832;
+$Calcite_Yellow_a200: 	 #edd448;
+$Calcite_Yellow_a250: 	 #f5df62;
+$Calcite_Orange_100: 	 #754c23;
+$Calcite_Orange_150: 	 #a16520;
+$Calcite_Orange_200: 	 #d18734;
+$Calcite_Orange_250: 	 #e8963a;
+$Calcite_Orange_a100: 	 #f29833;
+$Calcite_Orange_a150: 	 #f29f3f;
+$Calcite_Orange_a200: 	 #f5aa53;
+$Calcite_Orange_a250: 	 #ffb461;
+$Calcite_Green_100: 	 #295429;
+$Calcite_Green_150: 	 #386f38;
+$Calcite_Green_200: 	 #4b944a;
+$Calcite_Green_250: 	 #58ad57;
+$Calcite_Green_a100: 	 #53b350;
+$Calcite_Green_a150: 	 #59bf57;
+$Calcite_Green_a200: 	 #67c966;
+$Calcite_Green_a250: 	 #74d173;
+$Calcite_Red_100: 	     #632822;
+$Calcite_Red_150: 	     #853218;
+$Calcite_Red_200: 	     #ab421f;
+$Calcite_Red_250: 	     #c75028;
+$Calcite_Red_a100: 	     #d15226;
+$Calcite_Red_a150: 	     #d65d33;
+$Calcite_Red_a200: 	     #e36a40;
+$Calcite_Red_a250: 	     #eb7953;
+$Calcite_Purple_100: 	 #3e3654;
+$Calcite_Purple_150: 	 #4c3e6e;
+$Calcite_Purple_200: 	 #61518c;
+$Calcite_Purple_250: 	 #8070aa;
+$Calcite_Purple_a100: 	 #846ebf;
+$Calcite_Purple_a150: 	 #927acc;
+$Calcite_Purple_a200: 	 #9b87d9;
+$Calcite_Purple_a250: 	 #a393d1;
+$Calcite_Brown_100: 	 #4b341d;
+$Calcite_Brown_150: 	 #67441f;
+$Calcite_Brown_200: 	 #8c5e2b;
+$Calcite_Brown_250: 	 #a67032;
+$Calcite_Brown_a100: 	 #b37936;
+$Calcite_Brown_a150: 	 #cc8a3d;
+$Calcite_Brown_a200: 	 #d9974c;
+$Calcite_Brown_a250: 	 #dea664;
+
+// Calcite Gray Colors Dark
+$Calcite_Gray_050:   #242424;  // 86%
+$Calcite_Gray_100: 	 #333333;  // 80%
+$Calcite_Gray_150: 	 #363636;  // 79%
+$Calcite_Gray_200: 	 #404040;  // 75%
+$Calcite_Gray_250: 	 #474747;  // 72%
+$Calcite_Gray_300: 	 #4c4c4c;  // 70%
+$Calcite_Gray_350: 	 #5c5c5c;  // 64%
+$Calcite_Gray_400: 	 #666666;  // 60%
+$Calcite_Gray_450: 	 #787878;  // 53%
+$Calcite_Gray_500: 	 #8a8a8a;  // 46%
+$Calcite_Gray_550: 	 #9e9e9e;  // 38%
+$Calcite_Gray_600: 	 #adadad;  // 32%
+$Calcite_Gray_650: 	 #bdbdbd;  // 26%
+$Calcite_Gray_700: 	 #d1d1d1;  // 18%
+
+// Calcite Hightlight Color Dark
+$Calcite_Highlight_Blue_100:     #294a66; // hovered
+$Calcite_Highlight_Blue_150:     #3d6e99; // hovered & selected
+$Calcite_Highlight_Blue_200:     #1061a6; // selected (toggled)
+$Calcite_Highlight_Blue_250:     #136fbf; // pressed
+$Calcite_Highlight_Blue_300:     #2183d9; // border on hover
+$Calcite_Highlight_Blue_350:     #2493f2; // active
+$Calcite_Highlight_Blue_400:     #40a7ff; // active accent
+$Calcite_Highlight_Green_100:    #205920; // hovered
+$Calcite_Highlight_Green_150:    #478c47; // hovered & selected
+$Calcite_Highlight_Green_200:    #257a25; // selected (toggled)
+$Calcite_Highlight_Green_250:    #2a8c2a; // pressed
+$Calcite_Highlight_Green_300:    #31a331; // border on hover
+$Calcite_Highlight_Green_350:    #34ad34; // active
+$Calcite_Highlight_Green_400:    #39bf39; // active accent
+
+//Calcite Vibrant Colors Dark
+// For all Calcite Vibrant colors -- they should comprise <10% of the image area. Only use if additional contrast is needed.
+$Calcite_Vibrant_Blue_100:       #1376bf;
+$Calcite_Vibrant_Blue_150:       #0089f0;
+$Calcite_Vibrant_Blue_200:       #00c0f0;
+$Calcite_Vibrant_Blue_250:       #00b5b9; // only use inside icons, to show "selection"
+$Calcite_Vibrant_Yellow_100:     #917b00;
+$Calcite_Vibrant_Yellow_150:     #c7a900;
+$Calcite_Vibrant_Yellow_200:     #ffd800;
+$Calcite_Vibrant_Orange_100:     #a15600;
+$Calcite_Vibrant_Orange_150:     #cf7d1f;
+$Calcite_Vibrant_Orange_200:     #ffc415;
+$Calcite_Vibrant_Green_100:      #386f38;
+$Calcite_Vibrant_Green_150:      #59d152;
+$Calcite_Vibrant_Green_200:      #85e800;
+$Calcite_Vibrant_Red_100:        #751d00;
+$Calcite_Vibrant_Red_150:        #993516;
+$Calcite_Vibrant_Red_200:        #e65c2e;
+$Calcite_Vibrant_Purple_100:     #503691;
+$Calcite_Vibrant_Purple_150:     #754fd4;
+$Calcite_Vibrant_Purple_200:     #9b4ba6;
+$Calcite_Vibrant_Brown_100:      #673d10;
+$Calcite_Vibrant_Brown_150:      #995d18;
+$Calcite_Vibrant_Brown_200:      #df8c39;

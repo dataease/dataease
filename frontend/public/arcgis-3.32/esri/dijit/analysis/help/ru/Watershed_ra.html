@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Водосборная область</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="Задача Водосборная область"></h2>
+        <hr/>
+    <p>Инструмент геообработки, который определяет область, расположенную выше набора ячеек растра.
+    </p>
+    <p>Водораздел &ndash; это область вверх по склону, которая распределяет сток &ndash; особенно воду &ndash; в общую &laquo;точку слива&raquo; в качестве концентрированного дренажа. Он может быть частью большего водораздела, а также может содержать меньшие водоразделы, называемые подбассейны.
+    </p>
+    <p>Значение для каждой водосборной области будет определено, исходя из источника во входном растре или векторных данных по точкам устьев. Когда точки устьев представлены в виде набора растровых данных, по умолчанию будут использованы значения ячеек. Когда точки устьев даны в виде набора точечных данных, значения будут взяты из заданного пользователем поля.
+    </p>
+    <p>Инструмент Водосборная область поддерживает только входной растровый слой направлений стоковD8.
+    </p>
+    <p>При указании входных положений точек устьев в качестве данных объектов полем по умолчанию будет первое доступное и допустимое поле. Если допустимых полей нет, по умолчанию используется поле ObjectID (например, OID или FID).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>Выбор слоя направления стока</h2></div>
+        <hr/>
+        <div>
+            <p>Входной растр, показывающий направление стока для каждой ячейки.
+            </p>
+            <p>Растр направления стока можно вычислить с помощью инструмента Направление стока или задачи FlowDirection в сервисе RasterAnalysisTools, запущенного с типом направления стока по умолчанию  <b>D8</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>Указание входных положений точек устьев</h2></div>
+        <hr/>
+        <div>
+            <p>Входные положения точек устьев.
+            </p>
+            <p>Для растра этот параметр представляет ячейки, выше которых будет определяться водосборная область. В качестве входных ячеек будут использоваться все ячейки, значение которых отличается от значения NoData. Для набора данных точечных объектов этот параметр представляет местоположения, для которых будет определяться расположенная выше них водосборная область.
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>Выбор поля точек устьев</h2></div>
+        <hr/>
+        <div>
+            <p>Поле, используемое для присвоения значений местоположениям точек устьев.
+            </p>
+            <p>Если входной слой точек слоя является растром, то используется Value. Если же это объекты, то используется числовое поле. Если поле содержит значения с плавающей точкой, они будут округлены до целых чисел.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Имя слоя результата</h2></div>
+        <hr/>
+        <div>
+            <p>Имя слоя, который будет добавлен в  <b>Мои ресурсы</b> и на карту. Имя слоя по умолчанию зависит от имени инструмента и имени входного слоя. Если имя слоя уже используется, появится запрос ввести новое имя.
+            </p>
+            <p>Вы можете указать имя папки в  <b>Моих ресурсах</b>, где будет сохранен результат, с помощью ниспадающего списка <b>Сохранить результат в</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

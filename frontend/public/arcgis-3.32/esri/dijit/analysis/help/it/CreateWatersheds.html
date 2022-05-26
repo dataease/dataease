@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Crea spartiacque</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="Crea Spartiacque"></h2>
+        <hr/>
+    <p>Questo strumento determina lo spartiacque o l'area contribuente a monte per ogni punto del layer di input. 
+    </p>
+    <p>Si supponga, ad esempio, che siano presenti feature punto relative alle posizioni di contaminazione presenti nell'acqua e che si desideri individuare le probabili fonti di tale contaminazione. Considerato che la fonte di contaminazione deve essere all'interno dell'area a monte dello spartiacque del punto, tale strumento stabilir&agrave; gli spartiacque contenenti le fonti del contaminante.
+    </p>
+    <p>La posizione dei punti di input &egrave; importante.  Se non sono posizionati esattamente su una linea di drenaggio, gli spartiacque risultanti potrebbero essere molto piccoli e poco utili ai fini dell'analisi.  <b>Ricerca distanza per il drenaggio pi&ugrave; vicino</b> pu&ograve; essere usato per regolare la posizione dei punti di input affinch&eacute; cadano precisamente sulla linea di drenaggio e trovare cos&igrave; lo spartiacque che scorre nel punto posizionato su tale linea di drenaggio.  Le posizioni modificate usate per trovare gli spartiacque vengono riportate nel layer di output e i punti di input non vengono cambiati.
+    </p>
+    <p>Il risultato &egrave; un layer di gruppo che contiene due layer: gli spartiacque e i punti modificati usati per calcolare gli spartiacque.     
+    </p>
+    <p>Gli spartiacque risultanti avranno tutti gli attributi dei punti di input oltre ad attributi aggiuntivi:     
+        <ul>
+            <li> <i>PourPtID</i>: contiene il valore dell&rsquo;ID del punto di input
+            </li>
+            <li> <i>Area Square Kilometers</i>: contiene l&rsquo;area in chilometri quadrati dello spartiacque a monte
+            </li>
+            <li> <i>Description</i> e <i>DataResolution</i>: contengono informazioni relative ai dati idrologici usati per calcolare il tracciamento
+            </li>
+        </ul>
+        
+    </p>
+    <p>Se si seleziona  <b>Usa estensione mappa corrente</b>, per calcolare gli spartiacque vengono usate solo le feature visibili all'interno dell'estensione mappa corrente.  Se questa opzione &egrave; deselezionata, verranno analizzate tutte le feature del layer di input, anche se esterne all'estensione mappa corrente.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Feature puntuali da utilizzare per calcolare gli spartiacque</h2></div>
+        <hr/>
+        <div>
+            <p>Verr&agrave; calcolato uno spartiacque (l'area contribuente a monte) per ogni punto.  
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> in fondo all'elenco a discesa. Con questa opzione si apre una galleria in cui &egrave; possibile individuare e selezionare dataset di varie fonti da utilizzare nell'analisi. 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>Ricerca distanza per il drenaggio più vicino</h2></div>
+        <hr/>
+        <div>
+            <p>Se i punti di input sono distanti da una linea di drenaggio, gli spartiacque risultanti potrebbero essere molto piccoli e poco utili ai fini dell'analisi, ad esempio per determinare una fonte di contaminazione a monte.  Nella maggior parte dei casi, i punti di input devono posizionarsi sulla linea di drenaggio pi&ugrave; vicina per trovare gli spartiacque che scorrono verso il punto posizionato sulla linea di drenaggio.  Per trovare la linea di drenaggio pi&ugrave; vicina &egrave; necessario specificare una distanza di ricerca. Se non viene specificata la distanza di ricerca, lo strumento calcoler&agrave; e user&agrave; una distanza di ricerca pi&ugrave; prudente.  
+            </p>
+            <p>Per usare la posizione esatta del punto di input &egrave; necessario inserire zero come valore per la distanza di ricerca.  
+            </p>
+            <p>Ai fini dell'analisi, le linee di drenaggio sono state calcolate in precedenza da Esri in base a modelli idrologici standard. Se all'interno della distanza di ricerca non sono presenti linee di drenaggio, viene utilizzata la posizione che contiene il pi&ugrave; alto accumulo di flusso entro tale distanza.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa.  Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il nome del layer esiste gi&agrave;, verr&agrave; richiesto di fornire un altro nome.
+            </p>
+            <p>Utilizzare il men&ugrave; a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+            <p> L&rsquo;esecuzione di questo strumento non consuma crediti.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

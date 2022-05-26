@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Tổng kết Vị trí Lân cận</h2><p/>
+        <h2><img src="../images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" alt="Tổng kết Vị tr&iacute; L&acirc;n cận"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y t&igrave;m v&agrave; tổng hợp c&aacute;c đối tượng nằm trong phạm vi khoảng c&aacute;ch chỉ định theo đối tượng trong lớp ph&acirc;n t&iacute;ch. C&oacute; thể đo khoảng c&aacute;ch theo đường thẳng hoặc th&ocirc;ng qua phương thức đi lại được chọn. C&aacute;c t&ugrave;y chọn phương thức đi lại l&agrave; khoảng c&aacute;ch l&aacute;i xe, thời gian l&aacute;i xe, khoảng c&aacute;ch vận chuyển bằng xe tải, thời gian vận chuyển bằng xe tải, khoảng c&aacute;ch đi bộ hoặc thời gian đi bộ. Số liệu thống k&ecirc; sau đ&oacute; được t&iacute;nh to&aacute;n cho c&aacute;c đối tượng l&acirc;n cận. V&iacute; dụ:
+        <ul>
+            <li>T&iacute;nh tổng số d&acirc;n trong phạm vi năm ph&uacute;t l&aacute;i xe từ vị tr&iacute; cửa h&agrave;ng mới được đề xuất.
+            </li>
+            <li>T&iacute;nh to&aacute;n số lượng c&aacute;c đoạn dốc l&ecirc;n đường cao tốc trong phạm vi một dặm của từ một vị tr&iacute; cửa h&agrave;ng mới được đề xuất v&agrave; sử dụng th&ocirc;ng tin n&agrave;y để t&iacute;nh to&aacute;n c&aacute;ch đi đến cửa h&agrave;ng.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Nếu chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b>, th&igrave; chỉ c&aacute;c đối tượng nh&igrave;n thấy trong lớp ph&acirc;n t&iacute;ch v&agrave; lớp cần tổng hợp trong phạm vi bản đồ hiện tại sẽ được ph&acirc;n t&iacute;ch. Nếu bỏ chọn, tất cả c&aacute;c tổng hợp trong cả lớp đầu v&agrave;o v&agrave; lớp cần tổng hợp sẽ được ph&acirc;n t&iacute;ch, ngay cả khi ch&uacute;ng ở ngo&agrave;i phạm vi bản đồ hiện tại.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumNearbyLayer">
+        <div><h2>Chọn lớp mà từ đó sẽ đo khoảng cách đến các đối tượng trên lớp tổng kết</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp điểm, đường, hoặc v&ugrave;ng sẽ được sử dụng l&agrave;m vị tr&iacute; bắt đầu để tổng kết c&aacute;c đối tượng l&acirc;n cận
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp từ bản đồ của bạn, bạn c&oacute; thể chọn  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới c&ugrave;ng trong danh s&aacute;ch xổ xuống. T&ugrave;y chọn n&agrave;y mở ra một thư viện, tại đ&oacute; bạn c&oacute; thể duyệt v&agrave; chọn c&aacute;c bộ dữ liệu từ nhiều nguồn kh&aacute;c nhau để sử dụng trong ph&acirc;n t&iacute;ch của m&igrave;nh. 
+            </p>
+            <p>C&ocirc;ng cụ hỗ trợ tối đa 1.000 đối tượng trong lớp n&agrave;y. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Chọn lớp để tổng kết</h2></div>
+        <hr/>
+        <div>
+            <p>C&aacute;c đối tượng của lớp n&agrave;y nằm trong khoảng c&aacute;ch chỉ định từ đối tượng trong lớp ph&acirc;n t&iacute;ch ph&iacute;a tr&ecirc;n sẽ được tổng hợp. 
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp từ bản đồ của bạn, bạn c&oacute; thể chọn  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới c&ugrave;ng trong danh s&aacute;ch xổ xuống. T&ugrave;y chọn n&agrave;y mở ra một thư viện, tại đ&oacute; bạn c&oacute; thể duyệt v&agrave; chọn c&aacute;c bộ dữ liệu từ nhiều nguồn kh&aacute;c nhau để sử dụng trong ph&acirc;n t&iacute;ch của m&igrave;nh. 
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Tổng kết các đối tượng gần nhất bằng</h2></div>
+        <hr/>
+        <div>
+            <p> Bạn c&oacute; thể x&aacute;c định loại ph&eacute;p đo khoảng c&aacute;ch m&agrave; bạn muốn sử dụng, theo khoảng c&aacute;ch đường thẳng hoặc phương thức đi lại được chọn. Chỉ c&oacute; thể k&iacute;ch hoạt phương thức đi lại khi lớp đầu v&agrave;o (lớp m&agrave; từ đ&oacute; sẽ đo khoảng c&aacute;ch) của bạn c&oacute; chứa c&aacute;c điểm. Người quản trị của tổ chức của bạn c&oacute; thể x&aacute;c định c&aacute;c phương thức đi lại khả dụng. Khi sử dụng một trong c&aacute;c phương thức đi lại, thực hiện c&aacute;c ph&eacute;p đo dọc theo con đường hoặc lối đi v&agrave; ch&uacute;ng tu&acirc;n theo c&aacute;c quy tắc hiện h&agrave;nh, v&iacute; dụ như đường một chiều v&agrave; cấm quay xe, v.v. <b>Thời gian L&aacute;i xe</b>, <b>Thời gian L&aacute;i xe ở N&ocirc;ng th&ocirc;n</b> v&agrave; <b>Thời gian Vận chuyển bằng Xe tải</b> tu&acirc;n theo c&aacute;c lựa chọn tốc độ đi lại của bạn, ch&uacute;ng được x&aacute;c định dựa v&agrave;o t&igrave;nh h&igrave;nh giao th&ocirc;ng thực tế hoặc đặc trưng. Tốc độ thực tế được thu thập th&ocirc;ng qua c&aacute;c chỉ số cảm biến hiện tại v&agrave; tốc độ đặc trưng được t&iacute;nh to&aacute;n từ c&aacute;c th&ocirc;ng số trung b&igrave;nh theo lịch sử trước đ&oacute;.
+            </p>
+            <p>Bạn c&oacute; thể nhập nhiều khoảng c&aacute;ch. C&aacute;c đối tượng trong (hoặc bằng) khoảng c&aacute;ch bạn nhập sẽ được tổng hợp.  
+            </p>
+            <p>Hộp chọn  <b>Trả về khu vực bao quanh</b>, nếu được chọn, sẽ trả về lớp kết quả l&agrave; c&aacute;c khu vực được x&aacute;c định bằng ph&eacute;p đo khoảng c&aacute;ch cụ thể. Lớp kết quả sẽ bao gồm tất cả th&ocirc;ng tin tổng hợp được y&ecirc;u cầu. Chẳng hạn, khi tổng hợp c&aacute;c điểm l&acirc;n cận, nếu sử dụng <b>Khoảng c&aacute;ch đường</b> l&agrave; 5 dặm, th&igrave; kết quả của bạn sẽ chứa c&aacute;c khu vực trong b&aacute;n k&iacute;nh 5 dặm xung quanh c&aacute;c đối tượng đầu v&agrave;o v&agrave; tất cả th&ocirc;ng tin tổng hợp, như số lượng điểm v&agrave; bất kỳ số liệu thống k&ecirc; n&agrave;o được th&ecirc;m v&agrave;o. Nếu bỏ chọn, lớp kết quả sẽ trả về c&aacute;c đối tượng tương tự lớp đầu v&agrave;o đầu ti&ecirc;n c&ugrave;ng với tất cả th&ocirc;ng tin tổng hợp y&ecirc;u cầu.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Thêm số liệu thống kê từ lớp tổng kết</h2></div>
+        <hr/>
+        <div>
+            <p>Bạn c&oacute; thể t&ugrave;y &yacute; t&iacute;nh to&aacute;n số liệu thống k&ecirc; của bất kỳ thuộc t&iacute;nh số của c&aacute;c điểm l&acirc;n cận. 
+            </p>
+            <p>Hộp chọn  <b>Số lượng điểm</b>, nếu được chọn, sẽ t&iacute;nh to&aacute;n ra tổng số điểm l&acirc;n cận. Ngo&agrave;i ra, bạn c&oacute; thể t&iacute;nh to&aacute;n số liệu thống k&ecirc; cho c&aacute;c trường số của c&aacute;c điểm l&acirc;n cận.
+            </p>
+            <ul>
+                <li> <b>Tổng</b>&mdash;Tổng gi&aacute; trị cho trường chỉ định.
+                </li>
+                <li> <b>Trung b&igrave;nh</b>&mdash;Trung b&igrave;nh hoặc b&igrave;nh qu&acirc;n cho trường chỉ định
+                </li>
+                <li> <b>Tối thiểu</b>&mdash;Gi&aacute; trị nhỏ nhất trong trường chỉ định
+                </li>
+                <li> <b>Tối đa</b>&mdash;Gi&aacute; trị lớn nhất trong trường chỉ định
+                </li>
+                <li> <b>Độ lệch chuẩn</b>&mdash;Độ lệch chuẩn đối với c&aacute;c gi&aacute; trị trong trường chỉ định
+                </li>
+            </ul>
+            
+            <p>Nếu lớp tổng kết kh&ocirc;ng c&oacute; bất kỳ trường số n&agrave;o, dữ liệu thống k&ecirc; bổ sung sẽ kh&ocirc;ng khả dụng.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Thêm số liệu thống kê từ lớp tổng kết</h2></div>
+        <hr/>
+        <div>
+            <p>Bạn c&oacute; thể t&ugrave;y &yacute; t&iacute;nh to&aacute;n số liệu thống k&ecirc; của bất kỳ thuộc t&iacute;nh số của c&aacute;c đường l&acirc;n cận. 
+            </p>
+            <p>Hộp chọn  <b>Tổng chiều d&agrave;i</b> nếu được chọn, sẽ t&iacute;nh to&aacute;n tổng độ d&agrave;i của c&aacute;c đường l&acirc;n cận. Ngo&agrave;i ra, bạn c&oacute; thể t&iacute;nh to&aacute;n số liệu thống k&ecirc; cho c&aacute;c trường số của c&aacute;c đường l&acirc;n cận.
+            </p>
+            <ul>
+                <li> <b>Tổng</b>&mdash;Tổng gi&aacute; trị cho trường chỉ định.
+                </li>
+                <li> <b>Trung b&igrave;nh</b>&mdash;Trung b&igrave;nh hoặc b&igrave;nh qu&acirc;n cho trường chỉ định
+                </li>
+                <li> <b>Tối thiểu</b>&mdash;Gi&aacute; trị nhỏ nhất trong trường chỉ định
+                </li>
+                <li> <b>Tối đa</b>&mdash;Gi&aacute; trị lớn nhất trong trường chỉ định
+                </li>
+                <li> <b>Độ lệch chuẩn</b>&mdash;Độ lệch chuẩn đối với c&aacute;c gi&aacute; trị trong trường chỉ định
+                </li>
+            </ul>
+            
+            <p>Nếu lớp tổng kết kh&ocirc;ng c&oacute; bất kỳ trường số n&agrave;o, dữ liệu thống k&ecirc; bổ sung sẽ kh&ocirc;ng khả dụng.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Thêm số liệu thống kê từ lớp tổng kết</h2></div>
+        <hr/>
+        <div>
+            <p>Bạn c&oacute; thể t&ugrave;y &yacute; t&iacute;nh to&aacute;n số liệu thống k&ecirc; của bất kỳ thuộc t&iacute;nh số của c&aacute;c khu vực l&acirc;n cận. 
+            </p>
+            <p>&Ocirc; vu&ocirc;ng lựa chọn  <b>Tổng diện t&iacute;ch</b>, nếu được chọn, sẽ t&iacute;nh to&aacute;n tổng diện t&iacute;ch của c&aacute;c đối tượng l&acirc;n cận. Ngo&agrave;i ra, bạn c&oacute; thể t&iacute;nh to&aacute;n số liệu thống k&ecirc; cho c&aacute;c trường số của c&aacute;c đối tượng l&acirc;n cận.
+            </p>
+            <ul>
+                <li> <b>Tổng</b>&mdash;Tổng gi&aacute; trị cho trường chỉ định.
+                </li>
+                <li> <b>Trung b&igrave;nh</b>&mdash;Trung b&igrave;nh hoặc b&igrave;nh qu&acirc;n cho trường chỉ định
+                </li>
+                <li> <b>Tối thiểu</b>&mdash;Gi&aacute; trị nhỏ nhất trong trường chỉ định
+                </li>
+                <li> <b>Tối đa</b>&mdash;Gi&aacute; trị lớn nhất trong trường chỉ định
+                </li>
+                <li> <b>Độ lệch chuẩn</b>&mdash;Độ lệch chuẩn đối với c&aacute;c gi&aacute; trị trong trường chỉ định
+                </li>
+            </ul>
+            
+            <p>Nếu lớp tổng kết kh&ocirc;ng c&oacute; bất kỳ trường số n&agrave;o, dữ liệu thống k&ecirc; bổ sung sẽ kh&ocirc;ng khả dụng.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Thêm số liệu thống kê từ lớp tổng kết</h2></div>
+        <hr/>
+        <div>
+            <p>Sau khi chọn một lớp để tổng hợp, bạn c&oacute; thể t&ugrave;y &yacute; t&iacute;nh to&aacute;n số liệu thống k&ecirc; của bất kỳ thuộc t&iacute;nh số n&agrave;o của điểm, đường hoặc v&ugrave;ng l&acirc;n cận. 
+            </p>
+            <ul>
+                <li> <b>Tổng</b>&mdash;Tổng gi&aacute; trị cho trường chỉ định.
+                </li>
+                <li> <b>Trung b&igrave;nh</b>&mdash;Trung b&igrave;nh hoặc b&igrave;nh qu&acirc;n cho trường chỉ định
+                </li>
+                <li> <b>Tối thiểu</b>&mdash;Gi&aacute; trị nhỏ nhất trong trường chỉ định
+                </li>
+                <li> <b>Tối đa</b>&mdash;Gi&aacute; trị lớn nhất trong trường chỉ định
+                </li>
+                <li> <b>Độ lệch chuẩn</b>&mdash;Độ lệch chuẩn đối với c&aacute;c gi&aacute; trị trong trường chỉ định
+                </li>
+            </ul>
+            
+            <p>T&ugrave;y thuộc v&agrave;o loại đối tượng đang tổng hợp, bạn c&oacute; thể t&iacute;nh to&aacute;n tổng số điểm l&acirc;n cận, tổng độ d&agrave;i của đường l&acirc;n cận hoặc tổng diện t&iacute;ch của đối tượng v&ugrave;ng l&acirc;n cận.
+            </p>
+            <p>Nếu lớp tổng kết kh&ocirc;ng c&oacute; bất kỳ trường số n&agrave;o, dữ liệu thống k&ecirc; bổ sung sẽ kh&ocirc;ng khả dụng.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Chọn trường để nhóm theo</h2></div>
+        <hr/>
+        <div>
+            <p> Đ&acirc;y l&agrave; một thuộc t&iacute;nh của đối tượng l&acirc;n cận m&agrave; bạn c&oacute; thể sử dụng để t&iacute;nh to&aacute;n c&aacute;c số liệu thống k&ecirc; ri&ecirc;ng biệt cho từng gi&aacute; trị thuộc t&iacute;nh duy nhất. V&iacute; dụ, giả sử lớp ph&acirc;n t&iacute;ch đầu ti&ecirc;n của bạn (lớp m&agrave; từ đ&oacute; sẽ đo khoảng c&aacute;ch) c&oacute; chứa c&aacute;c l&ocirc; đất trống để b&aacute;n v&agrave; đối tượng l&acirc;n cận l&agrave; vị tr&iacute; c&aacute;c c&ocirc;ng tr&igrave;nh. Một trong c&aacute;c thuộc t&iacute;nh của c&ocirc;ng tr&igrave;nh l&agrave; <i>UseType</i>, c&oacute; chứa c&aacute;c gi&aacute; trị như B&Aacute;N LẺ, D&Acirc;N CƯ, SẢN XUẤT, C&Ocirc;NG CỘNG, v.v. Để m&ocirc; tả tổ hợp c&aacute;c mục đ&iacute;ch sử dụng c&ocirc;ng tr&igrave;nh gần từng l&ocirc; đất trống, bạn c&oacute; thể t&iacute;nh to&aacute;n tổng diện t&iacute;ch của từng loại mục đ&iacute;ch sử dụng c&ocirc;ng tr&igrave;nh duy nhất trong phạm vi l&ocirc; đất trống hai kil&ocirc;m&eacute;t sử dụng <i>UseType</i> để nh&oacute;m theo thuộc t&iacute;nh. Số liệu thống k&ecirc; cho từng nh&oacute;m, cũng như số lượng c&aacute;c đối tượng l&acirc;n cận, sẽ được hiển thị trong cửa sổ lớp pop-up của kết quả.
+            </p>    
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Thêm thiểu số, đa số</h2></div>
+        <hr/>
+        <div>
+            <p>Hộp chọn n&agrave;y được bật khi bạn chọn một trường để nh&oacute;m theo. Nếu bạn muốn t&igrave;m ra c&aacute;c gi&aacute; trị thuộc t&iacute;nh trong mỗi nh&oacute;m l&agrave; thiểu số (chiếm &iacute;t ưu thế nhất) hoặc đa số (chiếm nhiều ưu thế nhất) trong mỗi khoảng c&aacute;ch hoặc thời gian đ&atilde; được chỉ định, chọn  <b>Th&ecirc;m thiểu số, đa số</b>. Khi bạn chọn <b>Th&ecirc;m thiểu số, đa số</b>, hai trường mới được th&ecirc;m v&agrave;o lớp kết quả của bạn. Nếu bạn cũng chọn <b>Th&ecirc;m tỷ lệ phần trăm</b>, hai trường bổ sung được th&ecirc;m v&agrave;o lớp kết quả chứa tỷ lệ phần trăm c&aacute;c gi&aacute; trị thuộc t&iacute;nh thiểu số v&agrave; đa số trong mỗi nh&oacute;m.
+            </p>
+            <ul>
+                <li>Nếu bạn đang tổng hợp c&aacute;c điểm l&acirc;n cận, c&aacute;c gi&aacute; trị thiểu số v&agrave; đa số được t&iacute;nh to&aacute;n dựa tr&ecirc;n số lượng c&aacute;c điểm trong khoảng c&aacute;ch hoặc thời gian bạn đ&atilde; chỉ định.
+                </li>
+                <li>Nếu bạn đang tổng hợp c&aacute;c đường l&acirc;n cận, c&aacute;c gi&aacute; trị thiểu số v&agrave; đa số được t&iacute;nh to&aacute;n dựa tr&ecirc;n chiều d&agrave;i c&aacute;c đường trong khoảng c&aacute;ch hoặc thời gian bạn đ&atilde; chỉ định.  
+                </li>
+                <li>Nếu bạn đang tổng hợp c&aacute;c khu vực l&acirc;n cận, c&aacute;c gi&aacute; trị thiểu số v&agrave; đa số được t&iacute;nh to&aacute;n dựa tr&ecirc;n c&aacute;c khu vực trong khoảng c&aacute;ch hoặc thời gian bạn đ&atilde; chỉ định.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Thêm phần trăm</h2></div>
+        <hr/>
+        <div>
+            <p>Hộp chọn n&agrave;y được bật khi bạn chọn một trường để nh&oacute;m theo. Chọn  <b>Th&ecirc;m tỷ lệ phần trăm</b> nếu bạn muốn t&igrave;m tỷ lệ phần trăm của từng gi&aacute; trị thuộc t&iacute;nh tổng từng nh&oacute;m. Một trường mới sẽ được th&ecirc;m v&agrave;o bảng kết quả v&agrave; chứa tỷ lệ phần trăm của từng gi&aacute; trị thuộc t&iacute;nh trong từng nh&oacute;m. Nếu bạn chọn <b>Th&ecirc;m thiểu số, đa số</b>, hai trường bổ sung sẽ được th&ecirc;m v&agrave;o lớp kết quả v&agrave; chứa tỷ lệ phần trăm c&aacute;c gi&aacute; trị thuộc t&iacute;nh thiểu số v&agrave; đa số trong mỗi nh&oacute;m.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&acirc;y l&agrave; t&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu t&ecirc;n lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Sử dụng chức năng  <b>Lưu kết quả trong</b> menu thả xuống, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong phần <b>Nội dung của T&ocirc;i</b> nơi sẽ lưu trữ kết quả của bạn.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

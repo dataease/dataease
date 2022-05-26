@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Hitung Kepadatan</h2><p/>
+        <h2><img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" alt="Hitung Kepadatan"></h2>
+        <hr/>
+    <p>Alat Hitung Kepadatan membuat peta kepadatan dari fitur titik dengan menyebarkan jumlah beberapa fenomena yang dikenal (diwakilkan sebagai atribut dari titik) lintas peta. Hasilnya adalah layer area yang diklasifikasikan dari yang paling tidak padat hingga paling padat.   
+
+    </p>
+    <p>Untuk input titik, setiap titik harus mewakili lokasi dari beberapa peristiwa atau insiden, dan layer hasil mewakili jumlah insiden per unit area. Nilai kepadatan yang lebih tinggi di lokasi baru berarti bahwa ada lebih banyak titik di dekat lokasi tersebut.  Pada banyak kasus, layer hasil dapat diinterpretasikan sebagai risiko yang muncul untuk peristiwa di masa mendatang. Misalnya, jika titik input mewakili lokasi sambaran petir, layer hasil dapat diinterpretasikan sebagai risiko yang muncul untuk sambaran petir di masa mendatang.
+    </p>
+    <p>Contoh lain penggunaan alat ini mencakup hal berikut:
+        <ul>
+            <li>Membuat peta kepadatan kejahatan untuk membantu kepolisian mengalokasikan sumber daya secara tepat ke area dengan tingkat kejahatan tinggi.
+            </li>
+            <li>Menghitung kepadatan rumah sakit dalam sebuah daerah.  Layer hasil akan menampilkan area dengan aksesibilitas tinggi dan rendah terhadap rumah sakit, dan informasi ini dapat digunakan untuk memutuskan tempat rumah sakit baru seharusnya dibangun.
+            </li>
+            <li>Mengenali area yang berisiko tinggi terjadi kebakaran hutan berdasarkan lokasi historis kebakaran hutan.
+            </li>
+            <li>Menemukan masyarakat yang jauh dari jalan raya utama untuk merencanakan lokasi pembangunan jalan baru.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pilih layer titik untuk menghitung kepadatan</h2></div>
+        <hr/>
+        <div>
+            <p>Layer titik tempat kepadatan akan dihitung.
+            </p>
+            <p>Selain memilih layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> di bawah daftar drop-down untuk menelusuri konten Anda untuk set data atau feature layer berbagi file big data.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Pilih satu atau beberapa kolom untuk dihitung kepadatannya (opsional)</h2></div>
+        <hr/>
+        <div>
+            <p>Sediakan satu kolom atau lebih yang menentukan jumlah insiden di setiap lokasi.  Misalnya, jika Anda memiliki titik yang menggambarkan kota, Anda dapat menggunakan kolom yang berisi populasi kota sebagai kolom hitung, dan layer kepadatan populasi yang dihasilkan akan menunjukkan kepadatan populasi lebih besar dekat kota-kota dengan populasi yang lebih besar.
+            </p>
+            <p>Kepadatan untuk jumlah titik akan selalu dihitung.   Jika tidak ada kolom dipilih, setiap lokasi akan diasumsikan mewakili jumlah tunggal.
+            </p>
+        </div>
+    </div>
+    <div id="binType">
+        <div><h2>Pilih bentuk bin</h2></div>
+        <hr/>
+        <div>
+            <p>Bentuk bin yang berupa titik diagregasikan menjadi dan digunakan untuk penghitungan kepadatan.
+            </p>
+            <p>Analisis menggunakan bin  <b>Persegi</b> atau <b>Heksagon</b> memerlukan sistem koordinat terproyeksi. Anda dapat menetapkan <b>Sistem koordinat pemrosesan</b> dalam <b>Lingkungan Analisis</b>. Jika sistem koordinat pemrosesan Anda tidak ditetapkan ke sistem koordinat terproyeksi, Anda akan diminta untuk menetapkannya saat Anda <b>Jalankan Analisis</b> .
+            </p>
+        </div>
+    </div>
+    <div id="binSizing">
+        <div><h2>Pilih ukuran bin untuk agregasi</h2></div>
+        <hr/>
+        <div>
+            <p>Ukuran bin yang dihasilkan. Untuk square bin, ukuran mewakili tinggi persegi. Untuk heksagon, ukuran mereprentasikan tinggi heksagon (dari sisi paralel).
+            </p>
+        </div>
+    </div>
+    <div id="weight">
+        <div><h2>Pilih pembobotan kepadatan yang akan diterapkan</h2></div>
+        <hr/>
+        <div>
+            <p>Tipe pembobotan yang diterapkan ke penghitungan kepadatan. Ada dua opsi:
+                <ul>
+                    <li> <b>Seragam</b>&mdash;Menghitung besar per area.
+                    </li>
+                    <li> <b>Kernel</b>&mdash;Menerapkan fungsi kernel agar cocok dengan permukaan tirus rata untuk masing-masing titik.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Pilih ukuran lingkungan</h2></div>
+        <hr/>
+        <div>
+            <p>Ukuran area yang digunakan untuk menghitung kepadatan. Ukuran lingkungan harus lebih besar daripada ukuran wadah.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Pilih unit output untuk kepadatan</h2></div>
+        <hr/>
+        <div>
+            <p>Unit output yang diinginkan dari nilai kepadatan. Secara default, ini diatur ke kilometer persegi atau mil persegi berdasarkan unit default yang ditentukan dalam profil Anda. Jika nilai kepadatan sangat kecil, Anda dapat menambah ukuran unit area (misalnya, meter persegi menjadi kilometer persegi) untuk menghasilkan nilai yang lebih besar. Nilai tersebut hanya mengukur hasil.  
+
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Hitung kepadatan menggunakan langkah waktu (opsional)</h2></div>
+        <hr/>
+        <div>
+            <p>Jika waktu diaktifkan pada layer titik input dan ini adalah tipe instan, Anda dapat menganalisis menggunakan langkah waktu.  Ada tiga parameter yang dapat Anda tentukan ketika menggunakan waktu:
+                <ul>
+                    <li> <b>Interval langkah waktu</b>
+                    </li>
+                    <li> <b>Seberapa sering mengulangi langkah waktu tersebut</b>
+                    </li>
+                    <li> <b>Waktu untuk diselaraskan dengan langkah waktu</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Misalnya, jika Anda memiliki data yang mewakili waktu satu tahun dan Anda ingin menganalisisnya menggunakan langkah mingguan, tetapkan  <b>Interval langkah waktu</b> ke <code>1 minggu</code>. 
+            </p>
+            <p>Misalnya, jika Anda memiliki data yang mewakili waktu satu tahun dan Anda ingin menganalisisnya menggunakan minggu pertama dalam bulan, atur  <b>Interval langkah waktu</b> ke <code>1 minggu</code>, <b>Seberapa sering mengulangi langkah waktu tersebut</b> ke <code>1 bulan</code>, dan <b>Waktu untuk diselaraskan dengan langkah waktu</b> ke <code>1 Januari, pukul 24.00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Interval langkah waktu</h2></div>
+        <hr/>
+        <div>
+            <p>Interval waktu yang digunakan untuk menghasilkan langkah waktu.  <b>Interval langkah waktu</b> dapat digunakan sendirian atau digunakan dengan parameter <b>Seberapa sering mengulangi langkah waktu tersebut</b> atau <b>Waktu untuk menyelaraskan langkah waktu ke</b> parameter.
+            </p>
+            <p>Misalnya, jika Anda ingin membuat langkah waktu yang berlaku setiap hari Senin dari pukul 09.00 hingga 10.00, atur  <b>Interval langkah waktu</b> ke <code>1 jam</code>, <b>Seberapa sering mengulangi langkah waktu tersebut</b> ke <code>1 minggu</code>, dan <b>Waktu untuk diselaraskan dengan langkah waktu</b> ke <code>09.00 pada hari Senin</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Seberapa sering mengulangi langkah waktu tersebut</h2></div>
+        <hr/>
+        <div>
+            <p> Langkah yang digunakan untuk menghitung langkah waktu. <b>Seberapa sering mengulangi langkah waktu tersebut</b> dapat digunakan sendirian, dengan <b>Interval langkah waktu</b>, dengan <b>Waktu Referensi</b>, atau dengan <b>Interval langkah waktu</b> dan <b>Waktu untuk diselaraskan dengan langkah waktu</b>.
+            </p>
+            <p> Misalnya, jika Anda ingin membuat langkah waktu yang diberlakukan setiap hari Senin dari pukul 09.00 hingga 10.00, atur <b>Interval langkah waktu</b> ke <code>1 jam</code>, <b>Seberapa sering mengulangi langkah waktu tersebut</b> ke <code>1 minggu</code>, dan <b>Waktu untuk diselaraskan dengan langkah waktu</b> ke <code>09.00 pada hari Senin</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Waktu untuk diselaraskan dengan langkah waktu</h2></div>
+        <hr/>
+        <div>
+            <p>Tanggal dan waktu yang digunakan untuk menyelaraskan pengirisan waktu. Langkah waktu akan dimulai pada dan dilanjutkan ke belakang dari waktu ini. Jika tidak ada waktu referensi yang dipilih, langkah waktu akan diselaraskan ke 1 Januari 1970. 
+            </p>
+            <p> Misalnya, jika Anda ingin membuat langkah waktu yang diberlakukan setiap hari Senin dari pukul 09.00 hingga 10.00, atur <b>Interval langkah waktu</b> ke <code>1 jam</code>, <b>Seberapa sering mengulangi langkah waktu tersebut</b> ke <code>1 minggu</code>, dan <b>Waktu untuk diselaraskan dengan langkah waktu</b> ke <code>09.00 pada hari Senin</code>.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Ini adalah parameter sementara untuk pra-rilis untuk menetapkan referensi spasial pemrosesan. Banyak alat big data yang mewajibkan bahwa sistem koordinat proyeksi digunakan sebagai referensi spasial untuk pemrosesan. Secara default, alat akan menggunakan sistem koordinat input, tetapi akan gagal jika ini adalah sistem koordinat geografik. Untuk menetapkan sistem koordinat proyeksi, masukkan WKID. Misalnya,  <b>Web Mercator</b> harus dimasukkan sebagai <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Pilih data store</h2></div>
+        <hr/>
+        <div>
+            <p>Hasil GeoAnalytics disimpan pada penyimpanan data dan ditampilkan sebagai feature layer di  Portal for ArcGIS. Secara umum, hasil harus disimpan di penyimpanan data spatiotemporal dan ini adalah pilihan default. Secara umum, menyimpan hasil data store relasional adalah opsi yang bagus. Berikut adalah alasan mengapa Anda mungkin ingin menyimpan hasil di data store relasional: 
+                <ul>
+                    <li>Anda dapat menggunakan hasil di portal-ke-kolaborasi portal.
+                    </li>
+                    <li>Anda dapat mengaktifkan kemampuan sinkronisasi dengan hasil Anda.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Anda tidak boleh menggunakan data store relasional jika Anda berharap hasil GeoAnalytics untuk ditingkatkan dan ingin memanfaatkan kemampuan big data store spatiotemporal untuk menangani jumlah data yang besar.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p> Nama layer yang akan dibuat.  Jika Anda menulis ke sebuah ArcGIS Data Store, hasil Anda akan disimpan di  <b>Konten Saya</b> dan ditambahkan ke dalam peta. Jika Anda menulis ke berbagi file big data, hasil Anda akan disimpan ke berbagi file big data dan ditambahkan ke manifestasinya. Ini tidak akan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer sudah ada, alat tidak akan berfungsi.
+            </p>
+            <p>Saat menulis ke  ArcGIS Data Store (penyimpanan big data relasional atau spasiotemporal) menggunakan  <b>Simpan hasil di</b> kotak drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> tempat hasil akan disimpan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

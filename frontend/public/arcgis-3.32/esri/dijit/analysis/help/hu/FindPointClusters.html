@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Pontklaszterek keresése</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="Pontklaszterek keres&eacute;se"></h2>
+        <hr/>
+    <p>Ez az eszk&ouml;z pont-t&iacute;pus&uacute; vektoros elemek klasztereit keresi a k&ouml;rnyező zajon bel&uuml;l a t&eacute;rbeli eloszl&aacute;suk alapj&aacute;n.
+    </p>
+    <p>Az  <b>Aktu&aacute;lis t&eacute;rk&eacute;pkiterjed&eacute;s haszn&aacute;lata</b> bejel&ouml;l&eacute;s&eacute;vel az elemz&eacute;s a bemenő pontr&eacute;tegnek csak az aktu&aacute;lis t&eacute;rk&eacute;pkiterjed&eacute;sben tal&aacute;lhat&oacute; vektoros elemeit foglalja mag&aacute;ban.  Ha nincs bejel&ouml;lve, akkor a bemenő pontr&eacute;teg &ouml;sszes vektoros elem&eacute;t elemzi, akkor is, ha azok k&iacute;v&uuml;l esnek az aktu&aacute;lis t&eacute;rk&eacute;pkiterjed&eacute;sen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Válassza ki a réteget, amelyhez meg szeretné találni a klasztereket</h2></div>
+        <hr/>
+        <div>
+            <p>A pontr&eacute;teg, ahol a klaszterek tal&aacute;lhat&oacute;k. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>A pontok minimális száma a klaszterként történő értelmezéshez</h2></div>
+        <hr/>
+        <div>
+            <p>A vektoros elemek minim&aacute;lis sz&aacute;ma a klaszterk&eacute;nt t&ouml;rt&eacute;nő &eacute;rtelmez&eacute;shez.  A megadottn&aacute;l kevesebb vektoros elemet tartalmaz&oacute; klasztereket zajk&eacute;nt &eacute;rtelmezi. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Keresési tartomány korlátozása erre (opcionális):</h2></div>
+        <hr/>
+        <div>
+            
+            <p>A legnagyobb t&aacute;vols&aacute;g, amely mellett a vektoros elemeket m&eacute;g azonos klaszter r&eacute;sz&eacute;nek tekinti.  Ha &uuml;resen hagyja, az eszk&ouml;z a HDBSCAN-t futtatja, ami k&uuml;l&ouml;nb&ouml;ző t&aacute;vols&aacute;gokat haszn&aacute;l a k&uuml;l&ouml;nb&ouml;ző sűrűs&eacute;gű klasztereknek a ritka zajokt&oacute;l t&ouml;rt&eacute;nő megk&uuml;l&ouml;nb&ouml;ztet&eacute;s&eacute;re. Ha megad egy &eacute;rt&eacute;ket, az eszk&ouml;z a DBSCAN-t futtatja, ami a megadott t&aacute;vols&aacute;got haszn&aacute;lja a sűrű klasztereknek a ritka zajokt&oacute;l t&ouml;rt&eacute;nő megk&uuml;l&ouml;nb&ouml;ztet&eacute;s&eacute;re.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve.  Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő men&uuml;ben megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

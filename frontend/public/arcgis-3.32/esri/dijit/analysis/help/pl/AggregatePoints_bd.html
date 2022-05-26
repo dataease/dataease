@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Agreguj punkty</h2><p/>
+        <h2><img src="../images/GUID-6C1620D9-D176-41FA-8283-833D8B1CCCFC-web.png" alt="Agreguj punkty"></h2>
+        <hr/>
+    <p>Narzędzie do pracy z warstwą obiekt&oacute;w punktowych i warstwą obiekt&oacute;w powierzchniowych. Wejściowe obiekty powierzchniowe mogą pochodzić z warstwy poligonowej lub mogą być kwadratowymi albo sześciokątnymi koszami obliczonymi podczas działania tego narzędzia. Pierwszą operacją wykonywaną przez to narzędzie jest przyporządkowanie punkt&oacute;w do poszczeg&oacute;lnych obszar&oacute;w. Po określeniu tej zależności przestrzennej między punktami i obszarami wykonywane są obliczenia statystyczne dotyczące wszystkich punkt&oacute;w na obszarze, a następnie statystyki te są przypisywane do danego obszaru. Najbardziej podstawowym obliczeniem statystycznym jest liczba punkt&oacute;w przypadająca na dany obszar, jednak można uzyskać r&oacute;wnież inne statystyki. 
+
+    </p>
+    <p>Przyjmijmy na przykład, że mamy obiekty punktowe reprezentujące lokalizację kawiarni oraz obiekty powierzchniowe reprezentujące powiaty i chcemy uzyskać podsumowanie sprzedaży kawy w powiatach. Zakładając, że kawiarnie mają atrybut  <i>TOTAL_SALES</i>, możemy obliczyć sumę wszystkich atrybut&oacute;w <i>TOTAL_SALES</i> dla każdego powiatu lub wyznaczyć minimalną bądź maksymalną wartość atrybutu <i>TOTAL_SALES</i> w&nbsp;każdym z&nbsp;nich, a&nbsp;także inne dane statystyczne, takie jak liczba, zakres, odchylenie standardowe lub wariancja.
+    </p>
+    <p>To narzędzie może także pracować na danych czasowych. Jeśli czas został włączony dla punkt&oacute;w wejściowych, w&oacute;wczas dostępne są opcje okien czasowych. Okna czasowe umożliwiają obliczenie relacji między punktami i obszarami w określonym oknie czasowym. Można na przykład wyświetlić interwały godzinne (dane wynikowe będą generowane dla każdej godziny). 
+    </p>
+    <p>Aby zaprezentować przykład uwzględniający czas, zał&oacute;żmy, że istnieją obiekty punktowe odpowiadające wszystkim transakcjom dokonanym w kawiarniach o r&oacute;żnych lokalizacjach, bez warstwy powierzchniowej. Dane były rejestrowane przez rok, a każdej transakcji odpowiada lokalizacja i znacznik czasu. Przyjmując, że każda transakcja ma atrybut  <i>TOTAL_SALES</i>, można obliczyć sumę wszystkich wartości atrybutu <i>TOTAL_SALES</i> w interesującym użytkownika obszarze i czasie. Jeśli te transakcje zostały dokonane w jednym mieście, można wygenerować obszary tworzące 1-kilometrową siatkę i wyświetlić tygodniowe okna czasowe, aby zsumować transakcje w czasie i przestrzeni.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Wybierz warstwę zawierającą punkty w celu agregowania do obszarów</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa punktowa, kt&oacute;ra będzie agregowana do obszar&oacute;w. Dla warstw punktowych agregowanych w koszach  <b>kwadratowych</b> lub <b>sześciokątnych</b> należy jako odniesienie przestrzenne przetwarzania skonfigurować układ wsp&oacute;łrzędnych odwzorowanych w oknie <b>Środowiska analizy</b>.
+            </p>
+            <p>Opr&oacute;cz wybrania warstwy z mapy, można wybrać opcję  <b>Wybierz warstwę analizy</b> znajdującą się w dolnej części listy rozwijanej, aby przejść do zasob&oacute;w zestawu danych udostępnionych plik&oacute;w dużych zbior&oacute;w danych lub warstwy obiektowej.
+            </p>
+        </div>
+    </div>
+    <div id="inputAggregation">
+        <div><h2>Wybierz warstwę powierzchniową na potrzeby agregowania</h2></div>
+        <hr/>
+        <div>
+            <p>Obszary, do kt&oacute;rych będzie agregowana warstwa punktowa. Można wybrać własną warstwę powierzchniową lub kosze wygenerowane podczas działania narzędzia.   Podczas generowania koszy  <b>kwadratowych</b> podana liczba i jednostki decydują o wysokości i długości kwadratu. W przypadku koszy <b>sześciokątnych</b> podana liczba i jednostki decydują o odległości między r&oacute;wnoległymi bokami sześciokąta.
+            </p>
+            <p>Analiza wykonywana przy użyciu koszy  <b>kwadratowych</b> lub <b>sześciokątnych</b> wymaga układu wsp&oacute;łrzędnych odwzorowanych. <b>Układ wsp&oacute;łrzędnych przetwarzania</b> można skonfigurować w oknie <b>Środowiska analizy</b>. Jeśli układ wsp&oacute;łrzędnych przetwarzania nie zostanie skonfigurowany jako układ wsp&oacute;łrzędnych odwzorowanych, podczas <b>uruchamiania analizy</b> zostanie wyświetlony monit informujący o konieczności wykonania tej czynności.
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Wybierz warstwę powierzchniową na potrzeby agregowania</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa obszar&oacute;w, dla kt&oacute;rej będą agregowane punkty. Wszystkie punkty znajdujące się w&nbsp;granicach obszar&oacute;w w&nbsp;tej warstwie zostaną uwzględnione w&nbsp;obliczeniach i&nbsp;opcjonalnie zsumowane przy użyciu wybranych operacji statycznych. 
+            </p>
+            <p>Należy ustawić  <b>wielkość kosza</b> dla koszy lub <b>warstwę powierzchniową</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Wybierz odległość, aby wygenerować kosze i agregować w</h2></div>
+        <hr/>
+        <div>
+            <p>Odległość używana do generowania koszy, w kt&oacute;rych mają być agregowane punkty wejściowe. W przypadku koszy kwadratowych wielkość reprezentuje wysokość kwadratu. W przypadku koszy sześciokątnych wielkość reprezentuje wysokość sześciokąta (między bokami r&oacute;wnoległymi).  
+            </p>
+            <p>Należy ustawić  <b>wielkość kosza</b> dla koszy lub <b>warstwę powierzchniową</b>.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Agreguj z użyciem etapów czasowych (opcjonalne)</h2></div>
+        <hr/>
+        <div>
+            <p>Jeśli dla wejściowej warstwy punktowej włączono czas (typu Moment), można przeprowadzić analizę przy użyciu etap&oacute;w czasowych. Jeśli używany jest czas, można ustawić trzy parametry:
+                <ul>
+                    <li> <b>Przedział etapu czasowego</b>
+                    </li>
+                    <li> <b>Częstotliwość powtarzania etapu czasowego</b>
+                    </li>
+                    <li> <b>Czas do wyr&oacute;wnania etap&oacute;w czasowych</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Na przykład, jeśli masz dane reprezentujące rok, kt&oacute;re chcesz przeanalizować przy użyciu tygodniowych etap&oacute;w czasowych, w polu  <b>Przedział etapu czasowego</b> ustaw wartość <code>1 tydzień</code>. 
+            </p>
+            <p>Na przykład, jeśli masz dane reprezentujące rok, kt&oacute;re chcesz przeanalizować przy użyciu pierwszego tygodnia miesiąca, w polu  <b>Przedział etapu czasowego</b> ustaw wartość <code>1 tydzień</code>, w polu <b>Częstotliwość powtarzania etapu czasowego</b> wartość <code>1 miesiąc</code>, a w polu <b>Czas do wyr&oacute;wnania etap&oacute;w czasowych</b> wartość <code>1 stycznia, 12:00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Przedział etapu czasowego</h2></div>
+        <hr/>
+        <div>
+            <p>Interwał czasu używany do tworzenia etap&oacute;w czasowych. Wartość w polu  <b>Przedział etapu czasowego</b> może być używana sama, z parametrem <b>Częstotliwość powtarzania etapu czasowego</b> lub <b>Czas do wyr&oacute;wnania etap&oacute;w czasowych</b>.
+            </p>
+            <p>Na przykład, jeśli chcesz utworzyć etapy czasowe występujące w każdy poniedziałek między 9:00 a 10:00, w polu  <b>Przedział etapu czasowego</b> ustaw wartość <code>1 godzina</code>, w polu <b>Częstotliwość powtarzania etapu czasowego</b> wartość <code>1 tydzień</code>, a w polu <b>Czas do wyr&oacute;wnania etap&oacute;w czasowych</b> wartość <code>9:00:00 w poniedziałek</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Częstotliwość powtarzania etapu czasowego</h2></div>
+        <hr/>
+        <div>
+            <p> Etap używany do obliczania etapu czasowego. Wartość w polu <b>Częstotliwość powtarzania etapu czasowego</b> może być używana sama, z parametrem <b>Przedział etapu czasowego</b> lub parametrem <b>Czas referencyjny</b> albo r&oacute;wnocześnie z parametrami <b>Przedział etapu czasowego</b> i <b>Czas do wyr&oacute;wnania etap&oacute;w czasowych</b>.
+            </p>
+            <p> Na przykład, jeśli chcesz utworzyć etapy czasowe występujące w każdy poniedziałek między 9:00 a 10:00, w polu <b>Przedział etapu czasowego</b> ustaw wartość <code>1 godzina</code>, w polu <b>Częstotliwość powtarzania etapu czasowego</b> ustaw wartość <code>1 tydzień</code>, a w polu <b>Czas do wyr&oacute;wnania etap&oacute;w czasowych</b> wartość <code>9:00:00 w poniedziałek</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Czas do wyrównania etapów czasowych</h2></div>
+        <hr/>
+        <div>
+            <p>Data i czas używane do wyr&oacute;wnywania okien czasowych. Etap czasowy rozpocznie się od tego czasu  i będzie trwał wstecz. Jeśli nie zostanie wybrany czas referencyjny, etap czasowy zostanie wyr&oacute;wnany względem 1 stycznia 1970 roku. 
+            </p>
+            <p> Na przykład, jeśli chcesz utworzyć etapy czasowe występujące w każdy poniedziałek między 9:00 a 10:00, w polu <b>Przedział etapu czasowego</b> ustaw wartość <code>1 godzina</code>, w polu <b>Częstotliwość powtarzania etapu czasowego</b> ustaw wartość <code>1 tydzień</code>, a w polu <b>Czas do wyr&oacute;wnania etap&oacute;w czasowych</b> wartość <code>9:00:00 w poniedziałek</code>.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Dodaj statystyki (opcjonalnie)</h2></div>
+        <hr/>
+        <div>
+            <p> Można obliczyć statystyki dla zsumowanych obiekt&oacute;w.W polach liczbowych można obliczyć następujące wartości:
+                <ul>
+                    <li>Liczba &mdash; zlicza wartości inne niż null.Może być używane w polach liczbowych lub znakowych. Liczba dla wartości [null, 0, 2] wynosi 2.
+                    </li>
+                    <li>Suma &mdash; suma wartości liczbowych w polu. Suma dla wartości [null, null, 3] wynosi 3.
+                    </li>
+                    <li>Średnia &mdash; średnia wartości liczbowych. Średnia dla wartości [0, 2, null] wynosi 1.
+                    </li>
+                    <li>Min &mdash; wartość minimalna w polu liczbowym. Wartość minimalna dla wartości [0, 2, null] wynosi 0. 
+                    </li>
+                    <li>Maks &mdash; wartość maksymalna w polu liczbowym. Wartość maksymalna dla wartości [0, 2, null] wynosi 2.
+                    </li>
+                    <li>Zakres &mdash; zakres pola liczbowego. Zakres jest obliczany przez odjęcie wartości minimalnych od wartości maksymalnej. Zakres dla wartości [0, null, 1] wynosi 1. Zakres dla wartości [null, 4] wynosi 0.
+                    </li>
+                    <li>Wariancja &mdash; wariancja pola liczbowego w ścieżce. Wariancja dla wartości [1] wynosi null. Wariancja dla wartości [null, 1,0,1,1] wynosi 0,25.
+                    </li>
+                    <li>Odchylenie standardowe &mdash; odchylenie standardowe pola liczbowego. Odchylenie standardowe dla wartości [1] wynosi null. Odchylenie standardowe dla wartości [null, 1,0,1,1] wynosi 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>W polach znakowych można obliczyć następujące wartości:
+                <ul>
+                    <li>Liczba &mdash; liczba ciąg&oacute;w znakowych innych niż null.
+                    </li>
+                    <li>Dowolne &mdash; ta statystyka to losowy przykład wartości znakowej w podanym polu.
+                    </li>
+                </ul>
+                Wszystkie statystyki są obliczane na podstawie wartości niepustych. Warstwa wynikowa zawiera nowe pole dla każdego wykonanego obliczenia statystycznego. Dodać można dowolną liczbę statystyk poprzez wybranie atrybutu oraz&nbsp;właściwej operacji statystycznej. 
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>Odniesienie przestrzenne (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to parametr tymczasowy używany w wersji wstępnej do ustawiania odniesienia przestrzennego przetwarzania. Wiele narzędzi do obsługi dużych zbior&oacute;w danych wymaga użycia układu wsp&oacute;łrzędnych odwzorowanych jako odniesienia przestrzennego przetwarzania. Domyślnie narzędzie użyje wejściowego układu wsp&oacute;łrzędnych, ale operacja nie powiedzie się, jeśli będzie to układ wsp&oacute;łrzędnych geograficznych. Aby ustawić układ wsp&oacute;łrzędnych odwzorowanych, wprowadź wartość WKID. Na przykład  <b>Web Mercator</b> zostanie wprowadzony jako <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Wybierz aplikację ArcGIS Data Store, w której zostaną zapisane wyniki</h2></div>
+        <hr/>
+        <div>
+            <p>Wyniki analiz geoprzestrzennych są przechowywane w magazynie danych i udostępniane jako warstwa obiektowa w witrynie  Portal for ArcGIS. W większości przypadk&oacute;w wyniki powinny być przechowywane w magazynie danych czasowo-przestrzennych i jest to ustawienie domyślne. W niekt&oacute;rych przypadkach dobrym rozwiązaniem jest zapisanie wynik&oacute;w w relacyjnym magazynie danych. Poniżej podano sytuacje, kt&oacute;re mogą uzasadniać przechowywanie wynik&oacute;w w relacyjnym magazynie danych: 
+                <ul>
+                    <li>Wyniki mogą być używane w ramach kooperacji między portalami.
+                    </li>
+                    <li>Została włączona możliwość synchronizacji wynik&oacute;w.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Nie należy używać relacyjnego magazynu danych, jeśli liczba wynik&oacute;w analiz geoprzestrzennych może się zwiększyć i może być konieczne zastosowanie magazynu dużych zbior&oacute;w danych czasowo-przestrzennych w celu obsłużenia dużych ilości danych.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p> Nazwa warstwy, kt&oacute;ra zostanie utworzona w oknie Moje zasoby. W przypadku zapisywania w ArcGIS Data Store wyniki będą przechowywane w obszarze  <b>Moje zasoby</b> i dodawane do mapy. W przypadku zapisywania w udostępnionym pliku dużych zbior&oacute;w danych wyniki będą przechowywane w udostępnionym pliku dużych zbior&oacute;w danych i dodawane do jego manifestu. Nie będą dodawane do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, działanie narzędzia nie powiedzie się.
+            </p>
+            <p>W przypadku zapisywania w  ArcGIS Data Store (relacyjny magazyn danych lub magazyn dużych zbior&oacute;w danych czasowo-przestrzennych) przy użyciu listy rozwijanej  <b>Zapisz wynik w</b> można określić nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

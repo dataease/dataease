@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Kokoa pisteet</h2><p/>
+        <h2><img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" alt="Kokoa pisteet"></h2>
+        <hr/>
+    <p>Ty&ouml;kalu k&auml;ytt&auml;&auml; pistekohdetasoja sek&auml; aluekohdetasoja. Toiminto m&auml;&auml;ritt&auml;&auml; ensin, mitk&auml; pisteet kuuluvat kuhunkin alueeseen. T&auml;m&auml;n j&auml;lkeen toiminto laskee alueen kaikkien pisteiden tilastotiedot ja kohdistaa ne alueeseen. Perustiedot k&auml;sitt&auml;v&auml;t alueen pistem&auml;&auml;r&auml;n, mutta my&ouml;s muita tilastotietoja on saatavilla. 
+    </p>
+    <p>Voit esimerkiksi laatia yhteenvedon piirikuntakohtaisesta kahvinmyynnist&auml;, kun k&auml;yt&auml;t kahvilasijainteja sis&auml;lt&auml;vi&auml; pistekohteita sek&auml; piirikuntia sis&auml;lt&auml;vi&auml; aluekohteita. Jos kahvioilla on  <i>TOTAL_SALES</i>-ominaisuustieto, voit laskea kaikkien <i>TOTAL_SALES</i>-ominaisuustietojen summan piirikunnittain, <i>TOTAL_SALES</i>-ominaisuustiedon v&auml;himm&auml;is- tai enimm&auml;isarvon piirikunnittain ja piirikuntakohtaisen myynnin keskihajoaman.
+    </p>
+    <p>Jos vaihtoehto  <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b> on valittuna, vain l&auml;ht&ouml;pistekarttatasossa ja aluetasossa olevat, nykyisess&auml; karttalaajuudessa n&auml;kyv&auml;t kohteet analysoidaan. Jos vaihtoehto ei ole valittuna, l&auml;ht&ouml;pistekarttatason ja aluetason kaikki kohteet analysoidaan, vaikka ne olisivat nykyisen kartan laajuuden ulkopuolella.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Valitse karttataso, joka sisältää alueisiin koostettavat pisteet</h2></div>
+        <hr/>
+        <div>
+            <p>Pistekarttataso, joka koostetaan alueisiin.
+            </p>
+            <p>Kartasta valittavan karttatason lis&auml;ksi voit valita alareunan avattavasta luettelosta  <b>Valitse analyysikarttataso</b> -vaihtoehdon. T&auml;m&auml; vaihtoehto avaa gallerian, jossa voit selata ja valita aineistoryhmi&auml; erilaisista l&auml;hteist&auml; ja k&auml;ytt&auml;&auml; niit&auml; analyysissa. 
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Valitse karttataso, joka sisältää koontialueet</h2></div>
+        <hr/>
+        <div>
+            <p>Aluekarttataso, johon pisteet kootaan Tason alueiden rajojen sis&auml;puolelle kuuluvat pisteet lasketaan ja haluttaessa koostetaan yhteenvedoksi valittujen tilastotietojen perusteella.  
+            </p>
+            <p>Voit valita antamasi aluekarttatason tai ty&ouml;kalun suorittamisen aikana luodut lohkot.   Luotaessa  <b>neli&ouml;lohkoja</b> m&auml;&auml;ritetyt yksik&ouml;t ja m&auml;&auml;r&auml; m&auml;&auml;ritt&auml;v&auml;t neli&ouml;n korkeuden ja pituuden. Luotaessa <b>kuusiolohkoja</b> m&auml;&auml;ritetyt yksik&ouml;t ja m&auml;&auml;r&auml; m&auml;&auml;ritt&auml;v&auml;t rinnakkaisten sivujen v&auml;lisen et&auml;isyyden.
+            </p>
+            <p>Kartasta valittavan karttatason lis&auml;ksi voit valita alareunan avattavasta luettelosta  <b>Valitse analyysikarttataso</b> -vaihtoehdon. T&auml;m&auml; vaihtoehto avaa gallerian, jossa voit selata ja valita aineistoryhmi&auml; erilaisista l&auml;hteist&auml; ja k&auml;ytt&auml;&auml; niit&auml; analyysissa. 
+            </p>
+        </div>
+    </div>
+    <div id="KeepBoundaryNoPoints">
+        <div><h2>Säilytä alueet, joilla ei ole pisteitä</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;ritt&auml;&auml;, n&auml;kyv&auml;tk&ouml; alueet, jotka eiv&auml;t sis&auml;ll&auml; yht&auml;&auml;n pistett&auml;, tulostasossa. Jos vaihtoehto ei ole valittuna, alueet, jotka eiv&auml;t sis&auml;ll&auml; yht&auml;&auml;n pistett&auml;, eiv&auml;t my&ouml;sk&auml;&auml;n n&auml;y tulostasossa. Jos vaihtoehto on valittuna, alueet, jotka eiv&auml;t sis&auml;ll&auml; yht&auml;&auml;n pistett&auml;, n&auml;kyv&auml;t my&ouml;s tulostasossa.  
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Lisää tilastotieto</h2></div>
+        <hr/>
+        <div>
+            <p>Voit laskea pistetason ominaisuuksista tilastotietoja, kuten summan, keskiarvon, minimin, maksimin ja keskihajonnan. Tulostaso sis&auml;lt&auml;&auml; uuden ominaisuuden jokaiselle lasketulle tilastotiedolle. Voit lis&auml;t&auml; niin paljon tilastotietoja kuin haluat valitsemalla ominaisuuden ja tilastotiedon (n&auml;kyviin tulee uusi avattava valikko).
+ 
+            </p>
+            <p>Jos karttatasossa, josta yhteenveto luodaan, ei ole numerokentti&auml;, lis&auml;tilastotiedot eiv&auml;t ole k&auml;ytett&auml;viss&auml;.
+            </p>
+        </div>
+    </div>
+    <div id="GroupByField">
+        <div><h2>Valitse kenttä ryhmittelyä varten</h2></div>
+        <hr/>
+        <div>
+            <p> Voit luoda tilastotietojen ryhmi&auml; k&auml;ytt&auml;m&auml;ll&auml; jotakin l&auml;ht&ouml;pistekarttatason ominaisuustietoa. Jos esimerkiksi kokoat naapurustoalueiden rikoksia, voit k&auml;ytt&auml;&auml; <i>Crime_type</i>-ominaisuustietoa, johon liittyy viisi eri rikostyyppi&auml;. Jokainen yksil&ouml;llinen rikostyyppi muodostaa ryhm&auml;n, ja valitsemasi tilastotiedot lasketaan kullekin yksil&ouml;lliselle <i>Crime_type</i>-arvolle.  Ryhmien tilastot sek&auml; pisteiden m&auml;&auml;r&auml; n&auml;kyv&auml;t esiin tulevassa tulostasossa. Kun valitset ryhmittelyominaisuuden, toiminto luo kaksi tulosta: tulostason sek&auml; tulostaulukon, joka sis&auml;lt&auml;&auml; kunkin yksil&ouml;llisen ryhm&auml;n tilastotiedot.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Lisää vähemmistö, enemmistö</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;m&auml; valintaruutu on k&auml;yt&ouml;ss&auml;, kun valitset kent&auml;n ryhmittely&auml; varten. Jos haluat selvitt&auml;&auml;, mitk&auml; kunkin ryhm&auml;n ominaisuustietoarvot ovat v&auml;hemmist&ouml;n&auml; (v&auml;hiten hallitsevia) tai enemmist&ouml;n&auml; (hallitsevimpia) kunkin rajan sis&auml;ll&auml;, valitse  <b>Lis&auml;&auml; v&auml;hemmist&ouml;, enemmist&ouml;</b>. Kun valitset <b>Lis&auml;&auml; v&auml;hemmist&ouml;, enemmist&ouml;</b>, tulostasoon lis&auml;t&auml;&auml;n kaksi uutta kentt&auml;&auml;. Jos valitset my&ouml;s <b>Lis&auml;&auml; prosenttiosuudet</b>, tulostasoon lis&auml;t&auml;&auml;n kaksi lis&auml;kentt&auml;&auml;. Kent&auml;t sis&auml;lt&auml;v&auml;t jokaisen ryhm&auml;n v&auml;hemmist&ouml;- ja enemmist&ouml;ominaisuustietoarvojen prosenttiosuuden.
+            </p>
+            <p>Jos esimerkiksi toimit kaupunkisuunnittelijana ja haluat selvitt&auml;&auml;, mit&auml; puulajeja on v&auml;hiten ja mit&auml; eniten kaikissa kaupungin puistoissa, tee kooste puistoalueilla olevista puista ja valitse t&auml;m&auml; asetus.
+            </p>
+        </div>
+    </div>
+    <div id="PercentPoints">
+        <div><h2>Lisää prosenttiosuudet</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;m&auml; valintaruutu on k&auml;yt&ouml;ss&auml;, kun valitset kent&auml;n ryhmittely&auml; varten. Valitse   <b>Lis&auml;&auml; prosenttiosuudet</b>, jos haluat selvitt&auml;&auml; jokaisen ryhm&auml;n kunkin ominaisuustietoarvon prosenttiosuuden. Tulostaulukkoon lis&auml;t&auml;&auml;n uusi kentt&auml;, joka sis&auml;lt&auml;&auml; jokaisen ryhm&auml;n kunkin ominaisuustietoarvon prosenttiosuuden. Jos valittuna on my&ouml;s <b>Lis&auml;&auml; prosenttiosuudet</b>, tulostasoon lis&auml;t&auml;&auml;n kaksi lis&auml;kentt&auml;&auml;. Kent&auml;t sis&auml;lt&auml;v&auml;t jokaisen ryhm&auml;n v&auml;hemmist&ouml;- ja enemmist&ouml;ominaisuustietoarvojen prosenttiosuuden.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen tason nimi, joka luodaan kohtaan  <b>Oma sis&auml;lt&ouml;</b> ja joka lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttatason nimi on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Avattavan  <b>Tallenna tulos kohteeseen</b> -valikon avulla voit m&auml;&auml;ritt&auml;&auml; sen <b>Oma sis&auml;lt&ouml;</b> -kansion nimen, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

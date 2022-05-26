@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Määritä optimaalinen matkakuluverkko</h2><p/>
+        <h2><img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" alt="Optimaalisen matkakuluverkkoty&ouml;kalun kuvauksen m&auml;&auml;rittely "></h2>
+        <hr/>
+    <p>T&auml;m&auml; ty&ouml;kalu laskee optimaalisen kustannusverkon l&auml;ht&ouml;aluejoukosta.
+    </p>
+    <p>Yksi esimerkki t&auml;m&auml;n ty&ouml;kalun k&auml;yt&ouml;st&auml; on parhaan verkon l&ouml;yt&auml;minen h&auml;lytysajoneuvoille.
+    </p>
+    <p>Jos  <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b> -asetus on valittuna, vain l&auml;ht&ouml;karttatasossa olevat, nykyisess&auml; karttalaajuudessa n&auml;kyv&auml;t sijainnit analysoidaan. Jos toimintoa ei ole valittu, kaikki l&auml;ht&ouml;karttatason sijainnit analysoidaan &ndash; my&ouml;s kohteet, jotka ovat nykyisen karttalaajuuden ulkopuolella.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRegionsRasterOrFeatures">
+        <div><h2>Valitse rasteri tai kohdesijainnin karttataso polkujen määrittämiseksi seuraavien välillä:</h2></div>
+        <hr/>
+        <div>
+            <p>L&auml;ht&ouml;alueet, jotka yhdistyv&auml;t alhaisimpien kustannusten verkossa.
+            </p>
+            <p>Alueet, jotka voi m&auml;&auml;ritt&auml;&auml; joko kuva- tai kohdepalvelun kautta.
+            </p>
+            <p>Kuvapalvelua varten alueet m&auml;&auml;ritell&auml;&auml;n niiden ryhmien pohjalta, joiden vierekk&auml;isiss&auml; soluissa on sama arvo. Jokaisella alueella on oma numeronsa. Jos solu ei kuulu mihink&auml;&auml;n alueeseen, se on yht&auml; kuin NoData. Rasterityypin on oltava kokonaisluku, ja arvot voivat olla joko positiivisia tai negatiivisia.
+            </p>
+            <p>L&auml;ht&ouml; voi kohdepalvelua varten olla piste, viiva tai aluekohde.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Valitse matkakulujen rasterikarttataso</h2></div>
+        <hr/>
+        <div>
+            <p>Rasteri, joka m&auml;&auml;ritt&auml;&auml; impedanssin tai kustannuksen, jotta se voi liikkua planimetrisesti jokaisen solun l&auml;pi.
+            </p>
+            <p>Kunkin solusijainnin arvo edustaa yksikk&ouml;kohtaisen kustannuksen v&auml;limatkaa solun kautta siirtymiseksi. Kunkin solusijainnin arvo kerrotaan solun resoluutiolla diagonaalista liikett&auml; kompensoimalla, jotta saadaan selville solun l&auml;pikulun aiheuttamat kustannukset.
+            </p>
+            <p>Kustannusrasterin arvo voi olla kokonaisluku tai liukuluku, mutta se ei voi olla negatiivinen eik&auml; nolla (kustannus ei voi olla negatiivinen eik&auml; nolla).
+            </p> 
+        </div>
+    </div>
+    <div id="outputOptimumNetworkName">
+        <div><h2>Tuloksena oleva optimaalisten polkujen taiteviivakarttatason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen karttatason nimi, joka luodaan  <b>Oma sis&auml;lt&ouml;</b> -kohtaan ja lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos taso on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Voit m&auml;&auml;ritt&auml;&auml; kansion nimen  <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan avattavan <b>Tallenna tulos kohteeseen</b> -valikon avulla.
+            </p>
+        </div>
+    </div>
+    <div id="outputNeighborNetworkName">
+        <div><h2>Tuloksena oleva viereisten polkujen taiteviivakarttatason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen karttatason nimi, joka luodaan  <b>Oma sis&auml;lt&ouml;</b> -kohtaan ja lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos taso on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Voit m&auml;&auml;ritt&auml;&auml; kansion nimen  <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan avattavan <b>Tallenna tulos kohteeseen</b> -valikon avulla.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

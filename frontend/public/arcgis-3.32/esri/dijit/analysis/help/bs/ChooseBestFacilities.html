@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Izaberite najbolje ustanove</h2><p/>
+        <h2><img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" alt="Izaberite najbolje ustanove"></h2>
+        <hr/>
+    <p>Opcija Izaberite najbolje ustanove omogućuje vam da odaberete najbolje lokacije za ustanove. Alat raspoređuje lokacije gdje postoji potreba za ustanovama tako da se ispunjava zadani cilj.
+    </p>
+    <p>Ustanove predstavljaju lokacije koje nude određene usluge, kao &scaron;to su vatrogasne postaje, &scaron;kole, knjižnice, trgovine ili distribucijski centri. Lokacije potražnje predstavljaju lokacije gdje postoji potražnja za uslugama koje nude ustanove, kao &scaron;to su blokovi točaka popisa stanovni&scaron;tva koje sažimaju stanovni&scaron;tvo na određenom području.
+    </p>
+    <p>Alat Izaberite najbolje ustanove može vam pomoći odgovoriti na pitanja kao &scaron;to su
+        <ul>
+            <li>Kako se domaćinstva u hitnom slučaju mogu raspodijeliti po sabirnim centrima u slučaju katastrofe kada je kapacitet kreveta ograničen i ne bi trebao biti prema&scaron;en?
+            </li>
+            <li>Kako se četvrti mogu raspodijeliti prema najbližim podružnicama biblioteke i pronaći broj potencijalnih korisnika za svaku podružnicu? 
+            </li>
+            <li>Kako se može pronaći najbolja lokacija za centar za distribuciju namirnica da se smanji ukupno vrijeme putovanja (sukladno tome i tro&scaron;kovi) za isporuku lancima trgovina?
+            </li>
+            <li>Gdje bi se nalazio novi park kako bi se osiguralo da najveći broj stanovnika grada živi unutar pet minuta hoda od parka?
+            </li>
+            <li>Koje su najbolje lokacije za nekoliko trgovina za kućne ljubimce u okrugu tako da 40 posto vlasnika kućnih ljubimaca živi manje od deset minuta vožnje od jedne od trgovina?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="goal">
+        <div><h2>Cilj</h2></div>
+        <hr/>
+        <div>
+            <p>Odredite cilj koji se treba ispuniti kada se raspoređuju ustanove za lokacije potražnje.
+            </p>
+            <p>Uz alat Izaberite najbolje ustanove možete odrediti vrstu problema koji želite rije&scaron;iti &ndash; cilj. Alat je optimiziran za pružanje rje&scaron;enja za određene ciljeve. Bez obzira na cilj, za postizanje rje&scaron;enja upotrebljava se ista temeljna metoda &ndash; količina potražnje za zadanu lokaciju potražnje raspoređuje se najbližoj ustanovi. Ciljevi se razlikuju s obzirom na postupanje s udaljenosti (ili vremena) i potražnjom. Alat uzima u obzir vrijeme i udaljenost putovanja i količinu potražnje te, u nekim slučajevima, kapacitet ustanova. Ako je za cilj, primjerice, najvažnije da se smanji vrijeme putovanja, alat će svejedno poku&scaron;ati povećati raspoređenu potražnju. Slično tome, ako je cilj povećati raspoređenu potražnju, alat će to učiniti tako da smanji vrijeme putovanja (dodjeljivanjem lokacija potražnje najbližoj ustanovi, a ne bilo kojoj ustanovi).
+            </p>
+            <p>Ovisno o va&scaron;im podacima i postavkama kojima se koristite, različiti ciljevi mogu stvoriti iste ili slične rezultate. Međutim, trebali biste navesti cilj koji je najprikladniji za va&scaron;u analizu.
+            </p> 
+        </div>
+    </div>
+    <div id="allocateToExistingFacilities">
+        <div><h2>Dodijeli postojećim mjestima usluge</h2></div>
+        <hr/>
+        <div>
+            <p>Upotrijebite ovaj cilj ako ne želite tražiti nove ustanove, nego rasporediti na postojeće ustanove koje mogu imati ograničen ili neograničen kapacitet.    
+            </p>
+            <p>Ovaj cilj dodjeljuje potražnju postojećim ustanovama na temelju kapaciteta ustanove i količine potražnje okolnog područja. Potražnja se dodjeljuje najbližoj ustanovi dok se ne popuni dostupni kapacitet. Ako odredite maksimalni raspon putovanja, sve lokacije potražnje izvan raspona neće se dodijeliti ustanovi, čak i ako potražnja nije potpuno raspoređena.
+            </p> 
+        </div>
+    </div>
+    <div id="minimizeTravel">
+        <div><h2>Smanji putovanje</h2></div>
+        <hr/>
+        <div>
+            <p>Upotrijebite ovaj cilj ako želite potražiti ustanove tako da se smanji ukupno vrijeme putovanja ili udaljenost putovanja između traženih lokacija i ustanova.
+            </p>
+            <p>Cilj je obično primjenjiv kada se redovito putuje od ustanove do lokacije potražnje. Možete, primjerice, upotrijebiti ovaj cilj za smanjenje ukupne prijeđene udaljenosti za prijevoz dobara od distribucijskih centara do trgovina ili za odabir mjesta održavanja konferencije tako da se smanji vrijeme putovanja za sve sudionike.
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverage">
+        <div><h2>Povećaj pokrivenost</h2></div>
+        <hr/>
+        <div>
+            <p>Upotrijebite ovaj cilj ako želite povećati količinu potražnje koja će biti pokrivena unutar određenog vremena ili udaljenosti od ustanova.    
+            </p>
+            <p>Ovaj cilj odabire ustanove tako da se rasporedi maksimalna količina potražnje, uz svu potražnju od svake lokacije potražnje dodijeljenu najbližoj ustanovi.
+            </p>
+            <p>Konačni maksimalni raspon putovanja potreban je za ovaj cilj; u suprotnom se sva potražnja može dodijeliti jednoj ustanovi. Lokacije potražnje koje se nalaze izvan udaljenosti ili vremena ustanova neće se rasporediti (to će vam prikazati gdje se potražnja ne ispunjava i gdje mogu biti potrebne dodatne ustanove).
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverageWithCapacity">
+        <div><h2>Povećaj pokrivenost kapacitetom</h2></div>
+        <hr/>
+        <div>
+            <p>Upotrijebite ovaj cilj ako želite povećati količinu potražnje ustanova, ali ustanove imaju ograničene kapacitete.    
+            </p>
+            <p>Ovaj cilj odabire ustanove tako da se rasporedi maksimalna količina potražnje bez prema&scaron;ivanja kapaciteta ustanova. Sva potražnja svih lokacija potražnje dodjeljuje se najbližoj ustanovi s dostupnim kapacitetom (tj. ako bi dodjeljivanje lokacije potražnje prema&scaron;ilo dostupni kapacitet ustanove, lokacija potražnje neće se dodijeliti, umjesto dodjeljivanja dijela potražnje).
+            </p> 
+        </div>
+    </div>
+    <div id="coverAPercentageOfDemand">
+        <div><h2>Postotak pokrivenosti potražnje</h2></div>
+        <hr/>
+        <div>
+            <p>Upotrijebite ovaj cilj ako želite pronaći minimalni broj ustanova potrebnih da bi se pokrio dani postotak potražnje.
+            </p>
+            <p>Cilj odabire minimalni broj ustanova potrebnih za dostizanje određenog postotka potražnje. Za lokaciju potražnje koja se nalazi unutar maksimalnog raspona putovanja dviju ili vi&scaron;e ustanova potražnja će se podijeliti proporcionalno među ustanovama na temelju udaljenosti od svake ustanove. Ovaj se cilj obično upotrebljava kada ljudi imaju izbor koju ustanovu posjetiti i pretpostavlja se da će, općenito, posjetiti najbližu ustanovu (ako su ostali čimbenici jednaki).
+            </p>
+            <p>Za razliku od ostalih ciljeva koji odabiru ustanove, kojima se određuje koliko ustanova odabrati, ovaj cilj odabire broj ustanova za vas na temelju postotka potražnje koji želite zadovoljiti. Pretpostavlja se da ustanove nemaju ograničen kapacitet.
+            </p> 
+        </div>
+    </div>
+    <div id="measure">
+        <div><h2>Izmjeri</h2></div>
+        <hr/>
+        <div>
+            <p>Kao &scaron;to je slučaj s drugim alatima koji u analizu uključuju putovanje, možete odrediti mjeri li se putovanje putem udaljenosti ili vremena i odabrati među raznim načinima putovanja kao &scaron;to su vrijeme hodanja, vrijeme vožnje, udaljenost vožnje ruralnim područjem i tako dalje. Dostupne načine putovanja određuje administrator va&scaron;e organizacije. Kada upotrebljavate  <b>vrijeme vožnje</b>, <b>vrijeme vožnje ruralnim područjem</b> ili <b>vrijeme vožnje kamionom</b> možete uključiti promet za određeni dan u tjednu ili doba dana.
+            </p>
+            <p> Da bi se lokacije potražnje precizno dodijelile ustanovama, trebate odrediti putuje li se od ustanova do lokacija potražnje (npr. od vatrogasnih postaja do kuća) ili od lokacija potražnje do ustanova (od korisnika do knjižnica). Alat Izaberite najbolje ustanove uzet će u obzir smjer putovanja za jednosmjerne ulice, da li možete skrenuti iz jedne u drugu ulicu, da li je raskrižje gdje je zabranjeno skretanje ulijevo i tako dalje, ovisno o tome putuje li se od ustanove prema lokacijama potražnje ili od lokacija potražnje prema ustanovama.
+            </p>
+        </div>
+    </div>
+    <div id="demandLocationsLayer">
+        <div><h2>Sloj mjesta potražnje</h2></div>
+        <hr/>
+        <div>
+            <p>Točkasti slojevi predstavljaju lokacije gdje postoji potražnja za uslugama koje nude ustanove. Alat dodjeljuje te lokacije potražnje odgovarajućim ustanovama na temelju odabranog cilja.
+            </p>
+            <p>Lokacije potražnje imaju povezanu količinu potražnje. Upotrijebite konstantu za određivanje vrijednosti imaju li sve lokacije potražnje istu potražnju. Ako količina potražnje ovisi o lokaciji potražnje, upotrijebite polje u Sloju lokacije potražnje za određivanje vrijednosti za svaku lokaciju potražnje.
+            </p>
+            <p>Potražnja će se rasporediti na ustanove dok se potpuno ne rasporedi, bez obzira na to koliko su lokacije potražnje udaljene od ustanova. Možete dodijeliti maksimalni raspon putovanja Sloju lokacija potražnje za stvaranje praga udaljenosti ili vremena &ndash; sve lokacije potražnje izvan vrijednosti praga neće se rasporediti. Upotrijebite konstantu za određivanje vrijednosti imaju li sve lokacije potražnje isti maksimalni raspon putovanja. Ako maksimalni raspon putovanja ovisi o lokaciji potražnje, upotrijebite polje u Sloju lokacije potražnje za određivanje vrijednosti za svaku lokaciju potražnje.
+            </p>
+            <p>Ako je vrsta cilja  <b>Pokrij postotak potražnje</b>, trebate odrediti minimalni postotak potražnje koji želite da ustanove obuhvate.
+            </p>
+            <p>Osim odabira sloja iz karte, možete odabrati opciju  <b>Izaberi sloj za analizu</b> koja se nalazi na dnu popisa padajućeg izbornika. Ova opcija otvara galeriju u kojoj možete pretraživati i odabrati skupove podataka iz raznih izvora te ih koristiti u svojoj analizi. 
+            </p>
+            <p>Alat podržava do 10.000 geoobjekata u Sloju lokacija potražnje.
+            </p>  
+        </div>
+    </div>
+    <div id="requiredFacilitiesLayer">
+        <div><h2>Sloj zahtijevanih mjesta usluge</h2></div>
+        <hr/>
+        <div>
+            <p>Točkasti geoobjekti predstavljaju lokacije koje djeluju kao ustanove pružanjem neke vrste usluge. Zahtijevana mjesta usluge obično predstavljaju lokacije koje već postoje, za razliku od kandidata za mjesto ustanove koje obično predstavljaju lokacije gdje će se nove ustanove izgraditi ili smjestiti. Prilikom dodjeljivanja lokacija potražnje, alat se koristi ustanovama u  <b>Sloju zahtijevanih mjesta usluge</b>, a tek onda u <b>Sloju kandidata za mjesto usluge</b>.
+            </p>
+            <p>Zahtijevana mjesta usluge mogu imati neograničen kapacitet (tj. mogu zadovoljavati svu potražnju usmjerenu na njih) ili mogu imati ograničen kapacitet. Ako sve ustanove imaju isti ograničen kapacitet (kao &scaron;to je broj domaćinstava koje može uslužiti jedna vatrogasna postaja, recimo 4.000), navedite konstantnu vrijednost. Ako se kapacitet razlikuje među ustanovama (kao &scaron;to je broj dostupnih mjesta za nove učenike u svim srednjim &scaron;kolama), navedite polje koje sadrži vrijednost kapaciteta za svaku ustanovu.
+            </p>
+            <p>Alat podržava do 100 geoobjekata u  <b>Sloju zahtijevanih mjesta usluge</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="candidateFacilitiesLayer">
+        <div><h2>Sloj kandidata za mjesto usluge</h2></div>
+        <hr/>
+        <div>
+            <p>Točkasti geoobjekti predstavljaju lokacije koje djeluju kao ustanove pružanjem neke vrste usluge. Kandidati za mjesto ustanove obično predstavljaju lokacije gdje će se nove ustanove izgraditi ili smjestiti, za razliku od zahtijevanih mjesta usluge koje obično predstavljaju lokacije koje već postoje.
+            </p>
+            <p>Ovisno o cilju va&scaron;e analize, trebate odrediti broj kandidata za mjesto ustanove za odabir od skupa kandidata. Ako navedete tražene ustanove i ustanove kandidate, alat se koristi ustanovama u  <b>Sloju zahtijevanih mjesta usluge</b>, a tek onda u <b>Sloju kandidata za mjesto usluge</b>.
+            </p>
+            <p>Kandidati za mjesto ustanove mogu imati neograničen kapacitet (tj. mogu zadovoljavati svu potražnju usmjerenu na njih) ili mogu imati ograničen kapacitet. Ako sve ustanove imaju isti ograničen kapacitet (kao &scaron;to je broj domaćinstava koje može uslužiti jedna vatrogasna postaja, recimo 4.000), navedite konstantnu vrijednost. Ako se kapacitet razlikuje među ustanovama (kao &scaron;to je broj dostupnih mjesta za nove učenike u svim srednjim &scaron;kolama), navedite polje koje sadrži vrijednost kapaciteta za svaku ustanovu.
+            </p>
+            <p>Alat podržava do 1.000 geoobjekata u  <b>Sloju kandidata za mjesto usluge</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Odaberite slojeve ograničenja</h2></div>
+        <hr/>
+        <div>
+            <p> Jedan ili vi&scaron;e geoobjekata koji funkcioniraju kao privremena ograničenja (barijere) kad se krećete odgovarajućim ulicama. Možete navesti ograničenja upotrebom točkastih, linijskih ili poligonalnih geoobjekata.
+            </p>
+            <p>Točkasto ograničenje može predstavljati sru&scaron;eno stablo, nesreću, sru&scaron;eni dalekovod ili bilo &scaron;to &scaron;to u potpunosti blokira promet na određenom mjestu u ulici. Kretanje je dopu&scaron;teno po ulici, ali ne kroz ograničenje. Možete navesti do 250 geoobjekata koji će funkcionirati kao točkasta ograničenja.
+            </p>
+            <p>Linijsko ograničenje sprječava kretanje svugdje gdje ograničenje presijeca ulice. Na primjer, povorka ili prosvjed koji zaustavljaju promet kroz nekoliko dijelova ulica mogu se modelirati pomoću linijskog ograničenja. Ako broj geoobjekata na ulici koji presijecaju linijska ograničenja prema&scaron;uje 500, alat će javiti da je do&scaron;lo do pogre&scaron;ke.
+            </p>
+            <p>Poligonsko ograničenje sprječava kretanje svugdje gdje poligon presijeca ulice. Ova vrsta ograničenja može se upotrijebiti za modeliranje poplavljenih područja ulične mreže gdje kretanje cestom nije moguće. Ako broj geoobjekata na ulici koji presijecaju poligonska ograničenja prema&scaron;uje 2000, alat će javiti da je do&scaron;lo do pogre&scaron;ke.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja koji će se stvoriti u dijelu  <b>Moj sadržaj</b> i dodati karti.  Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako naziv sloja već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Sloj rezultata sadržavat će sloj za svaku od sljedećih stavki: ustanove kojima je dodijeljena potražnja, lokacije potražnje koje su dodijeljene ustanovama i linije dodjele koje povezuju lokacije potražnje s dodijeljenim ustanovama. Linije dodjele vuku se kao ravne linije; međutim, vrijeme ili udaljenost putovanja između ustanove i lokacije potražnje uvijek se temelji na načinu putovanja koji odredite i ne upotrebljavaju se udaljenosti zračne linije.
+            </p>
+            <p>Upotrebom padajućeg izbornika  <b>Spremi rezultat u</b> možete odrediti naziv mape u dijelu <b>Moj sadržaj</b> gdje će se spremiti rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

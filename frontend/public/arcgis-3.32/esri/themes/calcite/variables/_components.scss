@@ -1,0 +1,19 @@
+$padding-base-vertical:     5px !default;
+$padding-base-horizontal:   10px !default;
+
+$padding-small-vertical:    3px !default;
+$padding-small-horizontal:  5px !default;
+
+$padding-xs-vertical:       1px !default;
+$padding-xs-horizontal:     2px !default;
+
+//** Global color for active items (e.g., navs or dropdowns).
+$component-active-color:    $Calcite_Gray_050 !default;
+//** Global background color for active items (e.g., navs or dropdowns).
+$component-active-bg:       $brand-primary !default;
+//** Width of the `border` for generating carets that indicator dropdowns.
+$caret-width-base:          4px !default;
+//** Carets increase slightly in size for larger components.
+$caret-width-large:         5px !default;
+//** Background color for dividers, such as menu separator, toolbar separator, etc.
+$divider-bg:                $Calcite_Gray_200 !default;

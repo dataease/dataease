@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Find Centroids</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="Find Centroids"></h2>
+        <hr/>
+    <p>This tool works with a layer of multipoint, line, or area features to determine the representative center of each feature.
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only the features in the input multipoint, line, or area layer visible within the current map extent will be analyzed.  Dacă nu se bifează, toate obiectele spaţiale din stratul tematic introdus vor fi analizate, chiar dacă se află &icirc;n afara extinderii curente a hărţii.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choose layer whose features will be used to generate centroids</h2></div>
+        <hr/>
+        <div>
+            <p> The multipoint, line, or area layer that will be used to find centroids.
+            </p>
+            <p>Pe l&acirc;ngă alegerea unui strat tematic din harta dvs., puteţi selecta  <b>Alegere strat tematic de analiză</b>, care se găseşte &icirc;n partea de jos a listei derulante. Această opțiune deschide o galerie &icirc;n care puteți răsfoi și selecta seturi de date din diferite surse pentru a le utiliza &icirc;n analiza dvs. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>Show me output locations</h2></div>
+        <hr/>
+        <div>
+            <p> When <b>At the true centroid</b> is checked (default), the output will return the true location of the centroid for each input feature. The centroids will be located  as follows:
+                <ul>
+                    <li>Multipoint features&mdash;The output centroid will be located at the average x and y coordinates of all the points in the multipoint feature.
+                    </li>
+                    <li>Line features&mdash;The output centroid will be located at the weighted average x and y coordinates of the midpoints of all line segments in the line feature. The weight is based on the length of the segment.
+                    </li>
+                    <li>Area features&mdash;The output centroid will be located at the center of the area.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>When  <b>contained by input features</b> is checked, the output point features will be contained by or inside each input feature. The resulting point features will appear as follows:
+                <ul>
+                    <li>Multipoint features&mdash;The output centroid will be coincident to one of the points in the multipoint group.
+                    </li>
+                    <li>Line features&mdash;The output centroid will be on the line.  If the line is curved, the output will be at the midpoint of the line. 
+                    </li>
+                    <li>Area features&mdash;The output point will be inside the area feature.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic care va fi creat &icirc;n  <b>Resursele mele</b> și adăugat &icirc;n hartă.  Numele implicit se bazează pe numele instrumentului și numele stratului tematic de intrare. Dacă numele stratului tematic rezultat există deja, vi se va solicita să furnizați un alt nume.
+            </p>
+            <p>Utiliz&acirc;nd meniul derul&acirc;nd  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

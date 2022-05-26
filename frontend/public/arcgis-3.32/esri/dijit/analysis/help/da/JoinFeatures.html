@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Forbind objekter</h2><p/>
+        <h2><img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" alt="Forbind objekter"></h2>
+        <hr/>
+    <p>Forbind objekter-v&aelig;rkt&oslash;jet arbejder med to lag, og det knytter attributter fra det ene objekt til det andet baseret p&aring; spatiale relationer og attributrelationer. V&aelig;rkt&oslash;jet registrerer alle de inputobjekter, der opfylder de angivne tilknytningsbetingelser, og det knytter tilknytningslaget til destinationslaget. 
+    </p>
+    <p>Forbind objekter-v&aelig;rkt&oslash;jet kan anvendes til punkter, linjer, omr&aring;der og tabeller. En spatial tilknytning kr&aelig;ver, at dine data har en geometri. 
+    </p>
+    <p>Hvis feltet  <b>Brug aktuel kortudstr&aelig;kning</b> er markeret, analyseres kun de objekter, der er synlige inden for den aktuelle kortudstr&aelig;kning. Hvis feltet ikke er markeret, analyseres alle objekter i b&aring;de destinations- og tilknytningslaget, ogs&aring; selvom de befinder sig uden for den aktuelle kortudstr&aelig;kning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Vælg destinationslag</h2></div>
+        <hr/>
+        <div>
+            <p>Det destinationslag, der f&aring;r attributter fra tilknytningslaget knyttet til sin tabel.
+            </p>
+            <p>Ud over at v&aelig;lge et lag fra dit kort kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten. Denne indstilling &aring;bner et galleri, hvor du kan gennemse og v&aelig;lge datas&aelig;t fra forskellige kilder, som du kan bruge i din analyse. 
+            </p> 
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>Vælg lag, der skal knyttes til destinationslaget</h2></div>
+        <hr/>
+        <div>
+            <p>Tilknytningslaget med de attributter, der skal knyttes til destinationslaget.
+            </p>
+            <p>Ud over at v&aelig;lge et lag fra dit kort kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten. Denne indstilling &aring;bner et galleri, hvor du kan gennemse og v&aelig;lge datas&aelig;t fra forskellige kilder, som du kan bruge i din analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="joinType">
+        <div><h2>Vælg tilknytningstype(r)</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan anvende en spatial tilknytning, en attributtilknytning eller en kombination af begge to. 
+                <ul>
+                    <li> <b>Spatial</b> &ndash; Benytter den angivne spatiale relation til at tilknytte objekter. Dette kr&aelig;ver, at begge lag har en geometri.
+                    </li>
+                    <li> <b>Attribut</b> &ndash; Tilknytter objekter baseret p&aring; matchende felter.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Vælg en spatial relation</h2></div>
+        <hr/>
+        <div>
+            <p>Den spatiale relation, der bestemmer, om objekterne skal knyttes til hinanden. De tilg&aelig;ngelige relationer afh&aelig;nger af den geometritype (punkt, linje, omr&aring;de), der anvendes som inputobjekter. Tilg&aelig;ngelige relationer omfatter f&oslash;lgende:
+                <ul>
+                    <li> <b>Identisk med</b> &ndash; Objekterne i destinationslaget vil blive matchet, hvis de er identiske med objekterne i tilknytningslaget.
+                    </li>
+                    <li> <b>Gennemsk&aelig;r</b> &ndash; Objekterne i destinationslaget vil blive matchet, hvis de gennemsk&aelig;rer objekterne i tilknytningslaget.
+                    </li>
+                    <li> <b>Indeholder fuldst&aelig;ndigt</b> &ndash; Objekterne vil blive matchet, hvis objekterne i destinationslaget fuldst&aelig;ndig indeholder objekterne i tilknytningslaget.
+                    </li>
+                    <li> <b>Helt inde i</b> &ndash; Objekterne vil blive matchet, hvis objekterne i destinationslaget er helt inde i objekterne i tilknytningslaget.
+                    </li>
+                    <li> <b>Inden for en afstand af</b> &ndash; Objekterne i destinationslaget vil blive matchet, hvis de er placeret inden for en bestemt afstand fra objekterne i tilknytningslaget.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>Attribut-tilknytning</h2></div>
+        <hr/>
+        <div>
+            <p>Den attributrelation, der bestemmer, om objekterne knyttes til hinanden. Objekterne matches, n&aring;r feltv&aelig;rdierne i tilknytningslaget er lig med feltv&aelig;rdierne i destinationslaget. 
+            </p>
+            <p>Forestil dig f.eks., at vi har et geografisk lag med beboelsesadresser, der g&aring;r p&aring; tv&aelig;rs af regioner (inkl. feltet  <i>ZIP</i>), samt et tabeldatas&aelig;t med helbredsm&aelig;ssige og demografiske oplysninger fordelt efter postnummer (inkl. et felt med titlen <i>HEALTHZIP</i>). Vi kan knytte datas&aelig;ttet med helbredsoplysninger til datas&aelig;ttet med adresseoplysninger ved at matche feltet <i>ZIP</i> med feltet <i>HEALTHZIP</i>, hvilket vil resultere i et lag med beboelsesadresser med tilsvarende helbredsdata.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Vælg tilknytningshandling</h2></div>
+        <hr/>
+        <div>
+            <p>Bestemmer, hvordan tilknytninger mellem destinations- og tilknytningslaget h&aring;ndteres, hvis det viser sig, at flere objekter i tilknytningslaget har den samme relation i forhold til destinationslaget. Du kan v&aelig;lge mellem disse to tilknytningshandlinger:
+                <ul>
+                    <li> <b>Tilknyt &eacute;n-til-&eacute;n</b> &ndash; Denne indstilling knytter objekterne i destinationslaget til et enkelt objekt i tilknytningslaget. M&aring;den, objekter knyttes sammen p&aring;, bestemmes af parameteren <b>Tilf&oslash;j statistik</b> eller parameteren <b>Defin&eacute;r, hvilken post der beholdes</b>. Hvis <b>Tilf&oslash;j statistik</b> benyttes, summeres alle matchede tilknyttede objekter for hvert objekt i destinationslaget. Antallet af tilknyttede objekter tilf&oslash;jes som standard.Hvis <b>Defin&eacute;r, hvilken post der beholdes</b>
+ benyttes, kan du v&aelig;lge at beholde enten den f&oslash;rste post, der matcher, eller beholde en post, der matcher, p&aring; basis af et udtryk. Et udtryk kan bruge enten et numerisk felt 
+(mulighed for st&oslash;rste eller mindste post) eller et datofelt (mulighed for nyeste eller &aelig;ldste).
+                    </li>
+                    <li> <b>Tilknyt &eacute;n-til-mange</b> &ndash; Denne indstilling knytter alle matchende objekter i tilknytningslaget til destinationslaget. Resultatlaget vil indeholde flere poster fra destinationslaget.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Forestil dig f.eks., at vi &oslash;nsker at finde frem til alle de dagligvarebutikker, der ligger inden for 5 kilometer fra et marked med landbrugsprodukter. I dette tilf&aelig;lde skal det lag, der tilknyttes til, have et enkelt objekt, der repr&aelig;senterer et marked med landbrugsprodukter, og de tilknyttede objekter repr&aelig;senterer de lokale dagligvarebutikker, der har attributter s&aring;som samlede &aring;rlige salgstal. Med  <b>Forbind objekter</b>-v&aelig;rkt&oslash;jet finder du ud af, at fem dagligvarebutikker opfylder kriterierne. Hvis du har angivet tilknytningshandlingen <b>Tilknyt &eacute;n-til-mange</b>, ville du ende med at have fem objekter i dit resultatlag, hvor hver r&aelig;kke repr&aelig;senterer markedet med landbrugsprodukter og &eacute;n dagligvarebutik. Hvis du angiver en <b>Tilknyt &eacute;n-til-&eacute;n</b>-relation og v&aelig;lger en statistik, vil du ende med at have &eacute;t objekt, der repr&aelig;senterer markedet med landbrugsprodukter og de summerede oplysninger om dagligvarebutikker, s&aring;som antallet (5) samt andre valgfrie statistiske oplysninger som f.eks. de samlede &aring;rlige salgstal.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Tilføj statistik (valgfrit)</h2></div>
+        <hr/>
+        <div>
+            <p>Hvis indstillingen  <b>Tilknyt &eacute;n-til-&eacute;n</b> v&aelig;lges for de numeriske felter, kan du summere og beregne statistik p&aring; dine tilknyttede objekter. Samment&aelig;llingen af de matchende tilknyttede objekter vil som standard blive beregnet og f&oslash;jet til resultatlaget. Hvis du v&aelig;lger ikke at tilf&oslash;je statistik, vil det f&oslash;rste matchende objekt i tilknytningslaget blive knyttet til det f&oslash;rste matchende objekt i destinationslaget. Du kan beregne en eller flere af f&oslash;lgende:
+            </p>
+            <ul>
+                <li>Sum
+                </li>
+                <li>Minimum
+                </li>
+                <li>Maksimum
+                </li>
+                <li>Gennemsnit
+                </li>
+                <li>Standardafvigelse
+                </li>
+            </ul>
+            
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; det lag, som oprettes i  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis lagnavnet allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Ved hj&aelig;lp af rullemenuen  <b>Gem resultat</b> kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet skal gemmes.
+            </p>
+        </div>
+    </div>
+    <div id="isView">
+        <div><h2>Opret resultater som hosted vektorlag-visning</h2></div>
+        <hr/>
+        <div>
+            <p> N&aring;r du opretter resultaterne som en &quot;hosted&quot; vektorlag-visning, vil dataene v&aelig;re opdaterede, n&aring;r kildedataene &aelig;ndres. &quot;Hostede&quot; vektorlag-visninger, der indeholder tilknytninger, vil v&aelig;re skrivebeskyttede, og de vil ikke forbruge credits i forbindelse med analyse og lagring.
+            </p>
+            <p>Du kan oprette en hosted vektorlag-visning ud fra analyseresultaterne, hvis alle f&oslash;lgende betingelser er opfyldt:
+                <ul>
+                    <li>Du er ejer af begge lag.
+                    </li>
+                    <li>Begeg lag er hostede vektorlag.
+                    </li>
+                    <li>Du udf&oslash;rer en attribut-baseret tilknytning.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

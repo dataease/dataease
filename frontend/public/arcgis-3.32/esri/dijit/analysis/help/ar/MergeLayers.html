@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>دمج الطبقات</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="دمج الطبقات"></h2>
+        <hr/>
+    <p>تنسخ هذه الأداة المعالم من طبقتين إلى طبقة جديدة. يجب أن تحتوي جميع الطبقات التي سيتم دمجها على نفس اسم أنواع المعالم (النقاط أو الخطوط أو المناطق). يمكنك التحكم الآن في انضمام ونسخ الحقول من الطبقات المُدخلة. على سبيل المثال:
+        <ul>
+            <li>لدي ثلاث طبقات لإنجلترا وويلز واسكتلندا وأرغب في طبقة واحدة لبريطانيا العظمى. 
+            </li>
+            <li>لدي 12 طبقة وتتضمن كل منها معلومات قطعة الأرض المتعلقة بالبلدة القريبة. أريد ضمهما معًا إلى طبقة مُفردة مع الاحتفاظ بالحقول التي لها نفس الاسم والنوع فقط في الطبقات الاثني عشر المدخلة.
+            </li>
+        </ul>
+        
+    </p>
+    <p>عند التأشير على  <b>استخدام مدى الخريطة الحالي</b> لا يتم دمج إلا المعالم المرئية في المدى الحالي للخريطة.  عند إلغاء التأشير، سيتم دمج جميع المعالم في كلتا الطبقتين حتى لو كانت خارج مدى الخريطة الحالي.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>اختر طبقة</h2></div>
+        <hr/>
+        <div>
+            <p>النقطة، أو الخط، أو معالم المنطقة للدمج مع الطبقة المُحددة أسفل. 
+            </p>
+        </div>
+    </div>
+    <div id="MergeLayer">
+        <div><h2>اختيار الطبقة للدمج</h2></div>
+        <hr/>
+        <div>
+            <p>اختر الطبقة المُراد دمجها مع الطبقة الأولى.
+            </p>
+        </div>
+    </div>
+    <div id="MergingAttributes">
+        <div><h2>تعديل دمج الحقول</h2></div>
+        <hr/>
+        <div>
+            <p>يتم تنفيذ جميع حقول كلا المدخلين افتراضيًا في المخرجات. يمكنك تغيير كيفية نقل الحقول إلى المخرجات كما يلي:
+                <ul>
+                    <li> <b>إعادة التسمية</b>&mdash;ستتم إعادة تسمية الحقل في المخرجات.
+                    </li>
+                    <li> <b>إزالة</b>&mdash;ستتم إزالة الحقل من المخرجات.
+                    </li>
+                    <li> <b>تطابق</b>&mdash;تتطابق أسماء الحقول.  سيتم نسخ قيم الحقل من الطبقة المُراد دمجها إلى الحقل المُخرج المُطابق.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>إذا احتوت كلتا الطبقتين على حقل باسم مطابق ونوع البيانات، سيتم دمج محتوى كلا الحقلين في حقل واحد بذلك الاسم. لا ينطبق ذلك على الحقول حيث يتم استخدام  <b>تطابُق</b> في معلمة <b>تعديل دمج الحقول</b>.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>اسم طبقة النتيجة</h2></div>
+        <hr/>
+        <div>
+            <p>هذا هو اسم الطبقة الذي سيتم إنشاؤه في  <b>محتوياتي</b> وإضافتها للخريطة.  يستند الاسم الافتراضي إلى اسم الأداة واسم الطبقة المدخلة. إذا وُجدت الطبقة بالفعل، سيطلب منك كتابة اسم آخر.
+            </p>
+            <p>عند استخدام القائمة المنسدلة  <b>حفظ النتائج في </b> يمكن تحديد اسم المجلد في <b>المحتويات </b> حيث يتم حفظ النتائج.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

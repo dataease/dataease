@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Incorporar datos</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="Diagrama de flujo de trabajo de Incorporar datos"></h2>
+        <hr/>
+    <p>Esta herramienta incorpora datos a una capa de entidades alojada existente. Incorporar datos modifica la capa de entrada original y no genera una nueva capa de salida. Es posible coordinar los campos bas&aacute;ndose en el nombre del campo y el tipo de campo, o bien es posible aplicar m&eacute;todos de geocodificaci&oacute;n m&aacute;s avanzados.
+    </p>
+    <p>A continuaci&oacute;n se muestran algunos ejemplos: 
+        <ul>
+            <li>Usted trabaja para una gran aseguradora que genera registros de ventas cada mes. Para su informe anual, es necesario recopilar los datos mensuales para su an&aacute;lisis.  Para iniciar el an&aacute;lisis de las ventas, debe aprovechar Incorporar datos para actualizar su capa AnnualReport_2018 una vez est&eacute;n disponibles las cifras mensuales. Dado que sabe que su organizaci&oacute;n sigue un esquema uniforme todos los meses, puede usar el m&eacute;todo de asignaci&oacute;n de campos predeterminado para incorporar eficientemente las entidades bas&aacute;ndose en el nombre del campo y su tipo.
+            </li>
+            <li>Diez grupos medioambientales recopilan por separado cientos de miles de mediciones clim&aacute;ticas dentro de su jurisdicci&oacute;n.  Estas organizaciones desean reunir sus datos para mejor comprender los patrones regionales y mundiales. Cada organizaci&oacute;n determina el esquema para su dataset. Cada una ha especificado nombres de campo diferentes para los datos de temperatura y velocidad del viento.  Dadas las diferencias en los nombres de campo de un dataset a otro, la asignaci&oacute;n de campos se puede aprovechar para especificar la forma de incorporar las mediciones de temperatura y velocidad del viento a sus campos respectivos.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Elegir capa a la que incorporar</h2></div>
+        <hr/>
+        <div>
+            <p>Las entidades de tabla, punto, l&iacute;nea o pol&iacute;gono a las cuales se incorporar&aacute;n los datos.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>La capa a la que realice la incorporaci&oacute;n se modificar&aacute; durante la ejecuci&oacute;n de la herramienta. Antes de continuar, aseg&uacute;rese de que desea modificar esta capa.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>Adem&aacute;s de elegir una capa en el mapa, puede elegir  <b>Elegir capa de an&aacute;lisis</b> en la parte inferior de la lista desplegable para examinar su contenido para una capa de entidades alojada.
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>Elegir capa a incorporar</h2></div>
+        <hr/>
+        <div>
+            <p>Las entidades de tabla, punto, l&iacute;nea o pol&iacute;gono que desea incorporar a la capa de entrada.
+            </p>
+            <p>Adem&aacute;s de elegir una capa en el mapa, puede elegir  <b>Elegir capa de an&aacute;lisis</b> en la parte inferior de la lista desplegable para examinar el contenido del dataset o la capa de entidades de un recurso compartido de archivos de big data.
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>Incorporar todas las entidades o definir un subconjunto (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Identifica las entidades que se incorporar&aacute;n. Este par&aacute;metro es opcional.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>Elegir cómo incorporar los campos (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica de qu&eacute; modo se incorporan a la capa de entrada los campos de la capa de incorporaci&oacute;n. De forma predeterminada, se incorporan todos los campos de entrada e incorporaci&oacute;n que coincidan. Los campos coinciden si presentan el mismo nombre de campo y el mismo tipo de campo. Opcionalmente, puede elegir de qu&eacute; forma se asignan los campos o puede calcular expresiones de Arcade para rellenar los valores de campo.
+            </p>
+            <p>Por ejemplo, tiene una capa de entrada con los campos  <i>field_number</i>, <i>field_string</i>, <i>date_field</i> y <i>unused_field</i> y una capa de incorporaci&oacute;n con los campos <i>field_string</i>, <i>field_number</i> y <i>MY_DATE_FIELD</i>.
+                <ul>
+                    <li>De forma predeterminada, la herramienta asignar&aacute;  <i>field_number</i> de la capa de entrada a <i>field_number</i> en la capa de incorporaci&oacute;n y <i>field_string</i> de la capa de entrada a <i>field_string</i> en la capa de incorporaci&oacute;n.
+                    </li>
+                    <li>De forma predeterminada, los campos  <i>date_field</i> y <i>unused_field</i> de la capa de entrada se rellenar&aacute;n con valores de <i>null</i> dado que no cuentan con ning&uacute;n campo coincidente en la capa de incorporaci&oacute;n.
+                    </li>
+                    <li>Opcionalmente, puede incorporar valores a los campos no asignados autom&aacute;ticamente de forma predeterminada. Por ejemplo,  <i>date_field</i> de la capa de entrada puede asignarse al campo de incorporaci&oacute;n <i>MY_DATE_FIELD</i>. Para ello, utilice el men&uacute; desplegable situado junto a <i>date_field</i> en la primera columna y seleccione <i>MY_DATE_FIELD</i> en el men&uacute; desplegable de la segunda columna.
+                    </li>
+                </ul>
+                 Por poner otro ejemplo, una capa de entrada tiene los campos num&eacute;ricos <i>value_1</i>, <i>value_2</i>, <i>value_3</i> y <i>my_Average</i> y una capa de incorporaci&oacute;n presenta los campos num&eacute;ricos <i>value_1</i>, <i>value_2</i> y <i>value_3</i>.
+                <ul>
+                    <li>De forma predeterminada, se asignar&aacute;n e incorporar&aacute;n  <i>value_1</i>, <i>value_2</i> y <i>value_3</i>.
+                    </li>
+                    <li>Adem&aacute;s del comportamiento predeterminado, es posible calcular valores para el campo  <i>my_Average</i>. H&aacute;galo empleando varios campos y operaciones matem&aacute;ticas mediante la opci&oacute;n desplegable <b>Expresi&oacute;n</b> de la columna que aparece junto a <i>my_Average</i> y construyendo una expresi&oacute;n de Arcade personalizada, por ejemplo, <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

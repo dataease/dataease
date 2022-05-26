@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Luo valuma-alueet</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="Luo valuma-alueet"></h2>
+        <hr/>
+    <p>T&auml;m&auml;n ty&ouml;kalun avulla voit m&auml;&auml;ritt&auml;&auml; valuma-alueen tai yl&auml;virran kokooma-alueen kullekin l&auml;ht&ouml;karttatason pisteelle. 
+    </p>
+    <p>Oletetaan, ett&auml; k&auml;yt&ouml;ss&auml;si on pistekohteita, jotka edustavat vesitse levi&auml;vi&auml; saasteita, ja haluat etsi&auml; saasteiden todenn&auml;k&ouml;isen l&auml;hteen. Koska saasteen l&auml;hteen on oltava jossain kohtaa valuma-aluetta pisteest&auml; yl&auml;virtaan, t&auml;m&auml;n ty&ouml;kalun avulla voit selvitt&auml;&auml; valuma-alueet, jotka sis&auml;lt&auml;v&auml;t saasteen l&auml;hteet.
+    </p>
+    <p>L&auml;ht&ouml;pisteiden sijainnilla on merkityst&auml;. Jos ne eiv&auml;t sijaitse tarkkaan vesist&ouml;n viivalla, tuloksena syntyv&auml;t valuma-alueet voivat olla hyvin pieni&auml;, eik&auml; niist&auml; ole hy&ouml;ty&auml; analyysissa.  <b>Etsi et&auml;isyys l&auml;himp&auml;&auml;n vesist&ouml;&ouml;n</b> -toiminnon avulla voi s&auml;&auml;t&auml;&auml; l&auml;ht&ouml;pisteiden sijaintia, jotta ne osuvat tarkkaan vesist&ouml;n viivalle. Silloin vesist&ouml;n viivalla sijaitsevaan pisteeseen virtaavan valuma-alueen l&ouml;yt&auml;minen on helpompaa. Valuma-alueiden etsinn&auml;ss&auml; k&auml;ytetyt s&auml;&auml;detyt sijainnit kirjoitetaan tuloskarttatasoon &ndash; l&auml;ht&ouml;pisteit&auml; ei muokata.
+    </p>
+    <p>Tuloksena on ryhm&auml;taso, joka sis&auml;lt&auml;&auml; seuraavat kaksi tasoa: valuma-alueet ja valuma-alueiden laskennassa k&auml;ytetyt s&auml;&auml;detyt pisteet.     
+    </p>
+    <p>Tuloksena syntyviss&auml; valuma-alueissa on kaikki l&auml;ht&ouml;pisteiden ominaisuustiedot sek&auml; seuraavat lis&auml;ominaisuustiedot:     
+        <ul>
+            <li> <i>PourPtID</i>: T&auml;m&auml; sis&auml;lt&auml;&auml; l&auml;ht&ouml;pisteen tunnusarvon.
+            </li>
+            <li> <i>Area Square Kilometers</i>: T&auml;m&auml; sis&auml;lt&auml;&auml; yl&auml;virran valuma-alueen neli&ouml;kilometrein&auml;.
+            </li>
+            <li> <i>Description</i> ja <i>DataResolution</i>: N&auml;m&auml; sis&auml;lt&auml;v&auml;t tietoja, jotka liittyv&auml;t j&auml;ljityksen laskennassa tarvittavaan hydrologiseen aineistoon.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jos vaihtoehto  <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b> on valittuna, vain nykyisen karttalaajuuden kohteita k&auml;ytet&auml;&auml;n valuma-alueiden laskentaan. Jos toimintoa ei ole valittu, kaikki sy&ouml;tekarttatason kohteet analysoidaan &ndash; my&ouml;s kohteet, jotka ovat nykyisen karttalaajuuden ulkopuolella.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pistekohteet, joita käytetään valuma-alueiden laskennassa</h2></div>
+        <hr/>
+        <div>
+            <p>Valuma-alue (yl&auml;virran kokooma-alue) lasketaan kutakin pistett&auml; kohti.  
+            </p>
+            <p>Kartasta valittavan karttatason lis&auml;ksi voit valita alareunan avattavasta luettelosta  <b>Valitse analyysikarttataso</b> -vaihtoehdon. T&auml;m&auml; vaihtoehto avaa gallerian, jossa voit selata ja valita aineistoryhmi&auml; erilaisista l&auml;hteist&auml; ja k&auml;ytt&auml;&auml; niit&auml; analyysissa. 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>Etsi etäisyys lähimpään vesistöön</h2></div>
+        <hr/>
+        <div>
+            <p>Jos l&auml;ht&ouml;pisteet sijaitsevat kaukana vesist&ouml;n viivalta, tuloksena syntyv&auml;t valuma-alueet ovat todenn&auml;k&ouml;isesti hyvin pieni&auml; eik&auml; niist&auml; ole juurikaan hy&ouml;ty&auml; analyysissa, kuten saasteen yl&auml;virrassa sijaitsevan l&auml;hteen selvityksess&auml;. Useimmissa tapauksissa l&auml;ht&ouml;pisteen halutaan kiinnittyv&auml;n l&auml;himp&auml;&auml;n vesist&ouml;n viivaan niiden valuma-alueiden etsimiseksi, jotka virtaavat vesist&ouml;n viivalla sijaitsevaan pisteeseen. Voit etsi&auml; l&auml;himm&auml;n vesist&ouml;n viivan m&auml;&auml;ritt&auml;m&auml;ll&auml; hakuet&auml;isyyden. Jos et m&auml;&auml;rit&auml; hakuet&auml;isyytt&auml;, ty&ouml;kalu laskee tavanomaisen hakuet&auml;isyyden.  
+            </p>
+            <p>Voit k&auml;ytt&auml;&auml; l&auml;ht&ouml;pisteen tarkkaa sijaintia m&auml;&auml;ritt&auml;m&auml;ll&auml; hakuet&auml;isyydeksi nollan.  
+            </p>
+            <p>Analyysitarkoituksia varten Esri on laskenut vesist&ouml;n viivat ennakkoon k&auml;ytt&auml;m&auml;ll&auml; standardinmukaisia hydrologisia malleja. Jos hakuet&auml;isyydell&auml; ei ole yht&auml;&auml;n vesist&ouml;n viivaa, ohjelma k&auml;ytt&auml;&auml; hakuet&auml;isyyden sijaintia, joka sis&auml;lt&auml;&auml; korkeimman virtauskertym&auml;n.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen tason nimi, joka luodaan kohtaan  <b>Oma sis&auml;lt&ouml;</b> ja joka lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttatason nimi on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Avattavan  <b>Tallenna tulos kohteeseen</b> -valikon avulla voit m&auml;&auml;ritt&auml;&auml; sen <b>Oma sis&auml;lt&ouml;</b> -kansion nimen, johon tulos tallennetaan.
+            </p>
+            <p> T&auml;m&auml;n ty&ouml;kalun suorittaminen ei kuluta krediittej&auml;.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>اكتشاف الكائنات باستخدام التعلم الشامل</h2><p/>
+        <h2><img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" alt="اكتشاف الكائنات باستخدام التعلم الشامل"></h2>
+        <hr/>
+    <p>تشغل هذه الأداة نموذج تدريب شامل ومدرب على بيانات نقطية مدخلة لإنتاج فئة معلم تحتوي على كائنات يمكن إيجادها يمكن أن تكون هذه المعالم مربعات إحاطة أو مضلعات حول الكائنات التي يتم العثور عليها أو نقاط في مراكز الكائنات.
+    </p>
+    <p>إذا تم التأشير على  <b>استخدام نطاق الخريطة الحالي</b>، سيتم فقط تحليل منطقة البيانات النقطية المرئية داخل نطاق الخريطة الحالي. إذا لم يتم التأشير عليها، سيتم تحليل البيانات النقطية بالكامل، حتى إذا كانت خارج نطاق الخريطة الحالي.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>اختيار صورة مستخدمة لاكتشاف الكائنات</h2></div>
+        <hr/>
+        <div>
+            <p>صورة الإدخال المستخدمة لاكتشاف الكائنات.
+            </p> 
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>اختيار نموذج التعلم الشامل المستخدم لاكتشاف الكائنات</h2></div>
+        <hr/>
+        <div>
+            <p>عنصر باقة التعلم الشامل للإدخال ( <code>.dlpk</code>).
+            </p>
+            <p>تتألف باقة التعلم الشامل من ملف JSON لتعريف نموذج Esri ( <code>.emd</code>) وملف النموذج الثنائي، واختياريًا، استخدام دالة البيانات النقطية Python.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>تحديد وسيطات نموذج التعلم الشامل</h2></div>
+        <hr/>
+        <div>
+            <p>تُحدد وسيطات الدالة في تصنيف دالة البيانات النقطية Python التي يُشار إليها من قبل نموذج الإدخال. هذا هو المكان الذي تُدرج فيه وسيطات ومعلمات التعلم الشامل للتجارب والتحسين، مثل حد الثقة لتعديل الحساسية.
+            </p>
+            <p>تتم تعبئة أسماء الوسيطات من قبل الأداة من قراءة وحدة Python على خادم تحليل البيانات النقطية.
+            </p>
+        </div>
+    </div>
+    <div id="runNMS">
+        <div><h2>إزالة المعالم المكررة من الإخراج (اختياري)</h2></div>
+        <hr/>
+        <div>
+            <p>إجراء المنع غير الأقصى، حيث يتم تحديد الكائنات المكررة وإزالة المعلم المتكرر ذي قيمة ثقة أقل. 
+                <ul>
+                    <li>إلغاء التحديد&mdash;كل الكائنات المكتشفة ستكون في تصنيف المعلم. هذا هو الوضع الافتراضي.
+                        
+
+                    </li>
+                    <li>محدد&mdash;إزالة كل الكائنات المكررة التي يتم اكتشافها.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="confidenceScoreField">
+        <div><h2>حقل درجة الثقة</h2></div>
+        <hr/>
+        <div>
+            <p>الحقل في خدمة المعلم التي تحتوي على درجات الثقة كإخراج بواسطة طريقة اكتشاف الكائن.
+            </p>
+            <p>يلزم وجود هذا المعلم عند تحديد معلمة  <b>المنع غير الأقصى</b>.
+            </p>
+        </div>
+    </div>
+    <div id="classValueField">
+        <div><h2>حقل قيمة الفئة</h2></div>
+        <hr/>
+        <div>
+            <p>حقل قيمة التصنيف في خدمة معلم الإخراج. في حالة عدم التحديد، ستستخدم الأداة حقلي قيمة التصنيف القياسية  <i>Classvalue</i> و <i>Value</i>. في حال عدم وجود هذه الحقول، ستتم معاملة كل المعالم على أنها بنفس تصنيف الكائن.
+            </p>
+        </div>
+    </div>
+    <div id="maxOverlapRatio">
+        <div><h2>أقصى معدل تراكب</h2></div>
+        <hr/>
+        <div>
+            <p>الحد الأقصى لنسبة التراكب لمعلمين متراكبين، والمحددة على أنها نسبة منطقة تقاطع فوق المنطقة الموحدة. القيمة الافتراضية هي 0.
+            </p>
+        </div>
+    </div>
+    <div id="outputObjects">
+        <div><h2>اسم طبقة النتيجة</h2></div>
+        <hr/>
+        <div>
+            <p>سيتم إنشاء اسم الطبقة في  <b>المحتوى</b> وسيتم إضافته إلى الخريطة. يستند الاسم الافتراضي إلى اسم الأداة واسم الطبقة المدخلة. إذا وُجدت الطبقة بالفعل، سيطلب منك كتابة اسم آخر.
+            </p>
+            <p>يمكنك تحديد اسم مجلد في  <b>محتواي</b> حيث سيتم حفظ النتيجة باستخدام المربع المنسدل <b>حفظ النتيجة في</b>
+            </p>
+        </div>
+    </div>
+</div>
+</html>

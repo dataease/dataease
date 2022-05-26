@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>查找点聚类</h2><p/>
+        <h2><img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" alt="查找点聚类"></h2>
+        <hr/>
+    <p> 查找点聚类工具可基于点要素的空间分布查找周围噪点内的点要素聚类。
+    </p>
+    <p>例如，某非政府组织正在研究一种特别的害虫传播疾病。该组织拥有表示研究区域内家庭的点数据集，其中一些家庭已被感染，而其中一些则没有。通过使用 查找点聚类工具，分析人员可确定受感染家庭的聚类，帮助确定一个区域以开始处理和消灭害虫。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>选择要查找聚类的图层</h2></div>
+        <hr/>
+        <div>
+            <p>聚类所在的点图层。图层必须位于投影空间参考中，否则必须使用 <b>分析环境</b>将处理空间参考设置为投影坐标系。
+            </p>
+            <p>除了从地图中选择图层外，还可以在下拉列表的底部选择 <b>选择分析图层</b>，以浏览至大数据文件共享数据集或要素图层中的内容。
+            </p>
+        </div>
+    </div>
+    <div id="clusterMethod">
+        <div><h2>选择要使用的聚类方法</h2></div>
+        <hr/>
+        <div>
+            <p>用于区分点要素聚类和周围噪点的聚类方法。您可以选择使用定义距离或自调整的聚类算法。
+            </p>
+            <p>定义距离 (DBSCAN) 使用指定的搜索范围将密集聚类与稀疏噪点分离。定义距离 (DBSCAN) 是相对较快的方法，但仅适用于要使用的搜索范围非常明确的情况，非常有利于定义可能存在的所有聚类。定义距离 (DBSCAN) 可以查找具有相似密度的聚类。
+            </p>
+            <p>自调整 (HDBSCAN) 无需指定搜索范围，但这种方法相对比较耗时。与定义距离 (DBSCAN) 方法相似，自调整 (HDBSCAN) 可以查找点聚类，但可以使用不同的搜索范围，并且允许聚类具有不同的密度。
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>将视为聚类的最小点数</h2></div>
+        <hr/>
+        <div>
+            <p>根据选择的聚类方法，此参数的使用方式也不同：
+            </p>
+            <p>
+                <ul>
+                    <li>定义距离 (DBSCAN) - 可以指定在某点开始形成聚类的特定距离内必须找到的要素数。距离可使用 <b>将搜索范围限制为</b>参数进行定义。
+                    </li>
+                    <li>自调整 (HDBSCAN) - 可指定与估算密度时考虑的每个点相邻的要素数（包括点本身）。此数字也是提取聚类时所允许的最小聚类大小。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>将搜索范围限制为</h2></div>
+        <hr/>
+        <div>
+            <p>如果使用定义距离 (DBSCAN) 方法，则此参数是必须在其中找到 <b>将视为聚类的最小点数</b>的距离。如果选择使用自调整 (HDBSCAN) 作为聚类方法，则不会使用此参数。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p> 要创建的图层的名称。如果您要写入 ArcGIS Data Store，则您的结果将保存在<b>我的内容</b>并添加到地图中。如果您要写入大数据文件共享，则您的结果将存储于大数据文件共享中，并添加到其清单。结果将不会添加到地图中。默认名称基于工具名称以及输入图层名称。如果该图层已存在，将无法使用该工具。
+            </p>
+            <p>如果写入  ArcGIS Data Store（关系或时空大数据存储），可以使用<b>将结果保存在</b>下拉框指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

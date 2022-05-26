@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Derivar Novos Locais</h2><p/>
+        <h2><img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" alt="Derivar Novos Locais"></h2>
+        <hr/>
+    <p>Esta ferramenta deriva novas fei&ccedil;&otilde;es na sua &aacute;rea de estudo que atendem uma s&eacute;rie de crit&eacute;rios que voc&ecirc; especifica. Estes crit&eacute;rios podem ser baseados em consultas de atributo (por exemplo, lotes que est&atilde;o desocupados) e consultas espaciais (por exemplo, lotes dentro de zonas inundadas).
+
+    </p>
+    <p>Se  <b>Utilizar extens&atilde;o de mapa atual</b> estiver selecionada, somente as fei&ccedil;&otilde;es que s&atilde;o vis&iacute;veis dentro da extens&atilde;o de mapa atual ser&atilde;o analisadas.  Se n&atilde;o selecionada, todas as fei&ccedil;&otilde;es ser&atilde;o analisadas, mesmo se estiverem fora da extens&atilde;o de mapa atual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="Expression">
+        <div><h2>Derivar novos locais que correspondem à seguinte expressão</h2></div>
+        <hr/>
+        <div>
+            <p>Clique no bot&atilde;o  <b>Adicionar Express&atilde;o</b> para definir uma express&atilde;o.  Voc&ecirc; pode adicionar m&uacute;ltiplas express&otilde;es. Ap&oacute;s inserir as express&otilde;es e clicar no bot&atilde;o <b>Executar An&aacute;lise</b>, as fei&ccedil;&otilde;es na sua camada de an&aacute;lise s&atilde;o filtradas por cada express&atilde;o.  As por&ccedil;&otilde;es de fei&ccedil;&otilde;es que atendem todas as express&otilde;es s&atilde;o gravadas na camada resultante.
+            </p>
+            <p>H&aacute; dois tipos b&aacute;sicos de express&otilde;es que voc&ecirc; pode criar; atributo e espacial. As express&otilde;es de atributo s&atilde;o consultas em valores de campo, como  <code>onde est&aacute; o nome 'San Francisco'</code>.  H&aacute; quatro tipos de express&otilde;es espaciais:
+                <ul>
+                    <li> <b>dentro de uma dist&acirc;ncia de</b>: por&ccedil;&otilde;es de uma fei&ccedil;&atilde;o dentro de uma dist&acirc;ncia de uma fei&ccedil;&atilde;o em outra camada.  Por exemplo, localizar as por&ccedil;&otilde;es de lotes que est&atilde;o dentro de 500 metros do rio Los Angeles.
+                    </li>
+                    <li> <b>cont&eacute;m completamente</b>: a fei&ccedil;&atilde;o deve conter tudo de uma fei&ccedil;&atilde;o em outra camada.  Por exemplo, localizar bacias que cont&ecirc;m completamente lotes zoneados para uso industrial. Nenhuma parte do lote pode estar fora da bacia.
+                    </li>
+                    <li> <b>completamente dentro</b>: a fei&ccedil;&atilde;o deve estar completamente cercada por uma fei&ccedil;&atilde;o em outra camada.  Por exemplo, localizar distritos de escola que est&atilde;o completamente dentro do limite de uma cidade. Nenhuma parte do distrito de escola pode estar fora do limite da cidade.
+                    </li>
+                    <li> <b>intersecciona</b>: a fei&ccedil;&atilde;o ou partes da fei&ccedil;&atilde;o devem sobrepor ou interseccionar uma fei&ccedil;&atilde;o em outra camada.  Por exemplo, localizar &aacute;reas de vegeta&ccedil;&atilde;o queimada de m&uacute;ltiplos inc&ecirc;ndios dentro de um parque nacional. As &aacute;reas queimadas fora do limite de parque n&atilde;o ser&atilde;o inclu&iacute;das.
+                    </li>
+                    <li> <b>mais pr&oacute;ximo a</b>: a fei&ccedil;&atilde;o deve estar mais pr&oacute;xima de uma fei&ccedil;&atilde;o em outra camada. Por exemplo, localize o espa&ccedil;o verde que est&aacute; mais pr&oacute;ximo de cada escola.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Cada express&atilde;o espacial tem uma nega&ccedil;&atilde;o correspondente, com a exce&ccedil;&atilde;o de  <b>mais pr&oacute;ximo a</b>; <b>n&atilde;o dentro de uma dist&acirc;ncia de</b>, <b>n&atilde;o cont&eacute;m completamente</b>, <b>n&atilde;o completamente dentro</b>, e <b>n&atilde;o intersecciona</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa.  O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se o nome da camada j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Salvar resultado em</b>, &eacute; poss&iacute;vel especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

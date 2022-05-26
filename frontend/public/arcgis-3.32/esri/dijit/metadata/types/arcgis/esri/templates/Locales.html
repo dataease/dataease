@@ -1,0 +1,29 @@
+<div data-dojo-attach-point="containerNode">
+
+  <!-- locales -->
+  <div data-dojo-type="esri/dijit/metadata/form/Element"
+    data-dojo-props="target:'locales',minOccurs:0,showHeader:false">
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'locale',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.locales.locale}'">
+      <div data-dojo-type="esri/dijit/metadata/form/Attribute"
+        data-dojo-props="target:'language',minOccurs:1,label:'${i18nArcGIS.codelist.LanguageCode}'">
+        <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputSelectCode"
+          data-dojo-props="codelistType:'LanguageCode'">
+        </div>
+      </div>
+      <div data-dojo-type="esri/dijit/metadata/form/Attribute"
+        data-dojo-props="target:'country',minOccurs:0,label:'${i18nArcGIS.codelist.CountryCode}'">
+        <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputSelectCode"
+          data-dojo-props="codelistType:'CountryCode'">
+        </div>
+      </div>
+      <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+        data-dojo-props="target:'resTitle',minOccurs:0,label:'${i18nArcGIS.locales.resTitle}'">
+      </div>
+      <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+        data-dojo-props="target:'idAbs',minOccurs:0,label:'${i18nArcGIS.locales.idAbs}'">
+      </div>
+    </div>
+  </div>
+  
+</div>

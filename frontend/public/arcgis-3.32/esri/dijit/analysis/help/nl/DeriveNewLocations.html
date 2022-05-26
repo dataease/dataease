@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Nieuwe locaties afleiden</h2><p/>
+        <h2><img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" alt="Nieuwe locaties afleiden"></h2>
+        <hr/>
+    <p>Deze tool leidt nieuwe objecten af in uw onderzoeksgebied die voldoen aan een reeks door u opgegeven criteria. Deze criteria kunnen gebaseerd zijn op attribuutquery's (bijvoorbeeld percelen die vrij zijn) en ruimtelijke query's (bijvoorbeeld percelen binnen overstromingszones).
+
+    </p>
+    <p>Als  <b>Huidige kaartextent gebruiken</b> is geselecteerd, worden alleen de objecten geanalyseerd die zichtbaar zijn op de huidige kaartextent. Als de optie niet is aangevinkt, worden alle objecten geanalyseerd, zelfs als deze zich buiten de huidige extent van de kaart bevinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="Expression">
+        <div><h2>Nieuwe locaties afleiden die overeenkomen met de volgende expressie(s)</h2></div>
+        <hr/>
+        <div>
+            <p>Klik op de knop  <b>Expressie toevoegen</b> om een expressie te defini&euml;ren. U kunt meerdere expressies toevoegen. Nadat u de expressies hebt ingevoerd en op de knop <b>Analyse uitvoeren</b> hebt geklikt, worden objecten in uw analyselaag gefilterd via elke expressie. De delen van objecten die aan alle expressies voldoen, worden naar de resultaatlaag geschreven.
+            </p>
+            <p>Er zijn twee basistypen van expressies die u kunt maken: attribuutexpressies en ruimtelijke expressies. Attribuutexpressies zijn query's op basis van veldwaarden, zoals  <code>waarbij naam 'San Francisco' is</code>. Er zijn vier typen ruimtelijke expressies:
+                <ul>
+                    <li> <b>binnen een afstand van</b>: delen van een object binnen een afstand van een object in een andere laag. Bijvoorbeeld: zoek naar de delen van percelen binnen 500 meter van de Los Angeles-rivier.
+                    </li>
+                    <li> <b>bevat volledig</b>: het object moet alles van een object in een andere laag bevatten. Bijvoorbeeld: zoek naar waterafscheidingen die de percelen gezoneerd voor industrieel gebruik volledig bevatten. Er mag geen enkel deel van het perceel buiten de waterafscheiding liggen.
+                    </li>
+                    <li> <b>volledig binnen</b>: het object moet volledig omringd zijn door een object in een andere laag. Bijvoorbeeld: zoek naar schooldistricten die volledig binnen de grenzen van een stad liggen. Er mag geen enkel deel van het schooldistrict buiten de stadsgrens liggen.
+                    </li>
+                    <li> <b>kruisen</b>: het object of delen van het object moeten een object in een andere laag overlappen of kruisen. Zoek bijvoorbeeld naar gebieden van verbrande vegetatie door meerdere branden in een nationaal park. Verbrande gebieden buiten de parkgrens worden niet opgenomen.
+                    </li>
+                    <li> <b>dichtstbijzijnd</b>: het object moet het dichtstbij een object in een andere laag zijn. Bijvoorbeeld, de groenvoorziening die het dichtstbij iedere school is.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Elke ruimtelijke expressie heeft een overeenkomende negatie, behalve  <b>dichtstbijzijnd</b>; <b>niet binnen een afstand van</b>, <b>bevat niet volledig</b>, <b>niet volledig binnen</b> en <b>kruist niet</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>Dit is de naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laagnaam al bestaat, wordt u gevraagd een nieuwe naam te verschaffen.
+            </p>
+            <p>Met behulp van het vervolgkeuzemenu  <b>Resultaat opslaan in</b> kunt u de naam van een map opgeven in <b>Mijn Content</b> waar het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

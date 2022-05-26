@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>データセットの記述 (Describe Dataset)</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="[データセットの記述 (Describe Dataset)] のワークフロー図"></h2>
+        <hr/>
+    <p>[データセットの記述 (Describe Dataset)] ツールを使用すると、データセットをより詳細に考察できます。大量のデータに対する解析を実行する前に、このツールを使用して、入力データの内容と場所を確認します。デフォルトでは、入力レイヤーの主要記述子の概略を示す JSON 文字列と、フィールドごとのサマリー統計の詳細を示すテーブルが結果として出力されます。
+    </p>
+    <p>必要に応じて、データについてさらに詳しく記述する追加の出力フィーチャ レイヤーを作成できます。このオプションには、サンプル レイヤーと範囲レイヤーがあり、 いずれか 1 つまたは両方を出力できます。
+    </p>
+    <p>たとえば、15 のデータセットが格納されているビッグ データ ファイル共有があるとします。それぞれのデータセットには、国内各地にある建物と住居を表す 1,000 万のエリア フィーチャが含まれています。割り当てられたタスクは地域 C の解析ですが、これらのフィーチャがどのデータセットに含まれているか不明です。どのデータセットを使用すべきか判断するには、[データセットの記述 (Describe Dataset)] を実行し、範囲レイヤーの作成を選択して、どのデータセットが分析範囲内にあるかを調べます。
+    </p>
+    <p>もう 1 つの例として、大量のデータに対する解析ワークフローの完了というタスクが割り当てられたとします。ワークフローを実行するにあたり、データセット全体を処理するには数時間または数日かかる可能性があります。この場合、解析全体の実行に時間とリソースを使用する代わりに、サンプル レイヤーを作成し、それを使用して全体的なワークフローを効率的にテストします。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>記述するデータセットの選択</h2></div>
+        <hr/>
+        <div>
+            <p>記述、集計、サンプリングの対象となるポイント、ライン、エリア、または表形式フィーチャを含むレイヤー。
+            </p>
+            <p>マップからレイヤーを選択できるだけでなく、ドロップダウン リストの下部にある  <b>[解析レイヤーの選択]</b> を選択し、ビッグ データ ファイル共有データセットまたはフィーチャ レイヤーのコンテンツを参照して選択することもできます。
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>追加の記述レイヤーの作成によるデータセットの理解 (オプション)</h2></div>
+        <hr/>
+        <div>
+            <p>ビッグ データに対する理解を深めるために、追加の記述レイヤーを出力します。次に示すレイヤーのうち、いずれか 1 つまたは両方を出力できます。あるいは、どちらも出力しないことを選択できます。
+            </p>
+            <ul>
+                <li> <b>範囲レイヤー</b> - 入力フィーチャ、つまり対象エリアの範囲を表すエリア フィーチャを作成します。
+                </li>
+                <li> <b>サンプル レイヤー</b> - データセット、つまり対象エリア内から、指定された数の入力フィーチャを含むサブセット レイヤーを作成します。
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>サンプル レイヤー</h2></div>
+        <hr/>
+        <div>
+            <p>入力レイヤーからフィーチャのサブセットを含むレイヤーを出力します。 <b>[サンプル レイヤー]</b> が選択された場合は、サンプル レイヤー内で返されるフィーチャの数を指定できます。デフォルトでは、100 個のサンプル フィーチャが出力レイヤー内で返されます。
+            </p>
+            <p>0 より大きい値を指定する必要があります。フィーチャの合計数より大きい数を指定すると、すべてのフィーチャが返されます。
+            </p>
+            <p> <b>[現在のマップ範囲を使用]</b> が選択されている場合、サンプル レイヤーにはマップの範囲内にあるフィーチャが含まれます。
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>レイヤーの範囲</h2></div>
+        <hr/>
+        <div>
+            <p>入力フィーチャの範囲を表す 1 つのフィーチャを含むフィーチャ レイヤーを出力するには、 <b>[範囲レイヤー]</b> ボタンを選択します。これはデフォルトで選択されています。
+            </p>
+            <p> <b>[現在のマップ範囲を使用]</b> が選択されている場合、範囲レイヤーはマップの表示範囲を表します。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p> 作成されるレイヤーの名前。 ArcGIS Data Store に書き込んでいる場合、結果は  <b>[マイ コンテンツ]</b> に保存され、マップに追加されます。ビッグ データ ファイル共有に書き込んでいる場合、結果はビッグ データ ファイル共有に格納され、そのマニフェストに追加されます。この場合、結果はマップに追加されません。 デフォルトの名前は、ツール名と入力レイヤー名に基づいて設定されます。レイヤーがすでに存在する場合、このツールは正常に実行されません。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

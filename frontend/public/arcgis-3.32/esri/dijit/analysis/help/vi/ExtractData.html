@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Trích xuất Dữ liệu</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="Tr&iacute;ch xuất Dữ liệu"></h2>
+        <hr/>
+    <p>Bằng c&ocirc;ng cụ n&agrave;y, bạn c&oacute; thể lựa chọn v&agrave; tải dữ liệu về cho một khu vực quan t&acirc;m được chỉ định. C&aacute;c lớp bạn chọn sẽ được th&ecirc;m v&agrave;o tệp ZIP, CSV, hoặc KMZ.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>Lớp để Trích xuất</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&acirc;y l&agrave; c&aacute;c lớp trong mục lục m&agrave; từ đ&oacute; bạn c&oacute; thể tr&iacute;ch xuất c&aacute;c đối tượng. Tr&iacute;ch xuất c&aacute;c lớp được chọn v&agrave; th&ecirc;m tệp ZIP hoặc CSV v&agrave;o kết quả.
+            </p>
+            <p>Để một lớp xuất hiện trong danh s&aacute;ch lớp cần tr&iacute;ch xuất, bạn cần phải l&agrave; người l&agrave;m chủ dữ liệu hoặc chủ sở hữu của dữ liệu phải k&iacute;ch hoạt cho ph&eacute;p xuất dữ liệu. Để k&iacute;ch hoạt xuất dữ liệu m&agrave; bạn sở hữu: 
+                <ul>
+                    <li>Mở th&ocirc;ng tin m&ocirc; tả mục dữ liệu.
+                    </li>
+                    <li>Nhấp v&agrave;o tab  <b>Thiết lập</b>.
+                    </li>
+                    <li>Cuộn xuống đến phần  <b>Xuất Dữ liệu</b>.
+                    </li>
+                    <li>Chọn t&ugrave;y chọn  <b>Cho ph&eacute;p những người d&ugrave;ng kh&aacute;c xuất ra c&aacute;c định dạng kh&aacute;c</b>.  Nhấp v&agrave;o <b>Lưu</b> khi đ&atilde; ho&agrave;n th&agrave;nh.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Nếu lớp ph&acirc;n t&iacute;ch của bạn c&oacute; chứa tệp đ&iacute;nh k&egrave;m, lưu &yacute; rằng chỉ tr&iacute;ch xuất c&aacute;c tệp đ&iacute;nh k&egrave;m nếu định dạng dữ liệu đầu ra l&agrave; file geodatabase v&agrave; bỏ chọn  <b>Cắt đối tượng</b>.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>Khu vực nghiên cứu</h2></div>
+        <hr/>
+        <div>
+            <p>Khu vực x&aacute;c định đối tượng n&agrave;o sẽ được đưa v&agrave;o tệp ZIP hoặc CSV đầu ra. Bạn c&oacute; thể chọn từ c&aacute;c mục sau:
+                <ul>
+                    <li>Phạm vi bản đồ hiện đang nh&igrave;n thấy ( <b>Giống như Hiển thị</b>).
+                    </li>
+                    <li>Một trong c&aacute;c lớp trong mục lục của bạn. Nếu lớp được chọn l&agrave; đối tượng điểm hoặc đường, phạm vi của lớp sẽ được khu vực nghi&ecirc;n cứu sử dụng.
+                    </li>
+                    <li>Vẽ một khu vực để x&aacute;c định khu vực nghi&ecirc;n cứu.
+                    </li>
+                </ul>
+                 Tất cả c&aacute;c đối tượng nằm ho&agrave;n to&agrave;n trong phạm vi bản đồ sẽ được tr&iacute;ch xuất. Đối với c&aacute;c đối tượng giao thoa hoặc giao cắt ranh giới phạm vi bản đồ nhưng kh&ocirc;ng ho&agrave;n to&agrave;n nằm trong phạm vi n&agrave;y, bạn c&oacute; hai t&ugrave;y chọn:
+                <ul>
+                    <li> <b>Chọn đối tượng</b>&mdash;To&agrave;n bộ đối tượng giao thoa với ranh giới khu vực nghi&ecirc;n cứu sẽ được tr&iacute;ch xuất.
+                    </li>
+                    <li> <b>Cắt đối tượng</b>&mdash;Chỉ c&aacute;c phần của đối tượng nằm trong khu vực nghi&ecirc;n cứu mới được tr&iacute;ch xuất.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>Định dạng dữ liệu đầu ra</h2></div>
+        <hr/>
+        <div>
+            <p>Định dạng dữ liệu sẽ được tr&iacute;ch xuất. Khi xuất đối tượng đường hoặc v&ugrave;ng v&agrave;o c&aacute;c tệp CSV, chỉ c&aacute;c thuộc t&iacute;nh kh&ocirc;ng gian mới được tr&iacute;ch xuất. Khi xuất c&aacute;c đối tượng điểm, cả hai thuộc t&iacute;nh kh&ocirc;ng gian v&agrave; phi kh&ocirc;ng gian đều được tr&iacute;ch xuất.  
+            </p>
+            <p>Dữ liệu được tr&iacute;ch xuất sẽ sử dụng ph&eacute;p chiếu Web Mercator 1984.  Đối với c&aacute;c tệp CSV, c&aacute;c trường  <i>Lat</i> v&agrave; <i>Long</i> sẽ được th&ecirc;m v&agrave;o dữ liệu với hệ tọa độ Web Mercator 1984.
+            </p> 
+            <p>C&aacute;c định dạng đầu ra sau đ&acirc;y được hỗ trợ:
+                <ul>
+                    <li>Gi&aacute; trị được ph&acirc;n t&aacute;ch bằng dấu phẩy (CSV)&mdash; <code>.csv</code> hoặc <code>.zip</code>
+                    </li>
+                    <li>Tệp geodatabase&mdash; <code>.zip</code>
+                    </li>
+                    <li>Ng&ocirc;n ngữ Đ&aacute;nh dấu Lỗ kh&oacute;a (KML)&mdash; <code>.kmz</code> hoặc <code>.zip</code>
+                    </li>
+                    <li>Shapefile&mdash; <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Tên tệp đầu ra</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&acirc;y l&agrave; t&ecirc;n của mục sẽ được th&ecirc;m v&agrave;o  <b>Nội dung của T&ocirc;i</b>. T&ecirc;n mục dựa tr&ecirc;n <b>Định dạng dữ liệu đầu ra</b> được chọn. Nếu mục đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n mới.
+            </p>
+            <p>Sử dụng chức năng  <b>Lưu kết quả trong</b> hộp xổ xuống, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong mục <b>Nội dung của T&ocirc;i</b> nơi sẽ lưu trữ kết quả của bạn.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

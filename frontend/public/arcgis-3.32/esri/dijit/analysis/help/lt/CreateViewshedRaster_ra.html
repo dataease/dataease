@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Kurti matymo lauką</h2><p/>
+        <h2><img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" alt="Matymo lauko kūrimo įrankis"></h2>
+        <hr/>
+    <p>&Scaron;is įrankis nustato sritis, kurias stebėtojas gali matyti, atsižvelgdamas į pavir&scaron;iaus topografiją. Įvesties ta&scaron;kų padėtys gali atspindėti stebėtojus (pvz., žmones ant žemės arba stebėtojus ugniagesių bok&scaron;telyje) arba stebėjimo objektus (pvz., vėjo jėgaines, vandens bok&scaron;tus, transporto priemones arba kitus žmones). Rezultatai apibrėžia sritis, kurias galima matyti i&scaron; stebėtojo padėčių.
+    </p>
+    <p>Tiek stebėtojams, tiek stebimiems objektams gali būti nurodytas auk&scaron;tis vir&scaron; žemės. &Scaron;ie auk&scaron;čiai naudojami nustatant matomumą. Pavyzdžiui, matymo laukas, apskaičiuotas 120 m vėjo jėgainei ir 1,8 m ūgio ant žemės stovintiems žmonėms, paprastai bus platesnis nei matymo laukas, apskaičiuotas 80 m jėgainėms ir 1,6 m ūgio žmonėms.
+    </p>
+    <p>Rezultatų sluoksnyje įra&scaron;oma, kiek kartų įvedamo pavir&scaron;iaus rastro kiekvienos gardelės vieta gali būti matoma įvesties stebėjimo ta&scaron;kuose. Nematomoms gardelėms suteikiamos NoData (nėra duomenų) reik&scaron;mės.
+    </p>
+    <p>Jei pažymėta parinktis  <b>Naudoti esamą žemėlapio aprėptį</b>, analizuojami tik rastro plotai ir stebėtojo ta&scaron;kai, kurie matomi dabartinėje žemėlapio aprėptyje. Jei nepažymėta, bus analizuojami visi įvesties sluoksnio stebėjimo ta&scaron;kai, net jei jie nepatenka į esamą žemėlapio aprėptį.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="elevationSurface">
+        <div><h2>Aukščio paviršius</h2></div>
+        <hr/>
+        <div>
+            <p>Auk&scaron;čio pavir&scaron;ius, naudojamas skaičiuojant matymo lauką.
+            </p>
+            <p>Jeigu įvesties pavir&scaron;iaus vertikalės vienetas skiriasi nuo horizontalės vieneto, pvz., kai auk&scaron;čio reik&scaron;mės pateikiamos pėdomis, tačiau koordinačių sistema nurodoma metrais, būtina apibrėžti pavir&scaron;iaus vertikalės koordinačių sistemą. Taip yra todėl, kad įrankis naudoja vertikalės (Z) ir horizontalės (XY) vienetus apskaičiuodamas matymo lauko analizės Z faktorių. Be vertikalės koordinačių sistemos, t. y. neturint informacijos apie Z vienetą, įrankis laikys, kad Z vienetas yra toks pat kaip XY vienetas. Tokiu atveju analizei bus naudojamas vidinis Z faktorius 1.0, todėl gali būti gauti netikėti rezultatai.
+            </p>
+            <p>Pavir&scaron;iaus auk&scaron;tis gali būti sveikasis skaičius arba skaičius su slankiuoju kableliu.
+            </p>
+        </div>
+    </div>
+    <div id="observerFeatures">
+        <div><h2>Taškinis elementas, nurodantis stebėjimo vietoves</h2></div>
+        <hr/>
+        <div>
+            <p>Ta&scaron;kinis elementas, nurodantis stebėtojo vietas apskaičiuojant matymo laukus.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimizuoti</h2></div>
+        <hr/>
+        <div>
+            <p>Optimizavimo metodas, naudojamas skaičiuojant matymo lauką.
+            </p>
+            <ul>
+                <li>Speed &mdash; 
+&Scaron;is metodas optimizuoja apdorojimo greitį, nes, &scaron;iek tiek sumažindamas tikslumą, didina na&scaron;umą. Tai numatytasis nustatymas.
+
+                </li>
+                <li>Accuracy &mdash; 
+&Scaron;is metodas optimizuotas gauti kuo tikslesnius rezultatus naudojant ilgesnį apdorojimo laiką.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Maksimalus matomumo atstumas</h2></div>
+        <hr/>
+        <div>
+            <p>Įveskite trumpiausią atstumą iki ta&scaron;ko, kuriame nebeskaičiuojamos matomos vietos. Jei atstumas didesnis, nebus nustatoma, ar stebėjimo ta&scaron;kai ir kiti objektai gali matyti vienas kitą.
+            </p>
+            <p>Galite įvesti skaitinę reik&scaron;mę, nurodančią linijinį atstumą, arba pasirinkti skaitinį lauką i&scaron; įvesties stebėjimo elementų. Jei lauke yra pateiktos reik&scaron;mės, jos turi būti i&scaron;reik&scaron;tos tokiu pačiu matavimo vienetu kaip įvesties auk&scaron;čio pavir&scaron;iaus XY vienetas.
+            </p>
+            <p>Atkreipkite dėmesį, kad didelės reik&scaron;mės pailgins skaičiavimo laiką. Jeigu nenurodyta, numatytasis maksimalus atstumas bus apskaičiuojamas atsižvelgiant į skiriamąją gebą ir auk&scaron;čio pavir&scaron;iaus įvesties aprėptį.
+            </p>
+            <p>&Scaron;is parametras naudingas modeliuojant tam tikrus rei&scaron;kinius. Pavyzdžiui, apribojant aprėpties matomumą, galima modeliuoti oro sąlygas, pvz., lengvą rūką. Pana&scaron;iai apribojus matomumo aprėptį galima patogiau valdyti paros metą numatant sutemų efektą.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistanceField">
+        <div><h2>Maksimalus matomumo atstumas</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="minimumDistance">
+        <div><h2>Minimalus matomumo atstumas</h2></div>
+        <hr/>
+        <div>
+            <p>Įveskite atstumą iki ta&scaron;ko, nuo kurio pradedamos skaičiuoti matomos vietos. Gardelės, esančios ant pavir&scaron;iaus arčiau negu &scaron;is atstumas, nėra rodomos i&scaron;vestyje, tačiau vis tiek gali užstoti matomumą gardelių, esančių tarp minimalaus ir maksimalaus matomumo atstumo.
+            </p>
+            <p>Galite įvesti skaitinę reik&scaron;mę, nurodančią linijinį atstumą, arba pasirinkti skaitinį lauką i&scaron; įvesties stebėjimo elementų. Jei lauke yra pateiktos reik&scaron;mės, jos turi būti i&scaron;reik&scaron;tos tokiu pačiu matavimo vienetu kaip įvesties auk&scaron;čio pavir&scaron;iaus XY vienetas.
+            </p>
+            <p>&Scaron;is parametras naudingas valdant matomumo lauko analizės plotą konkrečiu atstumu nuo stebėtojo. Jeigu vertinate matomumą nuo pastato vir&scaron;aus iki tolimo parko, galima nustatyti minimalų matomumo atstumą taip, kad į jį nebūtų įtrauktos arti esančios, tačiau nedominančios vietos, ir sparčiau apdoroti duomenis.
+            </p>
+        </div>
+    </div>
+    <div id="minimumDistanceField">
+        <div><h2>Minimalus matomumo atstumas</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="viewingDistance3D">
+        <div><h2>Atstumas 3D formatu</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodykite, ar minimalaus ir maksimalaus matomumo atstumo parametrai matuojami trimačiu, ar paprastesniu dvimačiu būdu. Pažymėjus &scaron;ią parinktį, matomumo atstumas laikomas 3D atstumu. Nepažymėjus parinkties, atstumas laikomas 2D atstumu.
+            </p> 
+            <p>2D atstumas yra paprastas tiesinis atstumas, i&scaron;matuotas tarp stebėtojo ir objekto naudojant jų projekcines vietas jūros lygyje. 3D atstumas pateikia realesnę reik&scaron;mę, nes atsižvelgiama į objektų reliatyvų auk&scaron;tį.
+            </p>  
+        </div>
+    </div>
+    <div id="observersElevation">
+        <div><h2>Stebėtojo vietų aukštis</h2></div>
+        <hr/>
+        <div>
+            <p>Įveskite stebėtojo vietų auk&scaron;tį.
+            </p>
+            <p>Galima pateikti skaitinę reik&scaron;mę, nurodančią visų stebėtojų auk&scaron;tį, arba lauką, nurodantį kiekvieno stebėtojo auk&scaron;tį. Jeigu pateikiamas laukas, jame esanti reik&scaron;mė turi būti tokiais pačiais matavimo vienetais, kaip auk&scaron;čio pavir&scaron;iaus įvestis (Z).
+            </p>
+        </div>
+    </div>
+    <div id="observersElevationField">
+        <div><h2>Stebėtojo vietų aukštis</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="observersHeight">
+        <div><h2>Stebėtojų aukštis</h2></div>
+        <hr/>
+        <div>
+            <p>Įveskite auk&scaron;tį nuo stebėjimo vietų iki žemės.
+            </p> 
+            <p>Galite įvesti auk&scaron;čio skaitinę reik&scaron;mę arba panaudoti lauką i&scaron; įvesties stebėjimo elementų. Jeigu pateikiamas laukas, jame esanti reik&scaron;mė turi būti tokiais pačiais matavimo vienetais, kaip auk&scaron;čio pavir&scaron;iaus įvestis (Z).
+            </p>
+            <p>Numatytasis auk&scaron;tis yra 1,8 m. Jeigu žiūrite nuo auk&scaron;čiau esančios vietos, pvz., apžvalgos bok&scaron;to ar auk&scaron;to pastato, naudokite tą auk&scaron;tį. Skaičiuojant matymo lauką, &scaron;i reik&scaron;mė pridedama prie stebėtojo auk&scaron;čio, jeigu jis nurodytas. Kitu atveju ji pridedama prie interpoliuoto pavir&scaron;iaus Z reik&scaron;mės.
+            </p>
+        </div>
+    </div>
+    <div id="observersHeightField">
+        <div><h2>Stebėtojų aukštis</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="targetHeight">
+        <div><h2>Tikslinis aukštis</h2></div>
+        <hr/>
+        <div>
+            <p>Įveskite ant žemės esančių konstrukcijų auk&scaron;tį arba žmonių ūgį, naudojamą matomumui nustatyti.
+            </p>
+            <p>Galite įvesti auk&scaron;čio skaitinę reik&scaron;mę arba panaudoti lauką i&scaron; įvesties stebėjimo elementų. Jeigu pateikiamas laukas, jame esanti reik&scaron;mė turi būti tokiais pačiais matavimo vienetais, kaip auk&scaron;čio pavir&scaron;iaus įvestis (Z).
+            </p>
+            <p>Gautą matymo lauką sudaro tie plotai, i&scaron; kurių stebėjimo ta&scaron;kas gali matyti kitus objektus ant žemės. Gali būti ir atvirk&scaron;čiai &ndash; objektai ant žemės gali matyti stebėjimo ta&scaron;ką. 
+            </p>
+            <p>Toliau pateikti keli naudojimo pavyzdžiai:
+            </p>
+            <ul>
+                <li>Jei jūsų įvesties ta&scaron;kai yra vėjo jėgainės ir norite nustatyti, ar ant žemės stovintys žmonės gali jas matyti, įveskite vidutinį žmogaus ūgį (apie 1,8 m).
+                    
+
+                </li>
+                <li>Jei jūsų įvesties ta&scaron;kai yra gaisro stebėjimo bok&scaron;teliai ir norite nustatyti, i&scaron; kurių bok&scaron;telių galima matyti 6 m ar auk&scaron;tesnį dūmų debesį, įveskite 6 m auk&scaron;tį.
+                    
+
+                </li>
+                <li>Jei jūsų įvesties ta&scaron;kai yra apžvalgos bok&scaron;teliai ir norite nustatyti, i&scaron; kur galima matyti 160 m auk&scaron;čio vėjo jėgaines, įveskite 160 m auk&scaron;tį.
+                    
+
+                </li>
+                <li>Jei jūsų įvesties ta&scaron;kai yra apžvalgos bok&scaron;teliai ir norite nustatyti, kokias teritorijas gali matyti apžvalgos bok&scaron;telyje stovintys žmonės, įveskite nulį. 
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="targetHeightField">
+        <div><h2>Stebėtojų aukštis</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="resultAglLayer">
+        <div><h2>Nuo kada matomas įvesties aukštis</h2></div>
+        <hr/>
+        <div>
+            <p>I&scaron;vesties auk&scaron;čio vir&scaron; žemės lygio (AGL) rezultato pavadinimas. AGL rezultatas yra rastras, kuriame kiekviena gardelės reik&scaron;mė yra minimalus auk&scaron;tis, kurį būtina pridėti prie kitu atveju nematomos gardelės, kad ji būtų matoma bent vienam stebėtojui. &Scaron;iame i&scaron;vesties rastre esančioms gardelėms, kurios jau buvo matomos, bus priskirta 0 reik&scaron;mė.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Sluoksnio, kuris bus sukurtas puslapyje  <b>Turinys</b> ir įtrauktas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau egzistuoja, būsite papra&scaron;yti pateikti kitą pavadinimą.
+            </p>
+            <p>Galite nurodyti aplanko  <b>Turinyje</b>, kuriame rezultatai bus įra&scaron;yti naudojant i&scaron;&scaron;okantįjį meniu <b>Rezultatą įra&scaron;yti į</b>, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

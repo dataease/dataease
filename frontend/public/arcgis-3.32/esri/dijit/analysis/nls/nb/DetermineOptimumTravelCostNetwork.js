@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/nb/DetermineOptimumTravelCostNetwork",{inputLayerLabel:"Velg raster- eller geoobjektslokasjonslaget det skal bergenes reiseruter mellom",inputCostRasterLabel:"Velg rasterlag for reiseutgifter",outputOptimumNetworkName:"Navn p\u00e5 resulterende polylinjelag for optimale ruter",outputNeighborNetworkName:"Navn p\u00e5 resulterende polylinjelag for tilst\u00f8tende ruter (valgfritt)",outputLayerName:"Fastsett optimale reisekostnader for ${layername}",itemDescription:"Geoobjektslag generert ved kj\u00f8ring av Fastsett optimale reisekostnader p\u00e5 ${inputLayername}. ",
+itemTags:"Analyseresultat, Fastsett nettverk for optimale reisekostnader, ${layername} ${fieldname}",itemSnippet:"Geoobjektslag generert ved kj\u00f8ring av Fastsett nettverk for optimale reisekostnader."});

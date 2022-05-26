@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>피처를 래스터로 변환</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="피처를 래스터로 변환 도구"></h2>
+        <hr/>
+    <p>이 도구는 피처를 래스터 데이터셋으로 변환합니다.
+    </p>
+    <p>포인트, 라인 또는 폴리곤 피처가 포함된 모든 피처 클래스는 래스터 데이터셋으로 변환될 수 있습니다.
+    </p>
+    <p>결과 래스터 픽셀의 값이 결정되는데 셀 중심이 사용됩니다.
+    </p>
+    <p>입력 필드 유형에 따라 결과 래스터의 유형이 결정됩니다. 필드가 정수이면 결과 래스터가 정수이며 부동 소수점이면 결과도 부동 소수점입니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>변환할 피처 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>래스터 데이터셋으로 변환될 입력 피처 레이어입니다.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>필드 선택</h2></div>
+        <hr/>
+        <div>
+            <p>결과 래스터에 값을 할당하는 데 사용될 필드를 선택합니다.
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>결과 셀 크기</h2></div>
+        <hr/>
+        <div>
+            <p>결과 래스터의 셀 크기와 단위입니다.
+            </p>
+            <p>사용할 수 있는 단위는 마일(mile), 피트(ft), 킬로미터(km), 미터(m)입니다. 기본값은 피트입니다.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에 생성되고 맵에 추가되는 레이어의 이름입니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어가 이미 있는 경우 다른 이름을 입력하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 상자를 사용하여 결과가 저장될 <b>내 콘텐츠</b>에서 폴더 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

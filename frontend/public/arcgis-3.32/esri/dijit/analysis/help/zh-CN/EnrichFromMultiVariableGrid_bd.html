@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>从多变量格网丰富</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="从多变量格网丰富"></h2>
+        <hr/>
+    <p> 从多变量格网丰富工具可以有效地将多变量网格中的属性连接到点图层。
+    </p>
+    <p>多变量格网是使用&ldquo;构建多变量格网&rdquo;工具创建的任意图层，该工具可以将多个图层的属性汇编为单个面格网。使用多变量格网进行丰富，可以快速将多样的大型信息集合添加到点数据，以便在空间分析中进一步使用。
+    </p>
+    <p>例如，假设您获得了过去一年整个城市新增犯罪事件的图层。您希望对犯罪频率与人口、经济和地理等因素之间的关系进行建模。您可以访问描述这些因素的数据，但这些数据存储在五个不同的图层中，且具有不同的几何类型。此外，一些图层存储在大数据文件共享中，而其他图层则存储为要素服务。通过创建多变量格网存储这些信息，然后使用 从多变量格网丰富工具将格网连接到您的犯罪事件，只需运行两个工具，即可有效地将各种属性连接到点图层。然后，您可以使用连接的属性作为解释变量，开始使用结果图层构建犯罪频率模型。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>选择要丰富的点要素</h2></div>
+        <hr/>
+        <div>
+            <p>点要素将通过多变量格网进行丰富。
+            </p>
+            <p>除了从地图中选择图层外，还可以在下拉列表的底部选择 <b>选择分析图层</b>，以浏览至大数据文件共享数据集或要素图层中的内容。
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>选择丰富操作要使用的多变量格网</h2></div>
+        <hr/>
+        <div>
+            <p>多变量格网图层，其中包含将连接到输入点要素的属性。图层必须使用&ldquo;构建多变量格网&rdquo;工具创建且必须为托管要素图层。不支持使用存储在大数据文件共享中的多变量格网图层作为此工具的输入。
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>选择要添加的变量</h2></div>
+        <hr/>
+        <div>
+            <p>在点要素与格网相交时将连接到输入点要素的多变量格网图层中的属性。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p> 要创建的图层的名称。如果您要写入 ArcGIS Data Store，则您的结果将保存在<b>我的内容</b>并添加到地图中。如果您要写入大数据文件共享，则您的结果将存储于大数据文件共享中，并添加到其清单。结果将不会添加到地图中。默认名称基于工具名称以及输入图层名称。如果该图层已存在，将无法使用该工具。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Najdi najboljše lokacije storitev</h2><p/>
+        <h2><img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" alt="Najdi najbolj&scaron;e lokacije storitev"></h2>
+        <hr/>
+    <p>Orodje Najdi najbolj&scaron;e lokacije storitve vam omogoča, da najdete najbolj&scaron;e lokacije za storitve. Orodje razporedi lokacije s povpra&scaron;evanjem za lokacije storitev na način, ki ustreza določenemu cilju.
+    </p>
+    <p>Lokacije storitev predstavljajo lokacije, kjer so gasilski domovi, &scaron;ole, knjižnice, trgovine ali distribucijski centri. Lokacije povpra&scaron;evanja predstavljajo lokacije, kjer je povpra&scaron;evanje po storitvah. To je lahko točkovni sloj iz popisa prebivalstva, ki povzema prebivalstvo na določenem območju.
+    </p>
+    <p>Orodje Najdi najbolj&scaron;e lokacije storitev vam lahko pomaga odgovoriti na vpra&scaron;anja, kot so:
+        <ul>
+            <li>Kako se lahko gospodinjstva v nujnih primerih razporedijo po ustreznih zbirnih centrih, če je razpoložljivost postelj omejena in je ni mogoče povečati?
+            </li>
+            <li>Kako lahko razporedite soseske najbližjim enotam knjižnic in najdete &scaron;tevilo potencialnih uporabnikov za vsako enoto? 
+            </li>
+            <li>Kako najdete najbolj&scaron;o lokacijo za distribucijski center živil, ki kar najbolj skraj&scaron;a potovalni čas (in posledično stro&scaron;ke) za dostavo v verigo trgovin z živili?
+            </li>
+            <li>Kje naj se nahaja nov park, da bo kar največje &scaron;tevilo prebivalcev mesta živelo v oddaljenosti 5 minut hoje od parka?
+            </li>
+            <li>Katere so najbolj&scaron;e lokacije za več trgovin za hi&scaron;ne ljubljenčke v okrožju, tako da 40 odstotkov lastnikov hi&scaron;nih ljubljenčkov do ene od trgovin ni oddaljenih več kot 10 minut vožnje?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="goal">
+        <div><h2>Cilj</h2></div>
+        <hr/>
+        <div>
+            <p>Določite cilj, ki mora biti uresničen pri razporejanju lokacij povpra&scaron;evanja za lokacije storitve.
+            </p>
+            <p>Z orodjem Najdi najbolj&scaron;e lokacije storitve lahko določite tip težave, ki jo re&scaron;ujete &ndash; cilj. Orodje je optimizirano za zagotavljanje re&scaron;itev za ta določen cilj. Ne glede na cilj je za doseganje re&scaron;itve uporabljena ista osnovna metoda &ndash; količina povpra&scaron;evanja za določeno lokacijo povpra&scaron;evanja je dodeljena najbližji lokaciji storitve. Cilji se razlikujejo glede na obravnavo vpliva med razdaljo (ali časom) in povpra&scaron;evanjem. Orodje upo&scaron;teva tako potovalno razdaljo/čas, količino povpra&scaron;evanj in, v nekaterih primerih, kapaciteto lokacij storitve. Če je cilj, na primer, skraj&scaron;ati potovalni čas, bo orodje sekundarno vseeno sku&scaron;alo kar najbolj povečati dodeljeno povpra&scaron;evanje. Podobno bo orodje, če je cilj kar najbolj povečati dodeljeno povpra&scaron;evanje, posku&scaron;alo skraj&scaron;ati potovalni čas (z dodelitvijo lokacij povpra&scaron;evanja najbližji lokaciji storitve namesto katerikoli lokaciji storitve).
+            </p>
+            <p>Glede na va&scaron;e podatke in uporabljene nastavitve lahko različni cilji privedejo do enakih ali podobnih rezultatov. Vseeno morale navesti cilj, ki je najustreznej&scaron;i za va&scaron;o analizo.
+            </p> 
+        </div>
+    </div>
+    <div id="allocateToExistingFacilities">
+        <div><h2>Dodeli k obstoječi lokaciji storitve</h2></div>
+        <hr/>
+        <div>
+            <p>Uporabite ta cilj, če ne želite najti novih lokacij storitev in želite povpra&scaron;evanja dodeliti obstoječim lokacijam storitev, ki imajo lahko omejene ali neomejene kapacitete.    
+            </p>
+            <p>Ta cilj dodeli povpra&scaron;evanja lokacijam storitev na podlagi njihove kapacitete in količine povpra&scaron;evanj iz okolice. Povpra&scaron;evanje je dodeljeno najbližji lokaciji storitve, dokler ni zapolnjena njena kapaciteta. Če navedete največji potovalni doseg, ne bo nobena lokacija povpra&scaron;evanja zunaj dosega dodeljene lokaciji storitve, tudi če povpra&scaron;evanje ni povsem dodeljeno.
+            </p> 
+        </div>
+    </div>
+    <div id="minimizeTravel">
+        <div><h2>Skrajšaj potovanje</h2></div>
+        <hr/>
+        <div>
+            <p>Uporabite ta cilj, če želite najti tak&scaron;ne lokacije storitev, da je skupen potovalni čas ali potovalna razdalja med lokacijami povpra&scaron;evanja in lokacijami storitev kar najmanj&scaron;a.
+            </p>
+            <p>Ta cilj je pogosto uporaben pri rednih potovanjih med lokacijami storitev in lokacijami povpra&scaron;evanj. Ta cilj uporabite, na primer, za kar največje skraj&scaron;anje celotne potovalne razdalje blaga iz distribucijskih centrov do trgovin ali za izbiro lokacije konference, s katero kar najbolj skraj&scaron;ate potovalni čas za vse udeležence.
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverage">
+        <div><h2>Povečaj pokritost</h2></div>
+        <hr/>
+        <div>
+            <p>Uporabite ta cilj, če želite kar najbolj povečati količino povpra&scaron;evanj, ki so pokrite v okviru določenega časa ali razdalje od lokacij storitev.    
+            </p>
+            <p>Ta cilj izbere lokacije storitev tako, da je dodeljena največja količina povpra&scaron;evanj z vsake lokacije povpra&scaron;evanj, ki je dodeljena prvi najbližji lokaciji storitve.
+            </p>
+            <p>Za ta cilj je zahtevan končen največji potovalni doseg; v nasprotnem primeru so lahko vsa povpra&scaron;evanja dodeljena eni lokaciji storitve. Lokacije povpra&scaron;evanja, ki so zunaj razdalje ali časa katerekoli lokacije storitve, ne bodo dodeljene (to vam bo prikazalo, kje povpra&scaron;evanja niso izpolnjena in kje so morda potrebne dodatne lokacije storitev).
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverageWithCapacity">
+        <div><h2>Povečaj pokritost glede na kapaciteto</h2></div>
+        <hr/>
+        <div>
+            <p>Uporabite ta cilj, če želite kar najbolj povečati količino povpra&scaron;evanj, ki jih bodo pokrile lokacije storitev, vendar imajo te omejitve kapacitete.    
+            </p>
+            <p>Ta cilj izbere lokacije storitev tako, da je kar največja količina povpra&scaron;evanj dodeljena brez preseganja kapacitete katerekoli lokacije storitev. Vsa povpra&scaron;evanja iz posamezne lokacije poizvedb so dodeljena eni lokaciji storitve, ki je najbližja in ima razpoložljivo kapaciteto (to pomeni, da če bi dodelitev lokacije povpra&scaron;evanj lokaciji storitve preseglo razpoložljivo kapaciteto lokacije storitve, ta sploh ne bo dodeljena, prav tako ne bi bil dodeljen niti del povpra&scaron;evanja).
+            </p> 
+        </div>
+    </div>
+    <div id="coverAPercentageOfDemand">
+        <div><h2>Pokrij odstotek povpraševanja</h2></div>
+        <hr/>
+        <div>
+            <p>Uporabite ta cilj, če želite izvedeti najmanj&scaron;e &scaron;tevilo lokacij storitev, ki jih potrebujete za pokritje določenega odstotka povpra&scaron;evanja.
+            </p>
+            <p>Ta cilj izbere najmanj&scaron;e &scaron;tevilo lokacij storitev, potrebnih za doseganje določenega odstotka povpra&scaron;evanja. Lokacija povpra&scaron;evanja, ki je znotraj največjega potovalnega dosega dveh ali več lokacij storitev, se bo sorazmerno razdelila med lokacije storitev na podlagi razdalje od vsake od njih. Ta cilj je pogosto uporabljen, ko lahko ljudje izbirajo, katero lokacijo storitve obiskati in se v splo&scaron;nem predvideva, da bodo obiskali najbližjo lokacijo storitve (če je vse ostalo enako).
+            </p>
+            <p>V nasprotju z drugimi cilji za izbiro lokacij storitev, pri katerih sami določite, koliko lokacij storitev izbrati, ta cilj na podlagi odstotka povpra&scaron;evanj, ki jih želite izpolniti, izbere &scaron;tevilo lokacij storitev za vas. Predvideva, da lokacije storitev nimajo omejenih kapacitet.
+            </p> 
+        </div>
+    </div>
+    <div id="measure">
+        <div><h2>Izmera</h2></div>
+        <hr/>
+        <div>
+            <p>Kot pri drugih orodjih, ki v analizo vključujejo potovanje, lahko določite, ali se potovanje meri z razdaljo ali časom in izberete različne načine potovanja, kot so hoja, trajanje vožnje, razdalja vožnje po neasfaltiranih cestah in tako naprej. Razpoložljive načine potovanja določi administrator va&scaron;e organizacije. Pri uporabi  <b>časa vožnje z avtom</b>, <b>časa vožnje po neasfaltiranih cestah</b> ali <b>časa vožnje s tovornjakom</b> lahko poljubno vključite promet na določen dan v tednu in čas v dnevu.
+            </p>
+            <p> Za točno dodelitev lokacij povpra&scaron;evanja lokacijam storitev določite, ali se potuje od lokacij storitev do lokacij povpra&scaron;evanja (npr. od gasilskih domov do hi&scaron;) ali od lokacij povpra&scaron;evanj do lokacij storitev (od hi&scaron; do gasilskih domov). Orodje Najdi najbolj&scaron;o lokacijo storitev bo upo&scaron;tevalo smer potovanja po enosmernih ulicah, ali lahko zavijete iz ene v drugo ulico, ali je v križi&scaron;ču prepovedano zavijati levo in tako naprej, odvisno od tega, ali potujete od lokacije storitve proti lokaciji povpra&scaron;evanja ali od lokacije povpra&scaron;evanja do lokacije storitve.
+            </p>
+        </div>
+    </div>
+    <div id="demandLocationsLayer">
+        <div><h2>Sloj lokacij povpraševanja</h2></div>
+        <hr/>
+        <div>
+            <p>Točkovni geoobjekti, ki predstavljajo lokacije s povpra&scaron;evanjem po storitvah, ki jih ponujajo lokacije storitev. Orodje te lokacije povpra&scaron;evanja dodeli ustreznim lokacijam storitev glede na izbrani cilj.
+            </p>
+            <p>Lokacije povpra&scaron;evanj imajo pripadajočo količino povpra&scaron;evanj. Če imajo vse lokacije povpra&scaron;evanj isto povpra&scaron;evanje, uporabite konstanto za določanje vrednosti. Če se količina povpra&scaron;evanj po lokacijah spreminja, uporabite polje Sloj lokacij povpra&scaron;evanj, da določite vrednost za vsako lokacijo povpra&scaron;evanja.
+            </p>
+            <p>Povpra&scaron;evanja bodo dodeljevana lokacijam storitev, dokler ne bodo dodeljena vsa povpra&scaron;evanja, ne glede na to kako daleč so lokacije povpra&scaron;evanj od lokacij storitev. Sloju lokacij povpra&scaron;evanj lahko dodelite maksimalni doseg potovanja za ustvarjanje mejne vrednosti razdalje ali časa &ndash; katerekoli lokacije povpra&scaron;evanj zunaj mejne vrednosti ne bodo dodeljene. Če imajo vse lokacije povpra&scaron;evanj isti maksimalni potovalni doseg, uporabite konstanto za določanje vrednosti. Če se maksimalni doseg potovanja po lokacijah spreminja, uporabite polje Sloj lokacij povpra&scaron;evanja, da določite vrednost za vsako lokacijo povpra&scaron;evanja.
+            </p>
+            <p>Če je tip cilja  <b>Pokrij odstotek povpra&scaron;evanja</b>, morate določiti minimalni odstotek povpra&scaron;evanj, za katerega želite, da ga lokacije storitev zajamejo.
+            </p>
+            <p>Poleg izbire sloja s karte lahko izberete  <b>Izberi sloj za analizo</b> ki se nahaja v spodnjem delu spustnega menija. Ta možnost odpre galerijo, kjer lahko brskate in izberete sklope podatkov iz različnih virov za uporabo v svoji analizi. 
+            </p>
+            <p>Orodje podpira do 10.000 geoobjektov v sloju lokacij povpra&scaron;evanj.
+            </p>  
+        </div>
+    </div>
+    <div id="requiredFacilitiesLayer">
+        <div><h2>Zahtevan sloj lokacij storitev</h2></div>
+        <hr/>
+        <div>
+            <p>Točkovni geoobjekti predstavljajo lokacije, ki z nudenjem nekak&scaron;nih storitev delujejo kot lokacije storitev. Zahtevane lokacije storitev običajno predstavljajo lokacije, ki že obstajajo, za razliko od kandidatnih lokacij storitev, ki običajno predstavljajo lokacije, na katerih &scaron;ele bodo zgrajene ali postavljene nove lokacije storitev. Pri dodeljevanju lokacij povpra&scaron;evanj orodje uporablja lokacije storitev v  <b>zahtevanem sloju lokacij storitev</b> pred lokacijami storitev iz <b>sloja kandidata za lokacijo storitve</b>.
+            </p>
+            <p>Zahtevane lokacije storitev imajo lahko neomejeno kapaciteto (tj. ugodijo lahko vsem dodeljenim povpra&scaron;evanjem) ali pa imajo omejeno kapaciteto. Če imajo vse lokacije storitev iste omejene kapacitete (kot je &scaron;tevilo gospodinjstev, za katera lahko poskrbi gasilski dom, recimo 4.000), navedite konstantno vrednost. Če se kapaciteta med lokacijami storitev razlikuje (kot je &scaron;tevilo prostih mest za novince po posameznih &scaron;olah) navedite polje, ki vsebuje vrednost kapacitete za posamezno lokacijo storitve.
+            </p>
+            <p>Orodje podpira do 100 geoobjektov v  <b>zahtevanem sloju lokacij storitev</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="candidateFacilitiesLayer">
+        <div><h2>Sloj kandidata za lokacijo storitve</h2></div>
+        <hr/>
+        <div>
+            <p>Točkovni geoobjekti predstavljajo lokacije, ki z nudenjem nekak&scaron;nih storitev delujejo kot lokacije storitev. Kandidati za lokacijo storitve običajno predstavljajo lokacije, na katerih bodo zgrajene ali postavljene nove lokacije storitev, v nasprotju z zahtevanimi lokacijami storitev, ki običajno predstavljajo lokacije, ki že obstajajo.
+            </p>
+            <p>Odvisno od cilja va&scaron;e analize morate navesti &scaron;tevilo kandidatov za lokacijo, ki jih izberete iz nabora kandidatov. Če navedete tako zahtevane lokacije storitev kot kandidate za lokacijo storitve, orodje uporabi lokacije storitev v  <b>zahtevanem sloju lokacij storitev</b> pred lokacijami storitve iz <b>sloja kandidata za lokacije storitev</b>.
+            </p>
+            <p>Kandidati za lokacije storitev imajo lahko neomejeno kapaciteto (tj. ugodijo lahko vsem dodeljenim povpra&scaron;evanjem) ali pa imajo omejeno kapaciteto. Če imajo vse lokacije storitev iste omejene kapacitete (kot je &scaron;tevilo gospodinjstev, za katera lahko poskrbi gasilski dom, recimo 4.000), navedite konstantno vrednost. Če se kapaciteta med lokacijami storitev razlikuje (kot je &scaron;tevilo prostih mest za novince po posameznih &scaron;olah) navedite polje, ki vsebuje vrednost kapacitete za posamezno lokacijo storitve.
+            </p>
+            <p>Orodje podpira do 1.000 geoobjektov v  <b>sloju kandidata za lokacije storitev</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Izberi sloje ovire</h2></div>
+        <hr/>
+        <div>
+            <p> Ena ali več geoobjektov, ki imajo vlogo začasnih omejitev (pregrad) pri potovanju po ulicah. Pregrado je mogoče določiti z uporabo točkovnih, linijskih ali poligonskih geoobjektov.
+            </p>
+            <p>Točkovna ovira lahko prikazuje padlo drevo, nesrečo, padlo električno linijo oziroma kar koli, kar popolnoma blokira promet na določeni točki vzdolž ulice. Potovanje po ulici je dovoljeno, vendar ne skozi oviro. Do 250 geoobjektov lahko opredelite kot točkovne ovire.
+            </p>
+            <p>Linijska ovira prepoveduje potovanje na območju, kjer se ovira križa z ulico. Na primer, z linijsko oviro je mogoče prikazati parado ali protest, ki blokira promet po več uličnih segmentih. Če &scaron;tevilo geoobjektov ulice, ki se križajo z linijskimi ovirami, presega 500, orodje javi napako.
+            </p>
+            <p>Poligonska ovira prepoveduje potovanje na območju, kjer se poligon križa z ulico. En način uporabe te vrste ovire je prikaz poplav, ki pokrivajo območja uličnega omrežja, in zaradi katerih je potovanje po cesti nemogoče. Če &scaron;tevilo geoobjektov ulice, ki se križajo s poligonskimi ovirami, presega 2000, orodje javi napako.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>To je ime sloja, ki bo ustvarjen v  <b>Moji vsebini</b> in dodan na karto. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če ime sloja že obstaja, boste morali vnesti drugo ime.
+            </p>
+            <p>Sloj z rezultati bo vseboval vse od naslednjega: lokacije storitve, ki imajo dodeljena povpra&scaron;evanja, lokacije povpra&scaron;evanja, ki so dodeljene lokacijam storitev, in dodeljene linije, ki povezujejo lokacije povpra&scaron;evanj z dodeljenimi lokacijami storitev. Dodeljene linije so izrisane kot zračne razdalje, vendar potovalni čas ali razdalja med lokacijo storitve in lokacijo povpra&scaron;evanja vedno temelji na načinu potovanja, ki ga navedete in ne uporablja zračnih razdalj.
+            </p>
+            <p>S pomočjo spustnega menija  <b>Shrani rezultat v</b> lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

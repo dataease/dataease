@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Calcula la densitat</h2><p/>
+        <h2><img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" alt="Eina Calcula la densitat"></h2>
+        <hr/>
+    <p>Aquesta eina crea un mapa de densitat a partir de les entitats de punts o l&iacute;nies mitjan&ccedil;ant la difusi&oacute; de quantitats conegudes del mateix fenomen (que es representen com a atributs dels punts o les l&iacute;nies) al mapa. El resultat &eacute;s una capa d'&agrave;rees classificades de menor a major densitat.
+    </p>
+    <p>En una entrada de punts, cada punt hauria de representar la ubicaci&oacute; d'algun esdeveniment o incident; la capa de resultats representa un recompte d'incidents per &agrave;rea d'unitat. Un valor de densitat alt en una ubicaci&oacute; nova indica la pres&egrave;ncia de m&eacute;s punts a prop d'aquesta ubicaci&oacute;. En molts casos, la capa de resultats es pot interpretar com una superf&iacute;cie de risc per a esdeveniments futurs. Per exemple, si els punts d'entrada representen ubicacions on hi ha caigut un llamp, la capa de resultats es pot interpretar com una superf&iacute;cie de risc per a la caiguda de llamps en el futur.
+    </p>
+    <p>En el cas de l'entrada de l&iacute;nia, la superf&iacute;cie de densitat de l&iacute;nia representa la quantitat total de la l&iacute;nia que est&agrave; a prop de cada ubicaci&oacute;. Les unitats dels valors de densitat calculats corresponen a la longitud de l'&agrave;rea de l&iacute;nia per unitat. Per exemple, si les l&iacute;nies representen rius, la capa de resultats representar&agrave; la longitud total dels rius que s&oacute;n dins del radi de cerca. Aquest resultat es pot utilitzar per identificar les &agrave;rees que s&oacute;n adequades com a pastures per a animals.
+    </p>
+    <p>Altres casos d'&uacute;s d'aquesta eina inclouen els seg&uuml;ents:
+
+        <ul>
+            <li>Creaci&oacute; de mapes de densitat de delinq&uuml;&egrave;ncia perqu&egrave; els departaments de policia puguin assignar els recursos adequats a les zones amb un alt nivell de delinq&uuml;&egrave;ncia.
+                
+ 
+            </li>
+            <li>C&agrave;lcul de les densitats d'hospitals en un comtat. La capa de resultats mostrar&agrave; les &agrave;rees amb una accessibilitat alta i baixa als hospitals. Aquesta informaci&oacute; es pot utilitzar per decidir on s'haurien de construir hospitals nous.
+                
+ 
+            </li>
+            <li>Identificaci&oacute; d'&agrave;rees amb un alt risc d'incendi forestal en funci&oacute; de l'historial d'ubicacions d'aquests incendis.
+                
+ 
+            </li>
+            <li>Localitzaci&oacute; de comunitats allunyades de les carreteres principals per planificar on s'haurien de construir carreteres noves.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointOrLineFeatures">
+        <div><h2>Trieu la capa de punts o línies d'entrada a partir de la qual s'ha de calcular la densitat</h2></div>
+        <hr/>
+        <div>
+            <p>Capa de punts o l&iacute;nies d'entrada que s'utilitzar&agrave; per calcula la capa de densitat.
+            </p>
+        </div>
+    </div>
+    <div id="countField">
+        <div><h2>Utilitza un camp de recompte</h2></div>
+        <hr/>
+        <div>
+            <p>Proporcioneu un camp que especifiqui el nombre d'incidents de cada ubicaci&oacute;. Per exemple, si teniu punts que representen ciutats, podeu fer servir un camp que representi la poblaci&oacute; de la ciutat com a camp de recompte. La capa de densitat de poblaci&oacute; resultant calcular&agrave; les densitats de poblaci&oacute; m&eacute;s altes a prop de les ciutats amb m&eacute;s poblaci&oacute;.
+            </p>
+            <p>Si es fa servir l'opci&oacute; per defecte  <b>Cap</b>, es pressuposar&agrave; que cada ubicaci&oacute; representa un sol recompte.
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Distància de cerca</h2></div>
+        <hr/>
+        <div>
+            <p>Introdu&iuml;u una dist&agrave;ncia que especifiqui fins on s'ha de cercar per trobar entitats de punts o de l&iacute;nies quan es calculin valors de densitat. Per exemple, si proporcioneu una dist&agrave;ncia de cerca de 10.000 metres, la densitat de qualsevol ubicaci&oacute; de la capa de sortida es calcular&agrave; a partir de les entitats que es trobin en un radi de 10.000 metres de la ubicaci&oacute;. Qualsevol ubicaci&oacute; que no tingui cap incident en un radi de 10.000 metres tindr&agrave; un valor de densitat igual a zero.
+            </p>
+            <p>Si no es proporciona cap dist&agrave;ncia, se'n calcular&agrave; una per defecte a partir de les ubicacions de les entitats d'entrada i dels valors del camp de recompte (si se'n proporciona algun).
+            </p>
+        </div>
+    </div>
+    <div id="outputAreaUnits">
+        <div><h2>Unitats d'àrea de sortida</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica la unitat d'&agrave;rea de sortida. La densitat &eacute;s el recompte dividit per l'&agrave;rea i aquest par&agrave;metre especifica la unitat de l'&agrave;rea en el c&agrave;lcul de la densitat.
+            </p>
+            <p>Les unitats d'&agrave;rea disponibles s&oacute;n milles quadrades, peus quadrats, metres quadrats i quil&ograve;metres quadrats.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Mida de la cel·la de sortida</h2></div>
+        <hr/>
+        <div>
+            <p>Mida i unitat de la cel&middot;la dels r&agrave;sters de sortida.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Podeu especificar el nom d'una carpeta de  <b>El meu contingut</b> on es desar&agrave; el resultat mitjan&ccedil;ant el quadre desplegable <b>Desa el resultat a</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

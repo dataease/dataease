@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Növényzeti monitoring</h2><p/>
+        <h2><img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" alt="N&ouml;v&eacute;nyzeti monitoring eszk&ouml;z port&aacute;lhoz"></h2>
+        <hr/>
+    <p>Ez az eszk&ouml;z sz&aacute;mtani műveletet hajt v&eacute;gre egy t&ouml;bbs&aacute;vos raszteres r&eacute;teg s&aacute;vjain, &eacute;s az adatok alapj&aacute;n felt&aacute;rja a minta ter&uuml;let n&ouml;v&eacute;nyzettel bor&iacute;tott r&eacute;sz&eacute;t.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Bemenő adatok kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>V&aacute;lassza ki a t&ouml;bbs&aacute;vos raszteres r&eacute;teget. &Uuml;gyeljen arra, hogy a bemeneti raszter rendelkezzen a megfelelő s&aacute;vokkal.
+            </p> 
+        </div>
+    </div>
+    <div id="vegetationIndexType">
+        <div><h2>Válassza ki a növényzeti monitoring módszerét</h2></div>
+        <hr/>
+        <div>
+            <p>V&aacute;lassza ki a veget&aacute;ci&oacute;s indexr&eacute;teg l&eacute;trehoz&aacute;s&aacute;hoz haszn&aacute;lt m&oacute;dszert. A k&uuml;l&ouml;nb&ouml;ző veget&aacute;ci&oacute;s indexek seg&iacute;thetnek r&aacute;vil&aacute;g&iacute;tani bizonyos jellemzőkre, vagy cs&ouml;kkenthetik a k&uuml;l&ouml;nf&eacute;le zajokat.
+            </p>
+            <ul>
+                <li>Global Environmental Monitoring Index &mdash; 
+A GEMI műholdas t&aacute;v&eacute;rz&eacute;kelt felv&eacute;telből sz&aacute;rmaz&oacute;, nemline&aacute;ris veget&aacute;ci&oacute;s index glob&aacute;lis k&ouml;rnyezeti monitoringhoz. Az NDVI-hez hasonl&oacute;, de kev&eacute;sb&eacute; &eacute;rz&eacute;keny a l&eacute;gk&ouml;ri hat&aacute;sokra. A veget&aacute;ci&oacute; n&eacute;lk&uuml;li talaj azonban hat&aacute;ssal van r&aacute;, ez&eacute;rt ritka vagy k&ouml;zepesen sűrű veget&aacute;ci&oacute;val rendelkező ter&uuml;leteken nem aj&aacute;nlott a haszn&aacute;lata.
+
+                </li>
+                <li>Green Vegetation Index - Landsat TM &mdash; 
+A GVI-t eredetileg a Landsat MSS t&aacute;v&eacute;rz&eacute;kelt felv&eacute;telekből tervezt&eacute;k, de k&eacute;sőbb m&oacute;dos&iacute;tott&aacute;k a Landsat TM t&aacute;v&eacute;rz&eacute;kelt felv&eacute;telekkel t&ouml;rt&eacute;nő haszn&aacute;latra. Landsat TM Tasseled Cap z&ouml;ldveget&aacute;ci&oacute;s index n&eacute;ven is ismert. Ez a monitoringindex olyan t&aacute;v&eacute;rz&eacute;kelt felv&eacute;telekkel is haszn&aacute;lhat&oacute;, amelyek s&aacute;vjai ugyanazokkal a spektr&aacute;lis jellemzőkkel b&iacute;rnak.
+
+                </li>
+                <li>Modified Soil Adjusted Vegetation Index &mdash; 
+Az MSAVI2 veget&aacute;ci&oacute;s index igyekszik kik&uuml;sz&ouml;b&ouml;lni a veget&aacute;ci&oacute; n&eacute;lk&uuml;li talaj SAVI m&oacute;dszerben jelentkező hat&aacute;sait.
+
+                </li>
+                <li>Normalized Difference Vegetation Index  &mdash; 
+Az NDVI egy standardiz&aacute;lt index, amely lehetőv&eacute; teszi a z&ouml;ldess&eacute;get vagy a relat&iacute;v biomassz&aacute;t megjelen&iacute;tő k&eacute;p l&eacute;trehoz&aacute;s&aacute;t. Ez az index egy multispektr&aacute;lis raszteres adathalmaz k&eacute;t s&aacute;vj&aacute;nak jellemzői k&ouml;z&ouml;tti kontrasztot haszn&aacute;lja ki: a klorofillpigment elnyel&eacute;s&eacute;t a l&aacute;that&oacute; v&ouml;r&ouml;s s&aacute;vban &eacute;s a n&ouml;v&eacute;nyek anyagainak magas f&eacute;nyvisszaverő k&eacute;pess&eacute;g&eacute;t a k&ouml;zeli infrav&ouml;r&ouml;s (NIR) s&aacute;vban.
+
+                </li>
+                <li>Perpendicular Vegetation Index &mdash; 
+A PVI egy veget&aacute;ci&oacute;s indexhez hasonl&oacute;, de &eacute;rz&eacute;keny a l&eacute;gk&ouml;ri v&aacute;ltoz&aacute;sokra. Amikor ezt a m&oacute;dszert haszn&aacute;ljuk k&uuml;l&ouml;nb&ouml;ző k&eacute;pek &ouml;sszehasonl&iacute;t&aacute;s&aacute;ra, csak olyan k&eacute;peken szabad haszn&aacute;lni, amelyek l&eacute;gk&ouml;rileg korrig&aacute;ltak. Ez az inform&aacute;ci&oacute; az adatszolg&aacute;ltat&oacute;t&oacute;l beszerezhető.
+
+                </li>
+                <li>Soil-Adjusted Vegetation Index &mdash; 
+A SAVI olyan veget&aacute;ci&oacute;s index, amely talajsz&iacute;n-korrekci&oacute;s t&eacute;nyező seg&iacute;ts&eacute;g&eacute;vel igyekszik kik&uuml;sz&ouml;b&ouml;lni a talaj sz&iacute;n&eacute;nek hat&aacute;sait. Ilyet gyakran haszn&aacute;lnak sz&aacute;raz ter&uuml;leteken, ahol alacsony a n&ouml;v&eacute;nyzeti fedetts&eacute;g.
+
+                </li>
+                <li>Sultan's Formula &mdash; 
+A Sultan-k&eacute;plet elj&aacute;r&aacute;s egy hats&aacute;vos 8 bites k&eacute;pből meghat&aacute;rozott algoritmus seg&iacute;ts&eacute;g&eacute;vel h&aacute;roms&aacute;vos 8 bites k&eacute;pet &aacute;ll&iacute;t elő. Az eredm&eacute;ny&uuml;l kapott k&eacute;pen az ofiolitnak nevezett kőzetegy&uuml;ttes l&aacute;that&oacute; a partvonalak ment&eacute;n. Ezt a k&eacute;pletet egy Landsat 5 vagy 7 t&iacute;pus&uacute; 3D t&eacute;rk&eacute;p TM &eacute;s ETM s&aacute;vjai alapj&aacute;n tervezt&eacute;k.
+
+                </li>
+                <li>Transformed Soil-Adjusted Vegetation Index &mdash; 
+A Transformed-SAVI olyan veget&aacute;ci&oacute;s index, amely a talajf&eacute;nyess&eacute;g hat&aacute;sait azzal a felt&eacute;telez&eacute;ssel igyekszik kik&uuml;sz&ouml;b&ouml;lni, hogy a talajvonal lejt&eacute;se &eacute;s tengelymetsz&eacute;se v&eacute;letlenszerű.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bandIndexes">
+        <div><h2>Adja meg a közeli infravörös (NIR) sáv és a látható vörös sáv indexeit</h2></div>
+        <hr/>
+        <div>
+            <p>Adja meg s&aacute;vindexeket a k&ouml;zeli infrav&ouml;r&ouml;s (NIR) s&aacute;vhoz &eacute;s a l&aacute;that&oacute; v&ouml;r&ouml;s s&aacute;vhoz.
+            </p>
+            <p>Mindegyik műholdas &eacute;rz&eacute;kelő &eacute;s l&eacute;gi kamera s&aacute;vindexekbe rendezett inform&aacute;ci&oacute;kat r&ouml;gz&iacute;t. Mindegyik s&aacute;vindex az elektrom&aacute;gneses spektrum egy meghat&aacute;rozott r&eacute;sz&eacute;nek inform&aacute;ci&oacute;it tartalmazza. A n&ouml;v&eacute;nyzeti monitoring eme m&oacute;dszer&eacute;hez meg kell adni a NIR &eacute;s a v&ouml;r&ouml;s hull&aacute;mhosszt r&ouml;gz&iacute;tő s&aacute;vindexet.
+            </p>
+        </div>
+    </div>
+    <div id="slopeOfSoilLine">
+        <div><h2>Talajvonal lejtése</h2></div>
+        <hr/>
+        <div>
+            <p>A talajvonal lejt&eacute;se. A lejt&eacute;s (meredeks&eacute;g) a megk&ouml;zel&iacute;tőleg line&aacute;ris kapcsolat a NIR &eacute;s a l&aacute;that&oacute; v&ouml;r&ouml;s s&aacute;v k&ouml;z&ouml;tt egy sz&oacute;r&aacute;sdiagramon.
+            </p>
+            <p>Ez a param&eacute;ter csak a transzform&aacute;lt SAVI m&oacute;dszerhez &eacute;rv&eacute;nyes.
+            </p>
+        </div>
+    </div>
+    <div id="interceptOfSoilLine">
+        <div><h2>Tengelymetszet</h2></div>
+        <hr/>
+        <div>
+            <p>A NIR &eacute;rt&eacute;ke, amikor a l&aacute;that&oacute; v&ouml;r&ouml;s s&aacute;v visszaver&eacute;si &eacute;rt&eacute;ke 0 az adott talajvonalak mellett.
+            </p>
+            <p> <code>(a = NIR - sRed)</code> , amikor a l&aacute;that&oacute; v&ouml;r&ouml;s &eacute;rt&eacute;ke 0.
+            </p> 
+            <p>Ez a param&eacute;ter csak a transzform&aacute;lt SAVI m&oacute;dszerhez &eacute;rv&eacute;nyes.
+            </p>
+        </div>
+    </div>
+    <div id="greenVegetativeCover">
+        <div><h2>Zöld növényzeti fedettség mennyisége</h2></div>
+        <hr/>
+        <div>
+            <p>A z&ouml;ld n&ouml;v&eacute;nyzeti fedetts&eacute;g mennyis&eacute;g&eacute;t adja meg, ami a SAVI m&oacute;dszern&eacute;l sz&uuml;ks&eacute;ges.
+            </p>
+            <p>Az &eacute;rv&eacute;nyes &eacute;rt&eacute;kek a k&ouml;vetkezők: 
+
+                <ul>
+                    <li>1 = z&ouml;ld n&ouml;v&eacute;nyzettel nem fedett ter&uuml;letek
+                        
+ 
+                    </li>
+                    <li>0,5 = z&ouml;ld n&ouml;v&eacute;nyzettel k&ouml;zepesen benőtt ter&uuml;letek
+                        
+ 
+                    </li>
+                    <li>0 = z&ouml;ld n&ouml;v&eacute;nyzettel sűrűn fedett ter&uuml;letek
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="adjustmentFactor">
+        <div><h2>Korrekciós tényező</h2></div>
+        <hr/>
+        <div>
+            <p>A talajhat&aacute;s cs&ouml;kkent&eacute;s&eacute;t szolg&aacute;l&oacute; korrekci&oacute;s t&eacute;nyezőt adja meg, ami a transzform&aacute;lt talajhoz igaz&iacute;tott veget&aacute;ci&oacute;s index m&oacute;dszern&eacute;l sz&uuml;ks&eacute;ges. Az alap&eacute;rtelmezett &eacute;rt&eacute;k 0,08.
+            </p>
+            <p>Az alacsony &eacute;rt&eacute;k a talajhat&aacute;s figyelmen k&iacute;v&uuml;l hagy&aacute;s&aacute;t jelenti. A magas &eacute;rt&eacute;k azt jelenti, hogy a talaj hat&aacute;ssal lesz az eredm&eacute;nyre.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve. Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az Eredm&eacute;ny ment&eacute;si helye leg&ouml;rd&uuml;lő mezőben megadhatja a  <b>Saj&aacute;t tartalom</b>mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z <b>menti az eredm&eacute;nyt</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

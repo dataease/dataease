@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Arvuta kalle</h2><p/>
+        <h2><img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" alt="Kalde arvutamise t&ouml;&ouml;riist (Portal)"></h2>
+        <hr/>
+    <p>See t&ouml;&ouml;riist loob pinna, mis n&auml;itab sisendi k&otilde;rgusandmetest tuletatud kallet. Kalle n&auml;itab k&otilde;rguse muutumise m&auml;&auml;ra iga digitaalse k&otilde;rgusmudeli (DEM) piksli kohta.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valige kalde arvutamiseks sisendandmed</h2></div>
+        <hr/>
+        <div>
+            <p>K&otilde;rguste kiht, mille piksliv&auml;&auml;rtustest kalle arvutatakse.
+            </p>
+        </div>
+    </div>
+    <div id="zFactor">
+        <div><h2>Määrake kõrguse suurendustegur</h2></div>
+        <hr/>
+        <div>
+            <p>Sisestage Z-tegur.
+            </p>
+            <p>Z-tegur on suurendustegur, mida kasutatakse k&otilde;rguse v&auml;&auml;rtuse teisendamiseks. Seda kasutatakse kahel otstarbel:
+ 
+                <ul>
+                    <li>k&otilde;rgus&uuml;hikute (meetrid v&otilde;i jalad) teisendamine kihi horisontaalsete koordinaatide &uuml;hikuteks, mis v&otilde;ivad olla jalad, meetrid v&otilde;i kraadid
+                        
+  
+                    </li>
+                    <li>visuaalse efektina vertikaalse liialduse lisamiseks
+                        
+ 
+                    </li>
+                </ul>
+                
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                </td>
+                <td>
+                    <p>Jalgadest
+                    </p>
+                </td>
+                <td>
+                    <p>Meetritest
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Jalgadest
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>0,3048
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Meetritest
+                    </p>
+                </td>
+                <td>
+                    <p>3,28084
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

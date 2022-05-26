@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Regressió lineal generalitzada</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="Diagrama de flux de treball de GeneralizedLinearRegression"></h2>
+        <hr/>
+    <p>Realitza la regressi&oacute; lineal generalitzada 
+(GLR) per generar prediccions o per modelar una variable dependent des del punt de vista de la seva relaci&oacute; amb un conjunt de variables explicatives.  Aquesta eina es pot utilitzar per ajustar models continu (gaussi&agrave;), binari (log&iacute;stic) i de recompte (Poisson).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Tipus d'anàlisi</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica el mode de funcionament de l'eina. L'eina es pot executar per formar un model destinat nom&eacute;s a avaluar el rendiment, o b&eacute; per formar un model i predir les entitats. Els tipus de predicci&oacute; s&oacute;n els seg&uuml;ents:
+                <ul>
+                    <li> <b>Ajustar un model per avaluar-ne el rendiment</b>: s'ajustar&agrave; i aplicar&agrave; un model a les dades d'entrada. Utilitzeu aquesta opci&oacute; per avaluar la precisi&oacute; del model abans de generar prediccions sobre un nou dataset o per entendre les relacions i els controladors de la variable predita. La sortida d'aquesta opci&oacute; ser&agrave; un servei d'entitats de les dades ajustades i el diagn&ograve;stic del model.
+                    </li>
+                    <li> <b>Ajustar un model i predir els valors</b>: es generaran prediccions o classificacions d'entitats d'entrada i entitats de predicci&oacute;. Les variables explicatives s'han de proporcionar tant per a les entitats de predicci&oacute; com per a les entitats que es prediran. La sortida d'aquesta opci&oacute; ser&agrave; un servei d'entitats del modelo ajustat a les vostres dades d'entrada, un servei d'entitats dels valors predits i el diagn&ograve;stic del model.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>Ajustar un model per avaluar-ne el rendiment</h2></div>
+        <hr/>
+        <div>
+            <p>Utilitzeu aquest mode si voleu ajustar un model i investigueu l'ajust.
+            </p>
+            <p>Amb aquesta opci&oacute;, el model es formar&agrave; mitjan&ccedil;ant una capa d'entrada. Utilitzeu aquesta opci&oacute; per avaluar la precisi&oacute; del model abans de generar prediccions sobre un nou dataset. Aquesta opci&oacute; generar&agrave; el diagn&ograve;stic del model i aplicar&agrave; el model a les vostres dades de formaci&oacute;.
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>Ajustar un model i predir els valors</h2></div>
+        <hr/>
+        <div>
+            <p>Utilitzeu aquest mode si voleu ajustar un model i apliqueu el model al dataset per generar prediccions.
+            </p>
+            <p>Es generaran prediccions o classificacions d'entitats. La sortida d'aquesta opci&oacute; ser&agrave; un servei d'entitats, el diagn&ograve;stic del model i una taula opcional de la import&agrave;ncia de les variables.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>Trieu una capa des de la qual generar un model</h2></div>
+        <hr/>
+        <div>
+            <p>Capa que cont&eacute; les entitats de punts, l&iacute;nies, &agrave;rees o taules que contenen les variables dependents i explicatives.
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b> al final de la llista desplegable per cercar al vostre contingut una capa d'entitats o un dataset de recursos compartits de fitxers de dades massives.
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>Trieu el camp que voleu modelar</h2></div>
+        <hr/>
+        <div>
+            <p>Camp num&egrave;ric que cont&eacute; els valors observats que es modelaran i el tipus de valor que esteu modelant. Hi ha tres tipus de valors que podeu modelar
+                <ul>
+                    <li>Continu: representa valors continus. El model utilitzat &eacute;s el gaussi&agrave; i l'eina fa una regressi&oacute; dels m&iacute;nims quadrats ordinaris.
+                    </li>
+                    <li>Binari: representa els valors de pres&egrave;ncia o abs&egrave;ncia. Han de ser 1s i 0s. El model utilitzat &eacute;s el de regressi&oacute; log&iacute;stica.
+                    </li>
+                    <li>Recompte: representa dades discretes i esdeveniments, com ara recomptes d'actes delictius, incidents per malalties o accidents de tr&agrave;nsit. El model utilitzat &eacute;s el de regressi&oacute; Poisson. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Trieu una capa per predir-ne els valors</h2></div>
+        <hr/>
+        <div>
+            <p>Capa amb entitats que representen les ubicacions on s'han de calcular les estimacions. Cada entitat d'aquest dataset ha de contenir els valors de totes les variables explicatives especificades. La variable dependent d'aquestes entitats s'estimar&agrave; mitjan&ccedil;ant el modelo calibrat per a la capa d'entrada.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Trieu els camps explicatius</h2></div>
+        <hr/>
+        <div>
+            <p>Un o diversos camps que representen les variables explicatives (camps) que ajuden a predir el valor. Nom&eacute;s els camps num&egrave;rics seran visibles.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Trieu com han de coincidir els camps explicatius</h2></div>
+        <hr/>
+        <div>
+            <p>Manera en qu&egrave; les variables corresponents de la capa d'entrada coincidiran amb les variables de la capa de predicci&oacute;. Nom&eacute;s les variables utilitzades en generar el modelo s'inclouran a la taula. Nom&eacute;s es poden utilitzar valors num&egrave;rics. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la capa que es crear&agrave;.  Si esteu escrivint en un ArcGIS Data Store, els resultats es desaran a  <b>El meu contingut</b> i s'afegiran al mapa. Si esteu escrivint en un recurs compartit de fitxers de dades massives, els resultats s'emmagatzemaran en aquest recurs i s'afegiran al seu manifest. No s'afegiran al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, l'eina no funcionar&agrave;.
+            </p>
+            <p>El resultats retornats dependran del tipus d'an&agrave;lisi. Si esteu fent l'ajust per avaluar l'ajust del model, els resultats contindran una capa de dades d'entrada ajustada al model i informaci&oacute; de resultats que avalua l'ajust del model. Si esteu fent l'ajust i la predicci&oacute;, els resultats contindran una capa de dades d'entrada ajustada al model, una capa dels resultats predits i informaci&oacute; de resultats que avalua l'ajust del model.
+            </p>
+            <p>Si escriviu a l' ArcGIS Data Store (magatzem de dades massives relacional o espaciotemporal) mitjan&ccedil;ant el quadre desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta a <b>El meu contingut</b>, on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

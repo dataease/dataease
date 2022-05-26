@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Beregn helling</h2><p/>
+        <h2><img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" alt="Beregn hellingsverkt&oslash;y for Portal"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet oppretter en overflate som viser helningen p&aring; inngangsh&oslash;ydedataene. Hellingen representerer endringstakten for h&oslash;yden for hver celle i den digitale h&oslash;ydemodellen (DEM).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Velg inndata for beregning av helling</h2></div>
+        <hr/>
+        <div>
+            <p>H&oslash;ydelaget som helningen blir beregnet fra.
+            </p>
+        </div>
+    </div>
+    <div id="zFactor">
+        <div><h2>Spesifiser skaleringsfaktor for høyde over havet</h2></div>
+        <hr/>
+        <div>
+            <p>Angi en z-faktor.
+            </p>
+            <p>Z-faktoren er en skaleringsfaktor som brukes til &aring; omdanne h&oslash;ydeverdiene til to form&aring;l:
+ 
+                <ul>
+                    <li>&Aring; konvertere h&oslash;ydeenhetene (for eksempel meter eller fot) til de horisontale koordinatenhetene for laget, som kan v&aelig;re fot, meter eller grader
+                        
+  
+                    </li>
+                    <li>&Aring; legge til vertikal overdrivelse for &aring; oppn&aring; en visuell effekt
+                        
+ 
+                    </li>
+                </ul>
+                
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                </td>
+                <td>
+                    <p>Fra fot
+                    </p>
+                </td>
+                <td>
+                    <p>Fra meter
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Fra fot
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>0,3048
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Fra meter
+                    </p>
+                </td>
+                <td>
+                    <p>3,28084
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Du kan angi navnet p&aring; en mappe i  <b>Mitt innhold</b>, der resultatet blir lagret via rullegardinlisten <b>Lagre resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

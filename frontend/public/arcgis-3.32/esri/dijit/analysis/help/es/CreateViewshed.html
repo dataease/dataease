@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Crear cuenca visual</h2><p/>
+        <h2><img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" alt="Crear cuenca visual"></h2>
+        <hr/>
+    <p>La herramienta Crear cuenca visual crea &aacute;reas en las que un observador puede ver objetos sobre el terreno. Los puntos de observador de entrada pueden representar observadores (como por ejemplo, personas en el suelo o puestos de vigilancia en una torre de control de incendios) u objetos observados (como por ejemplo aerogeneradores, torres de agua, veh&iacute;culos u otras personas). Las &aacute;reas de resultado son las &aacute;reas en las que los observadores pueden ver los objetos observados y viceversa: las &aacute;reas en las que los objetos observados pueden ver a los observadores.
+    </p>
+    <p>Tanto los observadores como los objetos observados pueden tener una altura por encima del suelo y estas alturas se utilizan para determinar la visibilidad. Por ejemplo, una cuenca visual calculada para aerogeneradores de 100 metros y personas de 1,80 de altura que est&aacute;n de pie en el suelo ser&aacute; normalmente mayor que una cuenca visual calculada para aerogeneradores de 50 metros y personas de 1,80 de altura.
+    </p>
+    <p>Ten en cuenta que el c&aacute;lculo de la cuenca visual considera las obstrucciones, tales como &aacute;rboles o edificios. Puedes pensar que este c&aacute;lculo tiene lugar en un solar, sin nada m&aacute;s que el observador y los objetos observados.
+    </p>
+    <p>La capa de resultado no contiene entidades de &aacute;rea que representen &aacute;reas visibles. El campo  <i>Frequency</i> registra el n&uacute;mero de puntos de observador que pueden ver cada &aacute;rea. Por ejemplo, si tienes cinco puntos de entrada, cada uno de los cuales representa un puesto de vigilancia de incendios, el campo <i>Frequency</i> contendr&aacute; valores comprendidos entre el uno y el cinco; las &aacute;reas con un valor de uno solo podr&aacute;n ser vistas por una torre y las &aacute;reas con un valor de cinco podr&aacute;n ser vistas por todas las torres. La capa de resultados tambi&eacute;n contiene el campo <i>DEMResolution</i>, que registra la resoluci&oacute;n del modelo digital de elevaci&oacute;n (DEM) utilizado para crear las cuencas visuales.
+    </p>
+    <p>Si  <b>Usar la extensi&oacute;n del mapa actual</b> se ha activado, solo se analizar&aacute;n los puntos de observador que est&eacute;n visibles en la extensi&oacute;n de mapa actual.  Si la opci&oacute;n est&aacute; desactivada, se analizar&aacute;n todos los puntos de observador de la capa de entrada, aunque est&eacute;n fuera de la extensi&oacute;n de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Entidades de puntos que representan las ubicaciones del observador</h2></div>
+        <hr/>
+        <div>
+            <p>Entidades de puntos que se van a usar como ubicaciones del observador. 
+            </p>
+            <p>Adem&aacute;s de elegir una capa del mapa, puede seleccionar  <b>Elegir capa de an&aacute;lisis</b>, que se encuentra al final de la lista desplegable. Esta opci&oacute;n abre una galer&iacute;a en la que puede buscar y seleccionar datasets de varias fuentes para usarlos en su an&aacute;lisis. 
+            </p>
+        </div>
+    </div>
+    <div id="ObserverHeight">
+        <div><h2>Altura de las ubicaciones del observador</h2></div>
+        <hr/>
+        <div>
+            <p>Es la altura por encima del suelo de las ubicaciones de observador.    El valor predeterminado es aproximadamente la altura de una persona.  
+            </p>
+        </div>
+    </div>
+    <div id="TargetHeight">
+        <div><h2>Altura de otros objetos sobre el suelo.</h2></div>
+        <hr/>
+        <div>
+            <p>Es la altura de estructuras o personas en el suelo, utilizada para establecer la visibilidad. La cuenca visual resultante se compone de las &aacute;reas en las que un punto de observador puede ver estos otros objetos.  Lo contrario tambi&eacute;n es cierto; los objetos pueden ver un punto de observador. 
+            </p>
+            <p>
+                <ul>
+                    <li>Si tus puntos de observador representan aerogeneradores y deseas determinar en qu&eacute; lugares puede verlos una persona que est&eacute; de pie sobre el suelo, introduce la altura media de una persona (aproximadamente 1,80 metros).  El resultado ser&aacute;n las &aacute;reas en las que una persona de pie sobre el suelo puede ver los aerogeneradores.
+                    </li>
+                    <li>Si tus puntos de observador representan puestos de vigilancia de incendios y deseas determinar qu&eacute; torres de vigilancia pueden ver una columna de humo de 6 metros o m&aacute;s de altura, introduce 6 metros para la altura.  El resultado ser&aacute;n las &aacute;reas en las que una atalaya de vigilancia puede ver un penacho de humo de 6 metros o m&aacute;s de altura.
+                    </li>
+                    <li>Si tus puntos de observador representan miradores en carreteras y senderos y deseas determinar en qu&eacute; lugares pueden verse aerogeneradores de 120 metros o m&aacute;s de altura, introduce 120 metros para la altura.  El resultado ser&aacute;n las &aacute;reas en las que una persona de pie puede ver, desde un mirador, un aerogenerador de 120 metros o m&aacute;s de altura.
+                    </li>
+                    <li>Si tus puntos de observador representan miradores y deseas determinar la superficie que pueden ver las personas que est&eacute;n de pie en el mirador, introduce cero.  El resultado ser&aacute;n las &aacute;reas que pueden verse desde el mirador.  
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="MaximumDistance">
+        <div><h2>Distancia de visualización máxima</h2></div>
+        <hr/>
+        <div>
+            <p>Es una distancia de corte en la que se detiene el c&aacute;lculo de &aacute;reas visibles. M&aacute;s all&aacute; de esta distancia, no se sabe si los puntos de observador y los otros objetos pueden verse mutuamente. Los valores elevados podr&iacute;an aumentar el tiempo de c&aacute;lculo. El valor m&aacute;ximo permitido es de 31 millas (50 kil&oacute;metros).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>Este es el nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y se agregar&aacute; al mapa.  El nombre predeterminado se basa en el nombre de la herramienta y el nombre de la capa de entrada. Si el nombre de capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Con el men&uacute; desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+            <p> Ejecutar esta herramienta no consume cr&eacute;ditos.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="bdToolbox">
+        <p> GeoAnalytics distribuerer analysearbeidet til hele ArcGIS GeoAnalytics Server. Dette gj&oslash;r det mulig &aring; analysere mer data raskere med flere maskiner. F&oslash;lgende verkt&oslash;y er tilgjengelig: <ul>
+                <li> Aggreger punkter
+                </li>
+                <li> Opprett multivariabelt rutenett
+                </li>
+                <li> Beskriv datasett
+                </li>
+                <li> Koble geoobjekter
+                </li>
+                <li> Rekonstruer spor
+                </li>
+                <li> Summer attributter
+                </li>
+                <li> Summer innenfor
+                </li>
+                <li> Geokod lokasjoner fra tabell
+                </li>
+                <li> Berik fra multivariabelt rutenett
+                </li>
+                <li> Identifiser hendelser
+                </li>
+                <li> Finn lignende lokasjoner
+                </li>
+                <li> Beregn tetthet
+                </li>
+                <li> Finn punktklynger
+                </li>
+                <li> Finn hotspots
+                </li>
+                <li> Skogbasert klassifisering og regresjon
+                </li>
+                <li> Generalisert line&aelig;r regresjon
+                </li>
+                <li> Opprett buffere
+                </li>
+                <li> Legg til data
+                </li>
+                <li> Beregn felt
+                </li>
+                <li> Kopier til datalager
+                </li>
+                <li> Legg lag opp&aring;
+                </li>
+                <li> Visk ut grenser
+                </li>
+                <li> Sl&aring; sammen lag
+                </li>
+                <li> Klipp lag 
+                </li>
+            </ul>
+            
+        </p>
+        <p>GeoAnalytics fokuserer p&aring; &aring; analysere store datamengder med vekt p&aring; b&aring;de geografiske og tidsmessige m&oslash;nstre. 
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="largesize">
+        <h2>Summarize Data</h2>
+        <hr/>
+        <p> The Summarize Data toolset contains tools that calculate total counts, lengths, areas, and basic descriptive statistics of features and their attributes within areas or near other features.
+            <ul>
+                <li> <b>Aggregate Points</b> calculates statistics about points that fall within specified areas or bins.
+                </li>
+                <li> <b>Build Multi-Variable Grid</b> generates a grid of square or hexagonal bins and calculates values for each bin based on the proximity of each input layer.
+                </li>
+                <li> <b>Describe Dataset</b> calculates a summary of your input, and can optionally generate a sample of your input layer.
+                </li>
+                <li> <b>Join Features</b> calculates statistics about features that share a spatial, temporal, or attribute relationship with other features.
+                </li>
+                <li> <b>Reconstruct Tracks</b> calculates statistics about points or polygons that belong to the same track and reconstructs inputs into tracks.
+                </li>
+                <li> <b>Summarize Attributes</b> calculates statistics about feature or tabular data that share attributes.
+                </li>
+                <li> <b>Summarize Within</b> calculates statistics for area features and attributes that overlap each other.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="AggregatePointsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Aggreger punkter</h2></td>
+                    <td>
+                    <img src="../images/GUID-6C1620D9-D176-41FA-8283-833D8B1CCCFC-web.png" class="titleImage" alt="Samle punkter">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Dette verkt&oslash;yet bruker et lag med punkter og enten et lag med polygoner eller beholdere som er definert ut fra en bestemt avstand, til &aring; finne ut hvilke punkter som faller innenfor hvert polygon eller beholder, og beregner statistikk for alle punktene innenfor hver polygon eller beholder. Du kan eventuelt bruke tidsinndeling med dette verkt&oslash;yet. 
+            </p>
+            <p>Her f&oslash;lger noen eksempler:
+                <ul>
+                    <li>Med angitte punktlokasjoner for lovbrudd kan du telle antall lovbrudd per fylke eller distrikt.
+                    </li>
+                    <li>Finn den h&oslash;yeste og laveste m&aring;nedlige inntekten for franchiselokasjoner med100-kilometers beholdere.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="BuildMultiVariableGridTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Opprett multivariabelt rutenett</h2></td>
+                    <td>
+                    <img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" class="titleImage" alt="Arbeidsflytdiagram for Legg til data">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Verkt&oslash;yet Opprett multivariabelt rutenett genererer et rutenett av kvadratiske eller sekskantede beholdere og beregner variabler for hver beholder ut fra hvor n&aelig;r ett eller flere inndatalag er.
+            </p>
+            <p>Her f&oslash;lger noen eksempler:
+                <ul>
+                    <li>Gitt at byens infrastruktur for kollektivtransport best&aring;r av flere lag, hvilken del av byen er minst tilgjengelig n&aring;r man reiser kollektivt?
+                    </li>
+                    <li>Gitt at det finnes lag for vannveier som innsj&oslash;er og elver, hva heter vannforekomsten n&aelig;rmest hver lokasjon i USA?
+                    </li>
+                    <li>Gitt at det finnes et lag for inntekt per husholdning, hvor i USA er inntektsforskjellene st&oslash;rst innenfor en radius p&aring; 80 km?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="DescribeDatasetTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Beskriv datasett</h2></td>
+                    <td>
+                    <img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" class="titleImage" alt="Diagram over arbeidsflyten i Beskriv datasett">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Oppsummer inndatageoobjekter med statistikk, eksempellag og visualisering. Du kan velge eksempellag eller utstrekningslag som utdata.
+            </p>
+            <p>Her f&oslash;lger noen eksempler:
+                <ul>
+                    <li>Vis til oversikten over den utregnede statistikken for &aring; forst&aring; hvilke verdier datasettet ditt inneholder.
+                    </li>
+                    <li>I stedet for &aring; tegne hele datasettet kan du opprette en delmengde for &aring; visualisere geoobjekter og deres attributter n&aring;r de legges til et kart.
+                    </li>
+                    <li>Spar tid og ressurser ved &aring; kj&oslash;re analyse p&aring; et eksempellag f&oslash;r du kj&oslash;rer analyse p&aring; hele datasettet.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="JoinFeaturesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Koble geoobjekter</h2></td>
+                    <td>
+                    <img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" class="titleImage" alt="Koble geoobjekter">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Ved hjelp av enten geoobjektlag eller tabelldata kan du koble geoobjekter og oppf&oslash;ringer p&aring; bakgrunn av bestemte relasjoner mellom inndatalag eller tabeller.  Koblingene blir bestemt av romlige, tidsmessige, og attributtmessige forhold, og summeringsstatistikk kan eventuelt beregnes.  
+            </p>
+            <p>Her f&oslash;lger noen eksempler:
+                <ul>
+                    <li>Gitt punktlokasjoner for kriminelle hendelser med et tidspunkt, kan du koble kriminalitetsdataene med seg selv ved &aring; angi et romlig forhold for kriminalitet innenfor 1 kilometer fra hverandre, og som inntraff innenfor 1 time av hverandre for &aring; avgj&oslash;re om det er en sekvens av forbrytelser n&aelig;r hverandre i tid og rom.
+                    </li>
+                    <li>Gitt en tabell med postnummer med demografisk informasjon og polygoner som representerer boliger, kan du koble demografisk informasjon til boligene slik at hver bolig n&aring; har informasjonen.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="ReconstructTracksTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Rekonstruer spor</h2></td>
+                    <td>
+                    <img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" class="titleImage" alt="Rekonstruer spor">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Dette verkt&oslash;yet fungerer med et tidsaktivert lag med enten punkt- eller polygongeoobjekter som representerer et  <code>&oslash;yeblikk</code> i tid. Det finner ut hvilke inndatageoobjekter som h&oslash;rer til i et spor og sorterer inndataene sekvensielt i tid. Statistikk kan eventuelt beregnes for inndatageoobjektene innenfor hvert spor.
+            </p>
+            <p>Her f&oslash;lger noen eksempler:
+                <ul>
+                    <li>Gitt punktlokasjoner og tidspunkter for orkanm&aring;linger, beregnes gjennomsnittlig vindhastighet og maks vindtrykk fra orkanen.
+                    </li>
+                    <li>Bruk GPS-m&aring;linger av skip for &aring; rekonstruere skipsbaner som linjer. 
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeAttributesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Summer attributter</h2></td>
+                    <td>
+                    <img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" class="titleImage" alt="Summer attributter diagram">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Ved hjelp av enten geoobjekt- eller tabelldata oppsummerer dette verkt&oslash;yet statistikk for de angitte feltene. 
+            </p>
+            <p>Her f&oslash;lger noen eksempler:
+                <ul>
+                    <li>Gitt lokasjoner for dagligvarebutikker med feltet  <i>COMPANY_NAME</i>, summer butikkene etter firmanavn for &aring; finne statistikk for hvert firma.
+                    </li>
+                    <li>Gitt en tabell med dagligvarebutikker med feltene  <i>COMPANY_NAME</i> og <i>COUNTY</i>, summer butikkene etter firmanavn og fylke for &aring; finne statistikk for hvert firma innenfor hvert fylke.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Summer innenfor</h2></td>
+                    <td>
+                    <img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" class="titleImage" alt="Summer innenfor">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Finner omr&aring;der (og deler av omr&aring;der) som overlapper mellom to lag og beregner statistikk for overlappingen. 
+            </p>
+            <p>Her f&oslash;lger noen eksempler:
+                <ul>
+                    <li>Hvis du har et lag med nedb&oslash;rsfelt og et lag med arealbruksomr&aring;der etter arealbrukstype, kan du beregne totalt areal for arealbrukstype for hvert nedb&oslash;rsfelt. 
+                    </li>
+                    <li>Hvis du har et lag med tomtene i et fylke og et lag med bygrenser, kan du summere gjennomsnittsverdien p&aring; ledige tomter i hver enkelt by.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="FindLocationsCategory" class="regularsize">
+        <h2>Finn lokasjoner</h2>
+        <hr/>
+        <p>Disse verkt&oslash;yene brukes til &aring; identifisere omr&aring;der som oppfyller en rekke ulike kriterier som du angir.   
+            <ul>
+                <li> <b>Identifiser hendelser</b> fungerer med tidsaktiverte lag for &aring; fastsette hvilke geoobjekter som oppfyller en bestemt betingelse.
+                </li>
+                <li> <b>Geokod lokasjoner fra tabell</b> konverterer adresser til koordinater.
+                </li>
+                <li> <b>Finn lignende plasseringer</b> finner lokasjoner som er mest like eller mest ulike &eacute;n eller flere referanselokasjoner basert p&aring; kriterier du har angitt.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="DetectIncidentsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Identifiser hendelser</h2></td>
+                    <td>
+                    <img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" class="titleImage" alt="Identifiser hendelser">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Dette verkt&oslash;yet fungerer med et tidsaktivert lag med punkter, linjer, polygoner eller tabeller som representerer et &oslash;yeblikk i tid. Ved &aring; bruke sekvensielt ordnede geoobjekter, kalt spor, fastsetter dette verkt&oslash;yet hvilke geoobjekter som er hendelser av interesse. Hendelser fastsettes av betingelser du angir. 
+            </p>
+            <p>Her f&oslash;lger noen eksempler:
+                <ul>
+                    <li>Identifiser orkanm&aring;linger som er kategori 4-orkaner basert p&aring; et vindhastighetsattributt.
+                    </li>
+                    <li>Bruk GPS-m&aring;linger av skipsbevegelser med et felt som representerer skipets hastighet, og finn m&aring;linger som er st&oslash;rre enn 1,5 ganger gjennomsnittet av de foreg&aring;ende fem m&aring;lingene.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="GeocodeLocationsfromTableTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Geokod lokasjoner fra tabell</h2></td>
+                    <td>
+                    <img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" class="titleImage" alt="Geokod lokasjoner fra tabell">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Konverterer adresser til koordinater. Bruk dette verkt&oslash;yet p&aring; tabeller i et stordata fildelingsomr&aring;de.
+            </p>
+            <br/>
+        </div>
+        <div id="FindSimilarLocationsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Finn lignende lokasjoner</h2></td>
+                    <td>
+                    <img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" class="titleImage" alt="Finn lignende lokasjoner">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Basert p&aring; kriteriene du angir, finn lignende lokasjoner ved &aring; m&aring;le likheten mellom lokasjoner i kandidats&oslash;kelaget ditt og &eacute;n eller flere referanselokasjoner. 
+            </p>
+            <p>Her f&oslash;lger noen eksempler: 
+                <ul>
+                    <li>Finn de ti mest lignende butikkene ved &aring; unders&oslash;ke antall ansatte og &aring;rlig omsetning.
+                    </li>
+                    <li>Finn de 100 mest lignende byene ved &aring; unders&oslash;ke forholdet mellom befolkning, &aring;rlig vekst og skatteinntekter.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="largesize">
+        <h2>Analyser mønstre</h2>
+        <hr/>
+        <p>  Med disse verkt&oslash;yene kan du identifisere, kvantifisere og visualisere romlige m&oslash;nstre i dataene dine.
+            <ul>
+                <li> <b>Beregn tetthet</b> tar kjente mengder av et fenomen og sprer disse mengdene utover et kart.
+                </li>
+                <li> <b>Finn hotspots</b> identifiserer statistisk signifikante grupperinger i de geografiske m&oslash;nstrene i dataene dine.
+                </li>
+                <li> <b>Finn punktklynger</b> finner klynger av punktgeoobjekter med omgivelsesst&oslash;y basert p&aring; deres romlige distribusjon.
+                </li>
+                <li> <b>Skogbasert klassifisering og regresjon</b> oppretter modeller og genererer prediksjoner ved hjelp av en tilpasset versjon av Leo Breimans Random Forest-algoritme, som er en metode for veiledet maskinl&aelig;ring.
+                </li>
+                <li> <b>Generalisert line&aelig;r regresjon</b> genererer prediksjoner eller modeller av en avhengig variabel ut fra dens relasjon til et sett med forklaringsvariabler.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Beregn tetthet</h2></td>
+                    <td>
+                    <img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" class="titleImage" alt="Beregn tetthet">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Beregn Tetthet-verkt&oslash;yet lager et tetthetskart fra punktgeoobjekter ved &aring; spre kjente mengder av et fenomen (vises som attributter for punktene) over kartet. Resultatet er et lag med omr&aring;der som representerer tettheten.
+            </p>
+            <p>Her f&oslash;lger noen eksempler:
+                <ul>
+                    <li>Beregne tettheten av sykehus innenfor et fylke. Resultatlaget vil vise omr&aring;der med h&oslash;y og lav tilgjengelighet til sykehus, og denne informasjonen kan brukes til &aring; bestemme hvor nye sykehus skal bygges.
+                    </li>
+                    <li>Identifisere omr&aring;der som har h&oslash;y risiko for skogbrann p&aring; bakgrunn av lokasjon for tidligere skogbranner.
+                    </li>
+                    <li>Finne lokalsamfunn som er langt fra de store motorveiene for &aring; planlegge hvor nye veier skal bygges.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindPointClustersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Finn punktklynger</h2></td>
+                    <td>
+                    <img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" class="titleImage" alt="Finn punktklynger">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Verkt&oslash;yet Finn punktklynger finner klynger av punktgeoobjekter med omgivelsesst&oslash;y basert p&aring; deres geografiske fordeling.
+            </p>
+            <p>Her f&oslash;lger noen eksempler:
+                <ul>
+                    <li>Finn klynger av skadedyr-infiserte husholdninger for &aring; bidra til &aring; m&aring;lrette utryddingstiltakene.  
+                    </li>
+                    <li>Informer om og handle ut fra behov for redning og evakuering etter klyngenes st&oslash;rrelse og beliggenhet ved hjelp av geolokaliserte Twitter-meldinger i kj&oslash;lvannet av naturfarer eller terrorangrep.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindHotSpotsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Finn hotspots</h2></td>
+                    <td>
+                    <img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" class="titleImage" alt="Finn hotspots">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Finn hotspots-verkt&oslash;yet finner ut om det er noen statistisk signifikante samlinger i det geografiske m&oslash;nsteret i dataene dine. 
+                <ul>
+                    <li>Er punktene (kriminalitet, tr&aelig;r, trafikkulykker) virkelig samlet i klynger? Hvordan kan du v&aelig;re sikker?
+                    </li>
+                    <li>Har du virkelig oppdaget en statistisk signifikant hotspot (for forbruk, barned&oslash;delighet, konsekvent h&oslash;ye testresultater), eller ville kartet fortelle en annen historie hvis du endret m&aring;ten det symboliseres p&aring;?
+                    </li>
+                </ul>
+                Finn hotspots-verkt&oslash;yet hjelper deg med &aring; besvare disse sp&oslash;rsm&aring;lene p&aring; en p&aring;litelig m&aring;te.
+            </p>
+            <br/>
+        </div>
+        <div id="ForestBasedClassificationAndRegressionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Skogbasert klassifisering og regresjon</h2></td>
+                    <td>
+                    <img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" class="titleImage" alt="Arbeidsflytdiagrammet Skogbasert klassifisering og regresjon">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Verkt&oslash;yet Skogbasert klassifisering og regresjon oppretter modeller og genererer prediksjoner ved hjelp av en tilpasset versjon av Leo Breimans Random Forest-algoritme, som er en metode for veiledet maskinl&aelig;ring
+            </p>
+            <p>Her f&oslash;lger noen eksempler:
+                <ul>
+                    <li>Gitt data om forekomsten av sj&oslash;gress og et antall milj&oslash;messige forklaringsvariabler representert som b&aring;de attributter beriket ved hjelp av et multivariabelt rutenett for &aring; beregne avstand til fabrikker motstr&oslash;ms og st&oslash;rre havner, kan fremtidige forekomster av sj&oslash;gress predikeres p&aring; basis av fremtidsprojeksjoner for de samme milj&oslash;messige forklaringsvariablene.
+                          
+                    </li>
+                    <li>Tenk deg at du har data om avlinger p&aring; flere hundre g&aring;rder landet over sammen med andre attributter ved hvert enkelt g&aring;rdsbruk (antall ansatte, dyrkbart areal osv.). Ved hjelp av disse dataene kan du fremskaffe et sett av geoobjekter som representerer g&aring;rder der du ikke har noen avling (men du har alle de andre variablene), og predikere fremtidige avlinger.
+                    </li>
+                    <li>Boligpriser kan predikeres ut fra prisene p&aring; hus som er blitt solgt i innev&aelig;rende &aring;r. Salgsprisen p&aring; boliger sammen med opplysninger om antall soverom, avstand til skoler, n&aelig;rhet til st&oslash;rre gjennomfarts&aring;rer, gjennomsnittlig inntekt og antall lovbrudd kan brukes til &aring; predikere salgspriser p&aring; tilsvarende boliger.
+                         
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="GeneralizedLinearRegressionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Generalisert lineær regresjon</h2></td>
+                    <td>
+                    <img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" class="titleImage" alt="Arbeidsflytdiagram for generalisert line&aelig;r regresjon">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Verkt&oslash;yet Generalisert line&aelig;r regresjon  genererer prediksjoner eller modeller av en avhengig variabel ut fra dens relasjon til et sett med forklaringsvariabler. Dette verkt&oslash;yet kan brukes til tilpassing av kontinuerlige (OLS)-, bin&aelig;re (logistiske)- og antallsbaserte (Poisson)-modeller.
+            </p>
+            <p>Her f&oslash;lger noen eksempler:
+                <ul>
+                    <li>Hvilke demografiske kjennetegn bidrar til en h&oslash;yfrekvent bruk av kollektivtransport?
+                    </li>
+                    <li>Er det en positiv sammenheng mellom h&aelig;rverk og innbrudd?
+                    </li>
+                    <li>Hvilke variabler predikerer effektivt antallet n&oslash;danrop? Gitt fremtidige projeksjoner, hva er den forventede ettersp&oslash;rselen etter ressurser til n&oslash;dtelefonnummeret?
+                    </li>
+                    <li>Hvilke variabler p&aring;virker lave f&oslash;dselstall?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="smallsize">
+        <h2>Bruk nærhet</h2>
+        <hr/>
+        <p>Disse verkt&oslash;yene hjelper deg med finne svaret p&aring; et av det vanligste sp&oslash;rsm&aring;lene i geografiske analyser: &laquo;Hva ligger i n&aelig;rheten av hva?&raquo;
+            <ul>
+                <li> <b>Opprett buffere</b> oppretter omr&aring;der som har en bestemt avstand fra geoobjekter.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CreateBuffersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Opprett buffere</h2></td>
+                    <td>
+                    <img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" class="titleImage" alt="Opprett buffere">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>En buffer er et omr&aring;de som dekker en gitt avstand fra et punkt-, linje- eller polygongeoobjekt.
+            </p>
+            <p>Her f&oslash;lger noen eksempler:
+                <ul>
+                    <li>Ved hjelp av line&aelig;re elvegeoobjekter, bufre hver elv med 50 ganger bredden av elven for &aring; fastsette en foresl&aring;tt elvebreddegrense.
+                    </li>
+                    <li>Gitt omr&aring;der som representerer land, bufre hvert land med 200 nautiske mil for &aring; fastsette den maritime grensen.  
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="largesize">
+        <h2>Manage Data</h2>
+        <hr/>
+        <p>These tools are used for the day-to-day management of geographic and tabular data. 
+            <ul>
+                <li> <b>Append Data</b> appends features to an existing hosted feature layer.
+                </li>
+                <li> <b>Calculate Field</b> creates a new field or modifies an existing field and creates a new layer in your contents.
+                </li>
+                <li> <b>Clip Layer</b> copies features that intersect a defined area of interest. 
+                </li>
+                <li> <b>Copy to Data Store</b> copies data to your ArcGIS Data Store and creates a layer in your contents. 
+                </li>
+                <li> <b>Dissolve Boundaries</b> merges areas that share a common boundary or attribute value.
+                </li>
+                <li> <b>Merge Layers</b> copies all features from two layers into a single result layer.
+                </li>
+                <li> <b>Overlay Layers</b> combines two or more layers into a single layer.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CopyToDataStoreTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Kopier til Data Store</h2></td>
+                    <td>
+                    <img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" class="titleImage" alt="Kopier til Data Store">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Kopierer et innlagt geoobjektlag eller en tabell til en  ArcGIS Data Store og oppretter et lag i ditt innhold i  ArcGIS Enterprise. </p>
+            <p>Her f&oslash;lger noen eksempler:
+                <ul>
+                    <li>Kopier en samling  <code>.csv</code>-filer i et stordata fildelingsomr&aring;de til det geotemporale datalageret for visualisering.
+                    </li>
+                    <li>Kopier geoobjektene i den gjeldende kartutstrekningen som er lagret i det geootemporale datalageret til relasjonsdatalageret.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="CalculateFieldTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Beregn felt</h2></td>
+                    <td>
+                    <img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" class="titleImage" alt="Beregn felt">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Beregner verdier for et nytt eller eksisterende felt, og oppretter et lag i ditt innhold i  ArcGIS Enterprise. </p>
+            <p>Her f&oslash;lger noen eksempler:
+                <ul>
+                    <li>Endre et eksisterende felt som heter  <i>total</i> til &aring; bli summen av inntekter fra feltene <i>total_2016</i>, <i>total_2017</i>, og <i>total_2018</i>.
+                    </li>
+                    <li>Opprett et nytt felt for &aring; kategorisere fareniv&aring;er basert p&aring; feltverdier som  <i>windspeed</i> og <i>pollutant</i>.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="ClipLayerTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Klipp lag</h2></td>
+                    <td>
+                    <img src="../images/GUID-3F6A1ED7-A7F5-4F5C-BB2A-5D94403F2230-web.png" class="titleImage" alt="Klipp lag">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Klipper inndatageoobjekter fra definerte interesseomr&aring;der. Resultatet blir en delmengde av inndatageoobjektene. 
+            </p>
+            <p>Her f&oslash;lger noen eksempler: 
+                <ul>
+                    <li>Opprett en delmengde med utsatte bygninger som ligger innenfor flomsonen.
+                    </li>
+                    <li>Fastsl&aring; hvilke hovedveier som g&aring;r gjennom dine potensielle utviklingsomr&aring;der.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="DissolveBoundariesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Visk ut grenser</h2></td>
+                    <td>
+                    <img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" class="titleImage" alt="Visk ut grenser">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Sl&aring;r sammen omr&aring;degeoobjekter som krysser hverandre eller har en felles feltverdi, for &aring; opprette tilgrensende geoobjekter eller -geoobjekter med flere deler.
+            </p>
+            <p>Her f&oslash;lger noen eksempler:
+                <ul>
+                    <li>Opprett ett enkelt geoobjekt som representerer delstaten Hawaii, ved &aring; viske ut grensene mellom hawaiiske &oslash;yer.
+                    </li>
+                    <li>Sl&aring; sammen lignende studieomr&aring;der basert p&aring; jordart for &aring; opprette et datasett med tilgrensende jordarter.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="OverlayLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Legg lag oppå</h2></td>
+                    <td>
+                    <img src="../images/GUID-00A64703-4E97-4398-AE5C-F1885375BC30-web.png" class="titleImage" alt="Legg lag opp&aring;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Sl&aring;r sammen to eller flere lag til ett enkelt. Overlegg brukes til &aring; besvare et av de mest grunnleggende geografiske sp&oslash;rsm&aring;lene: Hva ligger opp&aring; hva? 
+            </p>
+            <p>Her f&oslash;lger noen eksempler:
+                <ul>
+                    <li>Hvilke tomter ligger innenfor sonen for hundre&aring;rsflom? (Innenfor betyr det samme som opp&aring;.)
+                          
+                    </li>
+                    <li>Hvilken arealbruk er det opp&aring; hvilken jordart?
+                         
+                    </li>
+                    <li>Hvilke br&oslash;nner befinner seg p&aring; nedlagte milit&aelig;rbaser?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="AppendDataTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Legg ved data</h2></td>
+                    <td>
+                    <img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" class="titleImage" alt="Arbeidsflytdiagram for Legg til data">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Legger til geoobjekter i et eksisterende hostet lag i innholdet ditt i  ArcGIS Enterprise. </p>
+            <p>Her f&oslash;lger noen eksempler:
+                <ul>
+                    <li>Oppdater geoobjektlaget Salg_2018  hver m&aring;ned etter hvert som rapportene blir tilgjengelige.
+                    </li>
+                    <li>Legg til datasett med orkansporing fra &aring;rene 2016 og 2017 i et hoveddatasett for orkaner.
+                    </li>
+                    <li>Samle inn og legg til datasett fra flere kilder med forskjellige skjemaer ved &aring; bruke egendefinert felttilordning.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="MergeLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Slå sammen lag</h2></td>
+                    <td>
+                    <img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" class="titleImage" alt="Sl&aring; sammen lag">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Sl&aring;r sammen to geoobjektlag og oppretter ett enkelt resultatlag. Alle felter fra de sammensl&aring;tte lagene inkluderes som standard, eller du kan angi tilpassede regler for sammensl&aring;ing for &aring; definere det resulterende skjemaet.  
+            </p>
+            <p>Her f&oslash;lger noen eksempler:
+                <ul>
+                    <li>Sl&aring; sammen tre lag som inneholder demografisk informasjon fra England, Wales og Skottland, for &aring; opprette ett enkelt lag for Storbritannia.
+                    </li>
+                    <li>Sl&aring; sammen to lag som inneholder opplysninger om tomter for tilgrensende kommuner. Behold bare feltene som har samme navn og type i de to lagene.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="EnrichLocationsCategory" class="smallsize">
+        <h2>Databerikelse</h2>
+        <hr/>
+        <p>Med disse verkt&oslash;yene kan du utforske omr&aring;denes egenart.
+            <ul>
+                <li> <b>Berik fra multivariabelt rutenett</b> f&oslash;yer effektivt til attributter fra et multivariabelt rutenett i et punktlag.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="EnrichFromMultiVariableGridTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Berik fra multivariabelt rutenett</h2></td>
+                    <td>
+                    <img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" class="titleImage" alt="Berik fra multivariabelt rutenett">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>F&oslash;yer effektivt attributter fra et multivariabelt rutenett til et punktlag og gj&oslash;r at du raskt kan legge til en stor og mangfoldig samling av informasjon til punktdata for bruk i videre romlige analyser. 
+            </p>
+            <p>Her f&oslash;lger noen eksempler:
+                <ul>
+                    <li>Hvis du har et lag som inneholder millioner av str&oslash;mbrudd, kan du berike hendelsesgeoobjektene med informasjon om typisk bruk, milj&oslash;risikoer og infrastrukturforhold for &aring; studere forholdet mellom disse faktorene og hyppigheten av str&oslash;mbrudd. 
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

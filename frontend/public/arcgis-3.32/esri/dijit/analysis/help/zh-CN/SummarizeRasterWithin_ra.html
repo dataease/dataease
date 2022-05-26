@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>汇总范围内的栅格</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="汇总范围内的栅格工具"></h2>
+        <hr/>
+    <p>该工具可根据第一个输入图层定义的区域（区）汇总栅格。
+    </p>
+    <p>其中的一些应用示例如下：
+    </p>
+    <p>
+        <ul>
+            <li>按土地使用类型给定分水岭边界图层和土地使用边界图层，计算每个分水岭的土地使用类型的总面积。
+                
+
+            </li>
+            <li>已知某县内宗地的图层和城市边界图层，汇总各城市边界内闲置宗地的平均值。
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>如果选中 <b>使用当前地图范围</b>，则仅分析当前地图范围内可见的输入图层和待汇总图层中的要素。如果未选中，则会对输入图层和待汇总图层内的所有要素进行分析，包括超出当前地图范围的要素。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>选择要在已定义边界内汇总栅格图层的区域图层</h2></div>
+        <hr/>
+        <div>
+            <p>定义要汇总的区域或区边界的图层。
+            </p>
+            <p>图层可以是栅格或要素数据。对于栅格，区域将由输入中具有相同像元值的所有位置定义。各区域无需相连。
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>选择要定义边界的字段</h2></div>
+        <hr/>
+        <div>
+            <p>这是将用于定义区域边界的图层的属性。
+            </p>
+            <p>例如，假设第一个输入图层使用定义各单元的地区、区域和宗地 ID 的属性定义管理单元边界。您还具有用于定义每个位置的生物多样性指数的栅格图层。使用所选字段可计算本地、区域或地区级别的平均生物多样性。
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>选择要汇总的栅格图层</h2></div>
+        <hr/>
+        <div>
+            <p>此图层中的栅格像元将按其所在的区域（区）进行汇总。
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>选择要计算的统计数据</h2></div>
+        <hr/>
+        <div>
+            <p>选择要汇总的图层后，您可以选择计算输入区域图层中点、线或区域的数值属性的统计数据。
+            </p>
+            <p>如果选定字段为整型，则可用的统计类型包括平均值、众数、最大值、中位数、最小值、少数、范围、标准差、总和以及变异度。
+            </p>
+            <p>如果字段为浮点型，则选项包括平均值、最大值、最小值、范围、标准差以及总和。
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>忽略计算中的缺失值</h2></div>
+        <hr/>
+        <div>
+            <p>如果选择忽略缺失值，则仅使用在要汇总的图层中拥有值的像元来确定该区域的输出值。否则，如果在区域内的任意位置存在缺失值，则会视作对该区域中所有像元执行统计计算的信息不足，该区域将在输出中收到空 (NoData) 值。
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>将在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该名称的图层已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>您可以使用 <b>将结果保存在</b>下拉框指定 <b>我的内容</b>中的文件夹名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

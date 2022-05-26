@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpoleeri punktid</h2><p/>
+        <h2><img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" alt="Punktide interpoleerimise t&ouml;&ouml;riist"></h2>
+        <hr/>
+    <p>Selle t&ouml;&ouml;riista abil saate prognoosida uute asukohtade v&auml;&auml;rtusi olemasolevate punktide m&otilde;&otilde;tmistulemuste p&otilde;hjal. T&ouml;&ouml;riist kogub igas punktis v&auml;&auml;rtustega punktandmeid ja tagastab prognoositavate v&auml;&auml;rtuste rastri.
+    </p>
+    <p>Seda t&ouml;&ouml;riista saab kasutada ka j&auml;rgmistel eesm&auml;rkidel:
+
+        <ul>
+            <li>Keskkonnaagentuuril on sensorid, mis m&otilde;&otilde;davad saaste taset. T&ouml;&ouml;riista Interpoleeri punktid saab kasutada saastetaseme ennustamiseks asukohtades, kus sensoreid pole &ndash; n&auml;iteks koolides v&otilde;i haiglates.
+                
+
+            </li>
+            <li>Saate ennustada raskmetallide kontsentratsiooni p&otilde;llusaagis &uuml;ksikutest taimedest v&otilde;etud proovide alusel.
+                
+
+            </li>
+            <li>Saate ennustada mulla toitainete (nt l&auml;mmastik, fosfor, kaalium jne) ja muude n&auml;itajate (nt elektrijuhtivus) taset, et uurida nende seost saagikusega ja anda iga asukoha jaoks p&otilde;llul t&auml;pse hulga v&auml;etist.
+                
+
+            </li>
+            <li>Meteoroloogiliste rakenduste hulka kuuluvad temperatuuri, sademete ja nendega seotud muutujate (nt happevihm) ennustamine.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointFeatures">
+        <div><h2>Vali tuntud väärtustega asukohti sisaldav punktikiht</h2></div>
+        <hr/>
+        <div>
+            <p>Punktikiht, mis sisaldab punkte, kus v&auml;&auml;rtusi on m&otilde;&otilde;detud.
+            </p>
+        </div>
+    </div>
+    <div id="interpolateField">
+        <div><h2>Vali väli interpoleerimiseks</h2></div>
+        <hr/>
+        <div>
+            <p>Valige v&auml;li, mille v&auml;&auml;rtusi soovite interpoleerida. V&auml;li peab olema numbriline.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimeeri järgmise jaoks</h2></div>
+        <hr/>
+        <div>
+            <p>Valige, kas eelistate kiirust v&otilde;i t&auml;psust.
+            </p>
+            <p>T&auml;psemate ennustuste arvutamine v&otilde;tab kauem aega. See parameeter muudab mitme teise punktide interpoleerimise parameetri vaikev&auml;&auml;rtusi, et optimeerida arvutamise kiirust, tulemuste t&auml;psust v&otilde;i nende kahe tasakaalu. Vaikimisi optimeerib t&ouml;&ouml;riist tasakaalu saavutamiseks.
+            </p>
+        </div>
+    </div>
+    <div id="transformData">
+        <div><h2>Teisenda andmed normaaljaotuseks</h2></div>
+        <hr/>
+        <div>
+            <p>Valige, kas teisendada oma andmed normaaljaotuseks.
+            </p>
+            <p>Interpolatsioon on k&otilde;ige t&auml;psem andmete jaoks, mis j&auml;rgivad normaaljaotust. Kui teie andmed ei n&auml;i olevat normaaljaotusega, peaksite need teisendama.
+            </p>
+        </div>
+    </div>
+    <div id="sizeOfLocalModels">
+        <div><h2>Lokaalsete mudelite suurus</h2></div>
+        <hr/>
+        <div>
+            <p>Punktide interpoleerimise t&ouml;&ouml;riist loob kohalikud interpolatsioonimudelid, mis kombineeritakse, et luua l&otilde;plik prognoositud kaart. See parameeter reguleerib, mitut punkti sisaldab iga kohalik mudel. V&auml;iksemad v&auml;&auml;rtused muudavad tulemused kohalikumaks ja v&otilde;ivad esile tuua v&auml;iksemaid m&otilde;jusid, kuid v&otilde;ivad ka muuta arvutused ebastabiilseks. Suuremad v&auml;&auml;rtused on stabiilsemad, kuid m&otilde;ned kohalikud m&otilde;jud v&otilde;ivad j&auml;&auml;da m&auml;rkamatuks.
+            </p>
+            <p>V&auml;&auml;rtus v&otilde;ib j&auml;&auml;da 30 ja 500 vahele, kuid tavalised v&auml;&auml;rtused j&auml;&auml;vad 50 ning 200 vahele.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfNeighbors">
+        <div><h2>Naabrite arv</h2></div>
+        <hr/>
+        <div>
+            <p>Prognoosid arvutatakse naaberpunktide p&otilde;hjal. See parameeter reguleerib, mitut punkti arvutuses kasutatakse. Kui kasutate suurt hulka naabreid, on tulemused &uuml;ldiselt t&auml;psemad, kuid nende arvutamine v&otilde;tab kauem aega.
+            </p>
+            <p>See v&auml;&auml;rtus v&otilde;ib j&auml;&auml;da 1 ja 64 vahele, kuid tavalised v&auml;&auml;rtused j&auml;&auml;vad 5 ning 15 vahele.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Väljundpiksli suurus</h2></div>
+        <hr/>
+        <div>
+            <p>The cell size and unit for the output rasters.
+            </p>
+            <p>Kasutatavad &uuml;hikud on j&auml;rgmised: jalg, miil, meeter ja kilomeeter.
+            </p>
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Väljundi ennustusviga</h2></div>
+        <hr/>
+        <div>
+            <p>Valige, kas soovite ennustatud v&auml;&auml;rtuste jaoks luua standardvigade rastri.
+            </p>
+            <p>Standardvead on kasulikud, sest annavad teavet ennustatud v&auml;&auml;rtuste usaldusv&auml;&auml;rsuse kohta. Lihtsa rusikareegli j&auml;rgi j&auml;&auml;b tegelik v&auml;&auml;rtus 95% juhtudest ennustatud v&auml;&auml;rtusest kuni kahe standardvea piiresse. Oletame n&auml;iteks, et uus asukoht saab eeldatavaks v&auml;&auml;rtuseks 50 standardveaga 5. See t&auml;hendab, et t&ouml;&ouml;riista parima hinnangu j&auml;rgi on selle asukoha tegelik v&auml;&auml;rtus 50, kuid see v&otilde;ib olla minimaalselt ka 40 v&otilde;i maksimaalselt 60. P&otilde;hjendatud v&auml;&auml;rtuste vahemiku arvutamiseks korrutage standardviga kahega ning vahemiku &uuml;lemise piiri saamiseks liitke see v&auml;&auml;rtus ennustatud v&auml;&auml;rtusele ning alumise piiri saamiseks lahutage see v&auml;&auml;rtus ennustatud v&auml;&auml;rtusest.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

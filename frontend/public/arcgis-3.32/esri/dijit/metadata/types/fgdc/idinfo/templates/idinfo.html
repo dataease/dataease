@@ -1,0 +1,85 @@
+<div data-dojo-attach-point="containerNode">
+
+  <div data-dojo-type="esri/dijit/metadata/form/Element"
+    data-dojo-props="target:'idinfo',label:'${i18nFgdc.idinfo.caption}'">
+      
+    <div data-dojo-type="esri/dijit/metadata/form/Tabs">
+    
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'citation',showHeader:false,label:'${i18nFgdc.idinfo.citeinfo}'">
+        <div data-dojo-type="esri/dijit/metadata/types/fgdc/citeinfo/citeinfo"></div>
+      </div>
+
+      <div data-dojo-type="esri/dijit/metadata/types/fgdc/idinfo/descript"
+        data-dojo-props="label:'${i18nFgdc.idinfo.descript.caption}'"></div>
+        
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,label:'${i18nFgdc.idinfo.section.timeAndStatus}'">
+        <div data-dojo-type="esri/dijit/metadata/types/fgdc/idinfo/timeperd"></div>
+        <div data-dojo-type="esri/dijit/metadata/types/fgdc/idinfo/status"></div>
+      </div>
+      
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'spdom',showHeader:false,label:'${i18nFgdc.idinfo.spdom.caption}'">
+        <div data-dojo-type="esri/dijit/metadata/types/fgdc/idinfo/bounding"></div>
+      </div>
+      
+      <div data-dojo-type="esri/dijit/metadata/types/fgdc/idinfo/keywords"
+        data-dojo-props="label:'${i18nFgdc.idinfo.keywords.caption}'"></div>
+        
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,label:'${i18nFgdc.idinfo.section.constraints}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'accconst',value:'None',
+            label:'${i18nFgdc.idinfo.accconst}'">
+          <div data-dojo-type="esri/dijit/metadata/form/InputTextArea">
+            <div data-dojo-type="esri/dijit/metadata/form/tools/ClickableValueTool"
+              data-dojo-props="value:'None',label:'${i18nFgdc.alternates.none}'"></div>  
+          </div>
+        </div>
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'useconst',value:'None',
+            label:'${i18nFgdc.idinfo.useconst}'">
+          <div data-dojo-type="esri/dijit/metadata/form/InputTextArea">
+            <div data-dojo-type="esri/dijit/metadata/form/tools/ClickableValueTool"
+              data-dojo-props="value:'None',label:'${i18nFgdc.alternates.none}'"></div>  
+          </div>
+        </div>
+      </div>
+        
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'ptcontac',showHeader:false,label:'${i18nFgdc.idinfo.section.contact}'">
+        <div data-dojo-type="esri/dijit/metadata/types/fgdc/cntinfo/cntinfo"></div>
+      </div>
+      
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,label:'${i18nFgdc.idinfo.section.additional}'">
+        
+        <div data-dojo-type="esri/dijit/metadata/types/fgdc/idinfo/browse"></div>
+        
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'datacred',minOccurs:0,
+            label:'${i18nFgdc.idinfo.datacred}'">
+        </div>
+        
+        <div data-dojo-type="esri/dijit/metadata/types/fgdc/idinfo/secinfo"></div>
+        
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'native',minOccurs:0,
+            label:'${i18nFgdc.idinfo.sNative}'">
+          <div data-dojo-type="esri/dijit/metadata/form/InputTextArea"></div>
+        </div>
+        
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'crossref',minOccurs:0,maxOccurs:'unbounded',
+            label:'${i18nFgdc.idinfo.crossref}'">
+          <div data-dojo-type="esri/dijit/metadata/types/fgdc/citeinfo/citeinfo"></div>
+        </div>
+        
+      </div>
+      
+    </div>
+      
+  </div>
+    
+</div>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Povzemi raster znotraj</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="Orodje Povzemi raster znotraj"></h2>
+        <hr/>
+    <p>To orodje povzema raster na podlagi območij (con), določenih s prvim vhodnim slojem.
+    </p>
+    <p>Nekaj primerov uporabe vključuje naslednje:
+    </p>
+    <p>
+        <ul>
+            <li>Podana sta sloja razvodnic in rabe tal. Izračunajte skupno kmetijsko povr&scaron;ino po tipu rabe tal za vsako razvodje.
+                
+
+            </li>
+            <li>Podana sta sloj parcel v okrožju in sloj mej mesta. Povzemite povprečno vrednost nepozidanih parcel znotraj vsake meje mesta.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Če je obkljukana možnost  <b>Uporabi trenutni obseg karte</b>, bodo analizirani samo tisti geoobjekti vhodnega sloja in sloja, ki ga je treba povzeti, ki so vidni znotraj trenutnega obsega karte. Če je možnost odkljukana, bodo analizirani vsi geoobjekti tako na vhodnem sloju kot na sloju, ki ga je treba povzeti, tudi če so zunaj trenutnega obsega karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Izberi poligonski sloj za povzetek rastrskega sloja znotraj določene meja</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj, ki določa meje območij ali con, ki bodo povzete.
+            </p>
+            <p>Sloj je lahko raster ali geoobjektni podatki. Za rastre se cone določajo glede na vse lokacije v vhodu, ki imajo enako vrednost celice. Območja ne morejo biti sosednja.
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>Izberi polje za določanje omejitve</h2></div>
+        <hr/>
+        <div>
+            <p>Gre za atribut sloja, ki se bo uporabil za določanje mej območij.
+            </p>
+            <p>Na primer, predpostavimo, da prvi vhodni sloj določa upravljanje mej enote z atributi, ki določajo regijo, okrožje in ID parcele za vsako enoto. Imate tudi rastrski sloj, ki določa indeks biotske raznovrstnosti za vsako lokacijo. S poljem, ki ga izberete, se lahko odločite za izračun povprečne biotske raznovrstnosti na lokalni, okrožni ali regionalni ravni.
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>Izberi rastrski sloj za povzemanje</h2></div>
+        <hr/>
+        <div>
+            <p>Rastrske celice v tem sloju bodo povzete po območjih (conah), v katera spadajo.
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>Izberi statistiko za izračun</h2></div>
+        <hr/>
+        <div>
+            <p>Ko izberete sloj za povzetek, lahko po želji izračunate statistiko katerih koli &scaron;tevilskih atributov točk, linij ali poligonov znotraj sloja vhodnega poligonskega sloja.
+            </p>
+            <p>Razpoložljivi tipi statistike, ko je izbrano polje celo &scaron;tevilo, so povprečje, večina, maksimum, sredina, minimum, manj&scaron;ina, obseg, standardni odklon, vsota in razlika.
+            </p>
+            <p>Če je polje plavajoča vejica, so na voljo možnosti povprečje, maksimum, minimum, razpon, standardni odklon in vsota.
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>Prezri manjkajoče vrednosti v izračunu</h2></div>
+        <hr/>
+        <div>
+            <p>Če se odločite, da boste manjkajoče vrednosti prezrli, bodo za določanje izhodne vrednosti za to območje uporabljene samo celice, ki imajo vrednost v sloju, ki bo povzet. V nasprotnem primeru, če manjkajo določene vrednosti za območje, se &scaron;teje, da ni dovolj informacij za statistični izračun za vse celice v tej coni, to območje pa bo dobilo ničelno vrednost (vrednost brez podatkov) v rezultatu.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>Ime sloja, ki bo ustvarjen v odseku  <b>Moja vsebina</b> in dodan na karto. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, bo od vas zahtevano, da vnesete drugo ime.
+            </p>
+            <p>Lahko navedete ime mape v  <b>Moji vsebini</b>, kjer bo rezultat shranjen s pomočjo spustnega menija <b>Shrani rezultat v</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

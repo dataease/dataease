@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Agréger des points</h2><p/>
+        <h2><img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" alt="Agr&eacute;ger les points"></h2>
+        <hr/>
+    <p>Cet outil fonctionne avec une couche d&rsquo;entit&eacute;s ponctuelles et une couche d&rsquo;entit&eacute;s surfaciques. Il commence par identifier les points qui se trouvent au sein de chaque surface. Apr&egrave;s avoir d&eacute;termin&eacute; cette relation spatiale des points au sein de la surface, des statistiques concernant tous les points de la surface sont calcul&eacute;es et affect&eacute;es &agrave; la surface. La statistique la plus &eacute;l&eacute;mentaire est le nombre total de points au sein de la surface, mais vous pouvez &eacute;galement en obtenir d'autres. 
+    </p>
+    <p>Supposons par exemple que des entit&eacute;s ponctuelles correspondent &agrave; l'emplacement des caf&eacute;s restaurants et que des entit&eacute;s surfaciques correspondent aux comt&eacute;s, et que vous souhaitez r&eacute;capituler la consommation de caf&eacute; par comt&eacute;. En admettant que les caf&eacute;s aient un attribut  <i>TOTAL_SALES</i>, vous pouvez calculer la somme de tous les attributs <i>TOTAL_SALES</i> au sein de chaque comt&eacute;, l&rsquo;attribut <i>TOTAL_SALES</i> minimal ou maximal au sein de chaque comt&eacute; ou l&rsquo;&eacute;cart type de toutes les ventes au sein de chaque comt&eacute;.
+    </p>
+    <p>Si l'option  <b>Utiliser l'&eacute;tendue courante de la carte</b> est s&eacute;lectionn&eacute;e, seules les entit&eacute;s de la couche de points en entr&eacute;e et de la couche surfacique qui sont visibles au sein de l'&eacute;tendue courante de la carte seront analys&eacute;es.  Si l'option n'est pas s&eacute;lectionn&eacute;e, toutes les entit&eacute;s qui se trouvent &agrave; la fois dans la couche de points en entr&eacute;e et dans la couche surfacique seront analys&eacute;es, m&ecirc;me si elles se trouvent en dehors de l'&eacute;tendue courante de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Choisissez la couche contenant les points à agréger en zones</h2></div>
+        <hr/>
+        <div>
+            <p>La couche de points sera agr&eacute;g&eacute;e dans les zones.
+            </p>
+            <p>Outre le choix d&rsquo;une couche dans votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante. Cette option ouvre une biblioth&egrave;que qui vous permet de s&eacute;lectionner des jeux de donn&eacute;es de diff&eacute;rentes sources pour les utiliser dans votre analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Choisissez la couche contenant les points d'agrégation</h2></div>
+        <hr/>
+        <div>
+            <p>La couche surfacique dans laquelle les points seront agr&eacute;g&eacute;s. Les points qui se trouvent au sein des limites des surfaces sur cette couche seront comptabilis&eacute;s et peuvent &ecirc;tre r&eacute;sum&eacute;s avec les statistiques que vous avez choisies.  
+            </p>
+            <p>Vous avez le choix entre une couche surfacique que vous fournissez ou des groupes qui sont g&eacute;n&eacute;r&eacute;s lors de l&rsquo;ex&eacute;cution de l&rsquo;outil. Lors de la g&eacute;n&eacute;ration des groupes, pour  <b>Carr&eacute;</b>, le nombre et les unit&eacute;s sp&eacute;cifi&eacute;s d&eacute;terminent la hauteur et la longueur du carr&eacute;. Pour <b>Hexagon (Hexagone)</b>, le nombre et les unit&eacute;s sp&eacute;cifi&eacute;s d&eacute;terminent la distance entre les c&ocirc;t&eacute;s parall&egrave;les.
+            </p>
+            <p>Outre le choix d&rsquo;une couche dans votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante. Cette option ouvre une biblioth&egrave;que qui vous permet de s&eacute;lectionner des jeux de donn&eacute;es de diff&eacute;rentes sources pour les utiliser dans votre analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="KeepBoundaryNoPoints">
+        <div><h2>Conserver les surfaces sans point</h2></div>
+        <hr/>
+        <div>
+            <p>D&eacute;termine si les surfaces qui ne comportent aucun point apparaissent dans la couche de r&eacute;sultat. Si cette option est d&eacute;sactiv&eacute;e, les surfaces qui ne comportent pas de points n'apparaissent pas dans le r&eacute;sultat. Si cette option est activ&eacute;e, les surfaces qui ne comportent pas de points apparaissent dans le r&eacute;sultat.  
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Ajouter des statistiques</h2></div>
+        <hr/>
+        <div>
+            <p>Vous pouvez calculer des statistiques concernant les attributs de la couche ponctuelle en entr&eacute;e, telles que la somme, la moyenne, le minimum, le maximum et l'&eacute;cart type. La couche de r&eacute;sultat contient un nouvel attribut pour chaque statistique calcul&eacute;e. Vous pouvez ajouter des statistiques en choisissant un attribut et une statistique (une nouvelle zone de liste d&eacute;roulante appara&icirc;t dans ce cas).
+ 
+            </p>
+            <p>Si la couche &agrave; synth&eacute;tiser ne contient aucun champ num&eacute;rique, les statistiques suppl&eacute;mentaires ne seront pas disponibles.
+            </p>
+        </div>
+    </div>
+    <div id="GroupByField">
+        <div><h2>Choisir le champ de regroupement</h2></div>
+        <hr/>
+        <div>
+            <p> Vous pouvez cr&eacute;er des groupes de statistiques au moyen d'un attribut dans la couche de points en entr&eacute;e.    Par exemple, si vous agr&eacute;gez des limites de crimes &agrave; voisinage, vous pouvez avoir un attribut <i>Crime_type</i> avec cinq types de crimes diff&eacute;rents. Chaque type de crime unique forme un groupe, et les statistiques que vous choisissez seront calcul&eacute;es pour chaque valeur unique de <i>Crime_type</i>. Les statistiques de chaque groupe, ainsi que le nombre total de points, appara&icirc;tront dans la fen&ecirc;tre contextuelle de la couche de r&eacute;sultat. Lorsque vous choisissez un attribut de regroupement, deux r&eacute;sultats sont cr&eacute;&eacute;s&nbsp;: la couche de r&eacute;sultat et une table de r&eacute;sultat contenant les statistiques pour chaque groupe unique.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Ajouter une minorité, majorité</h2></div>
+        <hr/>
+        <div>
+            <p>Cette case &agrave; cocher est activ&eacute;e lorsque vous s&eacute;lectionnez un champ de regroupement. Si vous souhaitez savoir quelles valeurs attributaires au sein de chaque groupe sont minoritaires (les moins dominantes) ou majoritaires (les plus dominantes), dans chaque limite, s&eacute;lectionnez  <b>Ajouter la minorit&eacute; et la majorit&eacute;</b>.   Lorsque vous s&eacute;lectionnez <b>Ajouter la minorit&eacute; et la majorit&eacute;</b>, deux nouveaux champs sont ajout&eacute;s &agrave; votre couche de r&eacute;sultat.   Si vous s&eacute;lectionnez &eacute;galement <b>Ajouter des pourcentages</b>, deux champs suppl&eacute;mentaires sont ajout&eacute;s &agrave; la couche de r&eacute;sultat, contenant les pourcentages des valeurs attributaires minoritaires et majoritaires au sein de chaque groupe.
+            </p>
+            <p>Par exemple, si vous &ecirc;tes urbaniste et souhaitez identifier les esp&egrave;ces d'arbres qui sont minoritaires et celles qui sont majoritaires au sein de tous les parcs de la ville, agr&eacute;gez vos donn&eacute;es concernant les arbres avec les zones des parcs et cochez cette option.
+            </p>
+        </div>
+    </div>
+    <div id="PercentPoints">
+        <div><h2>Ajouter des pourcentages</h2></div>
+        <hr/>
+        <div>
+            <p>Cette case &agrave; cocher est activ&eacute;e lorsque vous s&eacute;lectionnez un champ de regroupement. S&eacute;lectionnez  <b>Add percentages (Ajouter des pourcentages)</b> si vous souhaitez conna&icirc;tre le pourcentage de chaque valeur attributaire au sein de chaque groupe. Un nouveau champ est ajout&eacute; &agrave; la table de r&eacute;sultat&nbsp;; il contient les pourcentages de chaque valeur attributaire au sein de chaque groupe. Si l&rsquo;option <b>Add minority, majority (Ajouter une minorit&eacute;, majorit&eacute;)</b> est &eacute;galement s&eacute;lectionn&eacute;e, deux champs suppl&eacute;mentaires sont ajout&eacute;s &agrave; la couche de r&eacute;sultats&nbsp;; ils contiennent les pourcentages des valeurs attributaires minoritaires et majoritaires au sein de chaque groupe.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit du nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte.  Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si le nom de la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Le menu d&eacute;roulant  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b> permet de sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> dans lequel sera enregistr&eacute; le r&eacute;sultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

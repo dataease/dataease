@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Determinar red de gastos de viaje óptimos</h2><p/>
+        <h2><img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" alt="Ilustraci&oacute;n de la herramienta Determinar red de gastos de viaje &oacute;ptimos"></h2>
+        <hr/>
+    <p>Esta herramienta calcula la red de coste &oacute;ptimo a partir de un conjunto de regiones de entrada.
+    </p>
+    <p>Un ejemplo de aplicaci&oacute;n de esta herramienta es encontrar la mejor red para veh&iacute;culos de emergencia.
+    </p>
+    <p>Si se ha activado  <b>Usar extensi&oacute;n de mapa actual</b>, solo se analizar&aacute;n las ubicaciones de la capa de entrada que est&eacute;n visibles en la extensi&oacute;n de mapa actual. Si la opci&oacute;n est&aacute; desactivada, se analizar&aacute;n todas las ubicaciones de la capa de entrada, aunque est&eacute;n fuera de la extensi&oacute;n de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRegionsRasterOrFeatures">
+        <div><h2>Elegir la capa de ubicación de entidad o ráster entre la que se determinarán rutas de viaje</h2></div>
+        <hr/>
+        <div>
+            <p>Las regiones de entrada que se deben conectar mediante la red de m&iacute;nimo coste.
+            </p>
+            <p>Las regiones se pueden definir mediante un servicio de im&aacute;genes o un servicio de entidades.
+            </p>
+            <p>Para el servicio de im&aacute;genes, las regiones se definen mediante grupos de celdas contiguas (adyacentes) con el mismo valor. Cada regi&oacute;n se debe numerar de forma &uacute;nica. Las celdas que no formen parte de ninguna regi&oacute;n deber&aacute;n ser NoData. El tipo de r&aacute;ster debe ser un n&uacute;mero entero y los valores pueden ser positivos o negativos.
+            </p>
+            <p>En el caso de un servicio de entidades, la entrada puede ser un punto, una l&iacute;nea o un pol&iacute;gono.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Elegir capa ráster de costes de viaje</h2></div>
+        <hr/>
+        <div>
+            <p>R&aacute;ster que define la impedancia o el coste de hacer un movimiento planim&eacute;trico por medio de cada celda.
+            </p>
+            <p>El valor de cada ubicaci&oacute;n de celda representa la distancia de coste por unidad para moverse a trav&eacute;s de la celda. Cada valor de ubicaci&oacute;n de celda se multiplica por la resoluci&oacute;n de la celda mientras que tambi&eacute;n se compensa por el movimiento diagonal para obtener el coste total de pasar por medio de la celda.
+            </p>
+            <p>Los valores del r&aacute;ster de coste pueden ser enteros o de punto flotante, pero no pueden ser negativos o cero (no puede tener un coste negativo o cero).
+            </p> 
+        </div>
+    </div>
+    <div id="outputOptimumNetworkName">
+        <div><h2>Nombre de la capa de resultados de polilíneas de rutas óptimas</h2></div>
+        <hr/>
+        <div>
+            <p>El nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y que se agregar&aacute; al mapa. El nombre predeterminado se basa en el nombre de la herramienta y en el nombre de la capa de entrada. Si la capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Puede especificar el nombre de una carpeta de  <b>Mi contenido</b> en la que se guardar&aacute; el resultado con el cuadro desplegable <b>Guardar el resultado en</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputNeighborNetworkName">
+        <div><h2>Nombre de la capa de resultados de polilíneas de rutas vecinas</h2></div>
+        <hr/>
+        <div>
+            <p>El nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y que se agregar&aacute; al mapa. El nombre predeterminado se basa en el nombre de la herramienta y en el nombre de la capa de entrada. Si la capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Puede especificar el nombre de una carpeta de  <b>Mi contenido</b> en la que se guardar&aacute; el resultado con el cuadro desplegable <b>Guardar el resultado en</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

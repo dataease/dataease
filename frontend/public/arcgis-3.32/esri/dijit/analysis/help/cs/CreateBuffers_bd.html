@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Vytvořit obalové zóny (Create Buffers)</h2><p/>
+        <h2><img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" alt="Vytvořit obalov&eacute; z&oacute;ny"></h2>
+        <hr/>
+    <p>Obalov&aacute; z&oacute;na je oblast, kter&aacute; pokr&yacute;v&aacute; určenou vzd&aacute;lenost od dan&eacute;ho bodu, linie nebo polygonu. 
+    </p>
+    <p>Obalov&eacute; z&oacute;ny se zpravidla použ&iacute;vaj&iacute; pro vytv&aacute;řen&iacute; oblast&iacute;, kter&eacute; lze n&aacute;sledně analyzovat pomoc&iacute; dal&scaron;&iacute;ch n&aacute;strojů. Pokud se např&iacute;klad pt&aacute;me &bdquo;Jak&eacute; budovy se nach&aacute;zej&iacute; v okruhu jednoho kilometru od &scaron;koly?&ldquo;, lze odpověď zjistit tak, že se kolem &scaron;koly vytvoř&iacute; obalov&aacute; z&oacute;na o rozloze jednoho kilometru a překryje se vrstvou obsahuj&iacute;c&iacute; obrysy budov. V&yacute;sledkem je vrstva budov, kter&eacute; se nach&aacute;zej&iacute; v&nbsp;okruhu jednoho kilometru od &scaron;koly.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Zvolte vrstvu, na kterou bude použita obalová zóna</h2></div>
+        <hr/>
+        <div>
+            <p>Bodov&eacute;, liniov&eacute; nebo polygonov&eacute; prvky, pro kter&eacute; maj&iacute; b&yacute;t vytvořeny obalov&eacute; z&oacute;ny. Vstupn&iacute; vrstvy mus&iacute; b&yacute;t v rovinn&eacute;m souřadnicov&eacute;m syst&eacute;mu nebo souřadnicov&yacute; syst&eacute;m zpracov&aacute;n&iacute; mus&iacute; b&yacute;t nastaven na rovinn&yacute; souřadnicov&yacute; syst&eacute;m použ&iacute;vaj&iacute;c&iacute;  <b>Prostřed&iacute; anal&yacute;zy</b>.
+            </p>
+            <p>Kromě v&yacute;běru vrstvy z&nbsp;mapy můžete tak&eacute; zvolit položku  <b>Zvolit vrstvu anal&yacute;zy</b> kter&aacute; se nach&aacute;z&iacute; v&nbsp;doln&iacute; č&aacute;sti rozbalovac&iacute; nab&iacute;dky, abyste ve sv&eacute;m obsahu mohli naj&iacute;t vrstvu prvků nebo datovou sadu sd&iacute;len&yacute;ch souborů velk&yacute;ch dat.
+            </p>
+        </div>
+    </div>
+    <div id="bufferType">
+        <div><h2>Vyberte typ použité obalové zóny</h2></div>
+        <hr/>
+        <div>
+            <p>Existuj&iacute; tři způsoby, kter&yacute;mi můžete určit velikost obalov&eacute; z&oacute;ny pro va&scaron;e vstupn&iacute; prvky: 
+                <ul>
+                    <li>Zadejte vzd&aacute;lenost, kter&aacute; bude použita pro v&scaron;echny prvky.
+                    </li>
+                    <li>Zadejte pole ve vstupn&iacute; vrstvě, kter&eacute; obsahuje hodnotu vzd&aacute;lenosti. Můžete použ&iacute;t pole s&nbsp;č&iacute;selnou hodnotou nebo řetězcem. Pokud nen&iacute; definov&aacute;na d&eacute;lkov&aacute; jednotka, budou použity jednotky souřadnicov&eacute;ho syst&eacute;mu. Pokud použ&iacute;v&aacute;te zeměpisn&yacute; souřadnicov&yacute; syst&eacute;m, pole bez jednotky bude považov&aacute;no za metry. 
+                    </li>
+                    <li>Vytvořte v&yacute;raz s&nbsp;několika poli a matematick&yacute;mi oper&aacute;tory. Např&iacute;klad, pro vytvořen&iacute; obalov&eacute; z&oacute;ny, kter&aacute; 10n&aacute;sobně převy&scaron;uje hodnotu pole s n&aacute;zvem  <i>rychlost_vetru</i> přidejte v&yacute;raz <i>$feature[&quot;rychlost_vetru&quot;] x 10</i>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Vyberte typ obalové zóny</h2></div>
+        <hr/>
+        <div>
+            <p>Můžete si vybrat metodu  <b>Rovinn&yacute;</b> nebo <b>Geodetick&yacute;</b>. Metoda <b>Rovinn&yacute;</b> může b&yacute;t rychlej&scaron;&iacute; a je vhodn&aacute; pro m&iacute;stn&iacute; anal&yacute;zu zobrazen&yacute;ch dat. Metoda <b>Geodetick&yacute;</b> je vhodn&aacute; pro velk&eacute; oblasti a jak&yacute;koli zeměpisn&yacute; souřadnicov&yacute; syst&eacute;m.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveOption">
+        <div><h2>Vyberte typ způsobu sloučení</h2></div>
+        <hr/>
+        <div>
+            <p>Možnosti pro určen&iacute; metody sloučen&iacute;.   Pokud je zvolena metoda sloučen&iacute;, dostanete možnost vytvořit v&iacute;cen&aacute;sobn&eacute; nebo jednoduch&eacute; oblasti a budete moci vypoč&iacute;tat statistiku na z&aacute;kladě poskytnut&yacute;ch pol&iacute;.
+                <ul>
+                    <li> <b>V&scaron;e</b> &ndash; V&scaron;echny prvky budou sloučeny. Pokud jsou povoleny v&iacute;cen&aacute;sobn&eacute; prvky, budou v&scaron;echny prvky sloučeny do jednoho prvku. Pokud v&iacute;cen&aacute;sobn&eacute; prvky nejsou povoleny, budou sloučeny soused&iacute;c&iacute; nebo překr&yacute;vaj&iacute;c&iacute; se prvky.
+                    </li>
+                    <li> <b>Pole</b> &ndash; Prvky, kter&eacute; sd&iacute;lej&iacute; stejn&eacute; zadan&eacute; pole nebo kombinaci zadan&yacute;ch pol&iacute;, budou sloučeny. Pokud jsou povoleny v&iacute;cen&aacute;sobn&eacute; prvky, v&scaron;echny prvky se stejn&yacute;m polem budou sloučeny do jednoho prvku. Pokud v&iacute;cen&aacute;sobn&eacute; prvky nejsou povoleny, budou sloučeny soused&iacute;c&iacute; nebo překr&yacute;vaj&iacute;c&iacute; se prvky se stejnou hodnotou pole.
+                    </li>
+                    <li> <b>Ž&aacute;dn&eacute;</b> &ndash; Ž&aacute;dn&eacute; prvky nebudou sloučeny.  Jedn&aacute; se o v&yacute;choz&iacute; nastaven&iacute;.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Povolit vícenásobné prvky</h2></div>
+        <hr/>
+        <div>
+            <p>Možnost pro určen&iacute;, zda se v&aacute;&scaron; v&yacute;sledek bude skl&aacute;dat z&nbsp;jednoduch&yacute;ch nebo v&iacute;cen&aacute;sobn&yacute;ch prvků. 
+
+            </p>
+            <p>
+                <ul>
+                    <li>Za&scaron;krtnuto &ndash; V&yacute;sledky va&scaron;&iacute; anal&yacute;zy budou obsahovat v&iacute;cen&aacute;sobn&eacute; prvky.   
+                    </li>
+                    <li>Neza&scaron;krtnuto &ndash; V&yacute;sledky va&scaron;&iacute; anal&yacute;zy budou obsahovat jednoduch&eacute; prvky. Toto je v&yacute;choz&iacute; nastaven&iacute;.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Přidat statistiku (volitelné)</h2></div>
+        <hr/>
+        <div>
+            <p> Můžete vypoč&iacute;tat statistiku sumarizovan&yacute;ch prvků.Můžete vypoč&iacute;tat n&aacute;sleduj&iacute;c&iacute; v č&iacute;seln&yacute;ch pol&iacute;ch:
+                <ul>
+                    <li>Počet &ndash; Spoč&iacute;t&aacute; počet nenulov&yacute;ch hodnot. Lze jej použ&iacute;t na č&iacute;seln&yacute;ch pol&iacute;ch nebo řetězc&iacute;ch. Počet pro [null, 0, 2] je 2.
+                    </li>
+                    <li>Součet &ndash; Součet č&iacute;seln&yacute;ch hodnot v poli. Součet pro [null, null, 3] je 3.
+                    </li>
+                    <li>Průměr &ndash; Průměr č&iacute;seln&yacute;ch hodnot. Průměr pro [0, 2, null] je 1.
+                    </li>
+                    <li>Min &ndash; Minim&aacute;ln&iacute; hodnota č&iacute;seln&eacute;ho pole. Minimum pro [0, 2, null] je 0. 
+                    </li>
+                    <li>Max &ndash; Maxim&aacute;ln&iacute; hodnota č&iacute;seln&eacute;ho pole. Maximum pro [0, 2, null] je 2.
+                    </li>
+                    <li>Rozsah &ndash; Rozsah č&iacute;seln&eacute;ho pole. Vypočtou se jako minim&aacute;ln&iacute; hodnoty odečten&eacute; od maxim&aacute;ln&iacute; hodnoty. Rozsah pro [0, null, 1] je 1. Rozsah pro [null, 4] je 0.
+                    </li>
+                    <li>Odchylka &ndash; Odchylka č&iacute;seln&eacute;ho pole ve stopě. Odchylka pro [1]  je null. Odchylka pro [null, 1,0,1,1] je 0,25.
+                    </li>
+                    <li>Standardn&iacute; odchylka &ndash; Standardn&iacute; odchylka č&iacute;seln&eacute;ho pole. Standardn&iacute; odchylka pro [1] je null. Standardn&iacute; odchylka pro [null, 1,0,1,1] je 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>N&aacute;sleduj&iacute;c&iacute; můžete vypoč&iacute;tat  v pol&iacute;ch řetězců:
+                <ul>
+                    <li>Počet &ndash; Počet nenulov&yacute;ch řetězců.
+                    </li>
+                    <li>Libovoln&eacute; &ndash; Tato statistika je n&aacute;hodn&yacute;m vzorkem hodnoty řetězce v&nbsp;určen&eacute;m poli.
+                    </li>
+                </ul>
+                V&scaron;echny statistiky se poč&iacute;taj&iacute; pro nenulov&eacute; hodnoty. V&yacute;sledn&aacute; vrstva bude obsahovat nov&eacute; pole pro každou vypoč&iacute;tanou statistiku. Lze přidat libovoln&yacute; počet statistik zvolen&iacute;m atributu a statistiky. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Výběr ArcGIS Data Store, do kterého budou uloženy výsledky</h2></div>
+        <hr/>
+        <div>
+            <p>V&yacute;sledky geoanal&yacute;zy jsou ukl&aacute;d&aacute;ny do nějak&eacute;ho datov&eacute;ho &uacute;loži&scaron;tě a jsou zobrazeny jako vrstva prvků v   Portal for ArcGIS. Ve vět&scaron;ině př&iacute;padů by v&yacute;sledky měly b&yacute;t uloženy do časoprostorov&eacute;ho datov&eacute;ho &uacute;loži&scaron;tě a toto je v&yacute;choz&iacute; nastaven&iacute;. V někter&yacute;ch př&iacute;padech je vhodn&eacute; uložit v&yacute;sledky do relačn&iacute;ho datov&eacute;ho &uacute;loži&scaron;tě. Důvody k uložen&iacute; v&yacute;sledků do relačn&iacute;ho datov&eacute;ho &uacute;loži&scaron;tě: 
+                <ul>
+                    <li>Můžete použ&iacute;t v&yacute;sledky ke spolupr&aacute;ci mezi port&aacute;ly.
+                    </li>
+                    <li>Můžete povolit funkce synchronizace s v&yacute;sledky
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Relačn&iacute; datov&eacute; &uacute;loži&scaron;tě byste použ&iacute;vat neměli, pokud oček&aacute;v&aacute;te n&aacute;růst množstv&iacute; v&yacute;sledků geoanal&yacute;zy a chcete využ&iacute;t v&yacute;hod časoprostorov&eacute;ho &uacute;loži&scaron;tě Big Data ke zpracov&aacute;n&iacute; velk&yacute;ch objemů dat.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p> N&aacute;zev vytv&aacute;řen&eacute; vrstvy. Pokud zapisujete ArcGIS Data Store, va&scaron;e v&yacute;sledky budou uloženy v  <b>Můj obsah</b> a přid&aacute;ny na mapu. Pokud zapisujete sd&iacute;len&yacute; soubor velk&yacute;ch dat, va&scaron;e v&yacute;sledky budou uloženy ve sd&iacute;len&eacute;m souboru velk&yacute;ch dat a přid&aacute;ny do jejich manifestu.  Nebudou přid&aacute;ny na mapu. V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud vrstva již existuje, n&aacute;stroj selže.
+            </p>
+            <p>Když zapisujete do   ArcGIS Data Store  (datov&eacute; &uacute;loži&scaron;tě relačn&iacute;ch a časoprostorov&yacute;ch velk&yacute;ch dat) pomoc&iacute; rozbalovac&iacute;ho seznamu  <b>Uložit v&yacute;sledek do</b> , můžete zadat n&aacute;zev složky v <b>Můj obsah</b>, kde budou v&yacute;sledky uloženy.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/nl/DetermineTravelCostPathAsPolyline",{inputSourceLayerLabel:"Kies het raster of de objectbronlaag voor de bepaling van de paden van",inputCostRasterLabel:"Kies de rasterlaag met routekosten",inputDestinationLayerLabel:"Kies het raster of de bestemming van de objectlaag voor de bepaling van de route naar",pathTypeLabel:"Kies het type route voor de bepaling (optioneel)",bestSingle:"Beste enkel",eachCell:"Naar elke cel",eachZone:"Naar elke zone",destinationField:"Kies een veld om waarden voor de bestemming te krijgen",
+outputPolylineName:"Resultaat polylijnnnaam",outputLayerName:"Optimale routekosten als polylijn van ${layername}",drawDestinationPointLayerName:"Bestemmingspunten",drawSourcePointLayerName:"Bronpunten",itemDescription:"Objectlaag gegenereerd via de functie routekostenpad bepalen als polylijn op ${layername}. ",itemTags:"Analyseresultaat, routekostenpad bepalen als polylijn, ${layername} ${fieldname}",itemSnippet:"Objectlaag gegenereerd via de functie routekostenpad bepalen als polylijn.",missingMessage:"De bestemmingslaag moet verschillen van de bronlaag",
+noValueMessage:"Deze waarde is vereist",placeHolder:"--Een kaartlaag selecteren--"});

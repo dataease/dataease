@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>计算密度</h2><p/>
+        <h2><img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" alt="计算密度"></h2>
+        <hr/>
+    <p>&ldquo;计算密度&rdquo;工具用于通过将已知量的某种现象（表示为点或线的属性）散布到整个地图上以从点要素或线要素创建密度地图。结果是按密度从小到大分类的区域图层。   
+
+    </p>
+    <p>对于点输入，每个点应表示某一事件或事件点的位置，结果图层应表示每个单位面积中的事件点计数。新位置中的密度值越高则表示此位置附近的点越多。在多数情况下，可以将结果图层视为未来事件的风险表面。例如，如果输入点表示受到雷击的位置，则可将结果图层视为未来可能受到雷击的风险表面。
+    </p>
+    <p>对于线输入，线密度表面表示每个位置附近的线总数。所计算的密度值的单位是每单位面积的线长度。例如，如果线表示河流，则结果图层将表示搜索半径范围内的河流总长度。此结果可用于确定适合放牧动物的区域。
+    </p>
+    <p> 此工具的其他用例如下：
+        <ul>
+            <li>创建犯罪密度地图以帮助警方适当地将资源分配到高犯罪率区域。
+            </li>
+            <li>计算某县的医院密度。 结果图层将显示容易到达医院和不容易到达医院的区域，此信息可用于确定新建医院的位置。
+            </li>
+            <li>根据发生森林火灾的历史位置确定森林火灾的高风险区域。
+            </li>
+            <li>查找距离主干道较远的社区以计划修建新道路的位置。
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>选择点图层或线图层并根据其自身计算其密度</h2></div>
+        <hr/>
+        <div>
+            <p>将用于计算密度的点图层或线图层。
+
+            </p>
+            <p>除了从地图选择图层，您也可以选择下拉列表底部的 <b>选择分析图层</b>。此选项将打开一个库，您可以在其中浏览并选择各种来源的数据集以用于分析。 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>使用计数字段</h2></div>
+        <hr/>
+        <div>
+            <p>提供一个字段，用于指定每个位置处的事件点数量。例如，如果您具有表示城市的点，则您可以将表示城市人口的字段作为计数字段，结果人口密度图层将计算拥有较多人口的城市附近的较大人口密度。
+            </p>
+            <p> 如果使用默认选项 None，则假定每个位置代表一个计数。
+            </p>
+        </div>
+    </div>
+    <div id="radius">
+        <div><h2>搜索距离</h2></div>
+        <hr/>
+        <div>
+            <p>输入距离，以指定计算密度值时查找点要素或线要素的搜索距离。例如，如果您提供的搜索距离是 10,000 米，则输出图层中任意位置的密度将根据距此位置 10,000 米范围内的要素进行计算。在 10,000 米范围内任何不具有事件点的位置得到的密度值将为零。     
+
+            </p>
+            <p>如果未提供距离，则将根据输入要素的位置和计数字段中的值（如果已提供计数字段）计算默认值。
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>裁剪输出结果</h2></div>
+        <hr/>
+        <div>
+            <p>绘制或提供一个图层，以指定要计算密度的区域。例如，如果您要对湖中鱼的密度进行计算，则可以使用此参数中湖的边界，使输出结果仅在湖的边界内绘制。
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>分类依据</h2></div>
+        <hr/>
+        <div>
+            <p>选择将密度值分类到区域的方法。
+                <ul>
+                    <li>相等间隔 - 创建区域使每个区域的密度值范围相等。
+                    </li>
+                    <li>几何间隔 - 根据具有几何级数的组距创建分类区域。 此方法可确保每个类范围与每个类中所拥有的值的数量大致相同，且间隔之间的变化一致。
+                    </li>
+                    <li>自然间断点 - 区域的组距取决于数据的自然分组。 将识别出能够对类似的值进行最恰当地分组并使各类之间的差异最大化的分类间隔值。
+
+                    </li>
+                    <li>等面积 - 创建区域使每个区域的面积相等。 例如，如果结果图层的高密度值多于低密度值，则会为高密度创建更多区域。
+                    </li>
+                    <li>标准差 - 根据预测密度值的标准差创建区域。 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>类数目</h2></div>
+        <hr/>
+        <div>
+            <p>指定结果图层中的类数（预测值范围）。每个类定义区域边界。这些类的值将由以上 <b>分类方法</b>参数确定。
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>输出区域单位</h2></div>
+        <hr/>
+        <div>
+            <p>指定输出区域的单位。密度等于计数除以面积，此参数用于指定密度计算中的区域单位。  
+
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该图层名称已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>使用 <b>将结果保存在</b>下拉菜单，可以指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

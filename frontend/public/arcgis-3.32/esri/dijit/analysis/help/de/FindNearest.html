@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Nächstgelegene suchen</h2><p/>
+        <h2><img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" alt="N&auml;chstgelegene suchen"></h2>
+        <hr/>
+    <p>Dieses Werkzeug findet die am n&auml;chsten gelegenen Features und erfasst und bewertet die Entfernung der nahe gelegenen Features. Um die am n&auml;chsten gelegenen Features zu ermitteln, kann das Werkzeug zur Messung entweder eine geradlinige Entfernung oder einen ausgew&auml;hlten Reisemodus verwenden. Es sind Optionen verf&uuml;gbar, mit deren Hilfe die Anzahl der zu suchenden n&auml;chsten Features oder der Suchbereich, in dem sie gesucht werden sollen, eingeschr&auml;nkt werden kann. Die Ergebnisse dieses Werkzeugs erleichtern Ihnen die Beantwortung folgender Fragen:
+        <ul>
+            <li>Welcher Park liegt diesem Standort am n&auml;chsten?
+            </li>
+            <li>Welches Krankenhaus kann ich in der k&uuml;rzesten Fahrzeit erreichen? Wie lange w&uuml;rde die Fahrt an einem Dienstag um 17:30 Uhr w&auml;hrend der Hauptverkehrszeit dauern?
+            </li>
+            <li>Wie lang ist die Fahrtstrecke zwischen diesen St&auml;dten?
+            </li>
+            <li>Welche dieser Patienten wohnen im Umkreis von zwei Kilometern von diesen Chemiewerken?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Die Option &quot;N&auml;chstgelegene suchen&quot; gibt einen Layer mit den n&auml;chsten Features sowie einen Linien-Layer zur&uuml;ck, der die Startpositionen mit den jeweils n&auml;chstgelegenen Positionen verkn&uuml;pft. Der Linien-Layer enth&auml;lt Informationen zu den Start- und n&auml;chstgelegenen Positionen sowie deren Entfernungen zueinander.
+    </p>
+    <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur die Features als Start- und potenziell n&auml;chste Features betrachtet, die in der aktuellen Kartenausdehnung angezeigt werden.  Wenn diese Option deaktiviert ist, werden alle Features im Eingabe-Layer ber&uuml;cksichtigt, auch diejenigen, die sich au&szlig;erhalb der aktuellen Kartenausdehnung befinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Startpositionen festlegen</h2></div>
+        <hr/>
+        <div>
+            <p>Mit der Option &quot;N&auml;chstgelegene suchen&quot; wird von den Features im hier angegebenen Layer (die Startpositionen) aus zu den im n&auml;chsten Parameter angegebenen Positionen gemessen.  Das Werkzeug unterst&uuml;tzt bis zu  5.000&nbsp;Features pro Layer. 
+            </p>
+        </div>
+    </div>
+    <div id="NearbyLocationsLayer">
+        <div><h2>Nächstgelegene Positionen suchen in</h2></div>
+        <hr/>
+        <div>
+            <p>Mit der Option &quot;N&auml;chstgelegene suchen&quot; wird die Entfernung von jedem Feature im ersten Layer zu den Positionen in diesem Layer gemessen. Das Werkzeug unterst&uuml;tzt bis zu  5.000&nbsp;Positionen pro Layer. </p>
+            <p>Neben einem Layer aus Ihrer Karte k&ouml;nnen Sie auch die Option  <b>Analyse-Layer ausw&auml;hlen</b> unten in der Dropdown-Liste ausw&auml;hlen. Mit dieser Option &ouml;ffnen Sie eine Galerie, in der Sie zu Datasets aus verschiedenen Quellen navigieren und diese f&uuml;r Ihre Analysen ausw&auml;hlen k&ouml;nnen. 
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Messen</h2></div>
+        <hr/>
+        <div>
+            <p>Legen Sie fest, ob die n&auml;chstgelegenen Positionen auf Basis einer geradlinigen Entfernung oder eines ausgew&auml;hlten Reisemodus ermittelt werden sollen. Reisemodi sind nur dann aktiviert, wenn Ihr Eingabe-Layer Punkte enth&auml;lt. Die verf&uuml;gbaren Reisemodi werden vom Administrator Ihrer Organisation bestimmt.  Wenn Sie einen der Reisemodi verwenden, werden die Messungen entlang Stra&szlig;en und Gehwegen vorgenommen, wobei alle geltenden Verkehrsregeln wie Einbahnstra&szlig;en, unzul&auml;ssige Wendepunkte usw. ber&uuml;cksichtigt werden.
+            </p>
+            <p>Beim Messen zwischen Linien und Fl&auml;chen wird die Entfernung vom oder zum n&auml;chsten Punkt entlang der Linie oder Grenze der Fl&auml;che ermittelt. 
+            </p> 
+            <p>Bei Auswahl von  <b>Fahrzeit</b>, <b>Fahrzeit auf Landstra&szlig;en</b> oder <b>Lkw-Fahrzeit</b> werden Optionen zum Messen der Fahrzeit bereitgestellt.
+                <ul>
+                    <li>
+                        <p>Deaktivieren Sie die Option  <b>Verkehrsdaten verwenden</b> um die n&auml;chsten Features basierend auf statischen Verkehrsgeschwindigkeiten, wie Geschwindigkeitsbegrenzungen, anstatt auf fluktuierenden Geschwindigkeiten zu suchen, die sich je nach Verkehrslage &auml;ndern.
+                        </p>
+                        <p>Sie m&uuml;ssen diese Option ausw&auml;hlen, wenn Sie wissen m&ouml;chten, welche Features allgemein am n&auml;chsten gelegen sind, aber nicht unbedingt die n&auml;chstgelegenen Verkehrsbedingungen f&uuml;r eine bestimmte Uhrzeit und einen bestimmten Tag ermitteln m&ouml;chten.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Aktivieren Sie  <b>Verkehrsdaten verwenden</b>, um die n&auml;chsten Features basierend auf einer angegebenen Startzeit und sich &auml;ndernder Verkehrsbedingungen zu suchen. Wenn Sie au&szlig;erdem die Option <b>Live-Verkehrsdaten</b> ausw&auml;hlen, wird die Abfahrtzeit von den Startpositionen auf die aktuelle Uhrzeit festgelegt und aktuelle und vorhergesagte Fahrgeschwindigkeiten werden von Sensoren und Feeds referenziert, um zu ermitteln, welche Features am n&auml;chsten gelegen sind. Die vorhergesagten Fahrgeschwindigkeiten werden berechnet, indem Geschwindigkeitsdaten des Live-Verkehrs und aktuelle Ereignisse wie das Wetter referenziert werden. Fahrgeschwindigkeiten werden f&uuml;r die n&auml;chsten 12 Stunden vorhergesagt, damit Sie die Abfahrtzeit mit dem Schieberegler auf bis zu 12 Stunden im Voraus einstellen k&ouml;nnen.
+                        </p>
+                        <p>Verwenden Sie diese Einstellungen f&uuml;r Live-Verkehrsdaten, um zu ermitteln, welche Features in der k&uuml;rzesten Zeit erreicht werden k&ouml;nnen, wenn Sie jetzt, in einer Stunde usw. abfahren.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Wenn Sie die Option  <b>Verkehrsdaten verwenden</b> aktivieren und <b>Verkehrsdaten auf Grundlage von normalen Bedingungen f&uuml;r</b> einen Tag und eine Uhrzeit ausw&auml;hlen, findet das Werkzeug die n&auml;chsten Features basierend auf historischen Durchschnittsgeschwindigkeiten f&uuml;r jedes 5-Minuten-Intervall &uuml;ber eine normale Woche hinweg. Die Ergebnisse umfassen Verkehrsdaten, lassen jedoch den Einfluss aktueller Verkehrssituationen und -ereignisse au&szlig;er Acht, die erheblich von der Norm abweichen k&ouml;nnen.
+                        </p>
+                        <p>Sie k&ouml;nnen diese Einstellungen f&uuml;r historische Verkehrsdaten verwenden, um beispielsweise folgende Frage zu stellen: &quot;Welche Features k&ouml;nnen am schnellsten erreicht werden, wenn ich von den Start-Features an einem Mittwoch um 11:30 Uhr losfahre?&quot;. 
+                        </p>
+                        <p>Die festgelegte Zeit bezieht sich auf die Zeitzone, in der sich die Start-Features befinden. Wenn Sie die Uhrzeit also auf 8:00 Uhr festlegen und &uuml;ber zwei Start-Features verf&uuml;gen, eines in New York und das andere in Los Angeles, werden die n&auml;chstgelegenen Positionen gefunden, indem eine Abfahrtzeit von 8:00 Uhr Eastern Time bzw. 8:00 Uhr Pacific Time angenommen wird.
+                        </p>
+                    </li>
+                </ul>
+                Beachten Sie, dass Zeit vergeht und Verkehrslagen sich &auml;ndern, w&auml;hrend sich ein Fahrzeug von einem Punkt wegbewegt. Dieses Werkzeug ber&uuml;cksichtigt diese Unterschiede bei Verwendung der Option <b>Verkehrsdaten verwenden</b>, allerdings unterst&uuml;tzen nicht alle Regionen Verkehrsdaten. Klicken Sie in dem Werkzeug auf den Link <b>Verf&uuml;gbarkeit anzeigen</b>, um zu ermitteln, ob dies f&uuml;r Ihr Einzugsgebiet zutrifft. 
+            </p>
+            <p>F&uuml;r die  <b>Lkw-Fahrzeit</b> k&ouml;nnen dynamische, auf den Verkehrsbedingungen basierende Reisegeschwindigkeiten bis maximal zur gesetzlichen H&ouml;chstgeschwindigkeit f&uuml;r Lkw zugrunde gelegt werden. Wenn beispielsweise die dynamische Geschwindigkeit f&uuml;r eine Stra&szlig;e auf Grundlage der Live-Verkehrsdaten bei 100&nbsp;km/h liegt, die zul&auml;ssige H&ouml;chstgeschwindigkeit f&uuml;r Lkw auf dieser Stra&szlig;e jedoch 80&nbsp;km/h betr&auml;gt, werden in der Berechnung f&uuml;r diese Stra&szlig;e 80&nbsp;km/h zugrunde gelegt.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Barriere-Layer auswählen</h2></div>
+        <hr/>
+        <div>
+            <p> Mindestens ein Feature, das als vor&uuml;bergehende Einschr&auml;nkung (also Barriere) bei der Fahrt auf den zugrunde liegenden Stra&szlig;en fungiert Sie k&ouml;nnen die Barrieren anhand von Punkt-, Linien- oder Polygon-Features angeben.
+            </p>
+            <p>Eine Punkt-Barriere kann zum Modellieren eines umgefallenen Baumes, eines Unfalls, einer herabh&auml;ngenden Stromleitung oder eines beliebigen anderen Objekts, das den Verkehr an einer bestimmten Position auf der Stra&szlig;e blockiert, verwendet werden. Die Fahrt auf der Stra&szlig;e ist zul&auml;ssig, jedoch nicht die Fahrt durch die Barriere. Sie k&ouml;nnen bis zu 250&nbsp;Features, die als Punkt-Barrieren fungieren, hinzuf&uuml;gen.
+            </p>
+            <p>Eine Linien-Barriere unterbindet den Verkehr an allen Punkten, an denen die Barriere Stra&szlig;en schneidet. Mit einer Linien-Barriere kann beispielsweise eine Parade oder Demonstration modelliert werden, die den Verkehr &uuml;ber mehrere Stra&szlig;enz&uuml;ge hinweg blockiert. Wenn die Anzahl der Stra&szlig;en-Features, die sich mit allen Linien-Barrieren schneiden, 500 &uuml;berschreitet, gibt das Werkzeug einen Fehler zur&uuml;ck
+            </p>
+            <p>Eine Polygon-Barriere unterbindet den Verkehr an allen Punkten, an denen das Polygon Stra&szlig;en schneidet. Dieser Barrierentyp wird beispielsweise verwendet, um &uuml;berflutete Bereiche des Stra&szlig;ennetzes zu modellieren und den Stra&szlig;enverkehr in diesen Bereichen zu sperren. Wenn die Anzahl der Stra&szlig;en-Features, die sich mit allen Polygon-Barrieren schneiden, 2000 &uuml;berschreitet, gibt das Werkzeug einen Fehler zur&uuml;ck
+            </p>
+        </div>
+    </div>
+    <div id="Cutoffs">
+        <div><h2>Für jede Position im Eingabe-Layer</h2></div>
+        <hr/>
+        <div>
+            <p>Zum Einschr&auml;nken der Suche nach n&auml;chstgelegenen Positionen stehen zwei Optionen zur Verf&uuml;gung. Eine M&ouml;glichkeit besteht in der Einschr&auml;nkung der maximalen Anzahl der n&auml;chstgelegenen Positionen, die pro Startposition gesucht werden sollen. Sie k&ouml;nnen den n&auml;chsten Park, die zwei n&auml;chsten Parks usw. finden. Die zweite M&ouml;glichkeit besteht darin, eine maximale Suchentfernung oder Fahrzeit festzulegen.
+            </p>
+            <p>Wenn die Optionen deaktiviert sind, betr&auml;gt die maximal zu suchende Anzahl von n&auml;chstgelegenen Positionen 100 (der Grenzwert des Werkzeugs) und der maximale Suchbereich ist unbegrenzt.
+            </p>
+            <p>Die Verarbeitungszeit h&auml;ngt von der Anzahl der Startpositionen, der Anzahl der nahe gelegenen Positionen sowie dem maximalen Suchbereich ab. Die Verarbeitung nimmt mehr Zeit in Anspruch, wenn mehr Positionen oder gr&ouml;&szlig;ere Suchbereiche vorhanden sind.
+            </p>
+            <p>Beachten Sie, dass das Werkzeug m&ouml;glicherweise keine n&auml;chstgelegenen Positionen innerhalb des Bereichs findet, wenn der Suchbereich begrenzt ist, oder dass weniger als die von Ihnen festgelegte maximale Anzahl n&auml;chstgelegener Positionen gefunden werden.
+            </p>
+        </div>
+    </div>
+    <div id="OutputNearestLocationsLayer">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist der Name des Feature-Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird. Wenn der Feature-Layer bereits vorhanden ist, werden Sie aufgefordert, einen anderen Namen einzugeben. Der Feature-Layer enth&auml;lt zwei Layer: einen, der die n&auml;chstgelegenen Positionen darstellt, und einen anderen, der die Linien darstellt, die die Eingabepositionen mit den n&auml;chstgelegenen Positionen verkn&uuml;pfen.
+            </p>
+            <p>Wenn Sie  <b>Routen-Layer einbeziehen</b> ausw&auml;hlen, wird jede Route des Ergebnisses auch als Routen-Layer gespeichert. Ein Routen-Layer umfasst alle Informationen einer bestimmten Route wie zum Beispiel die Stopps, die der Route zugewiesen sind, oder die Wegbeschreibungen. Das Erstellen von Routen-Layern ist n&uuml;tzlich, wenn Sie die einzelnen Routen f&uuml;r andere Mitglieder in Ihrer Organisation freigeben oder wenn Sie die Routen mithilfe der Schaltfl&auml;che <b>Wegbeschreibung</b> im Map Viewer weiter bearbeiten m&ouml;chten. F&uuml;r die Namen der Routen-Layer wird der Name des angegebenen Feature-Layers als Pr&auml;fix verwendet. Dazu hinzugef&uuml;gt wird der Routenname, der bei der Analyse generiert wurde, um einen eindeutigen Namen f&uuml;r jeden Routen-Layer zu erstellen.
+            </p>
+            <p>Die maximale Anzahl von Routen-Layern, die erstellt werden k&ouml;nnen, betr&auml;gt  1.000. Wenn das Ergebnis mehr als  1.000 Routen enth&auml;lt und  <b>Routen-Layer einbeziehen</b> aktiviert ist, erstellt das Werkzeug lediglich den Ausgabe-Feature-Service.
+            </p>
+            <p>&Uuml;ber das Dropdown-Men&uuml;  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, um darin den Feature-Layer und die ggf. erstellten Routen-Layer zu speichern.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

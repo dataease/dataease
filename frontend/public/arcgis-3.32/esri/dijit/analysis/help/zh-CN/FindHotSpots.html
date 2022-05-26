@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>查找热点</h2><p/>
+        <h2><img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" alt="查找热点"></h2>
+        <hr/>
+    <p> 查找热点工具可以确定数据在空间模式方面是否存在任何统计显著性的聚类。
+        <ul>
+            <li>各个点要素（犯罪事件、树木、交通事故）是否可进行聚类？ 您又是如何确定的？
+            </li>
+            <li>您是否确实发现了具有统计显著性的热点（消费、婴儿死亡率、长期保持高测试分数）？或者说如果更改地图的符号化方式，地图会呈现出另一种结果吗？
+            </li>
+        </ul>
+        &ldquo;查找热点&rdquo;工具可针对这些问题给出令人信服的答案。
+    </p>
+    <p>即使是随机的空间模式也会展现出一定程度的聚类。此外，即使不存在模式，我们的眼睛和大脑也会出于本能进行查找。因此，很难辨别数据中的模式是正在研究的真实空间过程产生的结果还是仅为随机产生的结果。这就是研究人员和分析人员使用统计方法（如&ldquo;查找热点&rdquo;(Getis-Ord Gi*)）量化空间模式的原因。在数据中找到具有统计显著性的聚类时，您会获得非常有价值的信息。了解聚类发生的地点与时间可对您观察到的模式的形成过程提供重要线索。例如，如果需要制定有效的预防手段、分配有限的警力、发起小区监督计划、授权深入的刑事调查或者识别潜在嫌疑人，则掌握相关小区持续高发的入室盗窃信息就十分重要。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>选择要计算热点的图层</h2></div>
+        <hr/>
+        <div>
+            <p>要在其中查找热点和冷点的点图层或面图层。
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>查找高低聚类</h2></div>
+        <hr/>
+        <div>
+            <p>此分析将回答以下问题：高值和低值在哪里存在空间聚类？
+            </p>
+            <p>如果数据是点，且您选择 <b>点计数</b>，则该工具将评估点要素的空间排列以回答如下问题：点在哪里出现异常聚类或扩散？
+            </p>
+            <p>如果选择了一个字段，则该工具将评估与各要素相关的值的空间排列来回答如下问题：高值和低值聚类在哪？
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>范围内的点计数</h2></div>
+        <hr/>
+        <div>
+            <p>默认设置是计算由工具根据点数据创建的渔网格网中的点。或者，可以选择计算六边形格网中的点数或提供一个区域图层（通常这些图层将反映行政报告区，如人口普查区、市界或者县）来回答以下问题：给定每个区域要素内的点数，是否存在具有统计显著性的高点计数或低点计数空间聚类的位置？   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>定义可能存在点的区域</h2></div>
+        <hr/>
+        <div>
+            <p>绘制或提供一个定义事件潜在发生位置的图层来回答以下问题：区域内，是否存在点聚集异常的位置？   
+            </p>
+            <p>绘制的区域要素或者指定的区域图层中的要素应定义点可能出现的位置。要绘制这些区域，请单击 <b>绘制</b>按钮，然后单击地图上的一个位置以创建区域形状。要绘制其他区域，请再次单击绘制按钮，然后单击地图上的一个位置以继续操作。
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>除</h2></div>
+        <hr/>
+        <div>
+            <p>有时，您可能希望分析考虑了基础分布的模式。例如，如果点代表犯罪案件，则除以总人口数可以得到人均犯罪分析，而不是原始犯罪计数。选择被除的属性通常是指归一化。
+            </p>
+            <p>选择  <i>Esri 人口</i>将以人口值丰富每个区域要素，并随后将其作为划分依据的属性进行使用。此选项将使用配额。
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>覆盖选项</h2></div>
+        <hr/>
+        <div>
+            <p> 此工具将根据您数据的特性，为您查找 <b>像元大小</b>和 <b>距离范围</b>默认值的最佳设置。但是，如果您拥有对分析有意义的特定 <b>像元大小</b>或 <b>距离范围</b>，则可以使用 <b>覆盖选项</b>来设置上述值。
+            </p>
+            <p> <b>覆盖选项</b>在针对不同的数据集运行分析时也非常有用，它可以帮助你保持多个数据集中的 <b>距离范围</b>和 <b>像元大小</b>一致。然后您即可对结果进行适当地比较：例如，比较肥胖和糖尿病患病率，甚至可以比较两个不同年份的犯罪率。
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>像元大小</h2></div>
+        <hr/>
+        <div>
+            <p>用于计算某区域内点数的格网像元的大小。
+            </p>
+            <p>在使用六边形格网计算某区域内的点数时，该距离将被用作六边形的高度。
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>距离范围</h2></div>
+        <hr/>
+        <div>
+            <p>在指定的距离范围内，将对邻近要素环境中的每个要素进行分析。工具将计算默认距离，或者，可使用此选项设置对分析有意义的特定距离。
+            </p>
+            <p>例如，如果要研究通勤模式并且已知平均上下班路程为 15 英里，则最好使用 15 英里的距离范围进行分析。
+            </p>
+        </div>
+    </div>
+    <div id="hotSpotsResultLayer">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>为在 <b>我的内容</b>中创建并添加到地图中的图层命名。此结果图层将显示具有统计显著性的聚类（高值和低值或点计数）。如果结果图层名称已存在，则系统会要求您重命名该图层。
+            </p>
+            <p>使用 <b>将结果保存在</b>下拉框，可以指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

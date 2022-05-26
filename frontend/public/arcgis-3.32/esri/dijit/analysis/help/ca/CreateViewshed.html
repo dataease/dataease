@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Crea una conca visual</h2><p/>
+        <h2><img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" alt="Crea una conca visual"></h2>
+        <hr/>
+    <p>L'eina Crea una conca visual crea &agrave;rees on un observador pot veure objectes al terra. Els punts d'observador d'entrada poden representar observadors (com ara persones al terra o torres de vigil&agrave;ncia d'incendis) o objectes observats (com ara aerogeneradors, torres d'aigua, vehicles o altres persones). Les &agrave;rees de resultats s&oacute;n les &agrave;rees on els observadors poden veure els objectes observats i viceversa: els objectes observats poden veure els observadors.
+    </p>
+    <p>Tant els observadors com els objectes observats poden tenir una altura per sobre del terra; aquestes altures es fan servir per determinar la visibilitat. Per exemple, una conca visual calculada per a aerogeneradors de 120 metres d'altura i persones de metre vuitanta que estan a terra ser&agrave; normalment m&eacute;s gran que una conca visual calculada per a aerogeneradors de 60 metres d'altura i persones de metre vuitanta.
+    </p>
+    <p>Tingueu en compte que el c&agrave;lcul de la conca visual no t&eacute; en compte les obstruccions, com ara arbres o edificis. Podeu considerar que aquest c&agrave;lcul es fa en un terreny buit, sense res m&eacute;s a banda de l'observador i els objectes observats.
+    </p>
+    <p>La capa de resultats cont&eacute; entitats d'&agrave;rees que representen les &agrave;rees visibles. El camp  <i>Frequency</i> registra el nombre de punts d'observador que poden veure cada &agrave;rea. Per exemple, si teniu cinc punts d'entrada i cadascun representa una torre de vigil&agrave;ncia d'incendis, el camp <i>Frequency</i> tindr&agrave; valors entre u i cinc. Nom&eacute;s una torre pot veure les &agrave;rees amb el valor u i totes les torres poden veure les &agrave;rees amb el valor cinc. La capa de resultats tamb&eacute; cont&eacute; el camp <i>DEMResolution</i>, que registra la resoluci&oacute; del model d'elevaci&oacute; digital (DEM) que s'ha fet servir per crear les conques visuals.
+    </p>
+    <p>Si s'ha activat  <b>Utilitza l'extensi&oacute; del mapa actual</b>, nom&eacute;s s'analitzaran els punts d'observador que siguin visibles a l'extensi&oacute; de mapa actual.  Si l'opci&oacute; est&agrave; desactivada, s'analitzaran tots els punts d'observador de la capa d'entrada, encara que estiguin fora de l'extensi&oacute; de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Entitats de punts que representen les ubicacions de l'observador</h2></div>
+        <hr/>
+        <div>
+            <p>Entitats de punts que es faran servir com a ubicacions de l'observador. 
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b>, que es troba al final de la llista desplegable. Aquesta opci&oacute; obre una galeria on podeu cercar i seleccionar datasets de diversos or&iacute;gens per u utilitzar-los a l'an&agrave;lisi. 
+            </p>
+        </div>
+    </div>
+    <div id="ObserverHeight">
+        <div><h2>Altura de les ubicacions de l'observador</h2></div>
+        <hr/>
+        <div>
+            <p>Altura sobre el terra de les ubicacions de l'observador.    El valor per defecte &eacute;s aproximadament l'al&ccedil;ada mitjana d'una persona.  
+            </p>
+        </div>
+    </div>
+    <div id="TargetHeight">
+        <div><h2>Altura d'altres objectes sobre el terra</h2></div>
+        <hr/>
+        <div>
+            <p>&Eacute;s l'altura de les estructures o les persones al terra que es fa servir per determinar la visibilitat. La conca visual de resultats es compon de les &agrave;rees on un punt d'observador pot veure aquests altres objectes.  La situaci&oacute; contr&agrave;ria tamb&eacute; es compleix: els altres objectes poden veure un punt d'observador. 
+            </p>
+            <p>
+                <ul>
+                    <li>Si els vostres punts d'observador representen aerogeneradors i voleu determinar des d'on poden veure les turbines les persones que estiguin al terra, introdu&iuml;u l'al&ccedil;ada mitjana d'una persona, aproximadament 6 peus (1,80 metres).  El resultat seran les &agrave;rees des d'on una persona que estigui al terra podr&agrave; veure els aerogeneradors.
+                    </li>
+                    <li>Si els vostres punts d'observador representen torres de vigil&agrave;ncia d'incendis i voleu determinar quines torres de vigil&agrave;ncia poden veure una columna de fum de 20 peus (6 metres) o m&eacute;s d'altura, introdu&iuml;u 20 peus per a l'altura.  El resultat seran les &agrave;rees en qu&egrave; una torre de vigil&agrave;ncia d'incendis pot veure una columna de fum de 20 peus (6 metres) o m&eacute;s d'altura.
+                    </li>
+                    <li>Si els vostres punts d'observador representen miradors en carreteres i camins i voleu determinar en quins llocs es poden veure els aerogeneradors de 400 peus (120 metres) o m&eacute;s d'altura, introdu&iuml;u 400 peus per a l'altura.  El resultat seran les &agrave;rees des d'on una persona que estigui en un mirador podr&agrave; veure un aerogenerador de 400 peus (120 metres) o m&eacute;s d'altura.
+                    </li>
+                    <li>Si els vostres punts d'observador representen miradors i voleu determinar la superf&iacute;cie que poden veure les persones que estan al mirador, introdu&iuml;u zero.  El resultat seran les &agrave;rees que es poden veure des del mirador.  
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="MaximumDistance">
+        <div><h2>Distància de visualització màxima</h2></div>
+        <hr/>
+        <div>
+            <p>Dist&agrave;ncia de valor l&iacute;mit on s'atura el c&agrave;lcul de les &agrave;rees visibles. M&eacute;s enll&agrave; d'aquesta dist&agrave;ncia, no se sap si els punts d'observador i els altres objectes es poden veure entre si. Els valors grans augmenten el temps de c&agrave;lcul. El valor m&agrave;xim perm&egrave;s &eacute;s de 31 milles (50 quil&ograve;metres).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa.  El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si el nom de la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Mitjan&ccedil;ant el men&uacute; desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta d' <b>El meu contingut</b> on es desar&agrave; el resultat.
+            </p>
+            <p> L'execuci&oacute; d'aquesta eina no consumeix cr&egrave;dits.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

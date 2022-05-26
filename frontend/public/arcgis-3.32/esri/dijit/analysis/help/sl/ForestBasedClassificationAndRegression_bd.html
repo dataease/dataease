@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Klasifikacija in regresija na podlagi gozdov</h2><p/>
+        <h2><img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" alt="Diagram delovnega procesa klasifikacije in regresije na podlagi gozdov"></h2>
+        <hr/>
+    <p>Ustvarja modele in napovedi s prilagojenim algoritmom naključnih gozdov Lea Breimana, ki je metoda nadzorovanega strojnega učenja. Napovedi je možno izdelati tako za kategorične spremenljivke (klasifikacija) kot za stalne spremenljivke (regresija). Pojasnjevalne spremenljivke so polja v atributni tabeli učnih geoobjektov. Orodje je mogoče uporabiti za ustvarjanje modela za ocenjevanje uspe&scaron;nosti ali za ustvarjanje modela in napovedovanje rezultatov za druge sklope podatkov.
+    </p>
+    <p>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Tip analize</h2></div>
+        <hr/>
+        <div>
+            <p>Določa način delovanja orodja. Orodje je mogoče uporabiti za učenje modela, da ocenjuje samo uspe&scaron;nost, ali za učenje modela in napovedovanje geoobjektov. Tipi napovedi so naslednji:
+                <ul>
+                    <li> <b>Učenje modela za ocenjevanje uspe&scaron;nosti modela</b> &ndash; model bo naučen in prilagojen za vhodne podatke. To možnost uporabite za ocenjevanje natančnosti svojega modela pred ustvarjanjem napovedi za nov sklop podatkov. Rezultati te možnosti bodo geoobjektna storitev va&scaron;ih prilagojenih učnih podatkov, diagnostike modela in tabela možnosti spremenljivega pomena.
+                    </li>
+                    <li> <b>Učenje modela in napovedovanje vrednosti</b> &ndash; za geoobjekte bodo ustvarjene napovedi ali klasifikacije. Pojasnjevalne spremenljivke je treba zagotoviti tako za učne geoobjekte kot za geoobjekte, ki jih je treba napovedati. Rezultati te možnosti bodo geoobjektna storitev va&scaron;ih napovedanih vrednosti, diagnostike modela in tabela možnosti spremenljivega pomena.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="train">
+        <div><h2>Učenje modela za ocenjevanje uspešnosti modela</h2></div>
+        <hr/>
+        <div>
+            <p>Ta način uporabite, če želite prilagoditi model in preveriti prilagoditev.
+            </p>
+            <p>Model bo s to izbiro in uporabo vhodnega sloja naučen. To možnost uporabite za ocenjevanje natančnosti svojega modela pred ustvarjanjem napovedi za nov sklop podatkov. Ta možnost bo kot rezultat dala diagnostiko modela v oknu s sporočili in uporabila model na va&scaron;ih učnih podatkih.
+            </p>
+        </div>
+    </div>
+    <div id="trainAndPredict">
+        <div><h2>Učenje modela in napovedovanje vrednosti</h2></div>
+        <hr/>
+        <div>
+            <p>Ta način uporabite, če želite prilagoditi model in ga za ustvarjanje napovedi uporabiti na sklopu podatkov.
+            </p>
+            <p>Za geoobjekte bodo ustvarjene napovedi ali klasifikacije. Rezultati te možnosti bodo geoobjektna storitev, diagnostike modela in poljubna tabela možnosti spremenljivega pomena.
+            </p>
+        </div>
+    </div>
+    <div id="inFeatures">
+        <div><h2>Izberi učni sloj</h2></div>
+        <hr/>
+        <div>
+            <p>Geoobjektni sloj, ki vsebuje spremenljivko za napovedovanje in polja, ki se bodo uporabljala za ustvarjanje napovedi.
+            </p>
+            <p>Poleg izbire sloja s svoje karte lahko na dnu spustnega seznama izberete  <b>Izberi sloj za analizo</b>, da po svoji vsebini poi&scaron;čete delitev datotek velikih podatkov ali geoobjektni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Izberi sloj za napovedovanje vrednosti za</h2></div>
+        <hr/>
+        <div>
+            <p>Geoobjektni sloj, ki predstavlja lokacije, kjer bodo izdelane napovedi. Ta geoobjektni sloj mora prav tako vsebovati vse pojasnjevalne spremenljivke, ki so na voljo kot polja, ki ustrezajo tistim, ki so uporabljena iz učnih geoobjektov.
+            </p>
+            <p>Poleg izbire sloja s svoje karte lahko na dnu spustnega seznama izberete  <b>Izberi sloj za analizo</b>, da po svoji vsebini poi&scaron;čete delitev datotek velikih podatkov ali geoobjektni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="variablePredict">
+        <div><h2>Izberi polje za napovedovanje</h2></div>
+        <hr/>
+        <div>
+            <p>Polje iz učnih geoobjektov, ki vsebuje vrednosti, ki jih je treba uporabiti za učenje modela. To polje vsebuje znane (učne) vrednosti spremenljivke, ki se bo za napovedovanje uporabljala na neznanih lokacijah. Če so vrednosti kategorične (na primer, javor, bor, hrast), izberite izbirno polje  <b>Kategorično</b>.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Izberite eno ali več pojasnjevalnih spremenljivk</h2></div>
+        <hr/>
+        <div>
+            <p>Eno ali več polj, ki predstavljajo pojasnjevalne spremenljivke (polja), ki pomagajo pri napovedovanju vrednosti ali kategorije spremenljivke, ki jo je treba napovedati. Uporabite izbirno polje Kategorično za vse spremenljivke, ki predstavljajo razrede ali kategorije (kot je pokrovnost tal ali prisotnost ali odsotnost). Spremenljivko določite kot resnično za vse, ki predstavljajo razrede ali kategorije, kot je pokrovnost tal ali prisotnost ali odsotnost in kot neresnično, če je spremenljivka stalna.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfTrees">
+        <div><h2>Število dreves</h2></div>
+        <hr/>
+        <div>
+            <p>&Scaron;tevilo dreves, ki jih je treba ustvariti v modelu. Več dreves bo na splo&scaron;no zagotovilo natančnej&scaron;o napoved modela, vendar bo model za izračun potreboval več časa. Privzeto &scaron;tevilo dreves je 100.
+            </p>
+        </div>
+    </div>
+    <div id="minimumLeafSize">
+        <div><h2>Minimalna velikost listov</h2></div>
+        <hr/>
+        <div>
+            <p>Minimalno &scaron;tevilo opazovanj, potrebnih za ohranjanje lista (to je terminalsko vozli&scaron;če na drevesu brez dodatnih razdelitev). Privzeti minimum za regresijo je 5, za klasifikacijo pa 1. Pri zelo velikih podatkih bo povečanje teh &scaron;tevilk zmanj&scaron;alo čas izvajanja orodja.
+            </p>
+        </div>
+    </div>
+    <div id="maximumTreeDepth">
+        <div><h2>Maksimalna globina drevesa</h2></div>
+        <hr/>
+        <div>
+            <p>Maksimalno &scaron;tevilo razdelitev, ki bodo izvedene navzdol po drevesu. Z maksimalno globino bo ustvarjenih več razdelitev, kar lahko poveča možnosti za prekomerno prilagajanje modela. Privzeto je podatkovno vodeno in je odvisno od &scaron;tevila ustvarjenih dreves in &scaron;tevila vključenih spremenljivk.
+            </p>
+        </div>
+    </div>
+    <div id="sampleSize">
+        <div><h2>Razpoložljivih podatkov na drevo (%)</h2></div>
+        <hr/>
+        <div>
+            <p>Določa odstotek geoobjektov na učnem sloju, ki se uporablja za vsako odločitveno drevo. Privzetih je 100 odstotkov podatkov. Vzorci za vsako drevo so odvzeti naključno iz dveh tretjin navedenih podatkov.
+            </p>
+            <p>Vsako odločitveno drevo v gozdu je ustvarjeno z naključnim vzorcem ali podizborom (približno dve tretjini) razpoložljivih učnih podatkov. Uporaba nižjega odstotka vhodnih podatkov za vsako odločitveno drevo poveča hitrost orodja pri zelo velikih sklopih podatkov.
+            </p>
+        </div>
+    </div>
+    <div id="randomVariables">
+        <div><h2>Število naključno vzorčenih spremenljivk</h2></div>
+        <hr/>
+        <div>
+            <p>Določa &scaron;tevilo pojasnjevalnih spremenljivk, uporabljenih za ustvarjanje vsakega odločitvenega drevesa.
+            </p>
+            <p>Vsako odločitveno drevo v gozdu je ustvarjeno z naključnim podizborom določenih pojasnjevalnih spremenljivk. Povečanje &scaron;tevila spremenljivk, uporabljenih pri vsakem odločitvenem drevesu, bo povečalo možnosti za prekomerno prilagajanje va&scaron;ega modela, &scaron;e zlasti če obstaja ena ali več prevladujočih spremenljivk. Običajna praksa je uporaba kvadratnega korena skupnega &scaron;tevila pojasnjevalnih spremenljivk, če je va&scaron;a spremenljivka, ki jo je treba napovedati, &scaron;tevilčna, ali je treba skupno &scaron;tevilo pojasnjevalnih spremenljivk deliti s 3, če je spremenljivka, ki jo je treba napovedati, kategorična.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Izberite način ujemanja pojasnjevalnih polj</h2></div>
+        <hr/>
+        <div>
+            <p>Kako se bodo ustrezne spremenljivke na učnem sloju ujemale s spremenljivkami na napovedovalnem sloju. V tabelo bodo vključene samo spremenljivke, uporabljene pri učenju.
+            </p>
+        </div>
+    </div>
+    <div id="percentageForValidation">
+        <div><h2>Število izvajanj validacije</h2></div>
+        <hr/>
+        <div>
+            <p>Določa odstotek (med 0 in 50 odstotkov) geoobjektov na učnem sloju, ki jih je treba rezervirati kot testni sklop podatkov za validacijo. Izvedeno bo učenje modela brez te naključne podizbire podatkov, opazovane vrednosti za te geoobjekte pa bodo primerjane z napovedano vrednostjo. Privzetih je 10 odstotkov.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>To je ime sloja, ki bo ustvarjen v  <b>Moji vsebini</b> in dodan na karto. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, bo od vas zahtevano, da vnesete drugo ime.
+            </p>
+            <p>Vrnjeni rezultati bodo odvisni od vrste analize. Če učenje izvajate za ocenjevanje prilagoditve modela, bodo rezultati vsebovali sloj z učnimi podatki, ki je prilagojen modelu, in informacije rezultata o ocenjevanju prilagoditve modela. Če izvajate učenje in napovedovanje, bodo rezultati vsebovali sloj z učnimi podatki, ki so prilagojeni modelu, sloj z napovedanimi rezultati in informacije rezultata o ocenjevanju prilagoditve modela.
+            </p>
+            <p>S pomočjo spustnega menija  <b>Shrani rezultat v</b> lahko navedete ime mape v <b>Moja vsebina</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

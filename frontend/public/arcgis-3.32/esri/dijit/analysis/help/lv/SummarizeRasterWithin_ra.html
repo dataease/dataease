@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Apkopot rastru šeit:</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="Rīks Apkopot rastru &scaron;eit:"></h2>
+        <hr/>
+    <p>&Scaron;is rīks apkopo rastru, pamatojoties uz teritorijām (zonām), ko definē pirmais ievades slānis.
+    </p>
+    <p>Daži no pielietojumu piemēriem ietver:
+    </p>
+    <p>
+        <ul>
+            <li>Ņemot ūdens&scaron;ķirtnes robežas un zemes lieto&scaron;anas robežas, kalkulē kopējo zemes lieto&scaron;anas veidu katrai ūdens&scaron;ķirtnei.
+                
+
+            </li>
+            <li>Ņemot zemes gabalu slāni un novada un pilsētas robežu slāni, apkopo vidējo brīvo zemes gabalu vērtību katras pilsētas robežās.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Ja atzīmēts  <b>Lietot pa&scaron;reizējo kartes pārklājumu</b>, tiks analizēti tikai tie analīzes slāņa un apkopojamā slāņa elementi, kas ir redzami pa&scaron;reizējā kartes pārklājumā.  Ja noņemsiet atzīmi no izvēles rūtiņas, tiks analizēti visi elementi ievades un apkopojamā slānī (arī tie, kas atradīsies ārpus pa&scaron;reizējā kartes pārklājuma).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Izvēlēties apgabala slāni, lai definētajās robežās apkopotu rastra slāni</h2></div>
+        <hr/>
+        <div>
+            <p>Slānis, kas definē apkopojamo teritoriju vai zonu robežas.
+            </p>
+            <p>Slānis var būt rastra vai elementu dati. Rastra zonas definē visi ievades novietojumi ar vienādu &scaron;ūnas vērtību. Teritorijām nav jābūt nepārtrauktām.
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>Izvēlēties lauku robežu definēšanai</h2></div>
+        <hr/>
+        <div>
+            <p>&Scaron;is ir slāņa atribūts, kas tiks izmantots, lai definētu teritoriju robežas.
+            </p>
+            <p>Piemēram, pieņemsim, ka pirmais ievades slānis definē pārvaldības vienības robežas ar atribūtiem, kas definē katras vienības reģionu, rajonu un zemes gabala ID. Pieejams arī rastra slānis, kas definē katras atra&scaron;anās vietas bioloģisko daudzveidību. Izvēloties lauku, varat aprēķināt vidējo bioloģisko daudzveidību vietējā, rajona vai reģionālā līmenī.
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>Izvēlēties apkopojamo rastra slāni</h2></div>
+        <hr/>
+        <div>
+            <p>&Scaron;ī slāņa rastra &scaron;ūnas tiks apkopotas pēc teritorijām (zonām), kurās tās atrodas.
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>Izvēlēties aprēķināmo statistiku</h2></div>
+        <hr/>
+        <div>
+            <p>Kad esat izvēlējies apkopojamo slāni, varat pēc izvēles aprēķināt statistiku par jebkuru ievades teritorijas slānī eso&scaron;o punkta, līnijas vai teritorijas skaitlisko atribūtu.
+            </p>
+            <p>Ja izvēlētais lauks ir vesels skaitlis, pieejamie statistikas veidi ir vidējais, vairākums, maksimālais, mediāna, minimālais, mazākums, diapazons, standartnovirze, summa un dažādība.
+            </p>
+            <p>Ja lauks ir peldo&scaron;ā komata skaitlis, opcijas ir vidējais, maksimālais, minimālais, diapazons, standarta novirze un summa.
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>Ignorēt aprēķinā trūkstošās vērtības</h2></div>
+        <hr/>
+        <div>
+            <p>Ja izvēlaties ignorēt trūksto&scaron;ās vērtības, teritorijas izvades vērtības noteik&scaron;anai tiks izmantotas tikai &scaron;ūnas, kurām ir vērtība apkopojamajā slānī. Pretējā gadījumā, ja teritorijā trūkst vērtību, tiek uzskatīts, ka nav pietiekami daudz informācijas, lai veiktu statistikas aprēķinus visām &scaron;ūnām &scaron;ajā zonā, un izvadē &scaron;ai teritorijai tiek pie&scaron;ķirta nulles (NoData) vērtība.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slānis jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Mapes nosaukumu var norādīt mapē  <b>Mans saturs,</b> kur rezultāts tiks saglabāts, izmantojot nolaižamo lodziņu <b>Saglabāt rezultātu</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

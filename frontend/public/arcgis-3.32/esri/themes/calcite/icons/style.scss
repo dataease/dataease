@@ -1,0 +1,844 @@
+@import "variables";
+
+@font-face {
+  font-family: 'CalciteWebCoreIcons';
+  src:  url('#{$icomoon-font-path}/CalciteWebCoreIcons.eot?r2lind');
+  src:  url('#{$icomoon-font-path}/CalciteWebCoreIcons.eot?r2lind#iefix') format('embedded-opentype'),
+    url('#{$icomoon-font-path}/CalciteWebCoreIcons.ttf?r2lind') format('truetype'),
+    url('#{$icomoon-font-path}/CalciteWebCoreIcons.woff?r2lind') format('woff'),
+    url('#{$icomoon-font-path}/CalciteWebCoreIcons.svg?r2lind#CalciteWebCoreIcons') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="esri-icon-"], [class*=" esri-icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'CalciteWebCoreIcons' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.esri-icon-close {
+  &:before {
+    content: $esri-icon-close;
+  }
+}
+.esri-icon-drag-horizontal {
+  &:before {
+    content: $esri-icon-drag-horizontal;
+  }
+}
+.esri-icon-drag-vertical {
+  &:before {
+    content: $esri-icon-drag-vertical;
+  }
+}
+.esri-icon-handle-horizontal {
+  &:before {
+    content: $esri-icon-handle-horizontal;
+  }
+}
+.esri-icon-handle-vertical {
+  &:before {
+    content: $esri-icon-handle-vertical;
+  }
+}
+.esri-icon-check-mark {
+  &:before {
+    content: $esri-icon-check-mark;
+  }
+}
+.esri-icon-left-triangle-arrow {
+  &:before {
+    content: $esri-icon-left-triangle-arrow;
+  }
+}
+.esri-icon-right-triangle-arrow {
+  &:before {
+    content: $esri-icon-right-triangle-arrow;
+  }
+}
+.esri-icon-down-arrow {
+  &:before {
+    content: $esri-icon-down-arrow;
+  }
+}
+.esri-icon-up-arrow {
+  &:before {
+    content: $esri-icon-up-arrow;
+  }
+}
+.esri-icon-overview-arrow-bottom-left {
+  &:before {
+    content: $esri-icon-overview-arrow-bottom-left;
+  }
+}
+.esri-icon-overview-arrow-bottom-right {
+  &:before {
+    content: $esri-icon-overview-arrow-bottom-right;
+  }
+}
+.esri-icon-overview-arrow-top-left {
+  &:before {
+    content: $esri-icon-overview-arrow-top-left;
+  }
+}
+.esri-icon-overview-arrow-top-right {
+  &:before {
+    content: $esri-icon-overview-arrow-top-right;
+  }
+}
+.esri-icon-maximize {
+  &:before {
+    content: $esri-icon-maximize;
+  }
+}
+.esri-icon-minimize {
+  &:before {
+    content: $esri-icon-minimize;
+  }
+}
+.esri-icon-checkbox-unchecked {
+  &:before {
+    content: $esri-icon-checkbox-unchecked;
+  }
+}
+.esri-icon-checkbox-checked {
+  &:before {
+    content: $esri-icon-checkbox-checked;
+  }
+}
+.esri-icon-radio-unchecked {
+  &:before {
+    content: $esri-icon-radio-unchecked;
+  }
+}
+.esri-icon-radio-checked {
+  &:before {
+    content: $esri-icon-radio-checked;
+  }
+}
+.esri-icon-up-arrow-circled {
+  &:before {
+    content: $esri-icon-up-arrow-circled;
+  }
+}
+.esri-icon-down-arrow-circled {
+  &:before {
+    content: $esri-icon-down-arrow-circled;
+  }
+}
+.esri-icon-left-arrow-circled {
+  &:before {
+    content: $esri-icon-left-arrow-circled;
+  }
+}
+.esri-icon-right-arrow-circled {
+  &:before {
+    content: $esri-icon-right-arrow-circled;
+  }
+}
+.esri-icon-zoom-out-fixed {
+  &:before {
+    content: $esri-icon-zoom-out-fixed;
+  }
+}
+.esri-icon-zoom-in-fixed {
+  &:before {
+    content: $esri-icon-zoom-in-fixed;
+  }
+}
+.esri-icon-refresh {
+  &:before {
+    content: $esri-icon-refresh;
+  }
+}
+.esri-icon-edit {
+  &:before {
+    content: $esri-icon-edit;
+  }
+}
+.esri-icon-authorize {
+  &:before {
+    content: $esri-icon-authorize;
+  }
+}
+.esri-icon-map-pin {
+  &:before {
+    content: $esri-icon-map-pin;
+  }
+}
+.esri-icon-blank-map-pin {
+  &:before {
+    content: $esri-icon-blank-map-pin;
+  }
+}
+.esri-icon-table {
+  &:before {
+    content: $esri-icon-table;
+  }
+}
+.esri-icon-plus {
+  &:before {
+    content: $esri-icon-plus;
+  }
+}
+.esri-icon-minus {
+  &:before {
+    content: $esri-icon-minus;
+  }
+}
+.esri-icon-beginning {
+  &:before {
+    content: $esri-icon-beginning;
+  }
+}
+.esri-icon-reverse {
+  &:before {
+    content: $esri-icon-reverse;
+  }
+}
+.esri-icon-pause {
+  &:before {
+    content: $esri-icon-pause;
+  }
+}
+.esri-icon-play {
+  &:before {
+    content: $esri-icon-play;
+  }
+}
+.esri-icon-forward {
+  &:before {
+    content: $esri-icon-forward;
+  }
+}
+.esri-icon-end {
+  &:before {
+    content: $esri-icon-end;
+  }
+}
+.esri-icon-erase {
+  &:before {
+    content: $esri-icon-erase;
+  }
+}
+.esri-icon-up-down-arrows {
+  &:before {
+    content: $esri-icon-up-down-arrows;
+  }
+}
+.esri-icon-left {
+  &:before {
+    content: $esri-icon-left;
+  }
+}
+.esri-icon-right {
+  &:before {
+    content: $esri-icon-right;
+  }
+}
+.esri-icon-announcement {
+  &:before {
+    content: $esri-icon-announcement;
+  }
+}
+.esri-icon-notice-round {
+  &:before {
+    content: $esri-icon-notice-round;
+  }
+}
+.esri-icon-notice-triangle {
+  &:before {
+    content: $esri-icon-notice-triangle;
+  }
+}
+.esri-icon-home {
+  &:before {
+    content: $esri-icon-home;
+  }
+}
+.esri-icon-locate {
+  &:before {
+    content: $esri-icon-locate;
+  }
+}
+.esri-icon-expand {
+  &:before {
+    content: $esri-icon-expand;
+  }
+}
+.esri-icon-collapse {
+  &:before {
+    content: $esri-icon-collapse;
+  }
+}
+.esri-icon-layer-list {
+  &:before {
+    content: $esri-icon-layer-list;
+  }
+}
+.esri-icon-basemap {
+  &:before {
+    content: $esri-icon-basemap;
+  }
+}
+.esri-icon-globe {
+  &:before {
+    content: $esri-icon-globe;
+  }
+}
+.esri-icon-applications {
+  &:before {
+    content: $esri-icon-applications;
+  }
+}
+.esri-icon-arrow-up-circled {
+  &:before {
+    content: $esri-icon-arrow-up-circled;
+  }
+}
+.esri-icon-arrow-down-circled {
+  &:before {
+    content: $esri-icon-arrow-down-circled;
+  }
+}
+.esri-icon-arrow-left-circled {
+  &:before {
+    content: $esri-icon-arrow-left-circled;
+  }
+}
+.esri-icon-arrow-right-circled {
+  &:before {
+    content: $esri-icon-arrow-right-circled;
+  }
+}
+.esri-icon-minus-circled {
+  &:before {
+    content: $esri-icon-minus-circled;
+  }
+}
+.esri-icon-plus-circled {
+  &:before {
+    content: $esri-icon-plus-circled;
+  }
+}
+.esri-icon-add-attachment {
+  &:before {
+    content: $esri-icon-add-attachment;
+  }
+}
+.esri-icon-attachment {
+  &:before {
+    content: $esri-icon-attachment;
+  }
+}
+.esri-icon-calendar {
+  &:before {
+    content: $esri-icon-calendar;
+  }
+}
+.esri-icon-close-circled {
+  &:before {
+    content: $esri-icon-close-circled;
+  }
+}
+.esri-icon-browser {
+  &:before {
+    content: $esri-icon-browser;
+  }
+}
+.esri-icon-collection {
+  &:before {
+    content: $esri-icon-collection;
+  }
+}
+.esri-icon-comment {
+  &:before {
+    content: $esri-icon-comment;
+  }
+}
+.esri-icon-configure-popup {
+  &:before {
+    content: $esri-icon-configure-popup;
+  }
+}
+.esri-icon-contact {
+  &:before {
+    content: $esri-icon-contact;
+  }
+}
+.esri-icon-dashboard {
+  &:before {
+    content: $esri-icon-dashboard;
+  }
+}
+.esri-icon-deny {
+  &:before {
+    content: $esri-icon-deny;
+  }
+}
+.esri-icon-description {
+  &:before {
+    content: $esri-icon-description;
+  }
+}
+.esri-icon-directions {
+  &:before {
+    content: $esri-icon-directions;
+  }
+}
+.esri-icon-directions2 {
+  &:before {
+    content: $esri-icon-directions2;
+  }
+}
+.esri-icon-documentation {
+  &:before {
+    content: $esri-icon-documentation;
+  }
+}
+.esri-icon-duplicate {
+  &:before {
+    content: $esri-icon-duplicate;
+  }
+}
+.esri-icon-review {
+  &:before {
+    content: $esri-icon-review;
+  }
+}
+.esri-icon-environment-settings {
+  &:before {
+    content: $esri-icon-environment-settings;
+  }
+}
+.esri-icon-error {
+  &:before {
+    content: $esri-icon-error;
+  }
+}
+.esri-icon-error2 {
+  &:before {
+    content: $esri-icon-error2;
+  }
+}
+.esri-icon-experimental {
+  &:before {
+    content: $esri-icon-experimental;
+  }
+}
+.esri-icon-feature-layer {
+  &:before {
+    content: $esri-icon-feature-layer;
+  }
+}
+.esri-icon-filter {
+  &:before {
+    content: $esri-icon-filter;
+  }
+}
+.esri-icon-grant {
+  &:before {
+    content: $esri-icon-grant;
+  }
+}
+.esri-icon-group {
+  &:before {
+    content: $esri-icon-group;
+  }
+}
+.esri-icon-key {
+  &:before {
+    content: $esri-icon-key;
+  }
+}
+.esri-icon-labels {
+  &:before {
+    content: $esri-icon-labels;
+  }
+}
+.esri-icon-tag {
+  &:before {
+    content: $esri-icon-tag;
+  }
+}
+.esri-icon-layers {
+  &:before {
+    content: $esri-icon-layers;
+  }
+}
+.esri-icon-left-arrow {
+  &:before {
+    content: $esri-icon-left-arrow;
+  }
+}
+.esri-icon-right-arrow {
+  &:before {
+    content: $esri-icon-right-arrow;
+  }
+}
+.esri-icon-link-external {
+  &:before {
+    content: $esri-icon-link-external;
+  }
+}
+.esri-icon-link {
+  &:before {
+    content: $esri-icon-link;
+  }
+}
+.esri-icon-loading-indicator {
+  &:before {
+    content: $esri-icon-loading-indicator;
+  }
+}
+.esri-icon-maps {
+  &:before {
+    content: $esri-icon-maps;
+  }
+}
+.esri-icon-marketplace {
+  &:before {
+    content: $esri-icon-marketplace;
+  }
+}
+.esri-icon-media {
+  &:before {
+    content: $esri-icon-media;
+  }
+}
+.esri-icon-media2 {
+  &:before {
+    content: $esri-icon-media2;
+  }
+}
+.esri-icon-menu {
+  &:before {
+    content: $esri-icon-menu;
+  }
+}
+.esri-icon-mobile {
+  &:before {
+    content: $esri-icon-mobile;
+  }
+}
+.esri-icon-phone {
+  &:before {
+    content: $esri-icon-phone;
+  }
+}
+.esri-icon-navigation {
+  &:before {
+    content: $esri-icon-navigation;
+  }
+}
+.esri-icon-pan {
+  &:before {
+    content: $esri-icon-pan;
+  }
+}
+.esri-icon-printer {
+  &:before {
+    content: $esri-icon-printer;
+  }
+}
+.esri-icon-pie-chart {
+  &:before {
+    content: $esri-icon-pie-chart;
+  }
+}
+.esri-icon-chart {
+  &:before {
+    content: $esri-icon-chart;
+  }
+}
+.esri-icon-line-chart {
+  &:before {
+    content: $esri-icon-line-chart;
+  }
+}
+.esri-icon-question {
+  &:before {
+    content: $esri-icon-question;
+  }
+}
+.esri-icon-resend-invitation {
+  &:before {
+    content: $esri-icon-resend-invitation;
+  }
+}
+.esri-icon-rotate {
+  &:before {
+    content: $esri-icon-rotate;
+  }
+}
+.esri-icon-save {
+  &:before {
+    content: $esri-icon-save;
+  }
+}
+.esri-icon-settings {
+  &:before {
+    content: $esri-icon-settings;
+  }
+}
+.esri-icon-settings2 {
+  &:before {
+    content: $esri-icon-settings2;
+  }
+}
+.esri-icon-share {
+  &:before {
+    content: $esri-icon-share;
+  }
+}
+.esri-icon-sign-out {
+  &:before {
+    content: $esri-icon-sign-out;
+  }
+}
+.esri-icon-support {
+  &:before {
+    content: $esri-icon-support;
+  }
+}
+.esri-icon-user {
+  &:before {
+    content: $esri-icon-user;
+  }
+}
+.esri-icon-time-clock {
+  &:before {
+    content: $esri-icon-time-clock;
+  }
+}
+.esri-icon-trash {
+  &:before {
+    content: $esri-icon-trash;
+  }
+}
+.esri-icon-upload {
+  &:before {
+    content: $esri-icon-upload;
+  }
+}
+.esri-icon-download {
+  &:before {
+    content: $esri-icon-download;
+  }
+}
+.esri-icon-zoom-in-magnifying-glass {
+  &:before {
+    content: $esri-icon-zoom-in-magnifying-glass;
+  }
+}
+.esri-icon-search {
+  &:before {
+    content: $esri-icon-search;
+  }
+}
+.esri-icon-zoom-out-magnifying-glass {
+  &:before {
+    content: $esri-icon-zoom-out-magnifying-glass;
+  }
+}
+.esri-icon-locked {
+  &:before {
+    content: $esri-icon-locked;
+  }
+}
+.esri-icon-unlocked {
+  &:before {
+    content: $esri-icon-unlocked;
+  }
+}
+.esri-icon-favorites {
+  &:before {
+    content: $esri-icon-favorites;
+  }
+}
+.esri-icon-compass {
+  &:before {
+    content: $esri-icon-compass;
+  }
+}
+.esri-icon-down {
+  &:before {
+    content: $esri-icon-down;
+  }
+}
+.esri-icon-up {
+  &:before {
+    content: $esri-icon-up;
+  }
+}
+.esri-icon-chat {
+  &:before {
+    content: $esri-icon-chat;
+  }
+}
+.esri-icon-dock-bottom {
+  &:before {
+    content: $esri-icon-dock-bottom;
+  }
+}
+.esri-icon-dock-left {
+  &:before {
+    content: $esri-icon-dock-left;
+  }
+}
+.esri-icon-dock-right {
+  &:before {
+    content: $esri-icon-dock-right;
+  }
+}
+.esri-icon-organization {
+  &:before {
+    content: $esri-icon-organization;
+  }
+}
+.esri-icon-north-navigation {
+  &:before {
+    content: $esri-icon-north-navigation;
+  }
+}
+.esri-icon-locate-circled {
+  &:before {
+    content: $esri-icon-locate-circled;
+  }
+}
+.esri-icon-dial {
+  &:before {
+    content: $esri-icon-dial;
+  }
+}
+.esri-icon-polygon {
+  &:before {
+    content: $esri-icon-polygon;
+  }
+}
+.esri-icon-polyline {
+  &:before {
+    content: $esri-icon-polyline;
+  }
+}
+.esri-icon-visible {
+  &:before {
+    content: $esri-icon-visible;
+  }
+}
+.esri-icon-non-visible {
+  &:before {
+    content: $esri-icon-non-visible;
+  }
+}
+.esri-icon-link-vertical {
+  &:before {
+    content: $esri-icon-link-vertical;
+  }
+}
+.esri-icon-unlocked-link-vertical {
+  &:before {
+    content: $esri-icon-unlocked-link-vertical;
+  }
+}
+.esri-icon-link-horizontal {
+  &:before {
+    content: $esri-icon-link-horizontal;
+  }
+}
+.esri-icon-unlocked-link-horizontal {
+  &:before {
+    content: $esri-icon-unlocked-link-horizontal;
+  }
+}
+.esri-icon-swap {
+  &:before {
+    content: $esri-icon-swap;
+  }
+}
+.esri-icon-cta-link-external {
+  &:before {
+    content: $esri-icon-cta-link-external;
+  }
+}
+.esri-icon-reply {
+  &:before {
+    content: $esri-icon-reply;
+  }
+}
+.esri-icon-public {
+  &:before {
+    content: $esri-icon-public;
+  }
+}
+.esri-icon-share2 {
+  &:before {
+    content: $esri-icon-share2;
+  }
+}
+.esri-icon-launch-link-external {
+  &:before {
+    content: $esri-icon-launch-link-external;
+  }
+}
+.esri-icon-rotate-back {
+  &:before {
+    content: $esri-icon-rotate-back;
+  }
+}
+.esri-icon-pan2 {
+  &:before {
+    content: $esri-icon-pan2;
+  }
+}
+.esri-icon-tracking {
+  &:before {
+    content: $esri-icon-tracking;
+  }
+}
+.esri-icon-expand2 {
+  &:before {
+    content: $esri-icon-expand2;
+  }
+}
+.esri-icon-arrow-down {
+  &:before {
+    content: $esri-icon-arrow-down;
+  }
+}
+.esri-icon-arrow-up {
+  &:before {
+    content: $esri-icon-arrow-up;
+  }
+}
+.esri-icon-hollow-eye {
+  &:before {
+    content: $esri-icon-hollow-eye;
+  }
+}
+.esri-icon-play-circled {
+  &:before {
+    content: $esri-icon-play-circled;
+  }
+}
+.esri-icon-volume-off {
+  &:before {
+    content: $esri-icon-volume-off;
+  }
+}
+.esri-icon-volume-on {
+  &:before {
+    content: $esri-icon-volume-on;
+  }
+}
+

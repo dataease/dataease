@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>חלץ נתונים</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="חלץ נתונים"></h2>
+        <hr/>
+    <p>כלי זה מאפשר לך לבחור ולהוריד נתונים עבור תחום עניין ספציפי. שכבות שתבחר יתווספו לקובץ ZIP, &rlm;CSV או KMZ.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>שכבות לחילוץ</h2></div>
+        <hr/>
+        <div>
+            <p>אלה הן השכבות בתוכן העניינים שלך שמהן באפשרותך לחלץ ישויות. שכבות שתסמן יחולצו ויכללו בקובץ ZIP, או CSV שיתקבל כתוצאה.
+            </p>
+            <p>כדי ששכבה תופיע ברשימה של שכבות לחילוץ, עליך להיות הבעלים של הנתונים או שהבעלים של הנתונים יאפשר ייצוא של הנתונים.    כדי לאפשר ייצוא נתונים שהם בבעלותך: 
+                <ul>
+                    <li>פתח את תיאור הפריט של הנתונים.
+                    </li>
+                    <li>לחץ על הכרטיסייה  <b>הגדרות</b>.
+                    </li>
+                    <li>גלול למטה למקטע  <b>ייצא נתונים</b>.
+                    </li>
+                    <li>סמן את האפשרות  <b>אפשר לאחרים לייצא לפורמטים אחרים</b>.  לחץ על <b>שמור</b> בסיום.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>אם שכבת הניתוח שלך מכילה קבצים מצורפים, שים לב שקבצים מצורפים יחולצו רק אם פורמט נתוני הפלט הוא File Geodatabase והאפשרות  <b>גזור ישויות</b> לא מסומנת.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>אזור עניין</h2></div>
+        <hr/>
+        <div>
+            <p>האזור שמגדיר אילו ישויות ייכללו בקובץ ה-ZIP או ה-CSV של התוצאה.   ניתן לבחור מבין האפשרויות הבאות:
+                <ul>
+                    <li>התיחום הנראה הנוכחי של המפה ( <b>בדומה לתצוגה</b>).
+                    </li>
+                    <li>אחת השכבות בתוכן העניינים שלך. אם השכבה שנבחרה היא ישויות נקודה או קו, תיחום השכבה ישמש כאזור המחקר.
+                    </li>
+                    <li>שרטט אזור כדי להגדיר את אזור המחקר.
+                    </li>
+                </ul>
+                 כל הישויות שנכללות באופן מלא בתיחום המפה יחולצו.  לגבי ישויות שחוצות או מצטלבות עם גבול תיחום המפה אבל לא נכללות באופן מלא בתוך התיחום, קיימות שתי אפשרויות:
+                <ul>
+                    <li> <b>בחר ישויות</b> - מכלול הישויות שחוצות את גבול אזור המחקר יחולצו.
+                    </li>
+                    <li> <b>גזור ישויות</b> - רק החלקים בישויות שנמצאים בתוך אזור המחקר יחולצו.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>פורמט נתוני פלט</h2></div>
+        <hr/>
+        <div>
+            <p>פורמט הנתונים שיחולצו. בעת יצוא ישויות קו או אזור לקובצי CSV, יחולצו רק מאפיינים שאינם מרחביים.  בעת יצוא ישויות נקודה לקובצי CSV, יחולצו הן מאפיינים מרחביים והן מאפיינים שאינם מרחביים.  
+            </p>
+            <p>הנתונים שחולצו ישתמשו בהיטל Web Mercator 1984.  עבור קובצי CSV, שדות  <i>Lat</i> ו- <i>Long</i> יתווספו לנתונים עם קואורדינטות ב-Web Mercator 1984.
+            </p> 
+            <p>הפורמטים הבאים של פלט נתמכים:
+                <ul>
+                    <li>ערכים מופרדים בפסיק (CSV) -  <code>.csv</code> או <code>.zip</code>
+                    </li>
+                    <li>File Geodatabase -  <code>.zip</code>
+                    </li>
+                    <li>Keyhole Markup Language &rlm;(KML) -  <code>.kmz</code> או <code>.zip</code>
+                    </li>
+                    <li>Shapefile -  <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>שם קובץ תוצר</h2></div>
+        <hr/>
+        <div>
+            <p>זהו שם הפריט שיתווסף ל <b>תוכן שלי</b>.  שם הפריט מבוסס על <b>פורמט נתוני הפלט</b>.     אם הפריט כבר קיים, תתבקש לספק שם אחר.
+            </p>
+            <p>בעזרת התיבה הנפתחת  <b>שמור תוצאה ב</b>, באפשרותך לציין את שם התיקייה ב <b>תוכן שלי</b> שבה התוצאה תישמר.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

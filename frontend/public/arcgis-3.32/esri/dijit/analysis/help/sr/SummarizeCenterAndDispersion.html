@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Sumiraj centar i disperziju</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="Sumiraj centar i disperziju"></h2>
+        <hr/>
+    <p>Ova alatka pronalazi centralne geoobjekte i usmeravajuće distribucije.
+Može da se koristi za odgovaranje na pitanja kao &scaron;to su:
+        <ul>
+            <li>Gde je centar?
+            </li>
+            <li>Kojem geoobjektu se najlak&scaron;e pristupa sa drugih geoobjekata?
+            </li>
+            <li>Koliko su rasuti, kompaktni ili integrisani geoobjekti?
+            </li>
+            <li>Postoje li trendovi u usmeravanju?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Ako je opcija  <b>Koristi trenutni obuhvat mape</b> izabrana, biće analizirani samo oni geoobjekti u ulaznom sloju koji su vidljivi unutar trenutnog obuhvata mape. Ako nije izabrana, analiziraće se svi geoobjekti u ulaznom sloju, čak i ako su izvan trenutnog obuhvata mape.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Odaberite sloj za opis</h2></div>
+        <hr/>
+        <div>
+            <p>Tačkasti, linijski sloj ili sloj oblasti koji će se koristiti za pronalaženje centralnih geoobjekata i usmerenih distribucija.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>Tipovi rezimea</h2></div>
+        <hr/>
+        <div>
+            <p>Metoda rezimea centra i disperzije. 
+            </p>
+            <ul>
+                <li>Centralni geoobjekat &ndash; Identifikuje geoobjekat koji je lociran najbliže centru u skupu podataka.
+                </li>
+                <li>Srednji centar &ndash; prepoznaje geografsku sredinu (ili centar koncentracije) za skup geoobjekata.
+                </li>
+                <li>Srednja vrednost centra &ndash; prepoznaje lokaciju koja smanjuje na minimum ukupno Euklidsko rastojanje za geoobjekte u skupu podataka.
+                </li>
+                <li>Elipsa &ndash; kreira standardne devijacione elipse za sumiranje prostornih karakteristika geografskih funkcija: centralna tendencija, disperzija i trendovi usmeravanja. Elipse mogu da budu veličinski određene kao 1, 2 ili 3 standardne devijacije.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>Ponderisano po (opciono)</h2></div>
+        <hr/>
+        <div>
+            <p>Polje koje se koristi za određivanje važnosti lokacije u skladu sa njenom relativnom važno&scaron;ću. 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>Grupiši na osnovu (opciono)</h2></div>
+        <hr/>
+        <div>
+            <p>Polje se koristi za grupisanje geoobjekata za odvojena izračunavanja centralnih geoobjekata ili disperzije. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja koji će biti kreiran u  <b>Mom sadržaju</b> i dodat na mapu. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako naziv sloja već postoji, bićete upitani da unesete drugi naziv.
+            </p>
+            <p>Koristeći padajući meni  <b>Sačuvaj rezultat u</b>, možete da navedete ime fascikle u <b>Mom sadržaju</b> u kojoj će rezultat biti sačuvan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

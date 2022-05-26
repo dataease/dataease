@@ -1,0 +1,75 @@
+<div class="esriImageFilterSliderHorizontal">
+    <div data-dojo-attach-point="esriImageFilterCardsDiv">
+        <div data-dojo-attach-point="layerInfo" class="esriImageFilterSliderInfo"></div>
+        <div data-dojo-type="dijit/TitlePane" data-dojo-attach-point="attributeCard" class="esriImageFilterCards" toggleable="false"
+            data-dojo-props="title: '${_i18n.attributeCard}'">
+            <table class="esriImageFilterSliderTableHorizontal" data-dojo-attach-point="ifSliderTable">
+                <tr>
+                    <td>
+                        <img class="loadingImageFilter" data-dojo-attach-point="_loadingImageFilter" src="../js/jsapi/esri/dijit/images/loading-throb.gif">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="esriImageFilterFieldSelectBox">
+                        <div class="esriImageFilterSettingsSelect" data-dojo-type="dijit/form/Select" data-dojo-attach-point="fieldSelect" data-dojo-props="labelAttr: 'alias'"></div>
+                    </td>
+                    <td class="esriImageFilterSliderSelectIcons">
+                        <span data-dojo-type="dijit/form/Button" data-dojo-props="iconClass: 'esriImageFilterIcons esriImageFilterSettings'" data-dojo-attach-event="onClick: _openSettings"
+                            title="${_i18n.settingsButton}" data-dojo-attach-point="settingsButton" class="esriImageFilterButton"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="esriImageFilterfieldInfo" data-dojo-attach-point="_fieldInfo"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="esriImageFilterSliderCellHorizontal" data-dojo-attach-point="_ifSliderCell"></td>
+                    <td class="esriImageFilterDefineRange">
+                        <span data-dojo-type="dijit/form/Button" data-dojo-props="iconClass: 'esriImageFilterIcons esriImageFilterSingleButton'"
+                            data-dojo-attach-event="onClick: _setUseRangesAttr" title="${_i18n.singleValue}" data-dojo-attach-point="defineRangeButton"
+                            class="esriImageFilterButton"></span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div data-dojo-type="dijit/TitlePane" data-dojo-attach-point="resultTitle" class="esriImageFilterResultCard" toggleable="false"
+        data-dojo-props="title: '${_i18n.resultTiltle}'">
+        <table class="esriImageFilterResultTable">
+            <tr>
+                <td>
+                    <div data-dojo-attach-point="selectRasterInfo" class="esriImageFilterSelectRasterInfo"> </div>
+                </td>
+                <td colspan="2" class="esriImageFilterResultPanelOptions">
+                    <span data-dojo-type="dijit/form/Button" data-dojo-props="iconClass: 'esriImageFilterIcons esriImageFilterZoomToButton'"
+                        data-dojo-attach-event="onClick: _setMapExtent" title="${_i18n.extentLink}" data-dojo-attach-point="zoomTo"
+                        class="esriImageFilterButton"></span>
+
+                    <span data-dojo-type="dijit/form/Button" data-dojo-props="iconClass: 'esriImageFilterIcons esriImageFilterDscSortIcon'" data-dojo-attach-event="onClick: _sortRasters"
+                        title="${_i18n.sortDsc}" data-dojo-attach-point="sortRasters" class="esriImageFilterButton"></span>
+
+                    <span class="esriImageFilterButton">
+                        <div data-dojo-type="dijit/form/CheckBox" data-dojo-attach-event="onClick: _handleSelectAll" data-dojo-attach-point="selectAllRasters"
+                            title="${_i18n.selectAll}" class="esriImageFilterSelectAllButton"> </div>
+                    </span>
+
+                    <span data-dojo-type="dijit/form/Button" data-dojo-props="iconClass: 'esriImageFilterIcons esriImageFilterFieldOptions'"
+                        data-dojo-attach-event="onClick: _openShowFields" title="${_i18n.resultSettingToolTip}" data-dojo-attach-point="showFieldsButton"
+                        class="esriImageFilterButton"></span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <div data-dojo-attach-point="esriImageFilterImageGridDiv">
+                        <div data-dojo-attach-point="rasterListDiv"></div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <div data-dojo-attach-point="esriImageFilterAddToMapDiv" class="esriImageFilterAddToMap">
+            <button class="calcite blue" data-dojo-type="dijit/form/Button" type="button" data-dojo-attach-point="_addToMapButton" data-dojo-attach-event="onClick: _addToMap">${_i18n.addToMap}
+            </button>
+        </div>
+    </div>
+</div>

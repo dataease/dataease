@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Luo näkymäalue</h2><p/>
+        <h2><img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" alt="Luo n&auml;kym&auml;alue -ty&ouml;kalu"></h2>
+        <hr/>
+    <p>T&auml;m&auml; ty&ouml;kalu m&auml;&auml;ritt&auml;&auml; alueet, jotka tarkkailija voi n&auml;hd&auml; pinnan topografia huomioon ottaen. L&auml;ht&ouml;aineiston pistesijainnit voivat edustaa joko tarkkailijoita (kuten maanpinnalla olevia ihmisi&auml; tai palotornien t&auml;hystyspaikkoja) tai tarkastelun kohteita (kuten tuulimyllyj&auml;, vesitorneja, kulkuneuvoja tai muita ihmisi&auml;). Tulokset m&auml;&auml;ritt&auml;v&auml;t alueet, jotka voi n&auml;hd&auml; tarkkailusijainneista.
+    </p>
+    <p>Sek&auml; tarkkailijat ett&auml; tarkasteltavat kohteet voivat sijaita tietyll&auml; korkeudella maanpinnan yl&auml;puolella, ja n&auml;it&auml; korkeuksia k&auml;ytet&auml;&auml;n n&auml;kyvyyden m&auml;&auml;rityksess&auml;. Esimerkiksi 300 jalan (122 metrin) mittaisille tuulimyllyille ja kuuden jalan (1,8&nbsp;metrin) mittaisille maanpinnalla seisoville ihmisille laskettu n&auml;kym&auml;alue on yleens&auml; suurempi kuin 200 jalan (61&nbsp;metrin) mittaisille tuulimyllyille ja kuuden jalan (1,8&nbsp;metrin) mittaisille ihmisille laskettu n&auml;kym&auml;alue.
+    </p>
+    <p>Tuloskarttataso rekister&ouml;i, kuinka monta kertaa kukin l&auml;ht&ouml;aineiston pintarasterin solun sijainti voidaan n&auml;hd&auml; l&auml;ht&ouml;aineiston tarkkailupisteist&auml;. Soluille, jotka eiv&auml;t n&auml;y, annetaan arvoksi NoData.
+    </p>
+    <p>Jos  <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b> on valittuna, toiminto analysoi vain rasterialueen ja nykyisess&auml; karttalaajuudessa n&auml;kyviss&auml; olevat tarkkailupisteet. Jos toimintoa ei ole valittu, kaikki sy&ouml;tekarttatason tarkkailupisteet analysoidaan &ndash; my&ouml;s kohteet, jotka ovat nykyisen karttalaajuuden ulkopuolella.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="elevationSurface">
+        <div><h2>Korkeuspinta</h2></div>
+        <hr/>
+        <div>
+            <p>Korkeuspinta, jota k&auml;ytet&auml;&auml;n n&auml;kym&auml;alueen laskentaan.
+            </p>
+            <p>Jos l&auml;ht&ouml;aineiston pinnan pystysuunnan yksikk&ouml; on eri kuin vaakasuunnan yksik&ouml;ss&auml;, kuten silloin, kun korkeusarvot esitet&auml;&auml;n jalkoina mutta koordinaattij&auml;rjestelm&auml; on metrein&auml;, pinnalle pit&auml;&auml; olla m&auml;&auml;ritettyn&auml; pystysuuntainen koordinaattij&auml;rjestelm&auml;. Syyn&auml; t&auml;h&auml;n on se, ett&auml; ty&ouml;kalu k&auml;ytt&auml;&auml; pystysuuntaisia (Z) ja vaakasuuntaisia (XY) yksik&ouml;it&auml; Z-kertoimen laskemiseen n&auml;kym&auml;alueen analyysille. Jos pystysuuntaista koordinaattij&auml;rjestelm&auml;&auml; ei ole, jolloin my&ouml;sk&auml;&auml;n Z-yksikk&ouml;tietoja ei ole saatavissa, ty&ouml;kalu olettaa, ett&auml; Z-yksikk&ouml; on sama kuin XY-yksikk&ouml;. T&auml;m&auml;n tuloksena analyysiss&auml; k&auml;ytet&auml;&auml;n sis&auml;ist&auml; Z-kerrointa 1,0, mik&auml; voi aiheuttaa odottamattomia tuloksia.
+            </p>
+            <p>T&auml;m&auml; korkeuspinta voi olla kokonaisluku tai liukuluku.
+            </p>
+        </div>
+    </div>
+    <div id="observerFeatures">
+        <div><h2>Pistekohteet, jotka edustavat tarkkailusijainteja</h2></div>
+        <hr/>
+        <div>
+            <p>Pistekohteet, jotka edustavat tarkkailijan sijainteja laskettaessa n&auml;kym&auml;alueita.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimointiperuste</h2></div>
+        <hr/>
+        <div>
+            <p>Optimointimenetelm&auml;, jota k&auml;ytet&auml;&auml;n n&auml;kym&auml;alueen laskentaan.
+            </p>
+            <ul>
+                <li>Speed &mdash; 
+T&auml;m&auml; menetelm&auml; optimoi k&auml;sittelynopeuden niin, ett&auml; tarkkuudesta tingit&auml;&auml;n hieman suorituskyvyn parantamiseksi. T&auml;m&auml; on oletusarvo.
+
+                </li>
+                <li>Accuracy &mdash; 
+T&auml;m&auml; menetelm&auml; on optimoitu tulosten tarkkuuden parantamiseksi, mink&auml; haittapuolena on pidempi k&auml;sittelyaika.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Enimmäiskatseluetäisyys</h2></div>
+        <hr/>
+        <div>
+            <p>Anna rajaet&auml;isyys, jossa n&auml;kyvien alueiden laskenta p&auml;&auml;ttyy. T&auml;ll&ouml;in ei m&auml;&auml;ritet&auml;, n&auml;kev&auml;tk&ouml; tarkkailupisteet ja muut kohteet toisensa t&auml;t&auml; et&auml;isyytt&auml; kauempaa.
+            </p>
+            <p>Voit joko m&auml;&auml;ritt&auml;&auml; lineaarista et&auml;isyytt&auml; kuvaavan numeroarvon tai valita numerokent&auml;n l&auml;ht&ouml;aineiston tarkkailijakohteista. Jos kentt&auml; on annettu, kent&auml;n arvojen yksik&ouml;iden on oltava sama kuin l&auml;ht&ouml;aineiston korkeuspinnan XY-yksikk&ouml;.
+            </p>
+            <p>Huomaa, ett&auml; suuret arvot pident&auml;v&auml;t laskenta-aikaa. Ellei toisin ole m&auml;&auml;ritetty, oletusarvoinen enimm&auml;iset&auml;isyys lasketaan perustuen l&auml;ht&ouml;aineiston korkeuspinnan tarkkuuteen ja laajuuteen.
+            </p>
+            <p>T&auml;m&auml; parametri on k&auml;ytt&ouml;kelpoinen tiettyjen ilmi&ouml;iden mallintamisessa. Voit esimerkiksi mallintaa s&auml;&auml;olosuhteet, kuten kevyen sumun, rajoittamatta n&auml;kyvyytt&auml;. Samaten n&auml;kyvyyden laajuutta rajoittamalla voit hallita hieman p&auml;iv&auml;n eri aikoja j&auml;ljittelem&auml;ll&auml; h&auml;m&auml;r&auml;n vaikutusta.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistanceField">
+        <div><h2>Enimmäiskatseluetäisyys</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="minimumDistance">
+        <div><h2>Vähimmäiskatseluetäisyys</h2></div>
+        <hr/>
+        <div>
+            <p>Anna et&auml;isyys, josta n&auml;kyvien alueiden laskenta alkaa. Pinnan solut, jotka ovat t&auml;t&auml; et&auml;isyytt&auml; l&auml;hemp&auml;n&auml;, eiv&auml;t n&auml;y tulosaineistossa, mutta ne voivat silti est&auml;&auml; solujen n&auml;kyvyyden v&auml;himm&auml;is- ja enimm&auml;iset&auml;isyyden v&auml;lill&auml;.
+            </p>
+            <p>Voit joko m&auml;&auml;ritt&auml;&auml; lineaarista et&auml;isyytt&auml; kuvaavan numeroarvon tai valita numerokent&auml;n l&auml;ht&ouml;aineiston tarkkailijakohteista. Jos kentt&auml; on annettu, kent&auml;n arvojen yksik&ouml;iden on oltava sama kuin l&auml;ht&ouml;aineiston korkeuspinnan XY-yksikk&ouml;.
+            </p>
+            <p>T&auml;m&auml; parametri on k&auml;ytt&ouml;kelpoinen hallittaessa n&auml;kym&auml;alueen analyysialuetta tietyll&auml; et&auml;isyydell&auml; poisp&auml;in tarkkailijasta. Jos esimerkiksi arvioit n&auml;kyvyyden rakennuksen huipulta et&auml;iseen puistoalueeseen, voit asettaa v&auml;himm&auml;iskatseluet&auml;isyyden niin, ett&auml; ne l&auml;hell&auml; olevat alueet suljetaan pois, jotka eiv&auml;t ole mielenkiintoalueita, mik&auml; lyhent&auml;&auml; k&auml;sittelynopeutta.
+            </p>
+        </div>
+    </div>
+    <div id="minimumDistanceField">
+        <div><h2>Vähimmäiskatseluetäisyys</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="viewingDistance3D">
+        <div><h2>Etäisyys on 3D-muodossa</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rit&auml;, mitataanko v&auml;himm&auml;is- ja enimm&auml;iskatseluet&auml;isyyden parametrit kolmiulotteisesti tai yksinkertaisemmalla, kaksiulotteisella tavalla. Kun t&auml;m&auml; valinta valitaan, katseluet&auml;isyyksi&auml; k&auml;sitell&auml;&auml;n kolmiulotteisina (3D) et&auml;isyyksin&auml;. Kun valintaa ei ole valittu, niit&auml; k&auml;sitell&auml;&auml;n kaksiulotteisina (2D) et&auml;isyyksin&auml;.
+            </p> 
+            <p>2D-et&auml;isyys on yksinkertaisempi suora et&auml;isyys mitattuna tarkkailijasta kohteeseen k&auml;ytt&auml;en heid&auml;n projisoituja sijaintejaan merenpinnan tasolla. 3D-et&auml;isyys antaa realistisemman arvon ottamalla huomioon niiden suhteelliset korkeudet.
+            </p>  
+        </div>
+    </div>
+    <div id="observersElevation">
+        <div><h2>Tarkkailusijaintien korkeus</h2></div>
+        <hr/>
+        <div>
+            <p>Anna tarkkailijasijaintien korkeustaso.
+            </p>
+            <p>Voit m&auml;&auml;ritt&auml;&auml; joko numeroarvon, joka edustaa kaikkien tarkkailijoiden korkeustasoa, tai kent&auml;n, joka edustaa kunkin tarkkailijan korkeustasoa. Jos kentt&auml; on annettu, kent&auml;n arvon yksik&ouml;n on oltava sama kuin l&auml;ht&ouml;aineiston korkeuspinnan Z-yksikk&ouml;.
+            </p>
+        </div>
+    </div>
+    <div id="observersElevationField">
+        <div><h2>Tarkkailusijaintien korkeus</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="observersHeight">
+        <div><h2>Tarkkailijoiden korkeus</h2></div>
+        <hr/>
+        <div>
+            <p>Anna tarkkailusijaintiesi maanpinnan yl&auml;puolinen korkeus.
+            </p> 
+            <p>Voit m&auml;&auml;ritt&auml;&auml; numeroarvon korkeudelle tai kent&auml;n l&auml;ht&ouml;aineiston tarkkailijakohteista. Jos kentt&auml; on annettu, kent&auml;n arvon yksik&ouml;n on oltava sama kuin l&auml;ht&ouml;aineiston korkeuspinnan Z-yksikk&ouml;.
+            </p>
+            <p>Oletusarvo on 6&nbsp;jalkaa (1,8&nbsp;metri&auml;). Jos katselet kohdetta korkealla olevasta sijainnista, kuten n&auml;k&ouml;tornista tai korkeasta rakennuksesta, k&auml;yt&auml; sen sijaan t&auml;t&auml; korkeutta. N&auml;kym&auml;alueen laskennan aikana t&auml;m&auml; arvo lis&auml;t&auml;&auml;n tarkkailijan korkeustasoon, jos se on m&auml;&auml;ritetty; muussa tapauksessa se lis&auml;t&auml;&auml;n interpoloituun pinnan z-arvoon.
+            </p>
+        </div>
+    </div>
+    <div id="observersHeightField">
+        <div><h2>Tarkkailijoiden korkeus</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="targetHeight">
+        <div><h2>Kohteen korkeus</h2></div>
+        <hr/>
+        <div>
+            <p>Anna maanpinnan rakenteiden tai ihmisten korkeus, jota k&auml;ytet&auml;&auml;n n&auml;kyvyyden muodostamisessa.
+            </p>
+            <p>Voit m&auml;&auml;ritt&auml;&auml; numeroarvon korkeudelle tai kent&auml;n l&auml;ht&ouml;aineiston tarkkailijakohteista. Jos kentt&auml; on annettu, kent&auml;n arvon yksik&ouml;n on oltava sama kuin l&auml;ht&ouml;aineiston korkeuspinnan Z-yksikk&ouml;.
+            </p>
+            <p>Syntynyt n&auml;kym&auml;alue yksil&ouml;i alueet, joista tarkkailupiste n&auml;kee n&auml;m&auml; maanpinnalla olevat kohteet. T&auml;m&auml; p&auml;tee my&ouml;s k&auml;&auml;nteisesti: maanpinnalla olevat kohteet n&auml;kev&auml;t tarkkailupisteen. 
+            </p>
+            <p>Seuraavassa on muutamia esimerkkej&auml; tavoitekorkeusasetuksista:
+            </p>
+            <ul>
+                <li>Jos l&auml;ht&ouml;aineiston pisteet edustavat tuulimyllyj&auml; ja haluat selvitt&auml;&auml;, mist&auml; maanpinnalla seisovat ihmiset n&auml;kev&auml;t tuulimyllyt, kirjoita henkil&ouml;n keskim&auml;&auml;r&auml;inen pituus (noin 1,8 metri&auml;).
+                    
+
+                </li>
+                <li>Jos l&auml;ht&ouml;aineiston pisteet edustavat palotorneja, ja haluat selvitt&auml;&auml;, mist&auml; palotorneista n&auml;kee v&auml;hint&auml;&auml;n 20 jalan (6 metrin) korkeudelle nousevan savupilven, kirjoita korkeudeksi 20 jalkaa (6 metri&auml;).
+                    
+
+                </li>
+                <li>Jos l&auml;ht&ouml;aineiston pisteet edustavat joidenkin teiden tai polkujen varrella olevia n&auml;k&ouml;alapaikkoja ja haluat selvitt&auml;&auml;, mist&auml; v&auml;hint&auml;&auml;n 400&nbsp;jalan (122&nbsp;metrin) korkuiset tuulimyllyt n&auml;kyv&auml;t, kirjoita korkeudeksi 400&nbsp;jalkaa (122&nbsp;metri&auml;).
+                    
+
+                </li>
+                <li>Jos l&auml;ht&ouml;aineiston pisteet edustavat n&auml;k&ouml;alapaikkoja ja haluat selvitt&auml;&auml;, kuinka suuren alueen maanpinnasta n&auml;k&ouml;alapaikalla seisovat ihmiset n&auml;kev&auml;t, kirjoita tavoitekorkeuden arvoksi nolla. 
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="targetHeightField">
+        <div><h2>Tarkkailijoiden korkeus</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="resultAglLayer">
+        <div><h2>Näkyvä tulosaineiston korkeus</h2></div>
+        <hr/>
+        <div>
+            <p>Maanpinnan tason yll&auml; (AGL) n&auml;kyv&auml;n tulosaineiston nimi. AGL-tulos on rasteri, jossa jokaisen solun arvo on v&auml;himm&auml;iskorkeus, joka pit&auml;&auml; lis&auml;t&auml; muutoin n&auml;kym&auml;tt&ouml;m&auml;&auml;n soluun, jotta v&auml;hint&auml;&auml;n yksi tarkkailija n&auml;kee sen. Soluille, jotka n&auml;kyv&auml;t jo, m&auml;&auml;ritet&auml;&auml;n arvoksi 0 t&auml;ss&auml; tulosaineiston rasterissa.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen karttatason nimi, joka luodaan  <b>Oma sis&auml;lt&ouml;</b> -kohtaan ja lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos taso on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Voit m&auml;&auml;ritt&auml;&auml; kansion nimen  <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan avattavan <b>Tallenna tulos kohteeseen</b> -valikon avulla.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

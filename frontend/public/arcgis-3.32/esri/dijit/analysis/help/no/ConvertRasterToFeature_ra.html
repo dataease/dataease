@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Konverter raster til geoobjekt</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="Verkt&oslash;y for &aring; konvertere raster til geoobjekt"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet konverterer raster til et geoobjektdatasett som punkter, linjer eller polygoner.
+    </p>
+    <p>Med  <b>Velg felt</b>-parameteren kan du velge hvilket attributtfelt i inndatarasterdatasettet som skal bli et attributt i utdatageoobjektsklassen. Denne parameteren er kun tilgjengelig for heltallrastere som har ekstra attributter i den tilknyttede tabellen.
+    </p>
+    <p>Inngangsrastene kan ha en hvilken som helst cellest&oslash;rrelse.
+    </p>
+    <p>Heltallrastere kan konverteres til punkt-, linje- eller polygongeoobjekter, men flytpunktrastere kan bare konverteres til punktgeoobjekter.
+    </p>
+    <p>Hvis  <b>Bruk gjeldende kartutstrekning</b> er krysset av, blir bare rastercellene som er synlige innenfor gjeldende kartutstrekning konvertert. Hvis det ikke er merket av for dette alternativet, blir alle cellene i rasteret behandlet, selv om de befinner seg utenfor gjeldende kartutstrekning. Legg merke til dette hvis rasterlaget er stort eller har en meget h&oslash;y oppl&oslash;sning.
+    </p>
+    <p>Bruksm&aring;ter dette verkt&oslash;yet omfatter f&oslash;lgende:
+ 
+        <ul>
+            <li>Lag polygongeoobjekter fra en arealbruksomr&aring;deraster.
+                
+ 
+            </li>
+            <li>Elver som er identifisert i en DEM, kan konverteres til linjegeoobjekter.
+                
+
+            </li>
+            <li>En DEM kan konverteres til punktgeoobjekter som kan brukes i en arbeidsflyt som ikke er basert p&aring; raster.
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Velg rasterlag som skal konverteres</h2></div>
+        <hr/>
+        <div>
+            <p>Inndatarasterlaget som skal konverteres til geoobjektslag.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Velg felt</h2></div>
+        <hr/>
+        <div>
+            <p>Oppgi et felt som angir hvilken verdi som skal brukes til konverteringen.
+            </p>
+            <p>Det kan v&aelig;re et heltall eller en tekstverdi.
+            </p>
+            <p>Et felt som inneholder flyttallsverdier kan brukes bare hvis utdataene er til et punktdatasett.
+            </p>
+            <p>Standardvalget er &aring; bruke feltet  <i>Value</i>, som inneholder verdien i hver rastercelle.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Velg utdatatype</h2></div>
+        <hr/>
+        <div>
+            <p>Velg utdatatype, velg mellom punkt, linje eller polygon.
+            </p>
+            <ul>
+                <li>Punkt &ndash; Raster blir konvertert til et punktdatasett.
+                    
+ 
+                </li>
+                <li>Linje &ndash; Raster blir konvertert til et linjegeoobjektdatasett.
+                    
+ 
+                </li>
+                <li>Polygon &ndash; Raster blir konvertert til et polygongeoobjektdatasett.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>Forenkle linjer eller polygoner</h2></div>
+        <hr/>
+        <div>
+            <p>Spesifiser om geoobjektene skal forenkles.
+            </p>
+            <p>Hvis det er merket av for det (standard), vil linje- eller polygongeoobjektene glattes ut for &aring; lage et mer generalisert resultat. Hvis dette alternativet ikke er merket av, vil de line&aelig;re geoobjektene f&oslash;lge cellegrensene i rasterdatasettet.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Du kan angi navnet p&aring; en mappe i  <b>Mitt innhold</b>, der resultatet blir lagret via rullegardinlisten <b>Lagre resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Geokodowanie lokalizacji z tabeli</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="Geokoduj lokalizacje z tabeli"></h2>
+        <hr/>
+    <p>Geokodowanie to metoda przekształcania adres&oacute;w we wsp&oacute;łrzędne. To narzędzie przekształca adresy z tabeli, pliku CSV lub pliku programu Excel w warstwę obiektową lub plik wynikowy ze wsp&oacute;łrzędnymi jako dodatkowymi kolumnami.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>Wybieranie tabeli danych wejściowych</h2></div>
+        <hr/>
+        <div>
+            <p>Tabela danych wejściowych z adresami przeznaczonymi do geokodowania. Dane wejściowe muszą mieć format tabeli, pliku CSV lub pliku programu Excel.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Wybieranie lokatora</h2></div>
+        <hr/>
+        <div>
+            <p>Wybierz usługę lokatora używaną do geokodowania. Jeśli usługi lokatora, kt&oacute;rej chcesz użyć, nie ma w menu rozwijanym, poproś administratora o skonfigurowanie usługi lokatora na potrzeby geokodowania wsadowego.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>Kraj</h2></div>
+        <hr/>
+        <div>
+            <p>Jeśli wszystkie adresy pochodzą z jednego kraju, wybierz ten kraj, aby uzyskać najdokładniejsze wyniki. W przeciwnym razie pozostaw ten parametr pusty.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Wybieranie pól danych</h2></div>
+        <hr/>
+        <div>
+            <p>Usługa lokatora oczekuje pewnych p&oacute;l danych, takich jak adres, miejscowość, wojew&oacute;dztwo i kod pocztowy. Użyj p&oacute;l rozwijanych, aby dopasować pola danych w pliku lub tabeli wejściowej do p&oacute;l oczekiwanych przez usługę lokatora. Im więcej p&oacute;l zostanie przyporządkowanych, tym dokładniejsze będą wyniki. Jeśli wszystkie dane tabeli wejściowej znajdują się w jednej kolumnie, wybierz pozycję  <b>Pole pojedyncze</b> i z menu rozwijanego wybierz pole danych. W przeciwnym razie wybierz pozycję <b>Wiele p&oacute;l</b> i przyporządkuj odpowiednie pola lokatora do poszczeg&oacute;lnych kolumn p&oacute;l w tabeli.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Wybieranie formatu danych wynikowych</h2></div>
+        <hr/>
+        <div>
+            <p>Sformatuj wyniki. Jeśli wybierzesz utworzenie usługi obiektowej, adresy z tabeli wejściowej zostaną dodane do mapy jako warstwa obiekt&oacute;w punktowych. Opcje CSV i XLS powodują dodanie plik&oacute;w z wynikami zadania geokodowania do obszaru  <b>Moje zasoby</b> po zakończeniu tego zadania.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nazwa danych wynikowych</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to nazwa warstwy, kt&oacute;ra zostanie utworzona w zakładce  <b>Moje zasoby</b> i zostanie dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli ta nazwa warstwy już istnieje, wyświetlona zostanie prośba o podanie innej nazwy.
+            </p>
+            <p>Używając menu rozwijanego  <b>Zapisz wynik w</b>, można wskazać nazwę folderu na stronie <b>Moje zasoby</b>, w kt&oacute;rym zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

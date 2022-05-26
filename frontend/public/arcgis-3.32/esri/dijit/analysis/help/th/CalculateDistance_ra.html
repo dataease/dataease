@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>คำนวณระยะทาง</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="คำนวณระยะทาง"></h2>
+        <hr/>
+    <p>เครื่องมือนี้คำนวณระยะทาง Euclidean, ทิศทางและการจัดสรรจากต้นทางเดียวหรือชุดของต้นทาง
+    </p>
+    <p>ตัวอย่างของการใช้งานรวมถึงการตอบคำถามต่าง ๆ ดังต่อไปนี้:
+
+        <ul>
+            <li>ระยะทางไปยังเมืองที่ใกล้ที่สุดคือเท่าใด
+                
+
+            </li>
+            <li>ระยะทางไปยังถนนที่ใกล้ที่สุดคือเท่าใด
+                
+
+            </li>
+            <li>ระยะทางไปยังแหล่งน้ำที่ใกล้ที่สุดคือเท่าใด
+            </li>
+        </ul>
+        
+    </p>
+    <p>ถ้า  <b>ใช้ขอบเขตแผนที่ปัจจุบัน</b> ถูกเลือก เฉพาะฟีเจอร์เหล่านั้นในชั้นข้อมูลอินพุึตที่มองเห็นได้ ที่อยู่ในขอบเขตแผนที่ปัจจุบันนี้เท่านั้น จะถูกวิเคราะห์ หากไม่เลือก ฟีเจอร์ทั้งหมดในชั้นข้อมูลอินพุตจะถูกนำมาวิเคราะห์ ถึงแม้ว่าฟีเจอร์เหล่านั้นจะอยู่นอกขอบเขตแผนที่ปัจจุบัน
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>เลือกแรสเตอร์ของชั้นข้อมูลตำแหน่งของฟีเจอร์เพื่อคำนวณระยะทางไปยัง</h2></div>
+        <hr/>
+        <div>
+            <p>ชั้นข้อมูลที่กำหนดต้นทางที่จะใช้คำนวณระยะทาง ชั้นข้อมูลอาจเป็นบริการข้อมูลภาพหรือฟีเจอร์เซอร์วิส
+            </p>
+            <p>สำหรับบริการข้อมูลภาพ ประเภทอินพุตอาจเป็นจำนวนเต็มหรือจุดลอยตัว
+            </p>
+            <p>สำหรับฟีเจอร์เซอร์วิส อินพุตอาจเป็นจุด เส้น หรือหลายเหลี่ยม
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>ระยะทางสูงสุดที่จะคำนวณ</h2></div>
+        <hr/>
+        <div>
+            <p>ระยะทางสูงสุดที่จะคำนวณ ตัวอย่างเช่น หากคุณป้อนค่าเป็น 10,000 เมตร ระยะทาง Euclidian จะถูกคำนวณจากตำแหน่งต้นทางไปยังค่านั้น (ระยะทาง)
+            </p>
+            <p>หากไม่ได้ป้อนค่าใด ระยะทางจะถูกคำนวณไปยังขอบข่ายที่กำหนด
+            </p>
+            <p>หน่วยที่ใช้ได้คือกิโลเมตร เมตร ไมล์ และฟุต
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>ขนาดของเซลล์เอาต์พุต</h2></div>
+        <hr/>
+        <div>
+            <p>ขนาดเซลล์และหน่วยของแรสเตอร์เอาต์พุต
+            </p>
+            <p>หน่วยสามารถเป็นกิโลเมตร เมตร ไมล์หรือฟุต
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>ชื่อของชั้นข้อมูลระยะทางผลลัพธ์</h2></div>
+        <hr/>
+        <div>
+            <p>ชื่อของชั้นข้อมูลที่จะถูกสร้างขึ้นใน  <b>เนื้อหาของฉัน</b> และเพิ่มไปยังแผนที่ ชื่อเริ่มต้นจะขึ้นอยู่กับชื่อเครื่องมือและชื่อชั้นข้อมูลอินพุต ถ้าชั้นข้อมูลนี้มีอยู่แล้ว คุณจะถูกขอให้ตั้งชื่อใหม่
+            </p>
+            <p>คุณสามารถระบุชื่อโฟลเดอร์ใน  <b>My Content</b> ที่ผลลัพธ์จะบันทึกโดยการใช้ <b>กล่อง drop-down</b> บันทึกผลใน
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>ชื่อของชั้นข้อมูลทิศทางผลลัพธ์</h2></div>
+        <hr/>
+        <div>
+            <p>ชื่อของชั้นข้อมูลที่จะถูกสร้างขึ้นใน  <b>เนื้อหาของฉัน</b> คุณต้องระบุชื่อที่ไม่ซ้ำที่อยู่ใน <b>My Content</b>
+            </p>
+            <p>คุณสามารถระบุชื่อโฟลเดอร์ใน  <b>My Content</b> ที่ผลลัพธ์จะบันทึกโดยการใช้ <b>กล่อง drop-down</b> บันทึกผลใน
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>ชื่อของชั้นข้อมูลการจัดสรรผลลัพธ์</h2></div>
+        <hr/>
+        <div>
+            <p>ชื่อของชั้นข้อมูลที่จะถูกสร้างขึ้นใน  <b>เนื้อหาของฉัน</b> คุณต้องระบุชื่อที่ไม่ซ้ำที่อยู่ใน <b>My Content</b>
+            </p>
+            <p>คุณสามารถระบุชื่อโฟลเดอร์ใน  <b>My Content</b> ที่ผลลัพธ์จะบันทึกโดยการใช้ <b>กล่อง drop-down</b> บันทึกผลใน
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>เลือกฟิลด์การจัดสรร</h2></div>
+        <hr/>
+        <div>
+            <p>ฟิลด์บนชั้นข้อมูลแหล่งอินพุตที่รวมค่าที่เป็นตัวกำหนดแต่ละแหล่ง ซึ่งอาจเป็นจำนวนเต็มหรือฟิลด์สตริงของชุดข้อมูลแหล่ง
+            </p>
+            <p>ค่าเริ่มต้นคือ  <i>Value</i> หากกำลังใช้ฟีเจอร์เซอร์วิส และไม่มีฟิลด์ <i>Value</i> ใดที่นำมาใช้ได้ จำนวนเต็มหรือฟิลด์สตริงแรกที่ว่างจะถูกนำมาใช้ หากไม่มีฟิลด์ที่ใช้ได้อยู่เลย ฟิลด์ ObjectID (ตัวอย่างเช่น OID หรือ FID ขึ้นอยู่กับประเภทของอินพุตฟีเจอร์) จะถูกนำมาใช้
+            </p>
+        </div>
+    </div>
+</div>
+</html>

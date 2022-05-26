@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Raster Ayıkla</h2><p/>
+        <h2><img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" alt="Portal i&ccedil;in Raster Ayıklama aracı"></h2>
+        <hr/>
+    <p>Bu ara&ccedil; bir rasterı sınırına kadar, dikd&ouml;rtgen bir alana veya ekrandan etkileşimli olarak kendi tanımladığınız bir şekle kırpar. Haritanızda ge&ccedil;erli durumda g&ouml;r&uuml;nt&uuml;lediğiniz alan yayılımına kadar veya bir alan tarafından tanımlanan &ccedil;alışma alanı kadar kırpabilirsiniz.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Ayıklanacak girdi verilerini seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Kırpılacak girdi katmanı.
+            </p>
+        </div>
+    </div>
+    <div id="clippingGeometry">
+        <div><h2>Kesilen geometriyi belirt</h2></div>
+        <hr/>
+        <div>
+            <p>Katman geometrisi kesilirken kullanılacak yayılım t&uuml;r&uuml;n&uuml; se&ccedil;in:
+
+                <ul>
+                    <li>Ge&ccedil;erli yayılımı kullan; istenen katmana kırpmak i&ccedil;in ge&ccedil;erli harita yayılımı kullanılır. Varsayılan değerdir.
+                        
+
+                    </li>
+                    <li>&Ccedil;alışma alanını se&ccedil;; sonucun geometri yayılımı i&ccedil;inde kalan alanı mı yoksa geometri yayılımının dışında kalan alanı mı g&ouml;stereceğini belirlemenize olanak tanır.  <b>Veri geometrinin i&ccedil;inde</b> se&ccedil;eneğini belirlerseniz, yayılımın dışındaki g&ouml;r&uuml;nt&uuml; &ccedil;ıkarılır. <b>Veri geometrinin dışında</b> se&ccedil;eneğini belirlerseniz, yayılımın i&ccedil;inde kalan g&ouml;r&uuml;nt&uuml; &ccedil;ıkarılır. &Ccedil;izim aracını kullanarak da bir kırpma geometrisi tanımlayabilirsiniz.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adı. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>İ&ccedil;eriğim</b>&rsquo;de, <b>Sonu&ccedil;ları Kaydet</b> a&ccedil;ılır kutusunu kullanarak sonucun kaydedileceği klas&ouml;r&uuml;n adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

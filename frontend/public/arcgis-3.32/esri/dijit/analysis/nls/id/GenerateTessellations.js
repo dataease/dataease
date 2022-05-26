@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/id/GenerateTessellations",{chooseShape:"Pilih Bentuk",defineExtent:"Tentukan jangkauan",defineBin:"Tentukan ukuran bin dengan cara menentukan",area:"Luas",distance:"Jarak",resultLayerName:"Nama layer hasil",hexagon:"Heksagon",transverseHexagon:"Heksagon melintang",square:"Persegi",triangle:"Segitiga",diamond:"Wajik",sameAsDisplay:"Sama seperti tampilan",emptyBinSize:"Ukuran bin tidak boleh kosong",currentExtent:"jangkauan saat ini",intersectExtent:"Cukup jaga tessellation berpotongan",
+outputLayerName:"Buat tessellation di ${extentLayerName}",itemDescription:"Jangkauan dari ${extentLayerName} digunakan.",itemTags:"Hasil Analisis, Buat Tesselllation, ${extentLayerName}",itemSnippet:"Feature layer dibuat dari Buat Tesselllation."});

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>거리 계산(Calculate Distance)</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="거리 계산"></h2>
+        <hr/>
+    <p>이 도구는 하나 또는 여러 원본으로부터의 유클리드 거리, 방향 및 할당을 계산합니다.
+    </p>
+    <p>적용 예시에는 다음 질문에 대한 대답이 포함됩니다.
+
+        <ul>
+            <li>가장 가까운 마을까지의 거리는 얼마입니까?
+                
+
+            </li>
+            <li>가장 가까운 도로까지의 거리는 얼마입니까?
+                
+
+            </li>
+            <li>가장 가까운 수원까지의 거리는 얼마입니까?
+            </li>
+        </ul>
+        
+    </p>
+    <p> <b>현재 맵 범위 사용</b>을 선택한 경우 현재 맵 범위 내에 보이는 입력 레이어의 피처만 분석되고, 선택하지 않으면 현재 맵 디스플레이 범위 외부에 있는 피처를 포함하여 입력 레이어에 있는 모든 피처가 분석됩니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>피처 위치 레이어의 래스터를 선택하여 다음까지의 거리 계산</h2></div>
+        <hr/>
+        <div>
+            <p>거리를 계산할 원본을 정의하는 레이어입니다. 레이어는 이미지 서비스 또는 피처 서비스일 수 있습니다.
+            </p>
+            <p>이미지 서비스의 경우 입력 유형은 정수 또는 부동 소수점이 될 수 있습니다.
+            </p>
+            <p>피처 서비스의 경우 입력은 포인트, 라인 또는 폴리곤일 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>계산할 최대 거리</h2></div>
+        <hr/>
+        <div>
+            <p>계산할 최대 거리입니다. 예를 들어, 10,000m의 값을 입력하면 원본 위치에서 해당 값(거리)까지의 유클리드 거리가 계산됩니다.
+            </p>
+            <p>값을 입력하지 않으면 정의된 범위까지의 거리가 계산됩니다.
+            </p>
+            <p>사용할 수 있는 단위는 킬로미터(km), 미터(m), 마일(mile), 피트(ft)입니다.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>결과 셀 크기</h2></div>
+        <hr/>
+        <div>
+            <p>결과 래스터의 셀 크기와 단위입니다.
+            </p>
+            <p>단위는 킬로미터(km), 미터(m), 마일(mile), 피트(ft)일 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>결과 거리 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에 생성되고 맵에 추가되는 레이어의 이름입니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어가 이미 있는 경우 다른 이름을 입력하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 상자를 사용하여 결과가 저장될 <b>내 콘텐츠</b>에서 폴더 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>결과 방향 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에 생성되는 레이어의 이름입니다. <b>내 콘텐츠</b>에 현재 존재하지 않는 이름을 입력해야 합니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 상자를 사용하여 결과가 저장될 <b>내 콘텐츠</b>에서 폴더 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>결과 할당 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에 생성되는 레이어의 이름입니다. <b>내 콘텐츠</b>에 현재 존재하지 않는 이름을 입력해야 합니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 상자를 사용하여 결과가 저장될 <b>내 콘텐츠</b>에서 폴더 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>할당 필드 선택</h2></div>
+        <hr/>
+        <div>
+            <p>각 원본을 정의하는 값을 보유하는 입력 원본 레이어의 필드입니다. 이 필드는 원본 데이터셋의 정수 또는 문자열 필드일 수 있습니다.
+            </p>
+            <p>기본값은  <i>Value</i>입니다. 피처 서비스를 사용하고 <i>Value</i> 필드를 사용할 수 없는 경우, 첫 번째 사용 가능한 정수 또는 문자열 필드가 사용됩니다. 유효 필드가 없으면 객체 ID 필드(예: 피처 입력의 유형에 따라 OID 또는 FID)가 사용됩니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

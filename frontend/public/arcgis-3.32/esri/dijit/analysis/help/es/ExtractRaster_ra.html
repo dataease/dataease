@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Extraer ráster</h2><p/>
+        <h2><img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" alt="Herramienta Extraer r&aacute;ster para Portal"></h2>
+        <hr/>
+    <p>Esta herramienta permite recortar un r&aacute;ster por un l&iacute;mite, ya sea un &aacute;rea rectangular o una forma que defina interactivamente en la pantalla. Puede recortar por la extensi&oacute;n del &aacute;rea que se muestra en el mapa o por el &aacute;rea de estudio definida mediante un pol&iacute;gono.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Elija los datos de entada para extraer</h2></div>
+        <hr/>
+        <div>
+            <p>La capa de entrada para recortar.
+            </p>
+        </div>
+    </div>
+    <div id="clippingGeometry">
+        <div><h2>Especifique la geometría de recorte</h2></div>
+        <hr/>
+        <div>
+            <p>Elija el tipo de extensi&oacute;n que se debe utilizar al recortar la geometr&iacute;a de la capa:
+
+                <ul>
+                    <li>Usar extensi&oacute;n actual: se utilizar&aacute; la extensi&oacute;n de mapa actual para recortar la capa resultante. Esta es la opci&oacute;n predeterminada.
+                        
+
+                    </li>
+                    <li>Elegir &aacute;rea de estudio: le permite elegir si en el resultado se mostrar&aacute; el &aacute;rea que queda dentro de la extensi&oacute;n de la geometr&iacute;a o el &aacute;rea que queda fuera de ella. Si elige la opci&oacute;n  <b>Datos dentro de geometr&iacute;a</b>, las im&aacute;genes que queden fuera de las extensiones se eliminar&aacute;n. Si elige la opci&oacute;n <b>Datos fuera de geometr&iacute;a</b>, las im&aacute;genes que queden dentro de las extensiones se eliminar&aacute;n. Tambi&eacute;n puede definir una geometr&iacute;a de recorte utilizando la herramienta de dibujar.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>El nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y que se agregar&aacute; al mapa. El nombre predeterminado se basa en el nombre de la herramienta y en el nombre de la capa de entrada. Si la capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Puede especificar el nombre de una carpeta de  <b>Mi contenido</b> en la que se guardar&aacute; el resultado con el cuadro desplegable <b>Guardar el resultado en</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

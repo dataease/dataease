@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Trova cluster punti</h2><p/>
+        <h2><img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" alt="Trova cluster punti"></h2>
+        <hr/>
+    <p>Lo strumento  Trova cluster punti trova i cluster di feature punto entro il disturbo circostante in base alla loro distribuzione spaziale.
+    </p>
+    <p>Ad esempio, un'organizzazione non governativa sta studiando una particolare malattia trasmessa da un parassita. Dispone di un dataset di punti che rappresenta le famiglie in un'area di studio, alcune delle quali sono infestate e altre no. Utilizzando lo strumento  Trova cluster punti, un analista &egrave; in grado di determinare le famiglie infestate per poter individuare un'area in cui iniziare il trattamento e lo sterminio dei parassiti.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Scegliere il layer per il quale verranno trovati i cluster</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer di punti in cui si trovano i cluster. I layer devono essere in un riferimento spaziale proiettato o disporre di un riferimento spaziale di elaborazione su un sistema di coordinate proiettate utilizzando gli  <b>Ambienti di analisi</b>.
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> alla base dell'elenco a discesa per cercare un dataset di condivisione file Big Data o un feature layer.
+            </p>
+        </div>
+    </div>
+    <div id="clusterMethod">
+        <div><h2>Scegli il metodo di clustering da utilizzare</h2></div>
+        <hr/>
+        <div>
+            <p>Il metodo di clustering che sar&agrave; utilizzato per distinguere i cluster di feature puntuali dal disturbo circostante. &egrave; possibile scegliere di usare una distanza definita o un algoritmo di clustering a regolazione automatica.
+            </p>
+            <p>La distanza definita (DBSCAN) utilizza un intervallo di ricerca specificato per separare i cluster densi da disturbi sparsi. La distanza definita (DBSCAN) &egrave; pi&ugrave; veloce ma &egrave; adatta solo esiste un intervallo di ricerca chiaro da usare che funzioni bene per definire tutti i cluster che potrebbero essere presenti. La distanza definita (DBSCAN) trova cluster di densit&agrave; simili.
+            </p>
+            <p>La regolazione automatica (HDBSCAN) non richiede di specificare un intervallo di ricerca ma &egrave; un metodo che richiede pi&ugrave; tempo. La regolazione automatica (HDBSCAN) trova cluster si punti similmente alla distanza definita (DBSCAN) ma utilizza intervalli di ricerca variabili che consentono cluster di varie densit&agrave;. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Numero minimo di punti da considerare cluster</h2></div>
+        <hr/>
+        <div>
+            <p>Questo parametro viene utilizzato in modo diverso a seconda del metodo di clustering scelto:
+            </p>
+            <p>
+                <ul>
+                    <li>Densit&agrave; definita (DBSCAN): specifica il numero di feature da trovare entro una certa distanza da un punto perch&eacute; quel punto inizi a formare un cluster. La distanza &egrave; definita usando il parametro  <b>Limita l'intervallo di ricerca a</b>.
+                    </li>
+                    <li>Regolazione automatica (HDBSCAN): specifica il numero di feature intorno a ciascun punto (incluso il punto stesso) da considerare per la stima della densit&agrave;. Questo numero rappresenta anche la dimensione cluster minima consentita quando si estraggono i cluster.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Limita l\'intervallo di ricerca a</h2></div>
+        <hr/>
+        <div>
+            <p>Quando si usa la distanza definita (DBSCAN), questo parametro &egrave; la distanza entro la quale si deve trovare il  <b>Numero minimo di punti da considerare cluster</b>. Questo parametro non viene utilizzato quando si sceglie Regolazione automatica (HDBSCAN) come metodo di clustering.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p> Il nome del layer che verr&agrave; creato.  Se si scrive su un ArcGIS Data Store, i risultati saranno salvati in  <b>I miei contenuti</b> e aggiunti alla mappa. Se si scrive su una condivisione file Big Data, i risultati saranno memorizzati nella condivisione file Big Data e aggiunti al suo Manifest. Non saranno aggiunti alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, lo strumento non verr&agrave; eseguito.
+            </p>
+            <p>Quando si scrive su  ArcGIS Data Store (data store relazionale o Spatiotemporal Big Data Store) usando la casella a discesa  <b>Salva risultato in</b>, &egrave; possibile specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

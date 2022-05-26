@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Zwaartepunten zoeken</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="Zwaartepunten zoeken"></h2>
+        <hr/>
+    <p>Deze tool werkt met een laag van multipoint-, lijn- of gebiedsobjecten om het representatieve midden van elk object te bepalen.
+    </p>
+    <p>Als  <b>Huidig extent van de kaart gebruiken</b> is aangevinkt, worden alleen de objecten in de invoermultipoint-, lijn- of gebiedlaag zichtbaar binnen het huidige extent van de kaart geanalyseerd. Als de optie niet is aangevinkt, worden alle objecten in de invoerlaag geanalyseerd, zelfs als deze zich buiten het huidige extent van de kaart bevinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Kies een laag waarvan de objecten worden gebruikt om zwaartepunten te genereren</h2></div>
+        <hr/>
+        <div>
+            <p> De multipoint-, lijn- of gebiedslaag die wordt gebruikt om zwaartepunten te vinden.
+            </p>
+            <p>Naast het kiezen van een laag uit uw kaart, kunt u  <b>Analyselaag kiezen</b> selecteren onderaan de vervolgkeuzelijst. Met deze optie wordt een galerij geopend waarin u kunt bladeren naar en datasets van verschillende bronnen kunt selecteren die u in uw analyse kunt gebruiken. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>Toon mij uitvoer locaties</h2></div>
+        <hr/>
+        <div>
+            <p> Wanneer <b>Bij het echte zwaartepunt</b> is aangevinkt (standaard), retourneert de uitvoer de echte locatie van het zwaartepunt voor elk invoerobject. De zwaartepunten zullen als volgt worden gelokaliseerd:
+                <ul>
+                    <li>Multipoint-objecten&mdash;Het output-zwaartepunt bevindt zich op de gemiddelde x- en y-co&ouml;rdinaten van alle punten in het multipoint-object.
+                    </li>
+                    <li>Lijnobjecten&mdash;Het uitvoerzwaartepunt bevindt zich op de gewogen gemiddelde x- en y-co&ouml;rdinaten van de middelpunten van alle lijnsegmenten in het lijnobject. Het gewicht is gebaseerd op de lengte van het segment.
+                    </li>
+                    <li>Gebiedseigenschappen&mdash;Het uitvoerzwaartepunt bevindt zich in het midden van het gebied.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Wanneer  <b>ingeperkt door invoerobjecten</b> is aangevinkt, zullen de uitvoerpuntobjecten binnen elk invoerobject zijn of erdoor bevat worden. De resulterende puntobjecten zullen als volgt verschijnen:
+                <ul>
+                    <li>Multipoint-objecten&mdash;Het uitvoerzwaartepunt zal samenvallen met een van de punten in de multipoint-groep.
+                    </li>
+                    <li>Lijnobjecten&mdash;Het uitvoerzwaartepunt zal op de lijn zijn. Als de lijn gebogen is, bevindt de uitvoer zich op het middenpunt van de lijn. 
+                    </li>
+                    <li>Gebiedsobjecten&mdash;Het uitvoerpunt bevindt zich binnen het gebiedsobject.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>Dit is de naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laagnaam al bestaat, wordt u gevraagd een nieuwe naam te verschaffen.
+            </p>
+            <p>Met behulp van het vervolgkeuzemenu  <b>Resultaat opslaan in</b> kunt u de naam van een map opgeven in <b>Mijn Content</b> waar het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

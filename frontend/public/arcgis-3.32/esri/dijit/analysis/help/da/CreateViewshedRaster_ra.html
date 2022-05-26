@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Opret udsigtsområde</h2><p/>
+        <h2><img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" alt="Opret udsigtsomr&aring;de-v&aelig;rkt&oslash;j"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j identificerer de omr&aring;der, som en observat&oslash;r kan se, n&aring;r der tages h&oslash;jde for overfladetopografien. Inputpunkterne kan repr&aelig;sentere enten observat&oslash;rer (f.eks. mennesker p&aring; jorden eller personer p&aring; udkig i et brandt&aring;rn) eller observerede objekter (f.eks. vindm&oslash;ller, vandt&aring;rne, k&oslash;ret&oslash;jer eller andre mennesker). Resultaterne definerer de omr&aring;der, der kan ses fra observationspunkterne.
+    </p>
+    <p>B&aring;de observat&oslash;rerne og de observerede objekter kan have en vis h&oslash;jde over jorden, og disse h&oslash;jder bruges til at bestemme synligheden. For eksempel vil et udsigtsomr&aring;de, der er beregnet for 120 meter h&oslash;je vindm&oslash;ller og 1,83 meter h&oslash;je mennesker, der st&aring;r p&aring; jorden, normalt v&aelig;re st&oslash;rre end et udsigtsomr&aring;de, der er beregnet for 60 meter h&oslash;je vindm&oslash;ller og 1,83 meter h&oslash;je mennesker.
+    </p>
+    <p>Resultatlaget registrerer det antal gange, som hver celleplacering i inputoverfladerasteren kan ses fra inputobservationspunkterne. De ikke-synlige celler f&aring;r NoData-v&aelig;rdier.
+    </p>
+    <p>Hvis feltet  <b>Brug aktuel kortudstr&aelig;kning</b> er markeret, er det kun det rasteromr&aring;de og de observationspunkter, der er synlige inden for den aktuelle kortudstr&aelig;kning, der analyseres. Hvis markeringen fjernes, analyseres alle observationspunkter i inputlaget, ogs&aring; selvom de er placeret uden for den aktuelle kortudstr&aelig;kning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="elevationSurface">
+        <div><h2>Højdeoverflade</h2></div>
+        <hr/>
+        <div>
+            <p>Den h&oslash;jdeoverflade, der skal bruges til at beregne udsigtsomr&aring;det.
+            </p>
+            <p>Hvis inputoverfladens vertikale m&aring;leenhed adskiller sig fra den horisontale m&aring;leenhed, f.eks. n&aring;r h&oslash;jdev&aelig;rdierne er angivet i fod, men koordinatsystemet er i meter, skal overfladen have et defineret vertikalt koordinatsystem. &Aring;rsagen til dette er, at v&aelig;rkt&oslash;jet benytter de vertikale (Z) og horisontale (XY) m&aring;leenheder til at beregne en Z-faktor for analysen af udsigtsomr&aring;det. Uden et vertikalt koordinatsystem, hvorved der ikke vil v&aelig;re nogen tilg&aelig;ngelige oplysninger om Z-m&aring;leenheden, vil v&aelig;rkt&oslash;jet antage, at Z-enheden er den samme som XY-enheden. Resultatet af dette er, at en intern Z-faktor p&aring; 1,0 vil blive anvendt til analysen, hvilket kan give uventede resultater.
+            </p>
+            <p>H&oslash;jdeoverfladen kan v&aelig;re et heltal eller et flydende punkt.
+            </p>
+        </div>
+    </div>
+    <div id="observerFeatures">
+        <div><h2>Punktobjekter, der repræsenterer observationspunkter</h2></div>
+        <hr/>
+        <div>
+            <p>Punktobjekter, der repr&aelig;senterer observationspunkter ved beregning af udsigtsomr&aring;der.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimér for</h2></div>
+        <hr/>
+        <div>
+            <p>Den optimeringsmetode, der skal bruges til at beregne udsigtsomr&aring;det.
+            </p>
+            <ul>
+                <li>Speed &mdash; 
+Denne metode optimerer behandlingshastigheden p&aring; bekostning af lidt ringere n&oslash;jagtighed med hensyn til resultaterne. Dette er standardv&aelig;rdien.
+
+                </li>
+                <li>Accuracy &mdash; 
+Denne metode optimerer n&oslash;jagtigheden af resultaterne p&aring; bekostning af l&aelig;ngere behandlingstid.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Maksimal visningsafstand</h2></div>
+        <hr/>
+        <div>
+            <p>Angiv en gr&aelig;nseafstand, hvor beregningen af synlige omr&aring;der stopper. Ud over denne afstand er det umuligt at vide, om observationspunkterne og de andre objekter kan se hinanden.
+            </p>
+            <p>Du kan enten angive en numerisk v&aelig;rdi, der repr&aelig;senterer en line&aelig;r afstand, eller du kan v&aelig;lge et numerisk felt fra de indtastede observationsobjekter. Hvis der fremkommer et felt, skal v&aelig;rdierne i feltet v&aelig;re i samme enhed som xy-enheden for den indtastede h&oslash;jdeoverflade.
+            </p>
+            <p>Bem&aelig;rk, at h&oslash;je v&aelig;rdier vil &oslash;ge beregningstiden. Medmindre andet er angivet, vil en maksimal standardafstand blive beregnet p&aring; grundlag af opl&oslash;sningen og udstr&aelig;kningen af inputh&oslash;jdeoverfladen.
+            </p>
+            <p>Denne parameter er nyttig med henblik p&aring; modellering af visse f&aelig;nomener. For eksempel kan du ved at begr&aelig;nse den synlige udstr&aelig;kning modellere vejrforhold, s&aring;som let t&aring;ge. P&aring; samme m&aring;de kan en begr&aelig;nsning af den synlige udstr&aelig;kning give dig en vis kontrol over det tidspunkt p&aring; dagen, hvor tusm&oslash;rket s&aelig;tter ind.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistanceField">
+        <div><h2>Maksimal visningsafstand</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="minimumDistance">
+        <div><h2>Minimal visningsafstand</h2></div>
+        <hr/>
+        <div>
+            <p>Angiv en afstand, hvor beregningen af synlige omr&aring;der starter. De celler p&aring; overfladen, som er placeret n&aelig;rmere end denne afstand, vil ikke v&aelig;re synlige i outputtet, men de kan fortsat blokere for synligheden af de celler, der er placeret mellem den minimale og maksimale visningsafstand.
+            </p>
+            <p>Du kan enten angive en numerisk v&aelig;rdi, der repr&aelig;senterer en line&aelig;r afstand, eller du kan v&aelig;lge et numerisk felt fra de indtastede observationsobjekter. Hvis der fremkommer et felt, skal v&aelig;rdierne i feltet v&aelig;re i samme enhed som xy-enheden for den indtastede h&oslash;jdeoverflade.
+            </p>
+            <p>Denne parameter er nyttig til styring af udsigtsanalyseomr&aring;det ved en specifik afstand fra observat&oslash;ren. Hvis du f.eks. er ved at vurdere synligheden fra en bygnings tag til en fjerntliggende park, kan du angive en minimal visningsafstand, der udelukker de n&aelig;rliggende omr&aring;der, der ikke har interesse, og derved opn&aring; en bedre behandlingshastighed.
+            </p>
+        </div>
+    </div>
+    <div id="minimumDistanceField">
+        <div><h2>Minimal visningsafstand</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="viewingDistance3D">
+        <div><h2>Afstand er 3D</h2></div>
+        <hr/>
+        <div>
+            <p>Angiv om parametrene for den minimale og maksimale visningsafstand skal m&aring;les tredimensionalt eller p&aring; en enklere, todimensional m&aring;de. N&aring;r denne indstilling er markeret, behandles visningsafstandene som 3D-afstande. N&aring;r indstillingen ikke er markeret, behandles de som 2D-afstande.
+            </p> 
+            <p>En 2D-afstand er den enkle, line&aelig;re afstand, der m&aring;les mellem en observat&oslash;r og destinationen ved hj&aelig;lp af projekterede positioner ved havets overflade. En 3D-afstand giver en mere realistisk v&aelig;rdi ved at inddrage landskabets relative h&oslash;jdeforskelle i m&aring;lingen.
+            </p>  
+        </div>
+    </div>
+    <div id="observersElevation">
+        <div><h2>Højde på observationspunkter</h2></div>
+        <hr/>
+        <div>
+            <p>Angiv h&oslash;jden p&aring; dine observationspunkter.
+            </p>
+            <p>Du kan angive enten en numerisk v&aelig;rdi, der repr&aelig;senterer h&oslash;jden for alle observat&oslash;rer eller som et felt, der repr&aelig;senterer h&oslash;jden for den enkelte observat&oslash;r. Hvis der fremkommer et felt, skal v&aelig;rdien i feltet v&aelig;re i samme enhed som Z-enheden for den indtastede h&oslash;jdeoverflade.
+            </p>
+        </div>
+    </div>
+    <div id="observersElevationField">
+        <div><h2>Højde på observationspunkter</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="observersHeight">
+        <div><h2>Højde for observatører</h2></div>
+        <hr/>
+        <div>
+            <p>Angiv h&oslash;jden over jorden for dine observationspunkter.
+            </p> 
+            <p>Du kan enten angive en numerisk v&aelig;rdi for h&oslash;jden, eller du kan v&aelig;lge et felt fra de indtastede observationsobjekter. Hvis der fremkommer et felt, skal v&aelig;rdien i feltet v&aelig;re i samme enhed som z-enheden for den indtastede h&oslash;jdeoverflade.
+            </p>
+            <p>Standardv&aelig;rdien er 1,83 meter. Hvis du ser ud fra en h&oslash;jt placeret position, f.eks. et observationst&aring;rn eller en h&oslash;j bygning, skal du bruge h&oslash;jden i stedet for. Under beregningen af udsigtsomr&aring;det f&oslash;jes denne v&aelig;rdi til observationsh&oslash;jden, hvis denne er angivet. Ellers f&oslash;jes den til z-v&aelig;rdien for den interpolerede overflade.
+            </p>
+        </div>
+    </div>
+    <div id="observersHeightField">
+        <div><h2>Højde for observatører</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="targetHeight">
+        <div><h2>Højde for destination</h2></div>
+        <hr/>
+        <div>
+            <p>Angiv den h&oslash;jde p&aring; strukturer eller mennesker p&aring; jorden, der bruges til at fasts&aelig;tte synligheden.
+            </p>
+            <p>Du kan enten angive en numerisk v&aelig;rdi for h&oslash;jden, eller du kan v&aelig;lge et felt fra de indtastede observationsobjekter. Hvis der fremkommer et felt, skal v&aelig;rdien i feltet v&aelig;re i samme enhed som z-enheden for den indtastede h&oslash;jdeoverflade.
+            </p>
+            <p>Det resulterende udsigtsomr&aring;de identificerer de omr&aring;der, hvor man fra et observationspunkt kan se disse objekter p&aring; jorden. Det omvendte er ogs&aring; sandt: objekterne p&aring; jorden kan ogs&aring; se observationspunktet. 
+            </p>
+            <p>F&oslash;lgende er nogle eksempler p&aring; destinationsh&oslash;jdeindstillinger:
+            </p>
+            <ul>
+                <li>Hvis dine inputpunkter repr&aelig;senterer vindm&oslash;ller, og du &oslash;nsker at finde ud af, hvorfra mennesker, der st&aring;r p&aring; jorden, kan se vindm&oslash;llerne, skal du angive gennemsnitsh&oslash;jden for en person (ca. 1,83 meter).
+                    
+
+                </li>
+                <li>Hvis dine observationspunkter repr&aelig;senterer brandt&aring;rne, og du &oslash;nsker at finde ud af, hvilke brandt&aring;rne der kan se en r&oslash;gs&oslash;jle med en h&oslash;jde p&aring; 6 meter eller mere, skal du indtaste 6 meter som destinationsh&oslash;jde.
+                    
+
+                </li>
+                <li>Hvis dine inputpunkter repr&aelig;senterer natursk&oslash;nne udsigtspunkter langs med veje og stier, og du &oslash;nsker at finde ud af, hvorfra vindm&oslash;ller med en h&oslash;jde p&aring; 120 meter eller mere kan ses, skal du indtaste 120 meter som destinationsh&oslash;jde.
+                    
+
+                </li>
+                <li>Hvis dine inputpunkter repr&aelig;senterer natursk&oslash;nne udsigtspunkter, og du &oslash;nsker at finde ud af, hvor stort et omr&aring;de p&aring; jorden, der kan ses af personer, som st&aring;r p&aring; udsigtspunktet, skal du indtaste &quot;0&quot; som destinationsh&oslash;jde. 
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="targetHeightField">
+        <div><h2>Højde for observatører</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="resultAglLayer">
+        <div><h2>Outputhøjde, der skal blive synlig</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; AGL-resultatet (output over jordniveau - Above Ground Level). AGL-resultatet er en raster, hvor hver cellev&aelig;rdi er den minimumsh&oslash;jde, der skal tilf&oslash;jes til en ellers usynlig celle for at g&oslash;re den synlig for mindst &eacute;n observat&oslash;r. Celler, der var synlige i forvejen, vil blive tildelt v&aelig;rdien &quot;0&quot; i denne outputraster.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; det lag, som oprettes under  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Du kan angive navnet p&aring; en mappe i  <b>Mit indhold</b>, hvor resultatet bliver gemt ved at benytte rullelisten <b>Gem resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

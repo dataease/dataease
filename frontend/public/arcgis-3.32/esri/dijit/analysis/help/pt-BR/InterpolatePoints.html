@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpolar Pontos</h2><p/>
+        <h2><img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" alt="Interpolar Pontos"></h2>
+        <hr/>
+    <p>   A ferramenta Interpolar Pontos permite a voc&ecirc; prever os valores em novos locais baseado em medidas de uma cole&ccedil;&atilde;o de pontos. A ferramenta obt&eacute;m dados do ponto com valores em cada ponto e retorna &aacute;reas classificadas por valores preditos. Por exemplo
+        <ul>
+            <li>Uma &aacute;rea de gerenciamento da qualidade do ar tem sensores que medem n&iacute;veis de polui&ccedil;&atilde;o. Interpolar Pontos pode ser utilizada para predizer n&iacute;veis de polui&ccedil;&atilde;o em locais que n&atilde;o t&ecirc;m sensores, como locais com popula&ccedil;&otilde;es de risco&mdash;escolas ou hospitais, por exemplo.
+            </li>
+            <li>Prediga concentra&ccedil;&otilde;es de metal pesado em colheitas baseado em amostras tiradas de plantas individuais.
+            </li>
+            <li>Prediga n&iacute;veis de nutriente do solo (nitrog&ecirc;nio, f&oacute;sforo, pot&aacute;ssio, e assim por diante) e outros indicadores (como condutividade el&eacute;trica) para estudar suas rela&ccedil;&otilde;es com rendimento da cultura e prescrever quantidades precisas de fertilizante para cada local no campo.
+
+            </li>
+            <li>Os aplicativos meteorol&oacute;gicos incluem predi&ccedil;&atilde;o de temperaturas, chuva e vari&aacute;veis associadas (como chuva &aacute;cida). 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Escolha a camada de ponto contendo locais com valores conhecidos</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de ponto para utilizar como a base de interpola&ccedil;&atilde;o.  
+
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> localizado na parte inferior da lista suspensa. Esta op&ccedil;&atilde;o abre uma galeria onde voc&ecirc; pode procurar e selecionar conjunto de dados de v&aacute;rias fontes para utilizar em sua an&aacute;lise. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Escolher campo para interpolar</h2></div>
+        <hr/>
+        <div>
+            <p>Escolha o campo contendo os valores que voc&ecirc; deseja interpolar.  
+            </p>
+        </div>
+    </div>
+    <div id="interpolateOption">
+        <div><h2>Otimizar para</h2></div>
+        <hr/>
+        <div>
+            <p>Escolha sua prefer&ecirc;ncia para velocidade versus precis&atilde;o. Predi&ccedil;&otilde;es mais precisas tomam mais tempo para calcular.
+            </p> 
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Erros de predição de saída</h2></div>
+        <hr/>
+        <div>
+            <p> Se selecionada, uma camada de erros padr&atilde;o para as predi&ccedil;&otilde;es de interpola&ccedil;&atilde;o ser&aacute; criada.  O nome da camada de sa&iacute;da ser&aacute; o nome da camada resultante com 'Erros' anexado.
+            </p>
+            <p>Erros padr&atilde;o s&atilde;o &uacute;teis, pois fornecem informa&ccedil;&otilde;es sobre a confiabilidade dos valores preditos. Uma regra geral simples &eacute; que o valor verdadeiro cair&aacute; dentro de dois erros padr&atilde;o de 95 por cento de tempo do valor predito. Por exemplo, suponha que um novo local tem um valor previsto de 50 com um erro padr&atilde;o de 5. Isto significa que a melhor suposi&ccedil;&atilde;o desta ferramenta &eacute; que o valor verdadeiro neste local &eacute; 50, mas ele razoavelmente pode ser t&atilde;o baixo quanto 40 ou t&atilde;o alto quanto 60. Para calcular este intervalo de valores razo&aacute;vel, multiplique o erro padr&atilde;o por 2, adicione este valor ao valor previsto para obter o maior valor final do intervalo e subtraia do valor previsto para obter o menor valor final do intervalo.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Classificar por</h2></div>
+        <hr/>
+        <div>
+            <p>Escolha como valores previstos ser&atilde;o classificados em &aacute;reas.
+                <ul>
+                    <li>Intervalo geom&eacute;trico&mdash;As &aacute;reas s&atilde;o baseadas em intervalos de classe que t&ecirc;m uma s&eacute;rie geom&eacute;trica. Este m&eacute;todo garante que cada intervalo de classe tenha aproximadamente o mesmo n&uacute;mero de valores dentro de cada classe e que a altera&ccedil;&atilde;o entre intervalos seja consistente.
+                    </li>
+                    <li>Intervalo id&ecirc;ntico&mdash;&Aacute;reas s&atilde;o criadas de foma que os valores preditos do intervalo sejam iguais para cada &aacute;rea.
+                    </li>
+                    <li>&Aacute;rea Id&ecirc;ntica&mdash;As &aacute;reas s&atilde;o criadas de forma que o n&uacute;mero dos valores de dados em cada &aacute;rea sejam iguais. Por exemplo, se os dados tiverem mais valores grandes do que valores pequenos, mais &aacute;reas ser&atilde;o criadas para valores grandes.
+                    </li>
+                    <li>Manual&mdash;Esta op&ccedil;&atilde;o permite a voc&ecirc; definir seu pr&oacute;prio intervalo de valores para &aacute;reas. Estes valores ser&atilde;o inseridos no par&acirc;metro  <b>Valores da quebra de classe</b> abaixo.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Número de Classes</h2></div>
+        <hr/>
+        <div>
+            <p>Especifique o n&uacute;mero de classes (intervalo de valores preditos) na camada resultante. Cada classe define o limite das &aacute;reas. Os valores destas classes ser&atilde;o determinados pelo
+par&acirc;metro  <b>Classificar por</b> acima.
+            </p>
+        </div>
+    </div>
+    <div id="classBreaks">
+        <div><h2>Valores da quebra de classe</h2></div>
+        <hr/>
+        <div>
+            <p>Insira os valores da quebra de classe desejados separados por espa&ccedil;os. Por exemplo, se voc&ecirc; desejar quebras de classe em valores de 1.5, 3, e 7, insira  <code>1.5 3 7</code>.  Estes valores definir&atilde;o o limite superior de cada classe, ent&atilde;o o n&uacute;mero de classes se igualar&aacute; ao n&uacute;mero de valores inseridos. As &aacute;reas n&atilde;o ser&atilde;o criadas para quaisquer locais com valores previstos acima do maior valor de quebra inserido. Voc&ecirc; deve inserir pelo menos dois valores e n&atilde;o mais do que 32.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Recortar saída para</h2></div>
+        <hr/>
+        <div>
+            <p>Desenhe ou forne&ccedil;a uma camada especificando a &aacute;rea onde voc&ecirc; deseja que o resultado seja desenhado. Por exemplo, se voc&ecirc; estiver interpolando medi&ccedil;&otilde;es de polui&ccedil;&atilde;o do lago, voc&ecirc; poder&aacute; utilizar o limite do lago neste par&acirc;metro e a sa&iacute;da desenhar&aacute; somente dentro do limite do lago.
+            </p>
+        </div>
+    </div>
+    <div id="predictAtPointLayer">
+        <div><h2>Prever nestes locais</h2></div>
+        <hr/>
+        <div>
+            <p>Desenhe ou forne&ccedil;a uma camada especificando locais de ponto para calcular valores de predi&ccedil;&atilde;o. Isto permite a voc&ecirc; fazer predi&ccedil;&otilde;es em locais de interesse espec&iacute;ficos. Por exemplo, se a camada de entrada representar medidas de n&iacute;veis de polui&ccedil;&atilde;o, voc&ecirc; poder&aacute; utilizar este par&acirc;metro para predizer os n&iacute;veis de polui&ccedil;&atilde;o de locais com grandes popula&ccedil;&otilde;es de risco, como escolas ou hospitais.  Voc&ecirc; pode ent&atilde;o utilizar esta informa&ccedil;&otilde;es para dar recomenda&ccedil;&otilde;es para oficiais de sa&uacute;de nestes locais.
+            </p>
+            <p>Se fornecida, esta ferramenta ter&aacute; uma camada de ponto de sa&iacute;da das predi&ccedil;&otilde;es nestes locais especificados. O nome da camada de sa&iacute;da ser&aacute; o nome da camada resultante com 'Pontos' anexado.  
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa.  O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se o nome da camada j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Salvar resultado em</b>, &eacute; poss&iacute;vel especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

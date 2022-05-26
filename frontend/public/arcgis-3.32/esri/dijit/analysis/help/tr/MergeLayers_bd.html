@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Katmanları Birleştir</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Katmanları Birleştir"></h2>
+        <hr/>
+    <p>Bu ara&ccedil;, tek bir &ccedil;ıktı katmanı oluşturmak i&ccedil;in iki detay katmanını birleştirir. Birleştirilecek katmanlar aynı geometri t&uuml;r&uuml;nde ve zaman t&uuml;r&uuml;nde olmalıdır. Girdi katmanlarından gelen alanların nasıl birleşeceğini ve kopyalanacağını denetleyebilirsiniz. &Ouml;rneğin:
+        <ul>
+            <li>İngiltere, Galler ve İsko&ccedil;ya i&ccedil;in &uuml;&ccedil; katmanım var B&uuml;y&uuml;k Britanya i&ccedil;in tek bir katman istiyorum. 
+            </li>
+            <li>Her birinde bitişik kasabalar i&ccedil;in parsel bilgileri olan 2 katmanım var. Bunları tek bir katman olarak birleştirmek ve 2 giriş katmanında yalnızca aynı ada ve t&uuml;re sahip alanları tutmak istiyorum.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Katman seç</h2></div>
+        <hr/>
+        <div>
+            <p>İkinci detay katmanının birleştirileceği tablo, nokta, &ccedil;izgi veya alan detayları i&ccedil;eren katman. Bu katmandaki t&uuml;m alanlar sonu&ccedil; katmanına dahil edilir.
+            </p>
+        </div>
+    </div>
+    <div id="mergeLayer">
+        <div><h2>Birleştirilecek katmanı seç</h2></div>
+        <hr/>
+        <div>
+            <p>Girdi katmanıyla birleştirilecek detay katmanı. Birleştirilecek katman girdi katmanıyla aynı geometri t&uuml;r&uuml;nde ve zaman t&uuml;r&uuml;nde olmalıdır.
+            </p>
+        </div>
+    </div>
+    <div id="mergingAttributes">
+        <div><h2>Birleşen alanları değiştir</h2></div>
+        <hr/>
+        <div>
+            <p>Varsayılan olarak her iki girdi katmanından gelen t&uuml;m alanlar &ccedil;ıktıya dahil edilecektir. Katmandan birleştirilecek alanların &ccedil;ıktıya nasıl dahil edileceğini aşağıdaki se&ccedil;eneklerle değiştirebilirsiniz:
+                <ul>
+                    <li> <b>Yeniden adlandır</b>&mdash;Alan &ccedil;ıktıda yeniden adlandırılacaktır.
+                    </li>
+                    <li> <b>Kaldır</b>; Alan &ccedil;ıktıdan kaldırılacaktır.
+                    </li>
+                    <li> <b>Eşleştir</b>; Alan adları eşit yapılır.  Birleştirilen katmandan gelen alanın değerleri eşleşen &ccedil;ıktı alanına kopyalanacaktır.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Her iki katman da aynı ada ve veri t&uuml;r&uuml;ne sahip bir alan i&ccedil;eriyorsa, her iki alanın i&ccedil;eriği de bu ada sahip tek bir alanda birleştirilir. Bu,  <b>Birleşen alanları değiştir</b> parametresinde <b>Eşleştirme</b>nin kullanıldığı alanlara uygulanmaz.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> Oluşturulacak katmanın adı. Bir ArcGIS Data Store&lsquo;a yazdığınızda, sonu&ccedil;larınız  <b>İ&ccedil;eriğime</b> kaydedilir ve haritaya eklenir. Bir b&uuml;y&uuml;k veri dosya paylaşımına yazdığınızda,  sonu&ccedil;larınız b&uuml;y&uuml;k veri dosya paylaşımı i&ccedil;ine kaydedilir ve   manifestosuna eklenir.  haritaya eklenmez. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Detay katmanı zaten varsa ara&ccedil; &ccedil;alışmaz.
+            </p>
+            <p> ArcGIS Data Store&lsquo;a yazarken (ilişkisel ya da mekan-zamansal b&uuml;y&uuml;k veri deposu)  <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır kutusunu kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

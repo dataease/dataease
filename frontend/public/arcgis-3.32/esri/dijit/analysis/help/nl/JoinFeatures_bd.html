@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Objecten koppelen</h2><p/>
+        <h2><img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" alt="Objecten koppelen"></h2>
+        <hr/>
+    <p>De tool Objecten samenvoegen werkt met twee lagen. Objecten samenvoegen voegt attributen samen op basis van ruimtelijke, tijdelijke en attribuutrelaties of een combinatie van de drie. De tool bepaalt alle invoerobjecten die voldoen aan alle gestelde samenvoegvoorwaarden en voegt de tweede invoerlaag samen met de eerste. U kunt eventueel alle objecten samenvoegen met de overeenkomende objecten of de overeenkomende objecten samenvatten.
+    </p>
+    <p>Objecten samenvoegen kan worden toegepast op punten, lijnen, vlakken en tabellen. Een tijdelijke samevoeging vereist dat uw inputdata tijdingeschakeld is en een ruimtelijke samenvoeging vereist dat uw gegevens een geometrie hebben. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Doellaag kiezen</h2></div>
+        <hr/>
+        <div>
+            <p>De laag waarvan de  attributen van de samenvoegingslaag aan de tabel ervan zullen worden toegevoegd.
+            </p>
+            <p>Analyse d.m.v. de  <b>In de buurt</b> ruimtelijke relatie vereist een geprojecteerd co&ouml;rdinaatsysteem. U kunt het <b>Processing co&ouml;rdinaatsysteem</b> instellen bij <b>Analysis Environments</b>. Als uw huidige co&ouml;rdinaatsysteem niet op een geprojecteerd co&ouml;rdinaatsysteem is ingesteld, zal u gevraagd worden het in te stellen wanneer u <b>Analyse uitvoeren</b> kiest.
+            </p>
+            <p>Naast het kiezen van een laag van uw kaart, kunt u kiezen voor  <b>Analyselaag kiezen</b> onderaan de keuzelijst om in uw inhoud te zoeken naar een big data file share-dataset of objectlaag.
+            </p>
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>Kies laag om samen te voegen met de doellaag</h2></div>
+        <hr/>
+        <div>
+            <p>De koppelingslaag met de attributen die zullen worden toegevoegd aan de doellaag.
+            </p>
+            <p>Naast het kiezen van een laag van uw kaart, kunt u kiezen voor  <b>Analyselaag kiezen</b> onderaan de keuzelijst om in uw inhoud te zoeken naar een big data file share-dataset of objectlaag.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Kies koppelingbewerking</h2></div>
+        <hr/>
+        <div>
+            <p>Bepaalt hoe koppelingen tussen de doel- en koppelingslagen worden behandeld in de uitvoer als meerdere gekoppelde objecten dezelfde relatie hebben als de laag die gekoppeld wordt. Er zijn twee samenvoegbewerkingen om uit te kiezen:
+                <ul>
+                    <li> <b>E&eacute;n-aan-&eacute;&eacute;n koppelen</b>&mdash;Deze optie vat alle overeenkomende objecten samen aan elk object dat wordt gekoppeld.
+                    </li>
+                    <li> <b>E&eacute;n-aan-meerdere koppelen</b>&mdash;Deze optie voegt alle overeenkomende objecten toe aan de koppelingslaag.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Stel bijvoorbeeld dat u supermarkten wilt zoeken binnen 2 kilometer van een boerenmarkt. In dit geval heeft de doellaag een enkel object, namelijk de boerenmarkt, en de samenvoegende laag zijn plaatselijke supermarkten met attributen, zoals de totale jaarlijkse omzet. Met behulp van de tool Objecten koppelen vindt u vijf supermarkten die aan de criteria voldoen. Als u een koppelingsbewerking kiest voor  <b>E&eacute;n-aan-veel koppelen</b> krijgen we vijf objecten in ons resultaat, elke rij vertegenwoordigt de boerenmarkt en een supermarkt. Als u een relatie <b>E&eacute;n-aan-&eacute;&eacute;n</b> kiest, krijgt u &eacute;&eacute;n object dat de boerenmarkt vertegenwoordigt en de samengevatte informatie van de supermarkten, zoals het aantal (2) en andere statistieken, zoals de som van de jaarlijkse verkoop.
+            </p>
+        </div>
+    </div>
+    <div id="joinOptions">
+        <div><h2>Selecteer een of meer samenvoegingen</h2></div>
+        <hr/>
+        <div>
+            <p>Specificeert de gebruikte koppelingsoptie. U kunt &eacute;&eacute;n, twee of drie van de volgende samenvoegtypes toepassen. 
+                <ul>
+                    <li> <b>Ruimtelijk</b>&mdash;Gebruikt een gespecificeerde ruimtelijke relatie om objecten te koppelen. Dit vereist dat beide lagen een geometrie hebben.
+                    </li>
+                    <li> <b>Tijdelijk</b>&mdash;Gebruikt een tijdelijke relatie om objecten samen te voegen. Hiervoor moet tijd zijn ingeschakeld op beide lagen.
+                    </li>
+                    <li> <b>Attribuut</b>&mdash;Voegt objecten samen op basis van gelijke velden.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Een ruimtelijke relatie kiezen</h2></div>
+        <hr/>
+        <div>
+            <p>De ruimtelijke relatie die bepaalt of objecten worden gekoppeld. De volgendenbeschikbare relaties hangen af van het type geometrie (punt, polylijn of polygoon) die worden gebruikt als de invoerobjecten.
+                <ul>
+                    <li> <b>Snijdt</b>&mdash;De objecten worden gekoppeld als ze elkaar snijden.
+                    </li>
+                    <li> <b>Gelijk aan</b>&mdash;De objecten worden gekoppeld als ze dezelfde geometrie hebben.
+                    </li>
+                    <li> <b>Near</b>&mdash;De objecten worden gekoppeld als ze zich binnen een bepaalde afstand tot elkaar bevinden. De kaartlaag moet in een geprojecteerd co&ouml;rdinatensysteem zijn of de verwerkende ruimtelijke referentie moet worden ingesteld op een geprojecteerd co&ouml;rdinatenstelsel met behulp van de <b>Analysis Environments</b> als een ruimtelijke <b>Near</b> relatie wordt gebruikt.
+                    </li>
+                    <li> <b>Bevat</b>&mdash;Deze objecten worden gekoppeld als de doellaag is opgenomen in de samengevoegde objecten.
+                    </li>
+                    <li> <b>Binnen</b>&mdash;Deze objecten worden gekoppeld als de doellaag binnen de samengevoegde objecten is.
+                    </li>
+                    <li> <b>Raakt</b>&mdash;De objecten worden gekoppeld als ze een grens hebben die het doelobject raakt.
+                    </li>
+                    <li> <b>Kruist</b>&mdash;De objecten worden gekoppeld als ze een kruisende omtrek hebben.
+                    </li>
+                    <li> <b>Overlapt</b>&mdash;De objecten worden gekoppeld als ze elkaar overlappen.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearSpatial">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            <p> Bepaalt de radius toegepast op een ruimtelijk nauwe relatie.
+            </p>
+            <p>Als u bijvoorbeeld een dataset voor een kerncentrale hebt en een dataset voor woningen, kunt u een afstand van 1 kilometer nearSpatial afstand instellen om huizen binnen 1 kilometer van de kerncentrale te vinden.
+            </p> 
+        </div>
+    </div>
+    <div id="temporalRelationship">
+        <div><h2>Een tijdelijke relatie kiezen</h2></div>
+        <hr/>
+        <div>
+            <p>De tijdelijke relatie die bepaalt of objecten aan elkaar worden samengevoegd. Deze optie is alleen beschikbaar als tijd is ingeschakeld op beide lagen en de beschikbare relaties zijn afhankelijk van het type tijd (direct of interval) dat wordt gebruikt voor de invoerobjecten. De beschikbare tijdelijke relaties zijn:
+                <ul>
+                    <li> <b>Tegenkomt</b>&mdash;De objecten worden gekoppeld als het eerste object het tweede object tegenkomt.
+                    </li>
+                    <li> <b>Tegengekomen door</b>&mdash;De objecten worden gekoppeld als het eerste object het tweede object is tegengekomen.
+                    </li>
+                    <li> <b>Overlapt</b>&mdash;De objecten worden gekoppeld als het eerste object het tweede object overlapt.
+                    </li>
+                    <li> <b>Overlapt door</b>&mdash;De objecten worden gekoppeld als het eerste object wordt overlapt door tweede object.
+                    </li>
+                    <li> <b>Tijdens</b>&mdash;De objecten worden gekoppeld als het eerste object tijdens het tweede object is.
+                    </li>
+                    <li> <b>Bevat</b>&mdash;De objecten worden gekoppeld als het eerste object het tweede object bevat.
+                    </li>
+                    <li> <b>Gelijk aan</b>&mdash;De objecten worden gekoppeld als het eerste object gelijk is aan het tweede object.
+                    </li>
+                    <li> <b>Eindigt</b>&mdash;De objecten worden gekoppeld als het eerste object het tweede object eindigt.
+                    </li>
+                    <li> <b>Be&euml;indigd door</b>&mdash;De objecten worden gekoppeld als het eerste object worden be&euml;indigd door het tweede object.
+                    </li>
+                    <li> <b>Start</b>&mdash;De objecten worden gekoppeld als het eerste object het tweede object start.
+                    </li>
+                    <li> <b>Gestart door</b>&mdash;De objecten worden gekoppeld als het eerste object worden gestart door het tweede object.
+                    </li>
+                    <li> <b>Snijdt</b>&mdash;De objecten worden gekoppeld als de tijden elkaar snijden.
+                    </li>
+                    <li> <b>In de buurt van</b>&mdash;De objecten worden gekoppeld als ze in de buurt van elkaar zijn, bepaald door een gespecificeerde tijd.
+                    </li>
+                    <li> <b>In de omgeving voor</b>&mdash;De objecten worden gekoppeld als het eerste object voor het tweede object is en binnen de opgegeven tijd valt.
+                    </li>
+                    <li> <b>In de omgeving na</b>&mdash;De objecten worden gekoppeld als het eerste object na het tweede object is en binnen de opgegeven tijd valt.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearTemporal">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            
+            <p>Bepaalt de tijdelijke radius toegepast op een tijdelijke nauwe relatie. Een tijdelijke in de buurt-relatie  <b>In de buurt</b>, <b>In de buurt voor</b> en <b>In de buurt na</b>.
+            </p>
+            <p>Als u bijvoorbeeld een laag van incidenten met de scheepvaart en een laag van GPS-sporen voor een orkaan, kunt u zoeken naar incidenten met de scheepvaart binnen een bepaalde afstand van orkaansporen in zowel ruimte (1 kilometer) als tijd (5 uur). Dit zou resulteren in bootongevallen gekoppeld aan orkanen die in ruimte en tijd dicht bij elkaar hebben plaatsgevonden.
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>De overeen te stemmen velden kiezen</h2></div>
+        <hr/>
+        <div>
+            <p>Koppelt waarden in een gebied van de ene laag met waarden in een veld in een andere laag. 
+            </p>
+            <p>Als u bijvoorbeeld een landbrede geografische laag hebt van woonadressen (inclusief een  <i>ZIP</i> veld) en een tabeldataset van gezondsdemografie per postcode (een veld genaamd <i>HEALTHZIP</i>), kunt een een gezondheidsdataset koppelen aan woondata door het <i>ZIP</i> veld te koppelen aan het <i>HEALTHZIP</i> veld. Dit zou resulteren in een laag van woningen met de bijbehorende gezondheidsgegevens.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Statistieken toevoegen (optioneel)</h2></div>
+        <hr/>
+        <div>
+            <p>Berekend statistieken voor de gekoppelde objecten als de gezamenlijke handeling  <b>E&eacute;n-aan-&eacute;&eacute;n</b> is. Alle statistieken worden standaard berekend.
+            </p>
+            <p>U kunt statistieken berekenen over objecten die zijn samengevat. Op numerieke velden kunt u het volgende berekenen: 
+                <ul>
+                    <li>Count&mdash;Berekent het aantal niet-nulwaarden.Kan gebruikt worden op numerieke velden of strings. De telling van [nul, 0, 2] is 2.
+                    </li>
+                    <li>Som&mdash;De som van numerieke waarden in een veld. De som van [nul, nul, 3] is 3.
+                    </li>
+                    <li>Gemiddelde&mdash;Het gemiddelde van numerieke waarden. Het gemiddelde van [0, 2, nul] is 1.
+                    </li>
+                    <li>Min&mdash;De minimumwaarde van een numeriek veld. Het minimum van [0, 2, nul] is 0. 
+                    </li>
+                    <li>Max&mdash;De maximumwaarde van een numeriek veld. De maximumwaarde van [0, 2, nul] is 2.
+                    </li>
+                    <li>Bereik&mdash;Het bereik van een numeriek veld. Dit wordt berekend als de minimumwaarden afgetrokken van de maximumwaarde. Het bereik van [0, nul, 1] is 1. Het bereik van [nul, 4] is 0.
+                    </li>
+                    <li>Variantie&mdash;De variantie van een numeriek veld in een track. De variantie van [1] is nul. De variantie van [null, 1,0,1,1] is 0,25.
+                    </li>
+                    <li>Standaarddeviatie&mdash;De standaarddeviatie van een numeriek veld. De standaarddeviatie van [1] is nul. De standaarddeviatie van [null, 1,0,1,1] is 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Op stringvelden kunt u het volgende berekenen:
+                <ul>
+                    <li>Telling&mdash;Het aantal non-nul strings.
+                    </li>
+                    <li>Elke&mdash;Deze statistiek is een willekeurig voorbeeld van een stringwaarde in het gespecificeerde veld.
+                    </li>
+                </ul>
+                Alle statistieken worden berekend op nonnull waarden. De resultaatlaag zal een nieuw veld bevatten voor elke statistiek die wordt berekend. Andere statistieken kunnen worden toegevoegd door een attribuut en statistiek te kiezen.
+            </p>
+            <p>Alle statistieken worden berekend op nonnull waarden. De resultaatlaag zal een nieuw veld bevatten voor elke statistiek die wordt berekend. Andere statistieken kunnen worden toegevoegd door een attribuut en statistiek te kiezen.
+            </p>
+        </div>
+    </div>
+    <div id="joinCondition">
+        <div><h2>Maak een expressie om objecten aan toe te voegen (optioneel)</h2></div>
+        <hr/>
+        <div>
+            <p>Past een voorwaarde toe op bepaalde velden. Alleen objecten met velden die aan deze voorwaarden voldoen worden samengevoegd.
+            </p>
+            <p>Als u bijvoorbeeld een koppelen aan dataset wilt gebruiken voor alleen die objecten waar  <i>health_spending</i>  meer is dan 20 procent van <i>income</i>,  past een gezamenlijke conditie van <code>$target[&quot;health_spending&quot;] &gt; ($join[&quot;income&quot;] * .20)</code> met behulp van dit veld <i>health_spending</i> vanuit de eerste dataset (de datasetobjecten zijn gekoppeld aan) en het <i>income</i> veld vanuit de tweede dataset (de dataset wordt gekoppeld).
+            </p>
+            <p>Samenvoegvoorwaarden kunnen worden toegepast met behulp van de expressiecalculator.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Datastore kiezen</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytic-resultaten worden opgeslagen in een datastore en weergegeven als een objectlaag in  Portal for ArcGIS. In de meeste gevallen moeten de resultaten worden opgeslagen in de spatiotemporele data store en dit is de standaardinstelling. In sommige gevallen is het opslaan van de resultaten in de relationele data-opslag een goede optie. Hier volgen redenen waarom u resultaten zou willen opslaan in een relationele data-opslag: 
+                <ul>
+                    <li>U kunt resultaten gebruiken in portaal-tot-portaal samenwerking.
+                    </li>
+                    <li>Om synchronisatiemogelijkheden met uw resultaten mogelijk te maken.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>U moet geen gebruik maken van een relationele data-store als u verwacht dat uw GeoAnalytics-resultaten toenemen en u wilt profiteren van de mogelijkheden van de spatiotemporele big data-store om grote hoeveelheden gegevens te verwerken.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p> De naam van de laag die wordt gemaakt. Als u naar een ArcGIS Data Store,  schrijft, worden uw resultaten opgeslagen in  <b>Mijn Content</b> en toegevoegd aan de kaart. Als u naar een big data file share schrijft, worden uw resultaten opgeslagen in de big data file share en toegevoegd aan het bijhorende manifest. Ze zullen niet worden toegevoegd aan de kaart. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, zal de tool falen.
+            </p>
+            <p>Wanneer u schrijft naar  ArcGIS Data Store (relationele of spatiotemporele big datastore) met behulp van de vervolgkeuzelijst  <b>Resultaat opslaan in</b>, kunt u de naam van een map opgeven in <b>Mijn Content</b>, waar het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

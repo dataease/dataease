@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Phát hiện Sự cố</h2><p/>
+        <h2><img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" alt="Ph&aacute;t hiện Sự cố"></h2>
+        <hr/>
+    <p> C&ocirc;ng cụ n&agrave;y hoạt động với lớp điểm, đường, v&ugrave;ng hoặc bảng được k&iacute;ch hoạt th&ocirc;ng tin thời gian, thể hiện cho thời điểm hiện tại. Sử dụng c&aacute;c đối tượng được sắp xếp theo một thứ tự, việc theo d&otilde;i n&agrave;y theo dạng đường đi, c&ocirc;ng cụ n&agrave;y x&aacute;c định đối tượng n&agrave;o l&agrave; sự cố cần quan t&acirc;m. C&aacute;c sự cố được x&aacute;c định theo c&aacute;c điều kiện do bạn quy định.
+    </p>
+    <p>Trước ti&ecirc;n, c&ocirc;ng cụ sẽ x&aacute;c định c&aacute;c đối tượng n&agrave;o thuộc c&ugrave;ng một đường đi bằng c&aacute;ch sử dụng một hoặc nhiều trường. Sử dụng th&ocirc;ng tin thời gian tại mỗi đối tượng, đường đi được sắp xếp theo thứ tự v&agrave; được &aacute;p dụng điều kiện sự cố. C&aacute;c đối tượng n&agrave;o đ&aacute;p ứng được điều kiện sự cố sẽ được đ&aacute;nh dấu như l&agrave; một sự cố. Bạn c&oacute; thể t&ugrave;y &yacute; &aacute;p dụng một điều kiện sự cố kết th&uacute;c; khi điều kiện kết th&uacute;c l&agrave; đ&uacute;ng, đối tượng kh&ocirc;ng c&ograve;n l&agrave; sự cố nữa. Kết quả sẽ được trả lại đối tượng gốc&mdash;với c&aacute;c cột thể hiện t&ecirc;n sự cố&mdash;v&agrave; cho biết đối tượng n&agrave;o đ&aacute;p ứng điều kiện sự cố. Bạn c&oacute; thể trả lại tất cả c&aacute;c đối tượng gốc hoặc chỉ những đối tượng l&agrave; sự cố.
+    </p>
+    <p>V&iacute; dụ, giả sử bạn c&oacute; c&aacute;c gi&aacute; trị đo GPS của cơn b&atilde;o sau mỗi 10 ph&uacute;t. Mỗi gi&aacute; trị đo GPS ghi lại t&ecirc;n, vị tr&iacute; v&agrave; thời gian ghi cơn b&atilde;o cũng như tốc độ gi&oacute;. Khi sử dụng c&aacute;c trường n&agrave;y, bạn c&oacute; thể tạo ra một sự cố m&agrave; bất kỳ gi&aacute; trị đo lường n&agrave;o c&oacute; tốc độ gi&oacute; lớn hơn 208 km/giờ đều được gọi l&agrave; sự cố  <code>Thảm khốc</code>. Khi kh&ocirc;ng thiết lập điều kiện kết th&uacute;c, sự cố sẽ kết th&uacute;c nếu đối tượng kh&ocirc;ng c&ograve;n đ&aacute;p ứng được điều kiện bắt đầu nữa (tốc độ gi&oacute; giảm xuống dưới 208 km/giờ).
+    </p>
+    <p>Sử dụng v&iacute; dụ kh&aacute;c, giả sử bạn đang theo d&otilde;i nồng độ h&oacute;a chất trong nguồn nước địa phương bằng một trường c&oacute; t&ecirc;n  <code>contaminateLevel</code>. Bạn biết rằng mức khuyến c&aacute;o l&agrave; dưới 0,01 mg/L, v&agrave; mức nguy hiểm l&agrave; tr&ecirc;n 0.03 mg/L. Để ph&aacute;t hiện sự cố khi m&agrave; một gi&aacute; trị vượt qu&aacute; 0,03mg/L v&agrave; vẫn c&ograve;n l&agrave; sự cố cho đến khi mức &ocirc; nhiễm trở lại b&igrave;nh thường, bạn h&atilde;y tạo một sự cố sử dụng điều kiện bắt đầu l&agrave; <code>contaminateLevel &gt; 0.03</code> v&agrave; điều kiện kết th&uacute;c l&agrave; <code>contaminateLevel &lt; 0.01</code>. Việc n&agrave;y sẽ đ&aacute;nh dấu mọi chuỗi c&oacute; gi&aacute; trị vượt qu&aacute; 0.03mg/L cho đến khi ch&uacute;ng trở lại gi&aacute; trị dưới 0.01.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Chọn lớp dùng để phát hiện sự cố</h2></div>
+        <hr/>
+        <div>
+            <p>Điểm, đường, v&ugrave;ng hoặc bảng sẽ được sử dụng để t&igrave;m sự cố. Lớp đầu v&agrave;o phải được k&iacute;ch hoạt th&ocirc;ng tin thời gian cho c&aacute;c đối tượng thể hiện thời gian tức th&igrave;, cũng như c&oacute; một hoặc nhiều trường c&oacute; thể sử dụng được để x&aacute;c định đường đi.
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp dữ liệu từ bản đồ, bạn c&oacute; thể chọn mục  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới danh s&aacute;ch thả xuống để t&igrave;m đến nội dung của m&igrave;nh cho bộ dữ liệu chia sẻ tệp dữ liệu lớn hoặc lớp đối tượng.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Chọn một hoặc nhiều trường để xác định việc truy dấu</h2></div>
+        <hr/>
+        <div>
+            <p>C&aacute;c trường thể hiện m&atilde; của đường đi. Bạn c&oacute; thể sử dụng một hoặc nhiều trường để thể hiện c&aacute;c gi&aacute; trị duy nhất của đường đi.
+            </p>
+            <p>V&iacute; dụ: nếu bạn đang t&aacute;i tạo đường đi của cơn b&atilde;o, bạn c&oacute; thể sử dụng t&ecirc;n cơn b&atilde;o l&agrave;m trường đường đi.
+            </p>
+        </div>
+    </div>
+    <div id="startConditionExpression">
+        <div><h2>Xây dựng điều kiện biểu thức để báo hiệu điểm bắt đầu sự cố</h2></div>
+        <hr/>
+        <div>
+            <p>Th&ecirc;m điều kiện bằng tr&igrave;nh x&acirc;y dựng biểu thức để x&aacute;c định sự cố. Nếu điều kiện bạn quy định l&agrave; đ&uacute;ng, đối tượng sẽ l&agrave; một sự cố. Nếu bạn kh&ocirc;ng quy định điều kiện kết th&uacute;c, sự cố sẽ kết th&uacute;c khi điều kiện bắt đầu kh&ocirc;ng c&ograve;n đ&uacute;ng nữa.
+            </p>
+            <p>V&iacute; dụ: giả sử bạn muốn nhận được cảnh b&aacute;o khi tổng c&aacute;c trường  <code>nồng độ 1</code> v&agrave; <code>nồng độ 2</code> lớn hơn <code>nồng độ 3</code>.   Để thực hiện điều n&agrave;y, h&atilde;y &aacute;p dụng điều kiện l&agrave; <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; $feature[&quot;concentration_3&quot;])</code>.
+            </p>
+            <p>Nếu bạn quan t&acirc;m đến việc nồng độ thay đổi như thế n&agrave;o theo thời gian, v&agrave; muốn được cảnh b&aacute;o khi  <code>concentration_1</code> hiện tại lớn hơn hai gi&aacute; trị đo trước đ&oacute; của <code>concentration_2</code>, bạn c&oacute; thể sử dụng một biểu thức dạng <code>$feature[&quot;concentration_1&quot;] &gt;   $track.field[&quot;concentration_2&quot;].history(-3,-1)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="endConditionExpression">
+        <div><h2>Xây dựng điều kiện biểu thức để báo hiệu điểm kết thúc sự cố (tùy chọn)</h2></div>
+        <hr/>
+        <div>
+            <p>T&ugrave;y &yacute; th&ecirc;m điều kiện bằng tr&igrave;nh x&acirc;y dựng biểu thức để x&aacute;c định việc kết th&uacute;c sự cố. Nếu điều kiện kết th&uacute;c bạn quy định l&agrave; đ&uacute;ng, đối tượng sẽ kh&ocirc;ng c&ograve;n l&agrave; một sự cố. Nếu bạn kh&ocirc;ng quy định điều kiện kết th&uacute;c, sự cố sẽ kết th&uacute;c khi điều kiện bắt đầu kh&ocirc;ng c&ograve;n đ&uacute;ng nữa.    
+            </p>
+            <p>V&iacute; dụ: giả sử bạn muốn nhận được cảnh b&aacute;o khi tổng c&aacute;c trường  <code>nồng độ 1</code> v&agrave; <code>nồng độ 2</code> lớn hơn <code>nồng độ 3</code>, v&agrave; bạn muốn sự cố kết th&uacute;c nếu <code>nồng độ 4</code> nhỏ hơn <code>nồng độ 1</code>. Để thực hiện điều n&agrave;y, h&atilde;y &aacute;p dụng điều kiện l&agrave; <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; ($join[&quot;income&quot;] * .20)</code> v&agrave; một điều kiện kết th&uacute;c l&agrave; <code>($feature[&quot;concentration_4&quot;] &lt; $feature[&quot;concentration_1&quot;])</code>.
+            </p>
+            <p>Nếu bạn muốn sự cố kết th&uacute;c khi trung b&igrave;nh của  <code>concentration_1</code> hiện tại v&agrave; bốn gi&aacute; trị đo trước đ&oacute; lớn hơn gi&aacute; trị đo đầu ti&ecirc;n, bạn c&oacute; thể sử dụng một biểu thức dạng <code>$track.field[&quot;concentration_1&quot;].history(-5) &gt; $track.field[&quot;concentration_1&quot;].history(0)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="outputMode">
+        <div><h2>Hiển thị cho tôi</h2></div>
+        <hr/>
+        <div>
+            <p>Tất cả c&aacute;c phương ph&aacute;p đầu ra sẽ nối trường với đối tượng gốc. C&oacute; hai c&aacute;ch để x&aacute;c định đối tượng n&agrave;o được trả lại:
+                <ul>
+                    <li> <b>Tất cả c&aacute;c đối tượng</b>&mdash;Điều n&agrave;y l&agrave; mặc định. Tất cả c&aacute;c đối tượng sẽ được trả lại.
+                    </li>
+                    <li> <b>Chỉ sự cố</b>&mdash;Phương ph&aacute;p n&agrave;y sẽ chỉ trả lại c&aacute;c đối tượng l&agrave; sự cố. Mọi đối tượng kh&ocirc;ng phải l&agrave; sự cố sẽ kh&ocirc;ng được trả lại.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Phân tích dữ liệu với các khoảng thời gian (tùy chọn)</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định xem bạn c&oacute; muốn ph&aacute;t hiện sự cố bằng c&aacute;ch sử dụng khoảng thời gian cho ph&eacute;p ph&acirc;n đoạn đối tượng đầu v&agrave;o của bạn cho ph&acirc;n t&iacute;ch. Nếu sử dụng c&aacute;c khoảng thời gian, bạn phải thiết lập khoảng thời gian bạn muốn sử dụng v&agrave; t&ugrave;y &yacute; thiết lập thời gian tham chiếu. Nếu bạn kh&ocirc;ng thiết lập thời gian tham chiếu th&igrave; hệ thống sẽ sử dụng ng&agrave;y 1 th&aacute;ng 1 năm 1970. 
+            </p>
+            <p>V&iacute; dụ: nếu bạn thiết lập giới hạn thời gian l&agrave; 1 ng&agrave;y, bắt đầu l&uacute;c 9:00 s&aacute;ng ng&agrave;y 1 th&aacute;ng 1 năm 1990 th&igrave; mỗi đường đi sẽ được cắt ngắn v&agrave;o l&uacute;c 9:00 s&aacute;ng h&agrave;ng ng&agrave;y v&agrave; được ph&acirc;n t&iacute;ch trong khoảng thời gian đ&oacute;. 
+            </p>
+            <p>Sử dụng c&aacute;c khoảng thời gian l&agrave; c&aacute;ch nhanh để tăng tốc thời gian t&iacute;nh to&aacute;n, v&igrave; n&oacute; nhanh ch&oacute;ng tạo ra c&aacute;c đường đi nhỏ hơn cho ph&acirc;n t&iacute;ch. Nếu ph&acirc;n t&iacute;ch của bạn c&oacute; thể &aacute;p dụng chia t&aacute;ch khoảng thời gian định kỳ th&igrave; bạn n&ecirc;n d&ugrave;ng chức năng đ&oacute; cho việc xử l&yacute; dữ liệu lớn.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p> T&ecirc;n lớp sẽ được tạo. Nếu bạn đang ghi v&agrave;o ArcGIS Data Store, kết quả của bạn sẽ được lưu v&agrave;o phần  <b>Nội dung của t&ocirc;i</b> v&agrave; được th&ecirc;m v&agrave;o bản đồ. Nếu bạn đang ghi v&agrave;o một phần chia sẻ tệp dữ liệu lớn, kết quả của bạn sẽ được lưu v&agrave;o phần chia sẻ tệp dữ liệu lớn v&agrave; được th&ecirc;m v&agrave;o bản k&ecirc; của n&oacute;. N&oacute; sẽ kh&ocirc;ng được th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, c&ocirc;ng cụ sẽ thất bại.
+            </p>
+            <p>Khi ghi v&agrave;o  ArcGIS Data Store (kho dữ liệu lớn li&ecirc;n quan hoặc kho dữ liệu lớn kh&ocirc;ng gian thời gian) sử dụng hộp xổ xuống  <b>Lưu kết quả v&agrave;o</b>, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong mục <b>Nội dung của t&ocirc;i</b> để lưu trữ kết quả v&agrave;o.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

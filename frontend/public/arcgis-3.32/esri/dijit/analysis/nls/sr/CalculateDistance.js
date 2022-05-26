@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/sr/CalculateDistance",{inputLayerLabel:"Odaberite sloj lokacije rastera ili geoobjekta od kojeg \u017eelite da izra\u010dunate rastojanje",inputRaster:"Odaberite sloj rastera ili geoobjekta da biste predstavili barijere (opciono)",maxDistanceLabel:"Maksimalno rastojanje za izra\u010dunavanje (opciono)",outputCellSize:"Veli\u010dina izlazne \u0107elije (opciono)",distanceMethod:"Metod rastojanja",resultDistLayerName:"Naziv sloja sa rezultatima rastojanja",resultDirectionLayerName:"Naziv sloja sa rezultatima uputstava za navigaciju (opciono)",
+resultAllocationLayerName:"Naziv sloja sa rezultatima dodele (opciono)",outputBackDirectionName:"Naziv sloja povratnog smera rezultata (opciono)",outputLayerName:"Izra\u010dunato rastojanje za ${layername}",allocationFieldLabel:"Odaberite sloj za dodelu (opciono)",itemDescription:"Sloj geoobjekata nastao usled pokretanja re\u0161enja Izra\u010dunaj rastojanje na ${layerName}. ",itemTags:"Rezultat analize, CalculateDistance, ${layername}, ${fieldname}",itemSnippet:"Sloj geoobjekata nastao iz CalculateDistance.",
+planar:"Planarno",geodesic:"Geodetski",selectDistance:"-- izaberi --"});

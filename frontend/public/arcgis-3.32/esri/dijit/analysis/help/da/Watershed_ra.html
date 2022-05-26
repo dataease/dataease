@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Vandskel</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="Vandskelsopgave"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j fastl&aelig;gger afvandingsomr&aring;det over et s&aelig;t celler i en raster.
+    </p>
+    <p>Et vandskel er det opadh&aelig;ldende omr&aring;de, der bidrager til str&oslash;mning - generelt af vand - til et f&aelig;lles udl&oslash;b som koncentreret dr&aelig;ning. Det kan v&aelig;re en del af et st&oslash;rre vandskel, og det kan ogs&aring; indeholde mindre vandskel.
+    </p>
+    <p>V&aelig;rdien af ​​hvert vandskel tages fra v&aelig;rdien af ​​kilden i input-rasteren eller objektpunktlaget for vandl&oslash;bsretning. N&aring;r punktet for vandl&oslash;bsretning er et raster-datas&aelig;t, anvendes cellev&aelig;rdierne som standard. N&aring;r punktet for vandl&oslash;bsretning er et punktobjekt-datas&aelig;t, kommer v&aelig;rdierne fra det angivne felt.
+    </p>
+    <p>V&aelig;rkt&oslash;jet Vandskel underst&oslash;tter kun et D8-inputstr&oslash;mnings-rasterlag.
+    </p>
+    <p>N&aring;r du angiver input-placeringer for punkter for vandl&oslash;bsretning som objektdata, bliver standardfeltet det f&oslash;rste tilg&aelig;ngelige gyldige felt. Hvis der ikke er nogen gyldige felter, anvendes ObjectID-feltet (f.eks. OID eller FID) som standard.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>Vælg vandløbsretningslag</h2></div>
+        <hr/>
+        <div>
+            <p>Inputrasteren, der viser str&oslash;mningsretningen ud af hver celle.
+            </p>
+            <p>Rasteren for str&oslash;mningsretning kan oprettes ved hj&aelig;lp af v&aelig;rkt&oslash;jet Vandl&oslash;bsretning eller opgaven FlowDirection i RasterAnalysisTools-tjenesten. K&oslash;res med standard retningstype  <b>D8</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>Angiv input-placeringer for punkter for vandløbsretning</h2></div>
+        <hr/>
+        <div>
+            <p>Placeringerne for punkter for vandl&oslash;bsretning.
+            </p>
+            <p>For en raster repr&aelig;senterer dette celler, over hvilke afvandingsomr&aring;det vil blive bestemt. Alle celler, der ikke er NoData, vil blive brugt som kildeceller. For et punkt-input repr&aelig;senterer dette placeringer, over hvilke afvandingsomr&aring;det vil blive bestemt.
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>Vælg punktfelt for vandløbsretning</h2></div>
+        <hr/>
+        <div>
+            <p>Feltet bruges til at tildele v&aelig;rdier til placeringer for punkter for vandl&oslash;bsretning.
+            </p>
+            <p>Hvis input-punktlaget for vandl&oslash;bsretning er en raster, bruges V&aelig;rdi. Hvis det er et objekt, bruges et numerisk felt. Hvis feltet indeholder v&aelig;rdier med flydende komma, bliver de afkortet til heltal.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; det lag, som oprettes under  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Du kan angive navnet p&aring; en mappe i  <b>Mit indhold</b>, hvor resultatet bliver gemt ved at benytte rullelisten <b>Gem resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>핫 스팟 찾기(Find Hot Spots)</h2><p/>
+        <h2><img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" alt="핫 스팟 찾기"></h2>
+        <hr/>
+    <p>핫 스팟 찾기 도구는 데이터의 공간 패턴에 통계적으로 유의한 군집이 있는지 확인합니다. 
+        <ul>
+            <li>포인트(범죄 사건, 나무, 교통 사고)가 실제로 군집되어 있습니까?  어떻게 확신할 수 있습니까?
+            </li>
+            <li>통계적으로 유의한 핫 스팟을 발견했습니까? 아니면 심볼화 방식을 변경한 경우 맵에 다른 정보가 나타납니까?
+            </li>
+        </ul>
+        핫 스팟 찾기 도구를 사용하면 확신을 가지고 이러한 질문에 답변할 수 있습니다.
+    </p>
+    <p>무작위 공간 패턴도 어느 정도의 군집을 나타냅니다.  또한 사람의 눈과 뇌는 아무것도 없는 경우에도 자연적으로 패턴을 찾으려고 시도합니다.  따라서 데이터의 패턴이 실제 공간 프로세스의 결과인지 아니면 단순히 우연의 일치인지 구분하기가 어려울 수 있습니다.  이러한 이유로 연구 기관과 분석 기관에서는 핫 스팟 찾기(Getis-Ord Gi*)와 같은 통계 방법을 사용하여 공간 패턴을 정량화합니다. 데이터에서 통계적으로 유의한 군집을 찾으면 중요한 정보를 얻게 됩니다.  군집한 위치와 시점을 알면 확인한 패턴을 더욱 개선할 수 있는 프로세스에 대한 중요한 단서를 얻을 수 있습니다.  예를 들어 특정 거주 지역에서 주거 침입 사건이 지속적으로 증가하는 것을 안다는 것은 효과적인 예방 전략을 수립하거나, 부족한 경찰 인력을 배정하거나, 거주 지역 감시 프로그램을 시작하거나, 강도 높은 수사를 승인하거나, 잠재적 용의자를 파악해야 하는 경우에 매우 중요한 정보입니다.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>핫 스팟을 계산할 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>핫 스팟과 콜드 스팟을 찾아낼 포인트 레이어입니다.
+            </p>
+            <p>이 분석은 그룹을 사용하며 투영 좌표체계가 필요합니다.  <b>분석 환경</b>의 <b>처리 좌표체계</b>를 설정할 수 있습니다. 처리 좌표계가 투영 좌표계로 설정되지 않은 경우에 <b>분석을 실행</b> 하면 투영 좌표계로 설정하라는 메시지가 나타납니다.
+            </p>
+            <p>맵에서 레이어를 선택하는 것 이외에, 드롭다운 목록의 하단에 있는  <b>Analysis Layer 선택</b>을 선택하여 빅데이터 파일 공유 데이터셋 또는 피처 레이어의 콘텐츠를 찾아볼 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>높고 낮은 군집점 찾기</h2></div>
+        <hr/>
+        <div>
+            
+            <p>이 분석은 &quot;높고 낮은 값이 공간적으로 군집되는 위치는 어디입니까?&quot;라는 질문에 대한 답을 제공합니다.
+            </p>
+            <p>데이터가 포인트이고  <b>포인트 수</b>를 선택한 경우 이 도구는 포인트 피처의 공간 배열을 평가하여 &quot;포인트가 예기치 않게 군집되거나 분산된 곳은 어디입니까?&quot;라는 질문에 대한 답을 제공합니다.
+            </p>
+            <p>필드를 선택하면 이 도구는 각 피처와 연결된 값의 공간 배열을 평가하여 &quot;높고 낮은 값이 군집된 위치는 어디입니까&quot;라는 질문에 대한 답을 제공합니다.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>집계를 위한 그룹 크기 선택</h2></div>
+        <hr/>
+        <div>
+            <p>입력 포인트 분석에 사용될 정사각형 그룹을 생성하는 데 사용되는 거리입니다.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>시간 단계를 사용하여 핫 스팟 찾기(선택)</h2></div>
+        <hr/>
+        <div>
+            <p>포인트 레이어에 시간이 활성화되었으며 시간 유형이 인스턴트인 경우 시간 단계를 사용하여 분석할 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>시간 단계 간격</h2></div>
+        <hr/>
+        <div>
+            <p>시간 단계 생성에 사용되는 시간 간격입니다. 시간은 입력 데이터의 시작 시간 또는 종료 시간에 정렬하거나 지정된 참조 시간에 정렬할 수 있습니다.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>시간 단계 간격</h2></div>
+        <hr/>
+        <div>
+            <p>시간 단계 생성에 사용되는 시간 간격입니다. 시간은 입력 데이터의 시작 시간 또는 종료 시간에 정렬하거나 지정된 참조 시간에 정렬할 수 있습니다.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStepAlignment">
+        <div><h2>시간 단계를 정렬하는 방법 선택</h2></div>
+        <hr/>
+        <div>
+            <p>시간 단계 정렬 방식입니다. 다음과 같은 3가지 방식으로 정렬할 수 있습니다.
+                <ul>
+                    <li> <b>시작 시간</b> - 시간 단계가 시간 상의 첫 번째 피처에 맞춰 정렬됩니다.
+                    </li>
+                    <li> <b>종료 시간</b> - 시간 단계가 시간 상의 마지막 피처에 맞춰 정렬됩니다.
+                    </li>
+                    <li> <b>참조 시간</b> - 시간 단계가 지정 시간에 맞춰 정렬됩니다.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>시간 단계를 정렬하기 위한 참조 시간</h2></div>
+        <hr/>
+        <div>
+            <p>시간 단계를 정렬하는 데 사용되는 날짜와 시간입니다.
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>핫 스팟 계산을 위한 네이버후드 크기 선택</h2></div>
+        <hr/>
+        <div>
+            <p>핫 스팟 계산에 사용되는 네이버후드를 확인하는 데 사용되는 거리입니다. 각 그룹이 네이버후드를 하나 이상 갖도록 하려면 네이버후드가 그룹 크기보다 커야 합니다. 각 그룹이 분석되어 인접 그룹과 비교됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference(wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>이 매개변수는 프로세싱 공간 참조를 설정하기 위한 시험판용 임시 매개변수입니다. 대부분의 빅데이터 도구의 경우 투영 좌표체계를 프로세싱 공간 참조로 사용해야 합니다. 기본 설정에 따라 이 도구는 입력 좌표체계를 사용하지만 지리 좌표체계일 경우에는 사용할 수 없습니다. 투영 좌표체계를 설정하려면 WKID를 입력합니다. 예를 들어  <b>Web Mercator</b>를 설정하려면 <code>3857</code>을 입력합니다.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>결과를 저장할 ArcGIS 데이터 저장소 선택</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytic 결과는 데이터 저장소에 저장되며  Portal for ArcGIS에서 피처 레이어로 나타납니다. 대부분의 경우 결과는 기본 설정에 따라 시공간적 데이터 저장소에 저장되어야 합니다. 하지만 관계형 데이터 저장소에 결과를 저장하는 것이 좋은 경우도 있습니다. 결과를 관계형 데이터 저장소에 저장하려는 이유는 다음과 같습니다. 
+                <ul>
+                    <li>결과를 포털 간 컬래버레이션에 사용할 수 있습니다.
+                    </li>
+                    <li>기능을 결과와 동기화할 수 있습니다.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>GeoAnalytics 결과가 늘어날 것으로 예상되며 시공간 빅데이터 저장소의 기능을 활용하여 대용량 데이터를 처리하려는 경우에는 관계형 데이터 저장소를 사용하지 마세요.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> 생성될 레이어의 이름입니다. ArcGIS Data Store에 작성하는 경우  결과는  <b>내 콘텐츠</b>에 저장되고 맵에 추가됩니다. 빅데이터 파일 공유에 작성하는 경우  결과는 빅데이터 파일 공유에 저장되고 해당 매니페스트에 추가됩니다. 이러한 결과는 맵에 추가되지 않습니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어가 이미 있으면 도구를 사용할 수 없습니다.
+            </p>
+            <p>이 결과 레이어는 높은 값과 낮은 값 또는 포인트 수의 통계적으로 유의한 군집을 보여 줍니다. 레이어가 이미 있는 경우 결과의 이름을 바꿀지 묻는 메시지가 나타납니다.
+            </p>
+            <p> ArcGIS Data Store(관계형 또는 시공간 빅데이터 저장소)에 작성하는 경우  <b>결과 저장:</b> 드롭다운 상자를 사용하여 <b>내 콘텐츠</b>에서 결과를 저장할 폴더의 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

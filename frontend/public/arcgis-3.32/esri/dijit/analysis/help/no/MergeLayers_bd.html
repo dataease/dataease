@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Slå sammen lag</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Sl&aring; sammen lag"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet sl&aring;r sammen to geoobjektlag og oppretter ett enkelt utdatalag. Lagene som sl&aring;s sammen, m&aring; ha samme type geometri og tid. Du kan bestemme hvordan feltene fra inndatalagrene skal sl&aring;s sammen og kopieres. Eksempel:
+        <ul>
+            <li>Hvis du har tre lag for England, Wales og Skottland, og du vil ha et enkelt lag for Storbritannia. 
+            </li>
+            <li>Du har to lag, og hvert lag inneholder tomteinformasjon for tilgrensende kommuner. Du vil sl&aring; lagene sammen til ett lag og kun beholde feltene som har samme navn og type i de to inndatalagene.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Velg kartlag</h2></div>
+        <hr/>
+        <div>
+            <p>Laget med punkter, linjer, polygoner eller tabul&aelig;re data som det andre geoobjektlaget blir sl&aring;tt sammen med. Alle felt fra dette laget tas med i resultatlaget.
+            </p>
+        </div>
+    </div>
+    <div id="mergeLayer">
+        <div><h2>Velg laget du vil slå sammen</h2></div>
+        <hr/>
+        <div>
+            <p>Geoobjektlaget som skal sl&aring;s sammen med inndatalaget. Laget som skal sl&aring;s sammen med et annet, m&aring; ha samme type geometri og tid som inndatalaget.
+            </p>
+        </div>
+    </div>
+    <div id="mergingAttributes">
+        <div><h2>Endre felter som slås sammen</h2></div>
+        <hr/>
+        <div>
+            <p>Standardinnstillingen er at alle feltene fra begge inndatalagene inkluderes i utdatalaget. Ved hjelp av f&oslash;lgende alternativer kan du endre hvordan felter fra laget som skal sl&aring;s sammen med et annet, skal inkluderes i resultatet:
+                <ul>
+                    <li> <b>Gi nytt navn</b> &ndash;&nbsp;Feltet f&aring;r nytt navn i utdatalaget.
+                    </li>
+                    <li> <b>Fjern</b> &ndash; Feltet fjernes fra utdatalaget.
+                    </li>
+                    <li> <b>Match</b> &ndash; Feltnavnene beholdes. Verdiene i feltene i laget som skal sl&aring;s sammen, kopieres til de tilsvarende utdatafeltene.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Hvis begge lagene inneholder et felt med et identisk navn og datatype, blir innholdet i begge feltene sl&aring;tt sammen til ett felt med det aktuelle navnet. Det gjelder ikke felter der  <b>Match</b> brukes i parameteren <b>Endre felter som sl&aring;s sammen</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; laget som opprettes. Hvis du skriver til en ArcGIS Data Store, blir resultatene dine lagret i  <b>Mitt innhold</b> og lagt til kartet. Hvis du skriver til et fildelingsomr&aring;de for stordata, blir resultatene lagret i fildelingsomr&aring;det for stordata og lagt til dets innholdsoversikt. De blir ikke lagt til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget allerede eksisterer, vil verkt&oslash;yet mislykkes.
+            </p>
+            <p>N&aring;r du skriver til  ArcGIS Data Store (fildelingsomr&aring;de for relasjons- eller geotemporale stordata) via rullegardinlisten  <b>Lagre resultat i</b>, kan du angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatet skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

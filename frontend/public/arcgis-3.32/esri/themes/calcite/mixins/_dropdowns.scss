@@ -1,0 +1,13 @@
+@mixin dropdown-outer() {
+    padding: 0;
+    margin: 0;
+    font-size: $font-size-base;
+    background-color: $dropdown-bg;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid $dropdown-fallback-border;
+    border: 1px solid $dropdown-border;
+    overflow: auto;
+    @include calcite-box-shadow-dropdown();
+    @include box-sizing(content-box);
+}

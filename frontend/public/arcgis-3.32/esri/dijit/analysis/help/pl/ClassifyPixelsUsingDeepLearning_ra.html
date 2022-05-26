@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Klasyfikuj piksele metodą Deep Learning</h2><p/>
+        <h2><img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" alt="Klasyfikuj piksele metodą Deep Learning"></h2>
+        <hr/>
+    <p>To narzędzie uruchamia na rastrze wejściowym model wytrenowany metodą Deep Learning, tworząc sklasyfikowany raster, w kt&oacute;rym każdy piksel ma przypisaną etykietę klasy.
+    </p>
+    <p>Jeśli zaznaczono opcję  <b>Użyj zasięgu bieżącej mapy</b>, analizowany będzie tylko ten obszar rastra, kt&oacute;ry jest widoczny w bieżącym zasięgu mapy. Jeśli opcja ta nie jest zaznaczona, przeanalizowany zostanie cały raster, nawet jeśli znajduje się poza bieżącym zasięgiem mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Wybierz obraz używany do klasyfikowania pikseli</h2></div>
+        <hr/>
+        <div>
+            <p>Obraz wejściowy do klasyfikowania.
+            </p>
+            <p>Może to być adres URL usługi rastrowej, warstwa rastrowa lub warstwa usługi rastrowej.
+            </p>
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Wybierz model Deep Learning używany do klasyfikowania pikseli</h2></div>
+        <hr/>
+        <div>
+            <p>Element wejściowego pakietu Deep Learning ( <code>.dlpk</code>).
+            </p>
+            <p>Pakiet Deep Learning składa się z pliku JSON definicji modelu Esri ( <code>.emd</code>) pliku modelu binarnego Deep Learning i opcjonalnie funkcji rastrowej w języku Python, kt&oacute;ra ma być używana.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Podaj argumenty modelu Deep Learning</h2></div>
+        <hr/>
+        <div>
+            <p>Argumenty funkcji są zdefiniowane w klasie funkcji rastrowej w języku Python, do kt&oacute;rej odwołuje się model wejściowy. W tym miejscu wymienione są dodatkowe parametry i argumenty Deep Learning na potrzeby eksperyment&oacute;w i precyzowania, takie jak pr&oacute;g ufności używany podczas dostosowywania czułości.
+            </p>
+            <p>Nazwy argument&oacute;w są uzupełniane przez narzędzie, kt&oacute;re odczytuje moduł Python z serwera analiz rastrowych.
+            </p>  
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputClassifiedRaster">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Nazwa warstwy, kt&oacute;ra zostanie utworzona w obszarze  <b>Moje zasoby</b> i dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, wyświetlony zostanie komunikat z monitem o podanie innej nazwy.
+            </p>
+            <p>Za pomocą listy rozwijanej  <b>Zapisz wynik w</b> można podać nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

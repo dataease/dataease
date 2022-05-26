@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Havza Oluştur</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="Havza Oluştur"></h2>
+        <hr/>
+    <p>Bu ara&ccedil; girdi katmanınızdaki her nokta i&ccedil;in su toplama veya yukarı akış alanlarını belirler. 
+    </p>
+    <p>&Ouml;rneğin, elinizdeki su kaynaklı kirlilik konumlarını g&ouml;steren nokta detaylarını kullanarak kirliliğin olası kaynaklarını bulmak istiyorsunuz. Kirliliğin kaynağı su toplama yukarı akış noktasında bir yerlerde olacağından, bu aracı kirlilik kaynaklarını barındıran su havzalarını tanımlamak i&ccedil;in kullanabilirsiniz.
+    </p>
+    <p>Girdi noktalarınızın konumu &ouml;nemlidir.  Bunlar drenaj &ccedil;izgisi &uuml;zerine hassas bi&ccedil;imde yerleştirilmezse, ortaya &ccedil;ıkan su havzaları &ccedil;ok k&uuml;&ccedil;&uuml;k olabilir ve analiz i&ccedil;in kullanışlı olmayabilir.  <b>En yakın drenaj mesafesini ara</b> &ouml;zelliği, girdi noktalarınızı ayarlamak i&ccedil;in kullanılabilir, b&ouml;ylece bu noktalar tam olarak bir drenaj hattına denk gelerek, bu hattaki noktaya akan su havzası kolayca bulunabilir.  Su havzalarını bulmak i&ccedil;in kullanılan ayarlanmış konumlar, &ccedil;ıktı katmanına yazılır; girdi noktalarınız değiştirilmez.
+    </p>
+    <p>Sonu&ccedil;ta ortaya iki katman i&ccedil;eren bir grup katmanı &ccedil;ıkar: su havzaları ve su havzalarını hesaplamak i&ccedil;in kullanılan ayarlanmış noktalar.     
+    </p>
+    <p>Sonu&ccedil; olarak elde edilen su havzaları, s&ouml;z konusu ek &ouml;zniteliklerin yanı sıra, girdi noktalarınızın t&uuml;m &ouml;zniteliklerini de i&ccedil;erir:     
+        <ul>
+            <li> <i>PourPtID</i>&mdash;Girdi noktasının Kimlik değerini kapsar
+            </li>
+            <li> <i>Area Square Kilometers</i>&mdash;Kilometre kare cinsinden yukarı akış havzası alanını i&ccedil;erir
+            </li>
+            <li> <i>Description</i> ve <i>DataResolution</i>&mdash;İzi hesaplamak i&ccedil;in kullanılan hidrolojik verilerle ilgili bilgileri i&ccedil;erir
+            </li>
+        </ul>
+        
+    </p>
+    <p> <b>Ge&ccedil;erli harita yayılımını kullan</b> se&ccedil;eneği işaretliyse, yalnızca ge&ccedil;erli harita yayılımı dahilinde g&ouml;r&uuml;n&uuml;r olan detaylar su havzası hesaplaması i&ccedil;in kullanılır.  İşaretli değilse, girdi katmanındaki t&uuml;m detaylar, ge&ccedil;erli harita yayılımının dışında bile olsa analiz edilir.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Su havzalarını hesaplamak için kullanılan nokta detayları</h2></div>
+        <hr/>
+        <div>
+            <p>Her nokta i&ccedil;in bir su toplama (yukarı akış besleme alanı) hesaplanır.  
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;meye ek olarak, a&ccedil;ılır listenin alt kısmında bulunan  <b>Analiz Katmanı Se&ccedil;</b> se&ccedil;eneğini de se&ccedil;ebilirsiniz. Bu se&ccedil;enek, analizinizde kullanmak &uuml;zere &ccedil;eşitli kaynaklardan gelen veri k&uuml;melerine g&ouml;z atabileceğiniz ve se&ccedil;ebileceğiniz bir galeri a&ccedil;ar. 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>En yakın drenaja olan mesafeyi ara</h2></div>
+        <hr/>
+        <div>
+            <p>Girdi noktalarınız bir drenaj &ccedil;izgisinden uzağa yerleştirilmişse, ortaya &ccedil;ıkan su havzaları b&uuml;y&uuml;k olasılıkla &ccedil;ok k&uuml;&ccedil;&uuml;k olacak ve yukarı akış kirlilik kaynağının belirlenmesi gibi analizlerde kullanışlı olmayacaktır.  &Ccedil;oğu durumda, girdi noktanızın en yakın drenaj &ccedil;izgisine oturmasını isteyebilirsiniz, b&ouml;ylece drenaj hattındaki bir noktaya akan su havzaları kolayca bulunabilir.  En yakın drenaj hattını bulmak i&ccedil;in bir arama mesafesi belirtin. Bir arama mesafesi belirtmezseniz, ara&ccedil; kendi kendine hesaplayarak sınırlar dahilinde bir arama mesafesi kullanır.  
+            </p>
+            <p>Girdi noktanızın tam konumunu kullanmak i&ccedil;in sıfır değerli bir arama mesafesi belirtin.  
+            </p>
+            <p>Analiz ama&ccedil;lı olarak drenaj &ccedil;izgileri standart hidrolojik modeller kullanılarak Esri tarafından &ouml;nceden hesaplanır. Arama mesafesi i&ccedil;inde drenaj &ccedil;izgisi yoksa, arama mesafesinde en y&uuml;ksek akış birikimini i&ccedil;eren konum kullanılır.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p>Bu,  <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adıdır.  Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman adı zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır men&uuml;s&uuml;n&uuml; kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+            <p> Bu aracın &ccedil;alıştırılması kredi harcamaz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

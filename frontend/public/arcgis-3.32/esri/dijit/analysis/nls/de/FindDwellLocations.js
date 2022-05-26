@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/de/FindDwellLocations",{inputLayerLabel:"Den Layer ausw\u00e4hlen, in dem nach Verweilorten gesucht werden soll",selectTracksLabel:"Mindestens ein Feld zum Identifizieren von Tracks ausw\u00e4hlen",defineDistanceLabel:"R\u00e4umliche Suchentfernung definieren",distMethodLabel:"Methode zum Berechnen der Entfernung ausw\u00e4hlen",temporalSearchLabel:"Zeitlichen Suchbereich definieren",outputDwellLabel:"Verweilorte ausgeben als",outputLayerName:"F\u00fcr ${inputLayerName} nach Verweilorten suchen",
+meanCenters:"Mittelwerte f\u00fcr Mittelpunkte",convexHulls:"Konvexe H\u00fcllen",dwellFeatures:"Verweilfeatures",allFeatures:"Alle Features",itemDescription:"\u00dcber 'Verweilorte suchen' f\u00fcr ${inputLayerName} erstellter Feature-Layer.",itemTags:"Analyseergebnis, Verweilorte suchen, ${inputLayerName}",itemSnippet:'Aus "Verweilorte suchen" erstellter Feature-Layer'});

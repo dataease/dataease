@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Find Similar Locations</h2><p/>
+        <h2><img src="./images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="Find Similar Locations"></h2>
+        <hr/>
+    <p>Based on criteria you specify, the Find Similar Locations tool measures the similarity of locations in your candidate search layer to one or more reference locations.  This tool can answer questions such as
+        <ul>
+            <li>Which of your stores are most similar to your top performers with regard to customer profiles?
+            </li>
+            <li>Based on characteristics of  villages hardest hit by the disease, which other villages are high risk?
+            </li>
+        </ul>
+        To answer questions such as these, you provide the reference locations, the candidate search locations, and the fields representing the criteria you want to match.  The first input layer should  contain your reference or benchmark locations.  For example, this might be a layer containing your top performing stores or the villages hardest hit by the  disease.  You then specify the layer containing your candidate search locations.  This might be all of your stores or all other villages.  Finally, you  identify one or more fields to use for measuring similarity.  The Find Similar Locations tool will then rank all of the candidate search locations by how closely they match your reference locations across all of the fields you have selected.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choose layer containing the reference locations</h2></div>
+        <hr/>
+        <div>
+            <p>The point, line, or area layer containing the reference locations to match.
+
+            </p>
+            <p>In addition to choosing a layer from your map, you can select  <b>Choose Analysis Layer</b> found at the bottom of the drop-down list. This option opens a gallery where you can browse to and select datasets from various sources to use in your analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>You may use all locations or make a selection</h2></div>
+        <hr/>
+        <div>
+            <p>Use the selection buttons to identify the reference locations, if necessary.  For example, if the input layer contains all of the locations&mdash;the reference locations as well as the candidate search locations&mdash;you will need to use one of the selection tools to identify the reference locations.  If you create two separate layers, one with the reference locations and the other with all candidate search locations, you do not need to make a selection.
+
+            </p>
+            <p>If there is more than one reference location, a single location is created by averaging the values for each of the fields used to analyze similarity.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>Search for similar locations in</h2></div>
+        <hr/>
+        <div>
+            <p>The candidate search locations in this layer will be ranked from most to least similar.  Similarity is based on how closely each location matches the reference location across the fields you specify.
+
+            </p>
+            <p>In addition to choosing a layer from your map, you can select  <b>Choose Analysis Layer</b> found at the bottom of the drop-down list. This option opens a gallery where you can browse to and select datasets from various sources to use in your analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>Base similarity on</h2></div>
+        <hr/>
+        <div>
+            <p>The fields you select will be the criteria used to evaluate similarity.  If you select a population and income field, for example, the candidate search locations with the lowest (best) rankings will be those that have similar population and income values to your reference locations.
+
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>Show me</h2></div>
+        <hr/>
+        <div>
+            <p>You may either see all of the candidate search locations ranked from most similar to least similar, or you can specify the number of results you would like to see.
+
+                <ul>
+                    <li> <b>All locations from most to least similar</b>&mdash;All of the features in the candidate search layer will be included in rank order in the result layer
+                    </li>
+                    <li> <b>The number of locations returned</b>&mdash;You determine how many of the top most similar candidates should be included in the result layer. The default input is 1.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>Provide a name for the layer that will be created in  <b>My Content</b>  and added to the map.  
+This result layer will contain the reference locations and the number of ranked candidate search locations you specified.   If the result layer name already exists you will be asked to rename it.
+            </p>
+            <p>Using the  <b>Save result in</b> drop-down box, you can  specify the name of a folder in <b>My Content</b> where the result will be saved.
+            </p>  
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Prati nizvodno</h2><p/>
+        <h2><img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" alt="Prati nizvodno"></h2>
+        <hr/>
+    <p>Ovaj alat određuje trag ili putanju protoka nizvodno od točaka u sloju unosa.
+    </p>
+    <p>Na primjer, pretpostavimo da imate točkaste geoobjekte koji predstavljaju izvore oneči&scaron;ćenja i vi želite otkriti gdje će teći zagađena voda u području proučavanja. Možete upotrijebiti opciju Prati nizvodno da biste identificirali putanju zagađene vode.  Ovo se praćenje može i podijeliti u pojedine linijske segmente određivanjem vrijednosti i jedinica udaljenosti. Dobivena linija može biti linija ukupne duljine putanje toka, određena maksimalna duljina praćenja ili dio izrezan na poligonalne geoobjekte kao &scaron;to je područje proučavanja. U mnogo slučajeva ako se dobije ukupna duljina putanje traga, bit će od izvora sve do oceana.
+    </p>
+    <p>Rezultat je linija koja predstavlja nizvodni trag.  Ako je udaljenost određena za opciju  <b>Podijeli trag u segmente linije</b>, linijski trag podijelit će se u vi&scaron;e linija gdje je svaka linija određene duljine.  Primjerice, ako va&scaron;a točka unosa predstavlja zagađeni izljev i rijeka u koju utiječe kreće se brzinom od 0,6 milja po satu ili 15 milja po danu, možda ćete htjeti podijeliti rijeku u segmente od 15 milja. Dijeljenje traga u intervale od 15 milja otprilike će pokazivati gdje će izljev putovati svaki dan.    Linija će se simbolizirati pomoću gradiranih boja na temelju udaljenosti i označit će se s udaljenosti od početka praćenja.
+    </p>
+    <p>Dobiveni trag imat će sve atribute svih unesenih točaka, kao i sljedeće dodatne atribute. 
+        <ul>
+            <li> <i>PointID</i> &ndash; sadrži vrijednost ID-ja od unosne točke..
+                
+
+            </li>
+            <li> <i>LengthKm</i> &ndash; sadrži duljinu u kilometrima za ukupni nizvodni trag.
+                
+
+            </li>
+            <li> <i>Description</i> i <i>DataResolution</i> &ndash; sadrži informacije koje se odnose na hidrolo&scaron;ke podatke za izračun traga.
+                
+
+            </li>
+            <li> <i>FromDistance</i> i <i>ToDistance</i> &ndash; sadrži udaljenosti od i do svakog segmenta linije. Ovi se atributi pi&scaron;u ako se upotrebljava opcija <b>Podijeli trag u segmente linije</b>.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Ako je označena opcija  <b>Upotrijebi trenutačni obuhvat karte</b>, analizirat će se samo geoobjekti točke u sloju unosa koji su vidljivi unutar trenutačnog obuhvata karte. Ako opcija nije označena, svi će se geoobjekti u ulaznom sloju upotrijebiti, čak i ako se nalaze izvan trenutačnog obuhvata karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Točkasti geoobjekti koji se upotrebljavaju kao početne lokacije za svaki nizvodni trag</h2></div>
+        <hr/>
+        <div>
+            <p>Točkasti geoobjekti koji se upotrebljavaju kao početne lokacije za nizvodni trag.  Izlazni rezultat sadržavat će liniju za svaku točku unosa.
+            </p>
+            <p>Osim odabira sloja iz karte, možete odabrati opciju  <b>Izaberi sloj za analizu</b> koja se nalazi na dnu popisa padajućeg izbornika. Ova opcija otvara galeriju u kojoj možete pretraživati i odabrati skupove podataka iz raznih izvora te ih koristiti u svojoj analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="SplitDistance">
+        <div><h2>Podijeli trag u segmente linije</h2></div>
+        <hr/>
+        <div>
+            <p>Linijski trag podijelit će se u vi&scaron;e linija gdje je svaka linija određene duljine.   Primjerice, ako va&scaron;a točka unosa predstavlja zagađeni izljev i rijeka u koju utiječe kreće se brzinom od 0,6 milja po satu ili 15 milja po danu, možda ćete htjeti podijeliti rijeku u segmente od 15 milja. Dijeljenje traga u intervale od 15 milja otprilike će pokazivati gdje će izljev putovati svaki dan.    Linija će se simbolizirati pomoću gradiranih boja na temelju udaljenosti i označit će se s udaljenosti od početka praćenja. Dobiveni trag imat će vi&scaron;e segmenata linije, svaki s poljima  <i>FromDistance</i> i <i>ToDistance</i>.
+            </p>
+        </div>
+    </div>
+    <div id="MaxDistance">
+        <div><h2>Maksimalna udaljenost traga</h2></div>
+        <hr/>
+        <div>
+            <p>Utvrđuje ukupnu duljinu linije koja će se dobiti.  Ako pružite poligonalne geoobjekte za izrezivanje traga, rezultat će se izrezati na poligonalni geoobjekt, neovisno o udaljenosti koju ovdje unesete.
+            </p>
+        </div>
+    </div>
+    <div id="ClipArea">
+        <div><h2>Izreži izlaz u</h2></div>
+        <hr/>
+        <div>
+            <p>Nacrtajte ili omogućite poligonalni sloj gdje želite da se izreže trag. Primjerice, ako želite da rezultat traga bude unutar područja proučavanja, kao &scaron;to je okrug, upotrijebite geoobjekt okruga kao unos tako da trag stane na granici okruga.
+            </p>
+        </div>
+    </div>
+    <div id="OutputTrace">
+        <div><h2>Naziva sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja koji će se stvoriti u dijelu  <b>Moj sadržaj</b> i dodati karti.  Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako naziv sloja već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Upotrebom padajućeg izbornika  <b>Spremi rezultat u</b> možete odrediti naziv mape u dijelu <b>Moj sadržaj</b> gdje će se spremiti rezultat.
+            </p>
+            <p> Pokretanjem tog alata ne tro&scaron;e se krediti.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Skapa avrinningsområden</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="Skapa avrinningsomr&aring;den"></h2>
+        <hr/>
+    <p>Det h&auml;r verktyget fastst&auml;ller avrinningsomr&aring;det, eller fl&ouml;desackumuleringsomr&aring;det uppstr&ouml;ms, f&ouml;r varje punkt i indatalagret. 
+    </p>
+    <p>Du kan till exempel ha punktgeoobjekt som representerar platser f&ouml;r vattenburna f&ouml;roreningar och vill hitta de troliga k&auml;llorna till f&ouml;roreningen. Eftersom k&auml;llan till f&ouml;roreningen m&aring;ste ligga n&aring;gonstans i avrinningsomr&aring;det uppstr&ouml;ms fr&aring;n punkten, kan du anv&auml;nda det h&auml;r verktyget f&ouml;r att avg&ouml;ra vilket avrinningsomr&aring;de som inneh&aring;ller k&auml;llorna till f&ouml;roreningen.
+    </p>
+    <p>Platsen f&ouml;r indatapunkterna &auml;r viktig. Om de inte ligger exakt p&aring; en dr&auml;neringslinje kan de resulterande avrinningsomr&aring;dena bli mycket sm&aring; och inte s&auml;rskilt anv&auml;ndbara f&ouml;r din analys.  <b>S&ouml;kavst&aring;nd till n&auml;rmaste dr&auml;nering</b> kan anv&auml;ndas f&ouml;r att justera platsen f&ouml;r dina indatapunkter s&aring; att de hamnar precis p&aring; en dr&auml;neringslinje. D&auml;rmed kan du hitta det avrinningsomr&aring;de som rinner till punkten p&aring; dr&auml;neringslinjen.  De justerade platserna som anv&auml;nds f&ouml;r att hitta avrinningsomr&aring;dena skrivs till utdatalagret &ndash; dina indatapunkter &auml;ndras inte.
+    </p>
+    <p>Resultatet blir ett grupplager som inneh&aring;ller tv&aring; lager: avrinningsomr&aring;dena och de justerade punkter som anv&auml;nds f&ouml;r att ber&auml;kna avrinningsomr&aring;dena.     
+    </p>
+    <p>De resulterande avrinningsomr&aring;dena kommer att ha alla attribut fr&aring;n indatapunkterna tillsammans med f&ouml;ljande ytterligare attribut:     
+        <ul>
+            <li> <i>PourPtID</i> &ndash; inneh&aring;ller ID-v&auml;rdet fr&aring;n indatapunkten
+            </li>
+            <li> <i>Area Square Kilometers</i>&ndash; inneh&aring;ller omr&aring;det i kvadratkilometer fr&aring;n avrinningsomr&aring;det uppstr&ouml;ms
+            </li>
+            <li> <i>Description</i> och <i>DataResolution</i>&ndash; inneh&aring;ller information som r&ouml;r de hydrologiska data som anv&auml;nds f&ouml;r att ber&auml;kna sp&aring;rningen
+            </li>
+        </ul>
+        
+    </p>
+    <p>Om  <b>Anv&auml;nd aktuell kartutbredning</b> &auml;r markerat anv&auml;nds endast de geoobjekt som finns i den aktuella kartutbredningen vid ber&auml;kningen av avrinningsomr&aring;dena. Om alternativet inte markeras analyseras alla geoobjekt i indatalagret, &auml;ven om de ligger utanf&ouml;r den aktuella kartutbredningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Punktgeoobjekt som används för beräkning av avrinningsområden</h2></div>
+        <hr/>
+        <div>
+            <p>Ett avrinningsomr&aring;de (fl&ouml;desackumuleringsomr&aring;det uppstr&ouml;ms) ber&auml;knas f&ouml;r varje punkt.  
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager p&aring; din karta kan du v&auml;lja  <b>V&auml;lj analyslager</b>, som du hittar l&auml;ngst ned i listrutan. Det alternativet &ouml;ppnar ett galleri d&auml;r du kan bl&auml;ddra till och v&auml;lja dataupps&auml;ttningar fr&aring;n diverse k&auml;llor som du kan anv&auml;nda i din analys. 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>Sökavstånd till närmaste dränering</h2></div>
+        <hr/>
+        <div>
+            <p>Om indatapunkterna ligger l&aring;ngt fr&aring;n en dr&auml;neringslinje, blir de resulterande avrinningsomr&aring;dena troligtvis mycket sm&aring; och &auml;r inte till mycket nytta i analysen, till exempel f&ouml;r att avg&ouml;ra k&auml;llan till f&ouml;roreningen uppstr&ouml;ms. I de flesta fall vill du att indatapunkterna ska snappa till n&auml;rmaste dr&auml;neringslinje f&ouml;r att hitta de avrinningsomr&aring;den som rinner till en punkt som finns l&auml;ngs dr&auml;neringslinjen. Ange ett s&ouml;kavst&aring;nd om du vill hitta den n&auml;rmaste dr&auml;neringslinjen. Om du inte anger ett s&ouml;kavst&aring;nd kommer verktyget att ber&auml;kna och anv&auml;nda ett konservativt s&ouml;kavst&aring;nd.  
+            </p>
+            <p>Om du vill anv&auml;nda den exakta platsen f&ouml;r din indatapunkt anger du s&ouml;kavst&aring;ndet noll.  
+            </p>
+            <p>Dr&auml;neringslinjerna har i analyssyfte ber&auml;knats i f&ouml;rv&auml;g av Esri med hj&auml;lp av hydrologiska standardmodeller. Om det inte finns n&aring;gon dr&auml;neringslinje inom s&ouml;kavst&aring;ndet anv&auml;nds den plats som inneh&aring;ller den st&ouml;rsta fl&ouml;desackumuleringen inom s&ouml;kavst&aring;ndet.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagernamnet redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Om du anv&auml;nder listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+            <p> Det h&auml;r verktyget f&ouml;rbrukar inte krediter.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

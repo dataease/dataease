@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Vastenda väärtused uuesti</h2><p/>
+        <h2><img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" alt="V&auml;&auml;rtuste uuesti vastendamise t&ouml;&ouml;riist (Portal)"></h2>
+        <hr/>
+    <p>Selle t&ouml;&ouml;riistaga saate rasterandmete piksliv&auml;&auml;rtusi muuta v&otilde;i &uuml;mber klassifitseerida. Piksliv&auml;&auml;rtuste vastendamiseks m&auml;&auml;ratakse vastendatav piksliv&auml;&auml;rtuste vahemik ja v&auml;ljundpiksliv&auml;&auml;rtus. V&auml;ljundpiksli v&auml;&auml;rtus v&otilde;ib olla kehtiv v&auml;&auml;rtus v&otilde;i nullv&auml;&auml;rtus (NoData), st pikslid, millega pole seotud teadaolevat v&auml;&auml;rtust.
+    </p>
+    <p>Kui tingimus  <b>Kasuta praegust kaardi ulatust</b> on m&auml;rgitud, vastendatakse ainult need pikslid, mis on kaardil praegu n&auml;htavad. Kui tingimus ei ole m&auml;rgitud, t&ouml;&ouml;deldakse k&otilde;ik rastris olevad pikslid, kaasa arvatud need, mis ei ole praegu kaardil n&auml;htavad.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Sisendandmed</h2></div>
+        <hr/>
+        <div>
+            <p>Sisendandmed, mille v&auml;&auml;rtused vastendatakse.
+            </p>
+        </div>
+    </div>
+    <div id="RemapList">
+        <div><h2>Vastenda piksliväärtused uuesti uute väärtustega</h2></div>
+        <hr/>
+        <div>
+            <p>V&auml;&auml;rtuste vahemiku sisestamiseks sisestage miinimum- ja maksimumv&auml;&auml;rtus ning seej&auml;rel m&auml;&auml;rake valitud vahemikule v&auml;ljundv&auml;&auml;rtus v&otilde;i nullv&auml;&auml;rtus (NoData).
+            </p>
+            <p>Uue v&auml;&auml;rtuste vahemiku vastendamiseks kl&otilde;psake nuppu  <b>Lisa</b>, mis lisab uue rea. Kl&otilde;psake igat v&auml;&auml;rtust, et redigeerida tabelis soovitud vahemikke ja vastendatud v&auml;&auml;rtusi. V&auml;&auml;rtuste vahemike m&auml;&auml;ratlemisel l&auml;htutakse kahest t&auml;htsast reeglist.
+                <ul>
+                    <li>Vahemiku miinimumv&auml;&auml;rtus on kaasa arvatud ja maksimumv&auml;&auml;rtus on v&auml;lja arvatud.
+                    </li>
+                    <li>Tabeli ridasid t&ouml;&ouml;deldakse &uuml;levalt alla.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Allpool olevas tabelis v&otilde;ib n&auml;ha, et miinimumv&auml;&auml;rtus on kaasa arvatud, aga maksimumv&auml;&auml;rtust ei ole v&auml;ljundis kaasa arvatud.
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>20
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;19
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+                <td>
+                    <p>51
+                    </p>
+                </td>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Tabelis m&auml;&auml;ratud vahemike j&auml;rjekord on samuti t&auml;htis. Tabeli &uuml;lemist rida t&ouml;&ouml;deldakse esimesena. Kahes j&auml;rgnevas tabelis on n&auml;idatud, kuidas tabeli ridade erineva j&auml;rjekorra t&otilde;ttu annavad kaks &uuml;hesugust v&auml;&auml;rtuste vahemikku eri tulemuse.
+            </p> 
+            <p>Allpool tabelis on n&auml;idatud v&auml;ljundv&auml;&auml;rtust, kui esimest veergu sorditakse numbriliselt:
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;14
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>15&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Allpool tabelis on n&auml;idatud, kuidas ridade erinev tellimine annab erinevad v&auml;ljundv&auml;&auml;rtused:
+            </p> 
+            <table border="1">
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>V&auml;&auml;rtuste &uuml;mberj&auml;rjestamiseks kasutatakse m&otilde;lemat reeglit. Kuna igat rida t&ouml;&ouml;deldakse &uuml;levalt alla, kasutatakse neid v&auml;&auml;rtusi v&auml;ljundi m&auml;&auml;ramisel esimesena ka siis, kui kasutatakse samu vahemikke.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

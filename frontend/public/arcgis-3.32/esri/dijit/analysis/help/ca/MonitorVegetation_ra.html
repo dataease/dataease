@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Supervisa la vegetació</h2><p/>
+        <h2><img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" alt="Eina Supervisa la vegetaci&oacute; del portal"></h2>
+        <hr/>
+    <p>Aquesta eina realitza una operaci&oacute; aritm&egrave;tica sobre les bandes d'una capa r&agrave;ster multibanda per revelar la informaci&oacute; de cobertura de vegetaci&oacute; de l'&agrave;rea d'estudi.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Seleccioneu les dades d'entrada</h2></div>
+        <hr/>
+        <div>
+            <p>Trieu la capa r&agrave;ster multibanda. Assegureu-vos que el r&agrave;ster d'entrada tingui les bandes adequades disponibles.
+            </p> 
+        </div>
+    </div>
+    <div id="vegetationIndexType">
+        <div><h2>Trieu el mètode per supervisar la vegetació</h2></div>
+        <hr/>
+        <div>
+            <p>Trieu el m&egrave;tode per crear la capa d'&iacute;ndexs de vegetaci&oacute;. Els &iacute;ndexs de vegetaci&oacute; diferents poden ajudar a destacar determinades entitats o a reduir sorolls diversos.
+            </p>
+            <ul>
+                <li>Global Environmental Monitoring Index &mdash; 
+GEMI &eacute;s un &iacute;ndex de vegetaci&oacute; no lineal per a la supervisi&oacute; mediambiental global a partir d'imatges de sat&egrave;l&middot;lit. &Eacute;s similar a NDVI, per&ograve; &eacute;s menys sensible als efectes atmosf&egrave;rics. Es veu afectat pel s&ograve;l nu; per tant, no es recomana el seu &uacute;s en &agrave;rees de vegetaci&oacute; escassa o moderada.
+
+                </li>
+                <li>Green Vegetation Index - Landsat TM &mdash; 
+El GVI es va dissenyar originalment a partir de les imatges Landsat MSS, per&ograve; s'ha modificat per utilitzar-lo amb les imatges Landsat TM. Tamb&eacute; es coneix com &iacute;ndex de vegetaci&oacute; verd Landsat TM Tasseled Cap. Aquest &iacute;ndex de supervisi&oacute; es pot utilitzar amb imatges les bandes de les quals comparteixen les mateixes caracter&iacute;stiques espectrals.
+
+                </li>
+                <li>Modified Soil Adjusted Vegetation Index &mdash; 
+MSAVI2 &eacute;s un &iacute;ndex de vegetaci&oacute; que intenta minimitzar les influ&egrave;ncies del s&ograve;l nu del m&egrave;tode SAVI.
+
+                </li>
+                <li>Normalized Difference Vegetation Index  &mdash; 
+NDVI &eacute;s un &iacute;ndex estandarditzat que us permet generar una imatge que mostri la verdor o biomassa relativa. Aquest &iacute;ndex aprofita el contrast de les caracter&iacute;stiques de dues bandes d'un dataset r&agrave;ster multiespectral: les absorcions de pigment de clorofil&middot;la de la banda vermella i l'altra reflectivitat dels materials de les plantes de la banda d'infraroja propera (NIR).
+
+                </li>
+                <li>Perpendicular Vegetation Index &mdash; 
+PVI &eacute;s similar a un &iacute;ndex diferencial de vegetaci&oacute;; aix&ograve; no obstant, &eacute;s sensible a les variacions atmosf&egrave;riques. Si s'utilitza aquest m&egrave;tode per comparar imatges diferents, nom&eacute;s s'ha de fer amb imatges que s'han corregit atmosf&egrave;ricament. Aquesta informaci&oacute; us la pot proporcionar el prove&iuml;dor de dades.
+
+                </li>
+                <li>Soil-Adjusted Vegetation Index &mdash; 
+SAVI &eacute;s un &iacute;ndex de vegetaci&oacute; que intenta minimitzar les influ&egrave;ncies de la brillantor del s&ograve;l mitjan&ccedil;ant un factor de correcci&oacute; de la brillantor del s&ograve;l. Sovint s'utilitza en regions &agrave;rides on la cobertura de vegetaci&oacute; &eacute;s baixa.
+
+                </li>
+                <li>Sultan's Formula &mdash; 
+El proc&eacute;s F&oacute;rmula de Sultan utilitza una imatge de 8 bits de sis bandes i li aplica un algoritme espec&iacute;fic per generar una imatge de 8 bits i tres bandes. La imatge resultant destaca les formacions de roca anomenades ofiolites en zones costeres. Aquesta f&oacute;rmula es va dissenyar segons les bandes TM i ETM d'una escena Landsat 5 o 7.
+
+                </li>
+                <li>Transformed Soil-Adjusted Vegetation Index &mdash; 
+El SAVI transformat &eacute;s un &iacute;ndex de vegetaci&oacute; que intenta minimitzar les influ&egrave;ncies de la brillantor del s&ograve;l mitjan&ccedil;ant la suposici&oacute; que la l&iacute;nia de terra t&eacute; una intercepci&oacute; i un pendent arbitrari.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bandIndexes">
+        <div><h2>Especifiqueu els índexs de la banda NIR i de la banda vermella</h2></div>
+        <hr/>
+        <div>
+            <p>Especifiqueu els &iacute;ndexs de banda de les bandes NIR i vermella.
+            </p>
+            <p>Cada sensor de sat&egrave;l&middot;lit i c&agrave;mera a&egrave;ria captura informaci&oacute; desglossada en &iacute;ndexs de banda. Cada &iacute;ndex de banda cont&eacute; la informaci&oacute; d'una part espec&iacute;fica de l'espectre electromagn&egrave;tic. Aquest m&egrave;tode de supervisi&oacute; de vegetaci&oacute; requereix que especifiqueu l'&iacute;ndex de banda que ha capturat les longituds d'ona de NIR i vermella.
+            </p>
+        </div>
+    </div>
+    <div id="slopeOfSoilLine">
+        <div><h2>Pendent de la línia de terra</h2></div>
+        <hr/>
+        <div>
+            <p>Pendent de la l&iacute;nia de terra. El pendent &eacute;s la relaci&oacute; lineal aproximada entre les bandes de NIR i vermella en un gr&agrave;fic de dispersi&oacute;.
+            </p>
+            <p>Aquest par&agrave;metre nom&eacute;s &eacute;s v&agrave;lid per al m&egrave;tode &Iacute;ndex de vegetaci&oacute; ajustat a terra transformat.
+            </p>
+        </div>
+    </div>
+    <div id="interceptOfSoilLine">
+        <div><h2>Intercepta</h2></div>
+        <hr/>
+        <div>
+            <p>Valor del NIR quan el valor de reflexi&oacute; de la banda vermella (Vermell) &eacute;s 0 per a les l&iacute;nies de terra concretes.
+            </p>
+            <p> <code>(a = NIR - sRed)</code> , quan Vermell &eacute;s 0.
+            </p> 
+            <p>Aquest par&agrave;metre nom&eacute;s &eacute;s v&agrave;lid per al m&egrave;tode &Iacute;ndex de vegetaci&oacute; ajustat a terra transformat.
+            </p>
+        </div>
+    </div>
+    <div id="greenVegetativeCover">
+        <div><h2>Quantitat de cobertura de vegetació verda</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica la quantitat de cobertura de vegetaci&oacute; verda, necess&agrave;ria per al m&egrave;tode SAVI.
+            </p>
+            <p>Els valors v&agrave;lids s&oacute;n els seg&uuml;ents: 
+
+                <ul>
+                    <li>1 = &agrave;rees sense cobertura de vegetaci&oacute; verda
+                        
+ 
+                    </li>
+                    <li>0,5 = &agrave;rees amb cobertura de vegetaci&oacute; verda moderada
+                        
+ 
+                    </li>
+                    <li>0 = &agrave;rees amb cobertura de vegetaci&oacute; verda alta
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="adjustmentFactor">
+        <div><h2>Factor d'ajust</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica el factor d'ajust per ajudar a minimitzar l'efecte del s&ograve;l, que &eacute;s necessari per al m&egrave;tode &Iacute;ndex de vegetaci&oacute; ajustat a terra transformat. El valor per defecte &eacute;s 0,08.
+            </p>
+            <p>Un valor baix significa que ignoreu l'efecte del s&ograve;l. Un valor alt significar que el s&ograve;l afectar&agrave; el vostre resultat.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Podeu especificar el nom d'una carpeta de  <b>El meu contingut</b> on es desar&agrave; el resultat mitjan&ccedil;ant el quadre desplegable <b>Desa el resultat a</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

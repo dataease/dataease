@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Rekonstrueeri rajad</h2><p/>
+        <h2><img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" alt="Rekonstrueeri rajad"></h2>
+        <hr/>
+    <p> See t&ouml;&ouml;riist kasutab ajateadlikku punkt- v&otilde;i pindobjektide kihti, mis kujutab endast <code>&uuml;hte ajahetke</code>.   K&otilde;igepealt m&auml;&auml;rab t&ouml;&ouml;riist identifikaatoriga, millised objektid kuuluvad raja juurde. Rajad j&auml;rjestatakse iga asukoha aja alusel ja teisendatakse jooneks  v&otilde;i alaks, mis t&auml;histab liikumisteed ajas. Vajaduse korral saab lisada sisendile puhvrina v&auml;lja, mis loob igas asukohas  ala. Need puhverpunktid v&otilde;i sisendalad &uuml;hendatakse j&auml;rjestikku, et luua rada alana, kus laiust t&auml;histab huvipakkuv atribuut. Tulemuseks saadud radadel on algus- ja l&otilde;ppaeg, mis t&auml;histab ajaliselt iga raja esimest ja viimast objekti. Radade loomisel arvutatakse sisendobjektide statistika, mis m&auml;&auml;ratakse v&auml;ljundraja juurde. K&otilde;ige lihtsam statistika on punktide arv alas, kuid kasutada v&otilde;ib ka muud statistikat.
+    </p>
+    <p>Ajateadlike kihtide objekte saab esitada kahel viisil.
+        <ul>
+            <li>Ajahetk &ndash; &uuml;ks hetk ajas
+            </li>
+            <li>Ajavahemik &ndash; algus- ja l&otilde;ppaeg
+            </li>
+        </ul>
+        
+    </p>
+    <p>Teil on n&auml;iteks 10-minutiste vahedega tehtud GPS-m&otilde;&otilde;tmised orkaanide jaoks. Iga GPS-m&otilde;&otilde;tmise juurde on j&auml;&auml;dvustatud orkaani nimi, asukoht, j&auml;&auml;dvustamise aeg ja tuule kiirus. Neid andmeid kasutades saaksite luua iga orkaani jaoks eraldi raja, kasutades raja tuvastamiseks orkaani nime. Lisaks sellele saaksite arvutada statistika, nagu iga orkaani keskmine, maksimaalne ja minimaalne tuulekiirus ning iga raja puhul tehtud m&otilde;&otilde;tmiste arv.
+    </p>
+    <p>Sama n&auml;ite alusel saaksite lisada radadele puhvrina ka tuulekiiruse. See lisaks igale m&otilde;&otilde;tmisele puhvrina tuulekiiruse v&auml;lja selles asukohas ning &uuml;hendaks puhverdatud alad kokku, mis looks  ala, mis n&auml;itab raja teed ja muudatusi tuule kiiruses orkaani kestel.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valige objektid, mille radasid rekonstrueerida</h2></div>
+        <hr/>
+        <div>
+            <p>Punkti v&otilde;i ala kiht, mis rekonstrueeritakse radadeks. Sisendkiht peab olema ajateadlik ja kujutama &uuml;hte ajahetke. Kiht peab olema tasapinnalises ristkoordinaatide s&uuml;steemis. Puhvri rakendamise korral peab tasapinnaliseks ristkoordinaatide s&uuml;steemiks olema funktsiooni  <b>Anal&uuml;&uuml;sikeskkonnad</b> abil m&auml;&auml;ratud t&ouml;&ouml;tlev koordinaats&uuml;steem.
+            </p>
+            <p>Lisaks kihi valimisele kaardil saate valida ripploendi alumises servas  <b>Vali anal&uuml;&uuml;sikihte</b>, et otsida oma sisust suurandmete failiketta andmestikku v&otilde;i objektikihti.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Valige radade tuvastamiseks üks või mitu välja</h2></div>
+        <hr/>
+        <div>
+            <p>Raja identifikaatorit t&auml;histavad v&auml;ljad. 
+            </p>
+            <p>N&auml;iteks v&otilde;ite kasutada orkaanide radade rekonstrueerimisel raja nimena orkaani nime.
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Valige meetod, mida kasutatakse radade rekonstrueerimiseks</h2></div>
+        <hr/>
+        <div>
+            <p>Meetod, mida kasutatakse radade &uuml;hendamiseks ja puhvri rakendamiseks (kui see on asjakohane). Meetodiga  <b>Planaarne</b> on tulemuste arvutamine kiirem, aga selle puhul ei j&auml;rgi rajad rahvusvahelist kuup&auml;evarada ja puhverdamisel ei v&otilde;eta arvesse maapinna tegelikku kuju. Meetodiga <b>Geodeetiline</b> j&auml;rgivad rajad rahvusvahelist kuup&auml;evarada ja maapinna tegeliku kuju arvesse v&otilde;tmiseks rakendatakse geodeetilist puhvrit.
+            </p>
+        </div>
+    </div>
+    <div id="bufferField">
+        <div><h2>Looge avaldis, mille alusel sisendobjekte puhverdada (valikuline)</h2></div>
+        <hr/>
+        <div>
+            <p>Valem sisendobjekte &uuml;mbritseva puhvri kauguse arvutamiseks. Selle valemi saab luua puhverkalkulaatoriga, mis toetab lihtsaid operatsioone nagu liitmine, lahutamine, korrutamine ja jagamine. V&auml;&auml;rtuste arvutamiseks kasutatakse anal&uuml;&uuml;si koordinaats&uuml;steemi. Kiht peab olema tasapinnalises ristkoordinaatide s&uuml;steemis. Puhvri rakendamise korral peab tasapinnaliseks ristkoordinaatide s&uuml;steemiks olema funktsiooni  <b>Anal&uuml;&uuml;sikeskkonnad</b> abil m&auml;&auml;ratud t&ouml;&ouml;tlev koordinaats&uuml;steem.
+            </p>
+            <p>Valem  <code>$feature.tuulekiirus* 1000</code> t&auml;hendab, et puhverv&auml;&auml;rtus 1000 korrutatakse v&auml;ljaga <i>windspeed</i>. Puhverkalkulaatoris saab kasutada ka mitut v&auml;lja.
+            </p>
+            <p> Saate m&auml;&auml;rata ka raja teadlikkuse avaldise. V&auml;lja v&auml;&auml;rtruse <i>windspeed</i> summa saate arvutada praegusele objektile ja eelnevale kahele objektile n&auml;iteks sellise v&otilde;rrandiga nagu <code>$track.field(windspeed).history(-3)</code>. Igas asukohas arvutatakse ja puhverdatakse praeguse <i>windspeed</i> ja eelneva kahe m&otilde;&otilde;tmistulemuse summa.
+            </p>
+        </div>
+    </div>
+    <div id="timeSplit">
+        <div><h2>Valige aeg, mille järgi radasid tükeldada (valikuline)</h2></div>
+        <hr/>
+        <div>
+            <p>Radade t&uuml;keldamise aeg. Kui sisendpunktide v&otilde;i alade vahele j&auml;&auml;b pikem aeg kui ajal&otilde;ik, t&uuml;keldatakse need eri radadeks.
+            </p>
+            <p>Kui m&auml;&auml;rate ajal&otilde;igu ja vahemaal&otilde;igu, t&uuml;keldatakse rajad juhul, kui t&auml;idetud on &uuml;ks v&otilde;i m&otilde;lemad tingimused. 
+            </p>
+            <p>N&auml;iteks teil on punktobjektid, mis t&auml;histavad lendusid, kus raja v&auml;ljaks on lennuki ID. Lennuk v&otilde;ib teha mitu lendu ja seda t&auml;histatakse &uuml;he rajana. Kui te teate, et lendude vahel on &uuml;hetunnine paus, saaksite kasutada raja t&uuml;keldamiseks  <code>1 tundi</code> ja iga lend t&uuml;keldatakse sel juhul eraldi rajaks.
+            </p>
+        </div>
+    </div>
+    <div id="splitTracks">
+        <div><h2>Tükeldatud rajad (valikuline)</h2></div>
+        <hr/>
+        <div>
+            <p>Radasid saab t&uuml;keldada kolmel erineval meetodil. V&otilde;ite kasutada mitte &uuml;htegi t&uuml;keldamismeetodit, k&otilde;iki meetodeid v&otilde;i m&otilde;ne meetodi kombinatsiooni. 
+            </p>
+            <p>T&uuml;keldamist saab teha allpool kirjeldatud viisil.
+                <ul>
+                    <li> <b>Sisendite vahekauguse p&otilde;hjal</b>&mdash; Kui sisendpunktide v&otilde;i alade vahele j&auml;&auml;b suurem vahemaa kui m&auml;&auml;ratletud kaugus, t&uuml;keldatakse need eri radadeks. Kui n&auml;iteks m&auml;&auml;rate kauguseks 10 kilomeetrit, muudetakse eraldi radadeks j&auml;rjestikused punktid vahemaaga &uuml;le 10 kilomeetri.
+                    </li>
+                    <li> <b>Sisendite vahelise aja p&otilde;hjal</b>&mdash; Kui sisendpunktide v&otilde;i alade vahele j&auml;&auml;b suurem ajavahemik kui t&uuml;keldamisaeg, t&uuml;keldatakse need eri radadeks. N&auml;iteks teil on punktobjektid, mis t&auml;histavad lennukite lendusid, kus raja v&auml;ljaks on lennuki ID. Lennuk v&otilde;ib teha mitu lendu ja seda t&auml;histatakse &uuml;he rajana. Kui te teate, et lendude vahel on &uuml;hetunnine paus, saaksite kasutada raja t&uuml;keldamiseks <code>1 tundi</code> ja iga lend t&uuml;keldatakse sel juhul eraldi rajaks.
+                    </li>
+                    <li> <b>M&auml;&auml;ratud ajaintervalliga</b>&mdash; T&uuml;keldage regulaarse intervalliga, mille m&auml;&auml;ravad &auml;ra ajavahemik ja viiteaeg. Kui te ei seadista viiteaega, kasutatakse 1. jaanuari 1970. Kui seadistate n&auml;iteks &uuml;he aasta viiteajaga 2. veebruaril 1990 kell 10.00, t&uuml;keldate rajad 2. veebruaril 1990 kell10.00 ja 2. veebruaril 1991 kell 10.00 ning edaspidi &uuml;heaastase intervalliga.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Kui m&auml;&auml;rate mitu t&uuml;keldamisvarianti, t&uuml;keldatakse rajad juhul, kui t&auml;idetud on &uuml;ks v&otilde;i m&otilde;lemad tingimused. 
+            </p>
+        </div>
+    </div>
+    <div id="distanceSplit">
+        <div><h2>Valige vahemaa, mille järgi radasid tükeldada (valikuline)</h2></div>
+        <hr/>
+        <div>
+            <p>Radade t&uuml;keldamise vahemaa. Kui sisendpunktide v&otilde;i alade vahele j&auml;&auml;b suurem vahemaa kui vahemaal&otilde;ik, t&uuml;keldatakse need eri radadeks.
+            </p>
+            <p>Kui m&auml;&auml;rate ajal&otilde;igu ja vahemaal&otilde;igu, t&uuml;keldatakse rajad juhul, kui t&auml;idetud on &uuml;ks v&otilde;i m&otilde;lemad tingimused. 
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Lisa statistika (valikuline)</h2></div>
+        <hr/>
+        <div>
+            <p> Saate arvutada summeeritud objektide statistika. Saateallj&auml;rgnevad v&auml;&auml;rtused numbriv&auml;ljadel:
+                <ul>
+                    <li>Koguarv &ndash; arvutatakse v&auml;&auml;rtuste, mis pole nullv&auml;&auml;rtused, hulk. See funktsioon on kasutatav numbriv&auml;ljade v&otilde;i stringide korral. V&auml;&auml;rtuste [null, 0 ja 2] koguarv on 2.
+                    </li>
+                    <li>Summa &ndash; v&auml;ljal olevate arvv&auml;&auml;rtuste summa. V&auml;&auml;rtuste [null, null ja 3] summa on 3.
+                    </li>
+                    <li>Keskmine &ndash; arvv&auml;&auml;rtuste keskmine. V&auml;&auml;rtuste [0; 2 ja null] keskmine on 1.
+                    </li>
+                    <li>Miinimum &ndash; numbriv&auml;lja miinimumv&auml;&auml;rtus. V&auml;&auml;rtuste [0; 2 ja null] miinimum on 0. 
+                    </li>
+                    <li>Maksimum &ndash; numbriv&auml;lja maksimumv&auml;&auml;rtus. V&auml;&auml;rtuste [0; 2 ja null] maksimum on 2.
+                    </li>
+                    <li>Vahemik &ndash; numbriv&auml;lja vahemik. Selle arvutamiseks lahutatakse maksimumv&auml;&auml;rtusest miinimumv&auml;&auml;rtus. V&auml;&auml;rtuste [0, null ja 1] vahemik on 1. V&auml;&auml;rtuste [null ja 4] vahemik on 0.
+                    </li>
+                    <li>Dispersioon &ndash; raja numbriv&auml;lja dispersioon. V&auml;&auml;rtuse [1] dispersiooni on null. V&auml;&auml;rtuste [null, 1,0,1,1] dispersioon on 0,25.
+                    </li>
+                    <li>Standardh&auml;lve &ndash; numbriv&auml;lja standardh&auml;lve. V&auml;&auml;rtuse [1] standardh&auml;lve on null. V&auml;&auml;rtuste [null, 1,0,1,1] standardh&auml;lve on 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Saate arvutadaallj&auml;rgnevad v&auml;&auml;rtused tekstiv&auml;ljadel:
+                <ul>
+                    <li>Koguarv &ndash; stringide, mis pole nullv&auml;&auml;rtused, hulk.
+                    </li>
+                    <li>M&otilde;ni &ndash; see statistik on juhuslik valim tekstistringi v&auml;&auml;rtusest vastaval v&auml;ljal.
+                    </li>
+                </ul>
+                K&otilde;ik statistikud arvutatakse v&auml;&auml;rtustega, mis ei ole nullv&auml;&auml;rtus. Tulemkiht sisaldab uut v&auml;lja iga arvutatud statistiku kohta. Soovitud statistika lisamiseks valige uus atribuut ja statistik. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Valige tulemite salvestamiseks mõni ArcGIS-i andmeladu</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalyticsi tulemeid k&auml;sitletakse  andmelaos salvedena ning need kuvatakse portaalis   Portal for ArcGIS objektikihtidena. &Uuml;ldjuhul salvestatakse tulemid ajalisruumilisse andmelattu &ndash; see on vaikimisi valitud. M&otilde;nel juhul on , tulemid m&otilde;istlik salvestada relatsioonilisse andmelattu. Allpool on toodud m&otilde;ned p&otilde;hjused, miks oleks soovitatav tulemid   salvestada relatsioonilisse andmelattu: 
+                <ul>
+                    <li>Tulemeid saateportaaliskasutadaportaali koost&ouml;&ouml;ks.
+                    </li>
+                    <li>Saate lubada tulemitega s&uuml;nkroniseerimise funktsiooni.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Relatsioonilist andmeladu pole otstarbekas kasutada, kui GeoAnalyticsi tulemite arv suureneb. Sel juhul peaksite kasutama suurt ajalisruumilist andmeladu, mis v&otilde;imaldab hallata suurt andmemahtu.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Loodavakihi nimi.  Kui kirjutate andmelattu ArcGIS Data Store, salvestatakse teie tulemused  <b>Minu sisus</b> ja lisatakse kaardile. Kui kirjutate suurandmete failikettale, salvestatakse teie andmed suurandmete failikettale  ja lisatakse  selle manifestifailile. Seda  ei lisata kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui see kiht on juba olemas, siis t&ouml;&ouml;tlemine nurjub.
+            </p>
+            <p>Kui salvestate admelattu   ArcGIS Data Store (relatsioonilisse v&otilde;i ajalisruumilisse andmelattu), kasutades rippmen&uuml;&uuml;d  <b>Salvesta tulemused</b>, saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemused salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

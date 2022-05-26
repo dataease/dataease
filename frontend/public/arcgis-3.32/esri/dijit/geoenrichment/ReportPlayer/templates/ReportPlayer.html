@@ -1,0 +1,25 @@
+<div class="esriGEReportPlayer esriGENonSelectable">
+
+    <div data-dojo-attach-point="printBackgroundView" class="esriGEAbsoluteStretched"></div>
+
+    <div data-dojo-attach-point="normalViewDiv">
+        <div data-dojo-attach-point="playerToolbarDiv"></div>
+
+        <div data-dojo-attach-point="printableDivContainer" class="reportPalyer_printableDivContainer">
+            <div data-dojo-attach-point="printableDiv" class="reportPalyer_printableDiv">
+                <div data-dojo-attach-point="reportContainerDiv"></div>
+            </div>
+        </div>
+
+        <div class="reportPlayer_sidePageNavigator" data-dojo-attach-point="sidePageNavigator">
+            <div class="reportPlayer_paginationArrowUp" data-dojo-attach-point="prevPageButton"></div>
+            <div class="reportPlayer_paginationArrowDown" data-dojo-attach-point="nextPageButton"></div>
+        </div>
+
+        <div data-dojo-attach-point="playerAfterToolbarDiv" class="reportPlayer_playerAfterToolbarDiv"></div>
+    </div>
+
+    <div data-dojo-attach-point="errorViewDiv" class="esriGEReportPlayerErrorMessage">
+        ${nls.cantPlayReportError}
+    </div>
+</div>

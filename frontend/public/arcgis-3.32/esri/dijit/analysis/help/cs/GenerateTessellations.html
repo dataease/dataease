@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Generovat pravidelné mřížky polygonů (Generate Tessellations)</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="Generovat pravideln&eacute; mř&iacute;žky polygonů"></h2>
+        <hr/>
+    <p>Tento n&aacute;stroj umožňuje generovat pravideln&eacute; mř&iacute;žky polygonů v z&aacute;jmov&eacute; oblasti podle zadan&eacute;ho tvaru a velikosti.
+    </p>
+    <p>Za&scaron;krt&aacute;vac&iacute; pole  <b>Použ&iacute;t aktu&aacute;ln&iacute; rozsah mapy</b> nen&iacute; povoleno pro tento n&aacute;stroj, protože rozsah použit&yacute; pro generov&aacute;n&iacute; pravideln&eacute; mř&iacute;žky polygonů je ř&iacute;zen parametrem <b>Definovat rozsah</b> .
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Zvolit tvar</h2></div>
+        <hr/>
+        <div>
+            <p>Tvar nebo geometrie pravideln&eacute; mř&iacute;žky polygonů, kterou chcete vytvořit. Dostupn&eacute; tvary jsou  <code>Čtverec</code>, <code>&Scaron;esti&uacute;heln&iacute;k</code>, <code>Př&iacute;čn&yacute; &scaron;esti&uacute;heln&iacute;k</code>, <code>Troj&uacute;heln&iacute;k</code>, nebo <code>Kosočtverec</code>.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Definovat zájmovou oblast</h2></div>
+        <hr/>
+        <div>
+            <p>Rozsah nebo plocha, kter&aacute; bude pokryta pravidelnou mř&iacute;žkou polygonů. Rozsah lze určit pomoc&iacute; aktu&aacute;ln&iacute;ho rozsahu mapy, rozsahu existuj&iacute;c&iacute; vrstvy nebo interaktivn&iacute;m kreslen&iacute;m plochy, kter&aacute; bude použita jako rozsah.
+            </p>
+            <p>Pokud byla pro určen&iacute; rozsahu vybr&aacute;na vrstva prvků, bude povolena možnost pouze zachovat prot&iacute;naj&iacute;c&iacute; se pravideln&eacute; mř&iacute;žky polygonů. Pokud je to za&scaron;krtnuto, pouze pravideln&eacute; mř&iacute;žky polygonů, kter&eacute; pokr&yacute;vaj&iacute; nebo prot&iacute;naj&iacute; prvky v zadan&eacute; vrstvě rozsahu, budou generov&aacute;ny ve v&yacute;sledn&eacute; vrstvě pravideln&eacute; mř&iacute;žky polygonů. 
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Neza&scaron;krtnuto
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="Pokryt&iacute; cel&eacute;ho rozsahu">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Za&scaron;krtnuto
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="Pokryt&iacute; prvků">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>Definovat velikost přihrádky zadáním</h2></div>
+        <hr/>
+        <div>
+            <p>Velikost každ&eacute; buňky. Velikost buňky lze určit zad&aacute;n&iacute;m plo&scaron;n&yacute;ch jednotek nebo zad&aacute;n&iacute;m vzd&aacute;lenosti, kter&aacute; je vypočtena pomoc&iacute; n&aacute;sleduj&iacute;c&iacute;ch měřen&iacute;, kde d = vzd&aacute;lenost: 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Čtverec
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="Čtvercov&aacute; pravideln&aacute; mř&iacute;žka polygonů">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>&Scaron;esti&uacute;heln&iacute;k
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="&Scaron;esti&uacute;heln&iacute;kov&aacute; pravideln&aacute; mř&iacute;žka polygonů">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Př&iacute;čn&yacute; &scaron;esti&uacute;heln&iacute;k
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="Pravideln&aacute; mř&iacute;žka polygonů ve tvaru př&iacute;čn&yacute;ch &scaron;esti&uacute;heln&iacute;ků">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Troj&uacute;heln&iacute;k
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="Troj&uacute;heln&iacute;kov&aacute; pravideln&aacute; mř&iacute;žka polygonů">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Kosočtverec
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="Kosočtvercov&aacute; pravideln&aacute; mř&iacute;žka polygonů">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>Toto je n&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; do mapy.  Pokud v&yacute;sledn&aacute; vrstva již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>V rozbalovac&iacute; nab&iacute;dce  <b>Uložit v&yacute;sledek do</b> můžete zadat n&aacute;zev složky ve složce <b>Můj obsah</b>, do kter&eacute; se m&aacute; v&yacute;sledek uložit.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Folyásirányú követés</h2><p/>
+        <h2><img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" alt="Foly&aacute;sir&aacute;ny&uacute; k&ouml;vet&eacute;s/kijel&ouml;l&eacute;s"></h2>
+        <hr/>
+    <p>Ez az eszk&ouml;z meghat&aacute;rozza a foly&aacute;sir&aacute;ny&uacute; k&ouml;vet&eacute;si vagy &aacute;raml&aacute;si &uacute;tvonalat a bemenő r&eacute;teg pontjait&oacute;l.
+    </p>
+    <p>Tegy&uuml;k fel p&eacute;ld&aacute;ul, hogy szennyező forr&aacute;soknak megfelelő, pontszerű vektor elemek birtok&aacute;ban szeretn&eacute; meg&aacute;llap&iacute;tani, hogy a minta ter&uuml;leten merre fog &aacute;ramlani a szennyez&eacute;s. A Foly&aacute;sir&aacute;ny&uacute; k&ouml;vet&eacute;s/kijel&ouml;l&eacute;s eszk&ouml;zzel azonos&iacute;thatja a szennyez&eacute;s halad&aacute;si &uacute;tvonal&aacute;t. A k&ouml;vet&eacute;st egyes vonalszakaszokra is feloszthatja t&aacute;vols&aacute;g&eacute;rt&eacute;k &eacute;s m&eacute;rt&eacute;kegys&eacute;gek megad&aacute;s&aacute;val. Az eredm&eacute;nyk&eacute;nt visszaadott vonal lehet az &aacute;raml&aacute;si &uacute;t teljes hossz&uacute;s&aacute;ga, egy megadott legnagyobb k&ouml;vet&eacute;si hossz, vagy lev&aacute;ghat&oacute; ter&uuml;let vektoros elemeknek, p&eacute;ld&aacute;ul a minta ter&uuml;letnek megfelelően. Ha az eredm&eacute;ny a k&ouml;vet&eacute;si &uacute;tvonal teljes hossza, akkor az sok esetben a forr&aacute;st&oacute;l eg&eacute;szen az &oacute;ce&aacute;nig tart.
+    </p>
+    <p>A eredm&eacute;ny a foly&aacute;sir&aacute;ny&uacute; k&ouml;vet&eacute;snek megfelelő vonal. Ha a t&aacute;vols&aacute;gn&aacute;l a  <b>Nyomvonal vonalszegmensekre feloszt&aacute;sa</b> be&aacute;ll&iacute;t&aacute;st adja meg, azzal a nyomvonalat t&ouml;bb, megadott hossz&uacute;s&aacute;g&uacute; vonalra osztja fel. Ha p&eacute;ld&aacute;ul a bemenő pont ki&ouml;mlő szennyeződ&eacute;snek felel meg, &eacute;s a foly&oacute;, amelybe &aacute;ramlik, &oacute;r&aacute;nk&eacute;nti 0,6 m&eacute;rf&ouml;ld vagy napi 15 m&eacute;rf&ouml;ld sebess&eacute;ggel folyik, akkor c&eacute;lszerű lehet a foly&oacute;t 15 m&eacute;rf&ouml;ldes szakaszokra felosztani. A nyomvonalat 15 m&eacute;rf&ouml;ldes szakaszokra bontva megjelen&iacute;thető, hogy a ki&ouml;ml&ouml;tt anyag k&ouml;r&uuml;lbel&uuml;l mekkora utat tesz meg naponta. A vonal sz&iacute;n&aacute;tmenetes szimb&oacute;lumk&eacute;nt jelenik meg a t&aacute;vols&aacute;g alapj&aacute;n, &eacute;s feliratk&eacute;nt l&aacute;that&oacute; rajta a t&aacute;vols&aacute;g a nyomvonal kezdet&eacute;től.
+    </p>
+    <p>Az eredm&eacute;nyk&eacute;nt kapott nyomvonal rendelkezik a bemenő pontok &ouml;sszes attrib&uacute;tum&aacute;val &eacute;s tov&aacute;bbi attrib&uacute;tumokkal. 
+        <ul>
+            <li> <i>PointID</i> &ndash; a bemenő pont azonos&iacute;t&oacute; &eacute;rt&eacute;k&eacute;t tartalmazza
+                
+
+            </li>
+            <li> <i>LengthKm</i> &ndash; a teljes foly&aacute;sir&aacute;ny&uacute; k&ouml;vet&eacute;s kilom&eacute;terben megadott hossz&aacute;t tartalmazza.
+                
+
+            </li>
+            <li> <i>Description</i> &eacute;s <i>DataResolution</i> &ndash; a nyomvonalk&ouml;vet&eacute;s kisz&aacute;m&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt hidrol&oacute;giai adatokkal kapcsolatos inform&aacute;ci&oacute;t tartalmazza
+                
+
+            </li>
+            <li> <i>FromDistance</i> &eacute;s <i>ToDistance</i> &ndash; az egyes vonalszegmensek kezdő &eacute;s befejező t&aacute;vols&aacute;g&aacute;t tartalmazza. Az attrib&uacute;tumok &iacute;r&aacute;s&aacute;ra a <b>Nyomvonal vonalszegmensekre feloszt&aacute;sa</b> haszn&aacute;lata eset&eacute;n ker&uuml;l sor.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Az  <b>Aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;s haszn&aacute;lata</b> bejel&ouml;l&eacute;s&eacute;vel a program csak a bemenő r&eacute;tegnek az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen l&aacute;that&oacute; pontszerű vektor elemeit elemzi. Ha nincs bejel&ouml;lve, akkor a bemenő r&eacute;teg &ouml;sszes vektoros elem&eacute;t haszn&aacute;lja, akkor is, ha azok k&iacute;v&uuml;l esnek az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Az egyes folyásirányú követések kiindulási helyeként használni kívánt pontszerű vektor elemek</h2></div>
+        <hr/>
+        <div>
+            <p>A foly&aacute;sir&aacute;ny&uacute; k&ouml;vet&eacute;s kiindul&aacute;si helyek&eacute;nt haszn&aacute;lni k&iacute;v&aacute;nt pontszerű vektor elemek. A kimenet egy-egy sort tartalmaz az egyes bemenő pontokhoz.
+            </p>
+            <p>A t&eacute;rk&eacute;p egy r&eacute;teg&eacute;nek kiv&aacute;laszt&aacute;sa mellett v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n tal&aacute;lhat&oacute;  <b>Elemz&eacute;si r&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is. Ennek a lehetős&eacute;gnek a v&aacute;laszt&aacute;sakor egy gal&eacute;ria ny&iacute;lik meg, amelyben k&uuml;l&ouml;nb&ouml;ző forr&aacute;sokb&oacute;l sz&aacute;rmaz&oacute; adathalmazok k&ouml;z&uuml;l v&aacute;logathat, &eacute;s ezeket felhaszn&aacute;lhatja az elemz&eacute;s&eacute;ben. 
+            </p>
+        </div>
+    </div>
+    <div id="SplitDistance">
+        <div><h2>Nyomvonal vonalszegmensekre felosztása</h2></div>
+        <hr/>
+        <div>
+            <p>A nyomvonal t&ouml;bb, megadott hossz&uacute;s&aacute;g&uacute; vonalra oszlik. Ha p&eacute;ld&aacute;ul a bemenő pont ki&ouml;mlő szennyeződ&eacute;snek felel meg, &eacute;s a foly&oacute;, amelybe &aacute;ramlik, &oacute;r&aacute;nk&eacute;nti 0,6 m&eacute;rf&ouml;ld vagy napi 15 m&eacute;rf&ouml;ld sebess&eacute;ggel folyik, akkor c&eacute;lszerű lehet a foly&oacute;t 15 m&eacute;rf&ouml;ldes szakaszokra felosztani. A nyomvonalat 15 m&eacute;rf&ouml;ldes szakaszokra bontva megjelen&iacute;thető, hogy a ki&ouml;ml&ouml;tt anyag k&ouml;r&uuml;lbel&uuml;l mekkora utat tesz meg naponta. A vonal sz&iacute;n&aacute;tmenetes szimb&oacute;lumk&eacute;nt jelenik meg a t&aacute;vols&aacute;g alapj&aacute;n, &eacute;s feliratk&eacute;nt l&aacute;that&oacute; rajta a t&aacute;vols&aacute;g a nyomvonal kezdet&eacute;től. Az eredm&eacute;nyk&eacute;nt kapott nyomvonal t&ouml;bb vonalszakaszb&oacute;l &aacute;ll, amelyek mindegyik&eacute;hez  <i>FromDistance</i> &eacute;s <i>ToDistance</i> mező tartozik.
+            </p>
+        </div>
+    </div>
+    <div id="MaxDistance">
+        <div><h2>Követés maximális távolsága</h2></div>
+        <hr/>
+        <div>
+            <p>Meghat&aacute;rozza a visszaadott vonal teljes hossz&aacute;t. Ha ter&uuml;let vektoros elemeket ad meg a nyomvonal lev&aacute;g&aacute;s&aacute;hoz, akkor az eszk&ouml;z az eredm&eacute;nyt a ter&uuml;let vektoros elemnek megfelelően v&aacute;gja le, tekintet n&eacute;lk&uuml;l az itt megadott t&aacute;vols&aacute;gra.
+            </p>
+        </div>
+    </div>
+    <div id="ClipArea">
+        <div><h2>Kivágás kimeneti helye</h2></div>
+        <hr/>
+        <div>
+            <p>Rajzoljon vagy adjon meg egy r&eacute;teget a ter&uuml;lettel, amelynek megfelelően a nyomvonalat le k&iacute;v&aacute;nja v&aacute;gni. Ha p&eacute;ld&aacute;ul csak annyit szeretne, hogy az eredm&eacute;nyk&eacute;nt kapott nyomvonal a minta ter&uuml;leten, p&eacute;ld&aacute;ul a megy&eacute;n bel&uuml;l legyen, akkor a megye vektoros elemet haszn&aacute;lja bemenetk&eacute;nt, &iacute;gy a nyomvonal a megyehat&aacute;rn&aacute;l v&eacute;get &eacute;r.
+            </p>
+        </div>
+    </div>
+    <div id="OutputTrace">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve.  Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő men&uuml;ben megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+            <p> Ennek az eszk&ouml;znek a futtat&aacute;sa nem haszn&aacute;l fel kreditet.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,31 @@
+-------------------------------------------------------------------------------
+dojox.flash
+-------------------------------------------------------------------------------
+Version 0.5
+Release date: 2008-03-10
+-------------------------------------------------------------------------------
+Project state: experimental
+-------------------------------------------------------------------------------
+Project authors
+	Brad Neuberg (BradNeuberg@dojotoolkit.org)
+	Alex Russell (alex@dojotoolkit.org, only handled minor porting issues)
+-------------------------------------------------------------------------------
+Project description
+
+Infrastructure for high-performance Flash/JS communication
+-------------------------------------------------------------------------------
+Dependencies:
+
+MTASC for creating builds
+-------------------------------------------------------------------------------
+Documentation
+
+TODOC
+-------------------------------------------------------------------------------
+Installation instructions
+
+Not intended as a stand-alone module.
+-------------------------------------------------------------------------------
+Additional Notes
+
+TODOC

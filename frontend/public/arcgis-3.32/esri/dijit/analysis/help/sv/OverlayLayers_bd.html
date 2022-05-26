@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Överlagra lager</h2><p/>
+        <h2><img src="../images/GUID-00A64703-4E97-4398-AE5C-F1885375BC30-web.png" alt="&Ouml;verlagra lager"></h2>
+        <hr/>
+    <p>&Ouml;verlagra lager kombinerar tv&aring; eller flera lager till ett enda lager. Du kan t&auml;nka dig &ouml;verlagring som att titta igenom en h&ouml;g med kartor och skapa en enda karta med all information som finns i h&ouml;gen. &Ouml;verlagring handlar om mycket mer &auml;n att sammanfoga linjer. Alla attribut f&ouml;r de geoobjekt som ing&aring;r i &ouml;verlagringen f&ouml;ljer med till slutprodukten. &Ouml;verlagring anv&auml;nds f&ouml;r att besvara en av de vanligaste fr&aring;gorna inom geografin: Vad finns ovanp&aring; vad? F&ouml;ljande &auml;r exempel:
+        <ul>
+            <li>Vilka fastigheter finns inom gr&auml;nserna f&ouml;r den 100-&aring;riga flodsl&auml;tten? (Vilket &auml;r ett annat s&auml;tt att s&auml;ga ovanp&aring;.)
+                  
+            </li>
+            <li>Vilken typ av markanv&auml;ndning finns p&aring; vilken jordtyp?
+                 
+            </li>
+            <li>Vilka brunnar finns p&aring; &ouml;vergivna milit&auml;rbaser?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Om  <b>Anv&auml;nd aktuell kartutbredning</b> markeras, &ouml;verlagras bara de geoobjekt i indatalagren och &ouml;verlagringslagren som visas i den aktuella kartutbredningen. Om alternativet inte &auml;r markerat &ouml;verlagras alla geoobjekt i b&aring;de indatalagret och &ouml;verlagringslagret, &auml;ven om de ligger utanf&ouml;r den aktuella kartutbredningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Välj indatalager</h2></div>
+        <hr/>
+        <div>
+            <p>Det punkt-, linje- eller omr&aring;deslager som ska &ouml;verlagra.
+            </p>
+            <p class="OnlineOnly">F&ouml;rutom att v&auml;lja ett lager p&aring; din karta kan du v&auml;lja  <b>V&auml;lj analyslager i v&auml;rldsatlasen</b> eller <b>V&auml;lj analyslager</b>, som du hittar l&auml;ngst ned i listrutan. D&aring; &ouml;ppnas ett galleri med en samling lager som kan vara praktiska att anv&auml;nda vid m&aring;nga analyser. 
+            </p>
+        </div>
+    </div>
+    <div id="overlayLayer">
+        <div><h2>Välj överlagringslager</h2></div>
+        <hr/>
+        <div>
+            <p>Lager som ska &ouml;verlagras p&aring; indatalagret.  
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager fr&aring;n kartan kan du v&auml;lja  <b>V&auml;lj analyslager</b> l&auml;ngst ned i listrutan f&ouml;r att bl&auml;ddra till ditt inneh&aring;ll efter ett big data-fildelningsdataset eller geoobjektlager.
+            </p>
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>Välj överlagringsmetod</h2></div>
+        <hr/>
+        <div>
+            <p>&Ouml;verlagringsmetoden definierar hur indatalagret och &ouml;verl&auml;ggningslagret kombineras.  
+
+                <ul>
+                    <li> <b>Korsa</b> &ndash; Resultatet inneh&aring;ller bara de geoobjekt eller delar av geoobjekt i &ouml;verlagringslagret som &ouml;verlappar geoobjekt i indatalagret. Vid korsande linje- eller omr&aring;desgeoobjekt har du m&ouml;jlighet att ange typen av geoobjekt du vill ha som utdata.
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>Punkter med punkter
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="Punkter och punktindata">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="Punkter och punkter med punktutdata">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Linjer med linjer 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="Linjer och linjeindata">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="Linjer och linjer med linjeutdata">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Omr&aring;den med omr&aring;den
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="Omr&aring;den och omr&aring;desindata">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="Omr&aring;den och omr&aring;den med omr&aring;desutdata">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>Radera</b> &ndash; Resultatet inneh&aring;ller bara de geoobjekt eller delar av geoobjekt i &ouml;verlagringslagret som inte &ouml;verlappar omr&aring;dena i indatalagret. &Ouml;verlagringslagret kan inneh&aring;lla omr&aring;des-, linje- eller punktgeoobjekt.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Det kommer att ha samma geoobjekttyp (omr&aring;den, linjer eller punkter) som indatalagren och &ouml;verlagringslagren. Standardnamnet bygger p&aring; &ouml;verlagringsmetoden och indatalagrets namn. Om lagret redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Om du anv&auml;nder listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

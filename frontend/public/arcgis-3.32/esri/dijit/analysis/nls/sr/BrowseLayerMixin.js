@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/sr/BrowseLayerMixin",{defaultAnaysisLayerTitle:"Odaberite Living Atlas sloj za analizu",customAnalysisLayerTitle:"Izaberi sloj za analizu",searchPlaceholderText:"Pretra\u017eite Living Atlas slojeve za analizu",searchCustomPlaceholderText:"Pretra\u017ei slojeve za analizu",mainActionTitle:"Selektujte",customActionName:"Selektujte i dodajte mapi",customeSectionName:"Living Atlas slojevi za analizu",Categories:"Kategorije",boundaries:"Granice",places:"Mesta",boundariesAndPlaces:"Svetske granice i mesta",
+hexbins:"Heksagonalno grupisani podaci",transportation:"Transport",point:"Ta\u010dkasti slojevi",line:"Slojevi polilinija",polygon:"Slojevi poligona",pointFilterName:"Ta\u010dka",lineFilterName:"Poligon",polygonFilterName:"Polilinija",multiPointFilterName:"Vi\u0161e ta\u010daka",geometryFilterName:"Geometrija",featureLayerName:"Sloj geoobjekata",tableLayerName:"Tabela",itemTypeFilterName:"Tip stavke",instantFilterName:"Trenutno",intervalFilterName:"Interval",timeFilterName:"Vreme",edit:"Izmeni",boundaryLayers:"Esri slojevi granica",
+customAnalysisGroupName:"Grupa za analiziranje organizacije"});

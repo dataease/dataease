@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/da/FindDwellLocations",{inputLayerLabel:"V\u00e6lg det lag, der skal findes boliger i",selectTracksLabel:"V\u00e6lg \u00e9t eller flere felter for at identificere spor",defineDistanceLabel:"Definer den spatiale s\u00f8geafstand",distMethodLabel:"V\u00e6lg metoden til at beregne afstand",temporalSearchLabel:"Definer det tidsm\u00e6ssige s\u00f8geomr\u00e5de",outputDwellLabel:"Output boliger som",outputLayerName:"Find boliger for ${inputLayerName}",meanCenters:"Middel-centre",
+convexHulls:'Konveks "hull"',dwellFeatures:"Bolig-objekter",allFeatures:"Alle objekter",itemDescription:"Vektorlag genereret ud fra k\u00f8rsel af Find boliger-l\u00f8sningen for ${inputLayerName}.",itemTags:"Analyseresultat, Find boliger, ${inputLayerName}",itemSnippet:"Vektorlag genereret ud fra Find boliger"});

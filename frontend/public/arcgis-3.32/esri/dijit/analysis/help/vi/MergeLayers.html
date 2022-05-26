@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Gộp Lớp</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Gộp Lớp"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y sao ch&eacute;p c&aacute;c đối tượng từ hai lớp v&agrave;o trong một lớp mới. C&aacute;c lớp được trộn phải chứa tất cả c&aacute;c loại đối tượng tương tự (điểm, đường, hoặc v&ugrave;ng). Bạn c&oacute; thể kiểm so&aacute;t c&aacute;ch sao ch&eacute;p v&agrave; kết hợp c&aacute;c trường từ c&aacute;c lớp đầu v&agrave;o. V&iacute; dụ:
+        <ul>
+            <li>T&ocirc;i c&oacute; ba lớp của Anh, Wales, Scotland v&agrave; t&ocirc;i muốn tạo ra một lớp duy nhất của Vương quốc Anh. 
+            </li>
+            <li>T&ocirc;i c&oacute; 12 lớp v&agrave; mỗi lớp sẽ chứa th&ocirc;ng tin thửa đất cho c&aacute;c thị trấn l&acirc;n cận. T&ocirc;i muốn kết hợp ch&uacute;ng v&agrave;o một lớp duy nhất, chỉ giữ lại c&aacute;c trường c&oacute; c&ugrave;ng t&ecirc;n v&agrave; loại tr&ecirc;n 12 lớp đầu v&agrave;o.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Nếu chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b>, th&igrave; chỉ c&aacute;c đối tượng nh&igrave;n thấy trong phạm vi bản đồ hiện tại mới được gộp. Nếu bỏ chọn, tất cả đối tượng trong hai lớp sẽ được trộn, ngay cả khi ch&uacute;ng nằm ngo&agrave;i phạm vi bản đồ hiện tại.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Chọn lớp</h2></div>
+        <hr/>
+        <div>
+            <p>C&aacute;c đối tượng điểm, đường hoặc v&ugrave;ng d&ugrave;ng để gộp với lớp được x&aacute;c định ở b&ecirc;n dưới 
+            </p>
+        </div>
+    </div>
+    <div id="MergeLayer">
+        <div><h2>Chọn Lớp để gộp</h2></div>
+        <hr/>
+        <div>
+            <p>Chọn lớp để gộp với lớp đầu ti&ecirc;n.
+            </p>
+        </div>
+    </div>
+    <div id="MergingAttributes">
+        <div><h2>Sửa đổi các trường trộn</h2></div>
+        <hr/>
+        <div>
+            <p>Theo mặc định, tất cả c&aacute;c trường từ cả hai lớp đầu v&agrave;o sẽ được kết hợp lại v&agrave;o đầu ra. Bạn c&oacute; thể thay đổi c&aacute;ch kết hợp c&aacute;c trường v&agrave;o lớp đầu ra như sau:
+                <ul>
+                    <li> <b>Đổi t&ecirc;n</b>&mdash;Trường sẽ được x&oacute;a khỏi lớp đầu ra.
+                    </li>
+                    <li> <b>X&oacute;a</b>&mdash;Trường sẽ được x&oacute;a khỏi lớp đầu ra.
+                    </li>
+                    <li> <b>Tr&ugrave;ng khớp</b>&mdash;T&ecirc;n trường được tạo tương ứng. 
+ C&aacute;c gi&aacute; trị trường từ lớp trộn sẽ được sao ch&eacute;p v&agrave;o trường đầu ra tr&ugrave;ng khớp.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Nếu cả hai lớp chứa một trường c&oacute; t&ecirc;n v&agrave; loại dữ liệu giống nhau, nội dung của cả hai trường sẽ được hợp nhất th&agrave;nh một trường của t&ecirc;n đ&oacute;. Điều n&agrave;y kh&ocirc;ng &aacute;p dụng cho c&aacute;c trường trong đ&oacute;  <b>So khớp</b> được sử dụng trong th&ocirc;ng số <b>Sửa đổi c&aacute;c trường trộn</b>.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&acirc;y l&agrave; t&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu t&ecirc;n lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Sử dụng chức năng  <b>Lưu kết quả trong</b> menu thả xuống, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong phần <b>Nội dung của T&ocirc;i</b> nơi sẽ lưu trữ kết quả của bạn.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

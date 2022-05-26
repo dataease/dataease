@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Oblicz zagęszczenie</h2><p/>
+        <h2><img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" alt="Narzędzie Oblicz zagęszczenie"></h2>
+        <hr/>
+    <p>To narzędzie tworzy mapę zagęszczenia na podstawie obiekt&oacute;w punktowych lub liniowych poprzez rozmieszczenie na mapie znanych wartości ilościowych dotyczących pewnego zjawiska (reprezentowanych przez atrybuty punkt&oacute;w lub linii). Wynikiem uruchomienia narzędzia jest warstwa z obszarami sklasyfikowanymi według gęstości &mdash; od najmniejszego do największego zagęszczenia.
+    </p>
+    <p>Jeśli dane wejściowe to obiekty punktowe, każdy punkt powinien prezentować lokalizację określonego wydarzenia lub zdarzenia, natomiast warstwa wynikowa przedstawia liczbę zdarzeń na jednostkę powierzchni. Większa wartość zagęszczenia w&nbsp;nowej lokalizacji oznacza, że w&nbsp;pobliżu tego miejsca znajduje się więcej punkt&oacute;w. W&nbsp;wielu przypadkach warstwa wynikowa może być traktowana jako powierzchnia zagrożenia dotycząca przyszłych wydarzeń. Na przykład, jeżeli dane punktowe reprezentują miejsca uderzenia pioruna, warstwę wynikową można interpretować jako powierzchnię zagrożenia przyszłymi uderzeniami piorun&oacute;w.
+    </p>
+    <p>Gdy danymi wejściowymi są obiekty liniowe, powierzchnia zagęszczenia linii reprezentuje wszystkie części linii znajdujące się w&nbsp;pobliżu danej lokalizacji. Jednostka, w&nbsp;kt&oacute;rej wyrażane są obliczone wartości zagęszczenia, to długość linii na jednostkę powierzchni. Jeżeli na przykład linie reprezentują rzeki, warstwa wynikowa będzie przedstawiać całkowitą długość tych części rzek, kt&oacute;re znajdują się w&nbsp;promieniu wyszukiwania. Uzyskana w&nbsp;ten spos&oacute;b warstwa może zostać użyta do identyfikacji właściwych obszar&oacute;w dla zwierząt pastwiskowych.
+    </p>
+    <p>Narzędzie to ma r&oacute;wnież następujące zastosowania:
+
+        <ul>
+            <li>Tworzenie map nasilenia przestępczości pomagających w&nbsp;opracowywaniu odpowiedniego przydziału sił policji do obszar&oacute;w o wysokiej przestępczości
+                
+ 
+            </li>
+            <li>Obliczanie liczby szpitali w określonym powiecie. Warstwa wynikowa będzie przedstawiać obszary o dużej i niskiej dostępności szpitali &mdash; informacja ta może zostać wykorzystana w procesie podejmowania decyzji o budowie nowych szpitali.
+                
+ 
+            </li>
+            <li>Identyfikacja obszar&oacute;w wysokiego zagrożenia pożarami las&oacute;w na podstawie lokalizacji wcześniejszych pożar&oacute;w las&oacute;w
+                
+ 
+            </li>
+            <li>Lokalizacja społeczności zamieszkujących tereny oddalone od gł&oacute;wnych dr&oacute;g w celu wyznaczenia przebiegu nowych dr&oacute;g
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointOrLineFeatures">
+        <div><h2>Wybierz wejściową warstwę punktową lub liniową, na podstawie której ma zostać obliczone zagęszczenie</h2></div>
+        <hr/>
+        <div>
+            <p>Wejściowa warstwa punktowa lub liniowa, kt&oacute;ra zostanie użyta do obliczenia warstwy gęstości.
+            </p>
+        </div>
+    </div>
+    <div id="countField">
+        <div><h2>Użyj pola zliczania</h2></div>
+        <hr/>
+        <div>
+            <p>Opcja umożliwiająca skorzystanie z&nbsp;pola określającego liczbę zdarzeń w&nbsp;danej lokalizacji. Jeżeli na przykład dane punktowe reprezentują miasta, możesz użyć pola określającego liczbę mieszkańc&oacute;w miasta jako pola zliczania. Wtedy w&nbsp;wynikowej warstwie zagęszczenia ludności przedstawione zostaną duże wartości gęstości zaludnienia znajdujące się w&nbsp;pobliżu miast o&nbsp;dużej liczbie mieszkańc&oacute;w.
+            </p>
+            <p>Jeżeli użyta zostanie domyślna wartość  <b>Brak</b>, przyjęte zostanie założenie, że każda lokalizacja reprezentuje określoną liczbę.
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Odległość wyszukiwania</h2></div>
+        <hr/>
+        <div>
+            <p>Opcja umożliwiająca podanie wartości określającej maksymalną odległość, w&nbsp;jakiej wyszukiwane mają być punkty lub linie podczas obliczania zagęszczenia. Jeżeli na przykład podana odległość wyszukiwania wynosi 10&nbsp;000 metr&oacute;w, zagęszczenie w&nbsp;danej lokalizacji w&nbsp;warstwie wynikowej jest obliczane na podstawie obiekt&oacute;w znajdujących się w&nbsp;odległości do 10&nbsp;000 metr&oacute;w od tej lokalizacji. Jeżeli w&nbsp;odległości do 10&nbsp;000 metr&oacute;w od określonej lokalizacji nie ma żadnych zdarzeń, lokalizacji tej przypisana zostanie wartość zagęszczenia r&oacute;wna zero.
+            </p>
+            <p>Jeżeli odległość nie zostanie podana, na podstawie lokalizacji obiekt&oacute;w wejściowych oraz wartości w&nbsp;polu zliczania (jeżeli podano pole zliczania) obliczona zostanie wartość domyślna.
+            </p>
+        </div>
+    </div>
+    <div id="outputAreaUnits">
+        <div><h2>Podaj jednostki powierzchni danych wynikowych</h2></div>
+        <hr/>
+        <div>
+            <p>Opcja umożliwiająca podanie jednostek wynikowych powierzchni. Zagęszczenie to wartość liczbowa podzielona przez wielkość powierzchni, a&nbsp;parametr ten określa jednostkę powierzchni używaną w&nbsp;obliczeniach wartości zagęszczenia.
+            </p>
+            <p>Dostępne jednostki to mile kwadratowe, stopy kwadratowe, metry kwadratowe oraz kilometry kwadratowe.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Wielkość komórki danych wynikowych</h2></div>
+        <hr/>
+        <div>
+            <p>Wielkość kom&oacute;rki i jednostka dla rastr&oacute;w wynikowych.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Nazwa warstwy, kt&oacute;ra zostanie utworzona w obszarze  <b>Moje zasoby</b> i dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, wyświetlony zostanie komunikat z monitem o podanie innej nazwy.
+            </p>
+            <p>Za pomocą listy rozwijanej  <b>Zapisz wynik w</b> można podać nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

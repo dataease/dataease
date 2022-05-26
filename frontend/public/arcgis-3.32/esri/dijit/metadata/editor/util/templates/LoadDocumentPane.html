@@ -1,0 +1,37 @@
+<div class="gxePrimaryPane gxeLoadDocumentPane" data-dojo-attach-point="containerNode">
+  <div class="gxePrompt" data-dojo-attach-point="promptNode" style="display:none"></div>
+
+  <div class="gxeTabs" data-dojo-attach-point="tabsNode">
+    <div data-dojo-type="esri/dijit/metadata/base/TabButton" data-dojo-attach-point="fileTab"
+      data-dojo-props="xtnMode:'file',label:'${i18nBase.editor.load.fileTab}'"
+      data-dojo-attach-event="onClick: _onFileTabClick">
+    </div><div data-dojo-type="esri/dijit/metadata/base/TabButton" data-dojo-attach-point="typeTab"
+      data-dojo-props="xtnMode:'type',label:'${i18nBase.editor.load.typeTab}'"
+      data-dojo-attach-event="onClick: _onTypeTabClick">
+    </div><div data-dojo-type="esri/dijit/metadata/base/TabButton" data-dojo-attach-point="itemTab"
+      data-dojo-props="xtnMode:'item',label:'${i18nBase.editor.load.itemTab}'"
+      data-dojo-attach-event="onClick: _onItemTabClick">
+    </div>
+  </div>
+
+  <div class="gxeSection" data-dojo-attach-point="fileSection">
+    <div class="gxePrompt" data-dojo-attach-point="filePrompt">${i18nBase.editor.load.filePrompt}</div>
+    <div class="gxePrompt" data-dojo-attach-point="astCheckBoxSection">
+      <input id="${id}_astcbx" type="checkbox" data-dojo-attach-point="astCheckBoxNode" />
+      <label for="${id}_astcbx"  data-dojo-attach-point="labelNode">${i18nBase.editor.load.pullItem}</label>
+    </div>
+     <div class="gxeInputFileContainer" data-dojo-attach-point="importNode"></div>
+     <div class="gxeLine gxeWarningSection" style="display:none"
+      data-dojo-attach-point="importWarningSection" >
+      <div class="gxeIconWarning"></div>
+      <div class="gxeWarning" data-dojo-attach-point="importWarningNode"></div>
+    </div>
+  </div>
+  <div class="gxeSection" data-dojo-attach-point="typesSection">
+    <div data-dojo-attach-point="typesNode"></div>
+  </div>
+  <div class="gxeSection" data-dojo-attach-point="itemSection">
+    <div class="gxeClickableText gxeLine" data-dojo-attach-point="pullItemNode"
+      data-dojo-attach-event="onClick: _onPullItemClick">${i18nBase.editor.load.pullItem}</div>
+  </div>
+</div>

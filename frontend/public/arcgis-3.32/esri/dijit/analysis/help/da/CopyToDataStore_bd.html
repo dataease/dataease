@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Kopiér til datalager</h2><p/>
+        <h2><img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" alt="Kopi&eacute;r til datalager"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j vil kopiere et inputlag til et datalager. Du kan kopiere resultater til  ArcGIS Data Store (relationelt eller spatiotemporalt big data-lager), og der oprettes et lag i din portal, eller du kan kopiere resultater til en big data fildeling. 
+    </p>
+    <p>Du kan f.eks. kopiere objekter, der er gemt i en  <code>big-datafildeling</code> til et <code>relationelt datalager</code> og angive, at kun objekter inden for den aktuelle kortudstr&aelig;kning skal kopieres. Dette ville oprette en &quot;hosted&quot; featuretjeneste, der udelukkende ville indeholde de objekter, som ligger inden for den angivne kortudstr&aelig;kning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vælg lag, der skal kopieres</h2></div>
+        <hr/>
+        <div>
+            <p>Laget eller tabellen vil blive kopieret. 
+            </p>
+            <p>Udover at du kan v&aelig;lge et lag i dit kort, kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten for at g&aring; til dit indhold til et big data-fildelingsdatas&aelig;t eller -vektorlag.
+            </p>
+        </div>
+    </div>
+    <div id="selection">
+        <div><h2>Du kan bruge alle objekter eller foretage et valg (valgfrit)</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan efter eget valg bruge markeringsknappen til at identificere de steder, der skal kopieres.
+            </p>
+        </div>
+    </div>
+    <div id="outputDataStore">
+        <div><h2>Vælg det datalager, der skal kopieres til</h2></div>
+        <hr/>
+        <div>
+            <p>Det datalager, som laget skal kopieres til. Denne parameter vil tilsides&aelig;tte valget i  <b>Analysemilj&oslash;erne</b> Der er f&oslash;lgende indstillinger:
+                <ul>
+                    <li> <b>ArcGIS Data Store</b> ArcGIS Data Store <ul>
+                            <li> <b>Spatiotemporal</b> &ndash; Dette er standardindstillingen.
+                            </li>
+                            <li> <b>Relationel</b>
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li> <b>Big data-fildeling &shy; Output-skabeloner</b>
+                        <ul>
+                            <li>En liste over tilg&aelig;ngelige big data-fildelingsskabeloner i formatet  <b>bigDataFileShareName-templateName</b>. Big data-fildelingsskabeloner skal konfigureres, f&oslash;r v&aelig;rkt&oslash;jet k&oslash;res.
+                            </li>
+                        </ul>
+                        
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; det lag, som oprettes. Hvis du skriver til et ArcGIS Data Store, bliver  dine resultater gemt i  <b>Mit indhold</b> og f&oslash;jet til kortet. Hvis du skriver til en big data-fildeling, bliver dine resultater gemt i big data-fildelingen og f&oslash;jet til dens manifest. De bliver ikke f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil v&aelig;rkt&oslash;jet ikke fungere.
+            </p>
+            <p>N&aring;r du skriver til   ArcGIS Data Store  (relationelt eller spatiotemporalt big data-lager) ved hj&aelig;lp af rullelisten  <b>Gem resultat i </b>, kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

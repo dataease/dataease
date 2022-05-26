@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/customgp/nls/nl/strings",{_widgetLabel:"Geoprocessing",_featureAction_ReceiveFeatureSet:"Instellen als input van ",requiredInfo:"is vereist.",drawnOnMap:"Het resultaat wordt getekend op de kaart.",noToolConfig:"Geen vooraf geconfigureerde geoprocessing-taak beschikbaar.",useUrlForGPInput:"URL",useUploadForGPInput:"Bestand uploaden",useImageServiceLayer:"Imageservicelaag",useBrowseLayerPortal:"Bladeren / selecteren van portaal",selectFileToUpload:"Bestand selecteren...",
+rasterFormat:"Bestandsformaat rooster",noFileSelected:"Geen bestand geselecteerd!",uploadSuccess:"Bestand met succes ge\u00fcpload!",showLayerContent:"Content van de laag weergeven",invalidUrl:"Ongeldige feature service-URL",urlPlaceholder:"Feature set URL",addShapefile:"Shapefile toevoegen",generateShapefileError:"Shapefile-fout genereren, controleer dan: ",cleared:"Het resultaat is gewist.",enlargeView:"Weergave vergroten",exportOutput:"Exporteren",emptyResult:"Het resultaat is leeg.",useSelectedFeatureset:"Gebruik het/de resulterende object(en).",
+closeSelectedFeatureset:"Wis en gebruik de geconfigureerde inputoptie."});

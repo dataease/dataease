@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/ViewJsonTypes",["dojo/_base/lang","dojo/has","../../kernel"],function(b,c,d){var a={joinFeatures:{layers:[{name:"Retail States Boundary",displayField:"",description:"AttributeJoin",adminLayerInfo:{viewLayerDefinition:{table:{name:"USABoundary",sourceServiceName:"USABoundary",sourceLayerId:1,sourceLayerFields:[{name:"POPULATION",alias:"POPULATION",source:"POPULATION"}],relatedTables:[{name:"Retail_Stores",sourceServiceName:"RetailStores",sourceLayerId:0,sourceLayerFields:[{name:"Store_Number",
+alias:"StoreNumber",source:"Store_Number"},{name:"Store_Name",alias:"Store_Name",source:"Store_Name"},{name:"Zone",alias:"Zone",source:"Zone"},{name:"SUM_Total_Sales_R12",alias:"SUM_Total_Sales_R12",statisticType:"SUM",source:"Total_Sales_R12"},{name:"Childrens_Apparel_FY13",alias:"Childrens_Apparel_FY13",source:"Childrens_Apparel_FY13"}],type:"INNER",parentKeyFields:["Shape"],keyFields:["Shape"]}],materialized:!1}},geometryField:{name:"USABoundaries.Shape"}}}]}};c("extend-esri")&&b.setObject("dijit.analysis.ViewJsonTypes",
+a,d);return a});

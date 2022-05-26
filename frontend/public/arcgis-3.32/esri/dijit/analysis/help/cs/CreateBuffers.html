@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Vytvořit obalové zóny (Create Buffers)</h2><p/>
+        <h2><img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" alt="Vytvořit obalov&eacute; z&oacute;ny"></h2>
+        <hr/>
+    <p>Obalov&aacute; z&oacute;na je oblast, kter&aacute; pokr&yacute;v&aacute; určenou vzd&aacute;lenost od dan&eacute;ho bodu, linie nebo polygonu. 
+    </p>
+    <p>Obalov&eacute; z&oacute;ny se obvykle použ&iacute;vaj&iacute; pro vytv&aacute;řen&iacute; oblast&iacute;, kter&eacute; pot&eacute; vstupuj&iacute; do dal&scaron;&iacute;ch anal&yacute;z, např&iacute;klad s využit&iacute;m n&aacute;stroje Překryv vrstev. Pokud se např&iacute;klad pt&aacute;me &bdquo;Jak&eacute; budovy se nach&aacute;zej&iacute; v okruhu jednoho kilometru od &scaron;koly?&ldquo;, lze odpověď zjistit tak, že se kolem &scaron;koly vytvoř&iacute; obalov&aacute; z&oacute;na o rozloze jednoho kilometru a pomoc&iacute; n&aacute;stroje Překryv vrstev se překryje vrstvou obsahuj&iacute;c&iacute; obrysy budov.  V&yacute;sledkem je vrstva budov, kter&eacute; se nach&aacute;zej&iacute; v okruhu jednoho kilometru od &scaron;koly.  
+    </p>
+    <p>Pokud je za&scaron;krtnuto pole  <b>Použ&iacute;t rozsah aktu&aacute;ln&iacute; mapy</b>, budou z&oacute;nou obaleny pouze prvky viditeln&eacute; v&nbsp;rozsahu aktu&aacute;ln&iacute; mapy.  Pokud pole za&scaron;krtnuto nen&iacute;, budou obaleny v&scaron;echny prvky ve vstupn&iacute; vrstvě, včetně těch, kter&eacute; se nach&aacute;zej&iacute; mimo rozsah aktu&aacute;ln&iacute; mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vyberte vrstvu obsahující prvky, pro které se mají vytvořit obalové zóny.</h2></div>
+        <hr/>
+        <div>
+            <p>Bodov&eacute;, liniov&eacute; nebo polygonov&eacute; prvky, pro kter&eacute; maj&iacute; b&yacute;t vytvořeny obalov&eacute; z&oacute;ny. 
+            </p>
+            <p>Vrstvu můžete vybrat ze sv&eacute; mapy nebo můžete zvolit možnost  <b>Vybrat vrstvu anal&yacute;zy</b>, kter&aacute; se nach&aacute;z&iacute; na konci rozbalovac&iacute;ho seznamu. Pomoc&iacute; t&eacute;to možnosti se otevře galerie, kde můžete proch&aacute;zet a&nbsp;vyb&iacute;rat datov&eacute; sady z&nbsp;různ&yacute;ch vrstev, kter&eacute; můžete použ&iacute;t ve sv&eacute; anal&yacute;ze. 
+            </p>
+        </div>
+    </div>
+    <div id="BufferSize">
+        <div><h2>Zadat velikost obalové zóny</h2></div>
+        <hr/>
+        <div>
+            <p>Můžete zadat jednu nebo v&iacute;ce hodnot vzd&aacute;lenosti. Jednotliv&eacute; hodnoty od sebe oddělujte mezerou.  Ve vstupn&iacute; vrstvě tak&eacute; můžete určit atribut obsahuj&iacute;c&iacute; hodnotu vzd&aacute;lenosti kliknut&iacute;m na tlač&iacute;tko  <b>Pole</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OptionPoint">
+        <div><h2>Možnosti</h2></div>
+        <hr/>
+        <div>
+            <p>Umožňuje vybrat, jak&yacute;m způsobem maj&iacute; b&yacute;t zpracov&aacute;ny překr&yacute;vaj&iacute;c&iacute; se obalov&eacute; z&oacute;ny. Pokud se nad obalovou z&oacute;nou nach&aacute;z&iacute; jin&aacute; obalov&aacute; z&oacute;na, mohou b&yacute;t společn&eacute; oblasti ponech&aacute;ny (Překr&yacute;t) nebo spojeny (Sloučit). Při použit&iacute; n&aacute;stroje  <b>Sloučit</b> se v&scaron;echny obalov&eacute; z&oacute;ny slouč&iacute; do jedin&eacute;ho v&iacute;cebodov&eacute;ho prvku, č&iacute;mž se odstran&iacute; př&iacute;padn&yacute; přesah.
+            </p>  
+            <p> Použ&iacute;v&aacute;te-li v&iacute;ce vzd&aacute;lenost&iacute;, můžete zvolit, jak&yacute;m způsobem m&aacute; b&yacute;t označena vzd&aacute;lenost od posledn&iacute; vzd&aacute;lenosti obalov&eacute; z&oacute;ny. Pokud jste např&iacute;klad zvolili vzd&aacute;lenosti 10 a 14:
+                <ul>
+                    <li>Možnost  <b>Kružnice</b> povede k obalov&yacute;m z&oacute;n&aacute;m se vzd&aacute;lenostmi od 0 do 10 a od 10 do 14.
+                    </li>
+                    <li>Možnost  <b>Kruhy</b> povede k obalov&yacute;m z&oacute;n&aacute;m se vzd&aacute;lenostmi od 0 do 10 a od 0 do 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionPoly">
+        <div><h2>Možnosti</h2></div>
+        <hr/>
+        <div>
+            <p>Umožňuje vybrat, jak&yacute;m způsobem maj&iacute; b&yacute;t zpracov&aacute;ny překr&yacute;vaj&iacute;c&iacute; se obalov&eacute; z&oacute;ny. Pokud se nad obalovou z&oacute;nou nach&aacute;z&iacute; jin&aacute; obalov&aacute; z&oacute;na, mohou b&yacute;t společn&eacute; oblasti ponech&aacute;ny (Překr&yacute;t) nebo spojeny (Sloučit). Při použit&iacute; n&aacute;stroje  <b>Sloučit</b> se v&scaron;echny obalov&eacute; z&oacute;ny slouč&iacute; do jedin&eacute;ho v&iacute;cebodov&eacute;ho prvku, č&iacute;mž se odstran&iacute; př&iacute;padn&yacute; přesah.
+            </p>
+            <p>Vytv&aacute;ř&iacute;te-li jednu obalovou z&oacute;nu kolem prvků oblasti (je zad&aacute;na jedna vzd&aacute;lenost), můžete zvolit, zda m&aacute; b&yacute;t ve v&yacute;sledn&eacute; obalov&eacute; z&oacute;ně zahrnut i obalovan&yacute; prvek.
+            </p>
+            <p>Použ&iacute;v&aacute;te-li v&iacute;ce vzd&aacute;lenost&iacute;, můžete zvolit, jak&yacute;m způsobem m&aacute; b&yacute;t označena vzd&aacute;lenost od posledn&iacute; vzd&aacute;lenosti obalov&eacute; z&oacute;ny. Pokud jste např&iacute;klad zvolili vzd&aacute;lenosti 10 a 14:
+                <ul>
+                    <li>Možnost  <b>Kružnice</b> povede k obalov&yacute;m z&oacute;n&aacute;m se vzd&aacute;lenostmi od 0 do 10 a od 10 do 14.
+                    </li>
+                    <li>Možnost  <b>Kruhy</b> povede k obalov&yacute;m z&oacute;n&aacute;m se vzd&aacute;lenostmi od 0 do 10 a od 0 do 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionLine">
+        <div><h2>Možnosti</h2></div>
+        <hr/>
+        <div>
+            <p>Umožňuje vybrat, jak&yacute;m způsobem maj&iacute; b&yacute;t zpracov&aacute;ny překr&yacute;vaj&iacute;c&iacute; se obalov&eacute; z&oacute;ny. Pokud se nad obalovou z&oacute;nou nach&aacute;z&iacute; jin&aacute; obalov&aacute; z&oacute;na, mohou b&yacute;t společn&eacute; oblasti ponech&aacute;ny (Překr&yacute;t) nebo spojeny (Sloučit). Při použit&iacute; n&aacute;stroje  <b>Sloučit</b> se v&scaron;echny obalov&eacute; z&oacute;ny slouč&iacute; do jedin&eacute;ho v&iacute;cebodov&eacute;ho prvku, č&iacute;mž se odstran&iacute; př&iacute;padn&yacute; přesah.
+            </p>
+            <p>Vytv&aacute;ř&iacute;te-li jednu obalovou z&oacute;nu kolem lini&iacute; (je zad&aacute;na jedna vzd&aacute;lenost), můžete zvolit, kter&aacute; strana linie m&aacute; b&yacute;t souč&aacute;st&iacute; obalov&eacute; z&oacute;ny.  Obvykle je nejvhodněj&scaron;&iacute; vybrat obě strany.  Lev&aacute; a prav&aacute; strana je určena stejn&yacute;m způsobem, jako byste &scaron;li po linii z jej&iacute; prvn&iacute; souřadnice ve form&aacute;tu x, y (poč&aacute;tečn&iacute; souřadnice) do jej&iacute; posledn&iacute; souřadnice ve form&aacute;tu x, y (koncov&aacute; souřadnice).  Volba lev&eacute; nebo prav&eacute; strany je vhodn&aacute; předev&scaron;&iacute;m v př&iacute;padě, že byly liniov&eacute; prvky vytvořeny a uloženy v určit&eacute;m směru (např&iacute;klad po proudu nebo proti proudu ř&iacute;čn&iacute; s&iacute;tě).   Obalovou vrstvu lze na obou konc&iacute;ch linie zaoblit (Zaoblen&eacute;) nebo v&eacute;st př&iacute;mo (Ploch&eacute;).
+            </p>
+            <p>Vytv&aacute;ř&iacute;te-li v&iacute;ce obalov&yacute;ch z&oacute;n (v&iacute;ce než jedna vzd&aacute;lenost), můžete zvolit, jak&yacute;m způsobem m&aacute; b&yacute;t označena vzd&aacute;lenost od posledn&iacute; vzd&aacute;lenosti obalov&eacute; z&oacute;ny. Pokud jste např&iacute;klad zvolili vzd&aacute;lenosti 10 a 14:
+                <ul>
+                    <li>Možnost  <b>Kružnice</b> povede k obalov&yacute;m z&oacute;n&aacute;m se vzd&aacute;lenostmi od 0 do 10 a od 10 do 14.
+                    </li>
+                    <li>Možnost  <b>Kruhy</b> povede k obalov&yacute;m z&oacute;n&aacute;m se vzd&aacute;lenostmi od 0 do 10 a od 0 do 14.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="OptionNolayer">
+        <div><h2>Možnosti</h2></div>
+        <hr/>
+        <div>
+            <p>Po v&yacute;běru vrstvy, kter&aacute; m&aacute; b&yacute;t souč&aacute;st&iacute; obalov&eacute; z&oacute;ny, můžete určit, jak&yacute;m způsobem maj&iacute; b&yacute;t zpracov&aacute;ny překr&yacute;vaj&iacute;c&iacute; se obalov&eacute; z&oacute;ny. Pokud se nad obalovou z&oacute;nou nach&aacute;z&iacute; jin&aacute; obalov&aacute; z&oacute;na, mohou b&yacute;t společn&eacute; oblasti ponech&aacute;ny (Překr&yacute;t) nebo spojeny (Sloučit). Při použit&iacute; n&aacute;stroje  <b>Sloučit</b> se v&scaron;echny obalov&eacute; z&oacute;ny slouč&iacute; do jedin&eacute;ho v&iacute;cebodov&eacute;ho prvku, č&iacute;mž se odstran&iacute; př&iacute;padn&yacute; přesah. Kromě toho lze určit, jak m&aacute; b&yacute;t zn&aacute;zorněno v&iacute;ce vzd&aacute;lenost&iacute;.   U vrstev obsahuj&iacute;c&iacute;ch liniov&eacute; prvky můžete zvolit, kter&aacute; strana linie m&aacute; b&yacute;t souč&aacute;st&iacute; obalov&eacute; z&oacute;ny.  U vrstev obsahuj&iacute;c&iacute;ch prvky oblasti můžete zvolit, zda m&aacute; b&yacute;t ve v&yacute;sledn&eacute; obalov&eacute; z&oacute;ně zahrnut i obalovan&yacute; prvek.
+            </p>
+        </div>
+    </div>
+    <div id="BufferLayer">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>Toto je n&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; do mapy.  V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud n&aacute;zev vrstvy již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>V rozbalovac&iacute; nab&iacute;dce  <b>Uložit v&yacute;sledek do</b> můžete zadat n&aacute;zev složky ve složce <b>Můj obsah</b>, do kter&eacute; se m&aacute; v&yacute;sledek uložit.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

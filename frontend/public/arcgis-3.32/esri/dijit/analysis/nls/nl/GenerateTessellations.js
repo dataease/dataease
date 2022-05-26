@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/nl/GenerateTessellations",{chooseShape:"Vorm kiezen",defineExtent:"Extent defini\u00ebren",defineBin:"Definieer de bingrootte door deze te specificeren",area:"Gebied",distance:"Afstand",resultLayerName:"Resultaat laagnaam",hexagon:"Zeskant",transverseHexagon:"Dwarse zeshoek",square:"Vierkant",triangle:"Driehoek",diamond:"Diamant",sameAsDisplay:"Zelfde als weergave",emptyBinSize:"De bingrootte kan niet leeg zijn",currentExtent:"huidige extent",intersectExtent:"Behoud alleen kruisende betegeling",
+outputLayerName:"Genereer betegeling op ${extentLayerName}",itemDescription:"Extent van ${extentLayerName} is gebruikt.",itemTags:"Analyseresultaat, betegeling genereren, ${extentLayerName}",itemSnippet:"Objectlaag gegenereerd van Betegeling genereren"});

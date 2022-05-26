@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Keskme ja hajumise summeerimine</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="Keskme ja hajumise summeerimine"></h2>
+        <hr/>
+    <p>See t&ouml;&ouml;riist leiab keskme objektid ja suunajaotused.
+Seda saab kasutada j&auml;rgmistele k&uuml;simustele vastamiseks:
+        <ul>
+            <li>Kus on kese?
+            </li>
+            <li>Milline objekt on k&otilde;ige paremini juurdep&auml;&auml;setav k&otilde;igi muude objektide juurest?
+            </li>
+            <li>Kuiv&otilde;rd hajunud, kompaktsed v&otilde;i integreeritud on objektid?
+            </li>
+            <li>Kas on olemas suunatrendid?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Kui ruut  <b>Kasuta praegust kaardi ulatust</b> on m&auml;rgitud, anal&uuml;&uuml;sitakse ainult neid sisendkihi objekte, mis on kaardil praegu n&auml;htavad. Kui see ruut pole m&auml;rgitud, kasutatakse anal&uuml;&uuml;si koostamisel k&otilde;iki sisendkihis olevaid objekte ka siis, kui neid pole praegu kaardil n&auml;ha.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Valige kirjeldatav kiht</h2></div>
+        <hr/>
+        <div>
+            <p>Punkti-, joone- v&otilde;i alakiht, mida kasutatakse keskme objektide ja suunajaotuste leidmiseks.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>Kokkuvõtte tüübid</h2></div>
+        <hr/>
+        <div>
+            <p>Keskme ja hajumise summeerimise meetod. 
+            </p>
+            <ul>
+                <li>Keskme objekt - M&auml;&auml;rab k&otilde;ige kesksema paigutusega objekti andmestikus.
+                </li>
+                <li>Keskmine kese - M&auml;&auml;rab objektide komplekti geograafilise keskme (v&otilde;i kontsentratsiooni keskme).
+                </li>
+                <li>Mediaani kese - M&auml;&auml;rab asukoha, mis minimeerib &uuml;ldise Eukleidese vahemaa andmestiku objektideni.
+                </li>
+                <li>Ellips - Loob standardh&auml;lbe ellipsid, et summeerida geograafiliste objektide ruumilised karakteristikud: keskmise tendentsi, hajumise ja suunatrendid. Ellipsite suurused v&otilde;ivad olla 1, 2 v&otilde;i 3 standardh&auml;lvet.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>Kaalu alusel (valikuline)</h2></div>
+        <hr/>
+        <div>
+            <p>Seda v&auml;lja kasutatakse asukohtade kaalumiseks vastavalt nende suhtelisele t&auml;htsusele. 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>Rühmitamise alusel (valikuline)</h2></div>
+        <hr/>
+        <div>
+            <p>Seda v&auml;lja kasutatakse objektide r&uuml;hmitamiseks, et eraldada kesksete objektide v&otilde;i hajumise arvutused. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>See on selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile.  Vaikenimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui samanimeline kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>Rippmen&uuml;&uuml;  <b>Salvesta tulemused</b> kaudu saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemus salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

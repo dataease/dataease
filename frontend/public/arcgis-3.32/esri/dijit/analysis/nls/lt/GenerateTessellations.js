@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/lt/GenerateTessellations",{chooseShape:"Pasirinkite fig\u016br\u0105",defineExtent:"Nurodykite apr\u0117pt\u012f",defineBin:"Nurodydami apibr\u0117\u017ekite daugiakampio dyd\u012f",area:"Plotas",distance:"Atstumas",resultLayerName:"Rezultat\u0173 sluoksnio pavadinimas",hexagon:"\u0160e\u0161iakampis",transverseHexagon:"Skersinis \u0161e\u0161iakampis",square:"Kvadratas",triangle:"Trikampis",diamond:"Rombas",sameAsDisplay:"Kaip ir ekranas",emptyBinSize:"B\u016btina nurodyti daugiakampio dyd\u012f",
+currentExtent:"esama apr\u0117ptis",intersectExtent:"Palikti tik susikertan\u010dias teseliacijas",outputLayerName:"Generuoti teseliacijas sluoksnyje ${extentLayerName}",itemDescription:"Naudota sluoksnio ${extentLayerName} apr\u0117ptis.",itemTags:"Analiz\u0117s rezultatas, Generuoti teseliacijas, ${extentLayerName}",itemSnippet:"Element\u0173 sluoksnis sukurtas naudojant Generuoti teseliacijas."});

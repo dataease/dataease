@@ -1,0 +1,28 @@
+@import "../css3.less";
+/* === Blue Badge ==*/
+.mblDomButtonBlueBadge {
+	position: relative;
+	width: 29px;
+	height: 29px;
+	text-align: right;
+	font-family: Helvetica;
+	font-size: 16px;
+	font-weight: bold;
+}
+.mblDomButtonBlueBadge > div {
+	position: absolute;
+	display: inline;
+	padding: 0px 5px;
+	top: 2px;
+	right: 2px;
+	color: white;
+	border: 2px solid white;
+	border-radius: 12px;
+	text-align: center;
+	.background-linear-gradient-top-bottom-2-stops(#6ba2e7, #216dd6, 0.5, #4282de, 0.5, #216dd6);
+	background-clip: padding-box;
+	.box-shadow(2px 3px 2px rgba(0, 0, 0, 0.5));
+}
+.mblDomButtonBlueBadge > div > div {
+	display: none;
+}

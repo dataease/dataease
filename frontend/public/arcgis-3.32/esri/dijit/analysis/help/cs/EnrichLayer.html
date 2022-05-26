@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Obohatit vrstvu (Enrich Layer)</h2><p/>
+        <h2><img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" alt="Obohatit vrstvu"></h2>
+        <hr/>
+    <p>Tento n&aacute;stroj obohacuje va&scaron;e data &uacute;daji o lidech, m&iacute;stech a firm&aacute;ch nach&aacute;zej&iacute;c&iacute;ch se ve va&scaron;&iacute; z&aacute;jmov&eacute; oblasti, a umožňuje v&aacute;m z&iacute;skat z nich nov&eacute; informace, kter&eacute; z map samotn&yacute;ch nejsou patrn&eacute;. Např&iacute;klad: Jak&yacute; typ lid&iacute; zde žije? Co lid&eacute; v t&eacute;to oblasti r&aacute;di dělaj&iacute;? Jak&eacute; jsou jejich zvyky a životn&iacute; styly? Jak&eacute; druhy firem se v t&eacute;to oblasti nach&aacute;z&iacute;?
+    </p>
+    <p>V&yacute;sledkem bude nov&aacute; vrstva obsahuj&iacute;c&iacute; v&scaron;echny demografick&eacute; a geografick&eacute; informace z vybran&yacute;ch datov&yacute;ch sad. Tyto nov&eacute; informace jsou přid&aacute;ny jako nov&aacute; pole tabulky.
+    </p>
+    <p>Pokud je za&scaron;krtnuto pole  <b>Použ&iacute;t aktu&aacute;ln&iacute; rozsah mapy</b>, budou obohaceny pouze prvky ve vstupn&iacute; vrstvě, kter&eacute; jsou viditeln&eacute; v aktu&aacute;ln&iacute;m rozsahu mapy.  Pokud pole za&scaron;krtnuto nen&iacute;, budou obohaceny v&scaron;echny prvky ve vstupn&iacute; vrstvě, včetně těch, kter&eacute; se nach&aacute;zej&iacute; mimo rozsah aktu&aacute;ln&iacute; mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Zvolte vrstvu, kterou chcete obohatit novými daty.</h2></div>
+        <hr/>
+        <div>
+            <p>Vrstva bodů, lini&iacute; nebo polygonů, kterou chcete obohatit nov&yacute;mi daty atributů. 
+            </p>
+            <p>Vrstvu můžete vybrat ze sv&eacute; mapy nebo můžete zvolit možnost  <b>Vybrat vrstvu anal&yacute;zy</b>, kter&aacute; se nach&aacute;z&iacute; na konci rozbalovac&iacute;ho seznamu. Pomoc&iacute; t&eacute;to možnosti se otevře galerie, kde můžete proch&aacute;zet a&nbsp;vyb&iacute;rat datov&eacute; sady z&nbsp;různ&yacute;ch vrstev, kter&eacute; můžete použ&iacute;t ve sv&eacute; anal&yacute;ze. 
+            </p>
+        </div>
+    </div>
+    <div id="DataCollection">
+        <div><h2>Proměnné pro obohacení</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Kliknut&iacute;m na položku  <b>Vybrat proměnn&eacute;</b> otevřete <b>Prohl&iacute;žeč dat</b>. <b>Prohl&iacute;žeč dat</b> v&aacute;m pom&aacute;h&aacute; jednotlivě nebo hromadně vyhledat a vybrat proměnn&eacute; pro obohacen&iacute;.
+            </p>
+            <p>Region je vybr&aacute;n automaticky na z&aacute;kladě va&scaron;ich dat. Pokud va&scaron;e data pokr&yacute;vaj&iacute; v&iacute;ce než jednu zemi, můžete zvolit jin&yacute; region. 
+            </p>
+            <p>Proměnn&eacute; pro obohacen&iacute; jsou pro usnadněn&iacute; př&iacute;stupu uspoř&aacute;d&aacute;ny do datov&yacute;ch sb&iacute;rek. Pot&eacute;, co zvol&iacute;te datovou sb&iacute;rku, zobraz&iacute; prohl&iacute;žeč několik nejobl&iacute;beněj&scaron;&iacute;ch proměnn&yacute;ch v t&eacute;to sb&iacute;rce. Na z&aacute;kladě možnosti  <b>Pokračovat v proch&aacute;zen&iacute;</b> tak&eacute; zobrazuje kategorie ve sb&iacute;rce. V každ&eacute; kategorii můžete vybrat cel&eacute; podkategorie, nebo otevř&iacute;t podkategorii a vybrat jednotliv&eacute; proměnn&eacute; pro obohacen&iacute;. K vyhled&aacute;n&iacute; konkr&eacute;tn&iacute; proměnn&eacute; v kategorii můžete tak&eacute; využ&iacute;t pole vyhled&aacute;v&aacute;n&iacute;.
+            </p>
+            <p>Když vyberete proměnn&eacute;, kter&eacute; chcete zahrnout do obohacen&iacute;, přidaj&iacute; se do n&aacute;kupn&iacute;ho ko&scaron;&iacute;ku, kter&yacute; se nach&aacute;z&iacute; v rohu  <b>Prohl&iacute;žeče dat</b>. Pomoc&iacute; tohoto n&aacute;kupn&iacute;ho ko&scaron;&iacute;ku můžete sledovat počet vybran&yacute;ch proměnn&yacute;ch.
+            </p>
+            <p>Každ&aacute; vybran&aacute; proměnn&aacute; se přid&aacute; do v&yacute;sledn&eacute; vrstvy jako pole.
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Definovat oblasti k obohacení</h2></div>
+        <hr/>
+        <div>
+            <p>Můžete definovat oblast kolem vstupn&iacute;ch bodů nebo lini&iacute;, kter&eacute; budou obohaceny, a to pomoc&iacute; vzdu&scaron;n&eacute; č&aacute;ry nebo zvolen&eacute;ho způsobu přepravy. U vzd&aacute;lenost&iacute; vzdu&scaron;nou čarou můžete zadat hodnotu až 1000 mil (1609 kilometrů). Způsoby přepravy lze použ&iacute;t pouze v př&iacute;padě, že vstupn&iacute; vrstva obsahuje body. Dostupn&eacute; způsoby přepravy jsou určeny administr&aacute;torem organizace. Při použit&iacute; jednoho ze způsobů přepravy je vzd&aacute;lenost měřena pod&eacute;l silnic nebo chodn&iacute;ků a jsou respektov&aacute;na př&iacute;slu&scaron;n&aacute; pravidla, např&iacute;klad jednosměrn&eacute; ulice, nepovolen&eacute; man&eacute;vry atd. Až zvol&iacute;te způsob přepravy a měřen&eacute; hodnoty, zadejte dobu nebo vzd&aacute;lenost až do v&yacute;&scaron;e 5 hodin (300 minut) nebo 300 mil (482,80 kilometrů).
+            </p>
+            <p>Pokud je za&scaron;krtnuto pole  <b>Vr&aacute;tit v&yacute;sledky v podobě hraničn&iacute;ch oblast&iacute;</b>, bude v&yacute;sledek vr&aacute;cen v podobě polygonov&yacute;ch prvků definovan&yacute;ch v&yacute;&scaron;e uveden&yacute;mi hodnotami času nebo vzd&aacute;lenosti.  Pokud toto pole nen&iacute; za&scaron;krtnuto, bude v&yacute;sledek vr&aacute;cen v podobě bodov&yacute;ch prvků.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>Toto je n&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; do mapy.  V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud n&aacute;zev vrstvy již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>V rozbalovac&iacute; nab&iacute;dce  <b>Uložit v&yacute;sledek do</b> můžete zadat n&aacute;zev složky ve složce <b>Můj obsah</b>, do kter&eacute; se m&aacute; v&yacute;sledek uložit.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

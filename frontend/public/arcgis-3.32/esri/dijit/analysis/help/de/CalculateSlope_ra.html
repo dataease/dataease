@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Neigung berechnen</h2><p/>
+        <h2><img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" alt="Werkzeug &quot;Neigung berechnen&quot; f&uuml;r Portal"></h2>
+        <hr/>
+    <p>Mit diesem Werkzeug wird die Oberfl&auml;che erstellt, die die Neigung der Eingabeh&ouml;hendaten anzeigt. Mit der Funktion &quot;Neigung&quot; wird die &Auml;nderungsrate der H&ouml;he f&uuml;r jede digitale H&ouml;henmodell (DEM)-Zelle dargestellt.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Eingabedaten zum Berechnen der Neigung auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Der H&ouml;hen-Layer, &uuml;ber den die Neigung berechnet wird.
+            </p>
+        </div>
+    </div>
+    <div id="zFactor">
+        <div><h2>Skalierungsfaktor für Höhe festlegen</h2></div>
+        <hr/>
+        <div>
+            <p>Geben Sie einen Z-Wert ein.
+            </p>
+            <p>Der Z-Faktor ist ein Skalierungsfaktor, der zum Konvertieren der H&ouml;henwerte f&uuml;r zwei Zwecke verwendet wird:
+ 
+                <ul>
+                    <li>Zum Konvertieren der H&ouml;henwerte (z.&nbsp;B. Meter oder Fu&szlig;) in die horizontalen Koordinateneinheiten des Layers, die in Fu&szlig;, Metern oder Grad vorliegen k&ouml;nnen
+                        
+  
+                    </li>
+                    <li>Zum Hinzuf&uuml;gen der vertikalen &Uuml;berh&ouml;hung als visuellem Effekt
+                        
+ 
+                    </li>
+                </ul>
+                
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                </td>
+                <td>
+                    <p>Von Fu&szlig;
+                    </p>
+                </td>
+                <td>
+                    <p>Von Meter
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Von Fu&szlig;
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>0,3048
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Von Meter
+                    </p>
+                </td>
+                <td>
+                    <p>3,28084
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, werden Sie aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>Sie k&ouml;nnen den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis &uuml;ber das Dropdown-Feld <b>Ergebnis speichern in</b> gespeichert wird.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

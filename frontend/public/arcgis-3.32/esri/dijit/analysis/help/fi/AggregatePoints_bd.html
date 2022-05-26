@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Kokoa pisteet</h2><p/>
+        <h2><img src="../images/GUID-6C1620D9-D176-41FA-8283-833D8B1CCCFC-web.png" alt="Kokoa pisteet"></h2>
+        <hr/>
+    <p>Ty&ouml;kalu k&auml;ytt&auml;&auml; pistekohdetasoa ja aluekohdetasoa. L&auml;ht&ouml;aineiston aluekohteet voivat olla aluekarttatasosta, tai ne voivat olla ty&ouml;kalun suorittamisen aikana laskettuja neli&ouml;- tai kuusiolohkoja. Ty&ouml;kalu m&auml;&auml;ritt&auml;&auml; ensin, mitk&auml; pisteet kuuluvat kuhunkin m&auml;&auml;ritettyyn alueeseen. T&auml;m&auml;n j&auml;lkeen toiminto laskee alueen kaikkien pisteiden tilastotiedot ja kohdistaa ne alueeseen. Perustiedot k&auml;sitt&auml;v&auml;t alueen pistem&auml;&auml;r&auml;n, mutta my&ouml;s muita tilastotietoja on saatavilla. 
+
+    </p>
+    <p>Voit esimerkiksi laatia yhteenvedon piirikuntakohtaisesta kahvinmyynnist&auml;, kun k&auml;yt&auml;t kahvilasijainteja sis&auml;lt&auml;vi&auml; pistekohteita sek&auml; piirikuntia sis&auml;lt&auml;vi&auml; aluekohteita. Jos kahviloille on m&auml;&auml;ritetty ominaisuustieto  <i>TOTAL_SALES</i>, voit laskea kaikkien ominaisuustietojen <i>TOTAL_SALES</i> summan piirikunnittain ja ominaisuustietojen <i>TOTAL_SALES</i> v&auml;himm&auml;is- tai enimm&auml;isarvon piirikunnittain. Voit my&ouml;s laskea muita tilastotietoja, kuten m&auml;&auml;r&auml;n, vaihteluv&auml;lin, keskihajonnan ja diversiteetin.
+    </p>
+    <p>T&auml;t&auml; ty&ouml;kalua voi k&auml;ytt&auml;&auml; my&ouml;s ajan huomioivan aineiston analysoimiseen. Jos aika on otettu k&auml;ytt&ouml;&ouml;n l&auml;ht&ouml;aineiston pisteiss&auml;, aikaleikkeiden asetukset ovat k&auml;ytett&auml;viss&auml;. Aikaleikkeiden avulla voit laskea piste alueella -suhteen ja tarkastella tietty&auml; aikaleikett&auml;. Voit esimerkiksi tarkastella tulosaineiston tuloksia tunneittain. 
+    </p>
+    <p>Oletetaan esimerkiksi, ett&auml; sinulla on pistekohteet eri kahviloiden ostotapahtumista eik&auml; aluekarttatasoa. Aineisto on tallennettu vuoden aikana, ja jokaisella ostotapahtumalla sijainti- ja aikaleima. Jos kullekin ostotapahtumalle on m&auml;&auml;ritetty ominaisuustieto <i>TOTAL_SALES</i>, voit laskea kaikkien ominaisuustietojen <i>TOTAL_SALES</i>-summan haluamasi sijainnin ja ajan mukaan. Jos n&auml;m&auml; ovat vain yhden kaupungin ostotapahtumia, voit muodostaa alueita, jotka ovat yhden kilometrin ruudukoita, ja laatia yhteenvedon tapahtumista ajan ja sijainnin mukaan tarkastelemalla viikoittaisia aikaleikkeit&auml;.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Valitse karttataso, joka sisältää alueisiin koostettavat pisteet</h2></div>
+        <hr/>
+        <div>
+            <p>Pistekarttataso, joka koostetaan alueisiin. Pistekarttatasoilla, jotka on koottu  <b>neli&ouml;</b>- tai <b>kuusikulmiolohkoissa</b>, on oltava k&auml;sittelev&auml; koordinaatisto, joka on m&auml;&auml;ritetty projisoituun koordinaattij&auml;rjestelm&auml;&auml;n k&auml;ytt&auml;m&auml;ll&auml; <b>analyysiymp&auml;rist&ouml;j&auml;</b>.
+            </p>
+            <p>Sen lis&auml;ksi, ett&auml; voit valita karttatason kartasta, voit valita  <b>Valitse analyysikarttataso</b> -vaihtoehdon avattavan luettelon alareunasta ja selata Big Data -tiedostoresurssin aineistoryhm&auml;n tai karttatason sis&auml;lt&ouml;&ouml;n.
+            </p>
+        </div>
+    </div>
+    <div id="inputAggregation">
+        <div><h2>Valitse aluekarttataso, johon tiedot koostetaan</h2></div>
+        <hr/>
+        <div>
+            <p>Alueet, joihin pistekarttataso koostetaan. Voit valita antamasi aluekarttatason tai ty&ouml;kalun suorittamisen aikana luodut lohkot.   Luotaessa  <b>neli&ouml;lohkoja</b> m&auml;&auml;ritetyt yksik&ouml;t ja m&auml;&auml;r&auml; m&auml;&auml;ritt&auml;v&auml;t neli&ouml;n korkeuden ja pituuden. Luotaessa <b>kuusiolohkoja</b> m&auml;&auml;ritetyt yksik&ouml;t ja m&auml;&auml;r&auml; m&auml;&auml;ritt&auml;v&auml;t rinnakkaisten sivujen v&auml;lisen et&auml;isyyden.
+            </p>
+            <p>Analysointi  <b>neli&ouml;</b>- tai <b>kuusikolmiolohkojen</b> avulla edellytt&auml;&auml; projisoitua koordinaattij&auml;rjestelm&auml;&auml;. Voit m&auml;&auml;ritt&auml;&auml; <b>k&auml;sittelev&auml;n koordinaattij&auml;rjestelm&auml;n</b> <b>Analyysiymp&auml;rist&ouml;t</b>-kohdassa. Jos k&auml;sittelev&auml;&auml; koordinaattij&auml;rjestelm&auml;&auml; ei ole m&auml;&auml;ritetty projisoiduksi koordinaattij&auml;rjestelm&auml;ksi, sinua pyydet&auml;&auml;n m&auml;&auml;ritt&auml;m&auml;&auml;n se sellaiseksi, kun valitset <b>Suorita Analyysi</b> .
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Valitse aluekarttataso, johon tiedot koostetaan</h2></div>
+        <hr/>
+        <div>
+            <p>Aluekarttataso, johon pisteet kootaan Karttatason alueiden rajojen sis&auml;puolelle kuuluvat pisteet lasketaan ja haluttaessa koostetaan yhteenvedoksi valittujen tilastotietojen perusteella. 
+            </p>
+            <p>Joko  <b>Lohkon koko</b> lohkoille tai <b>Aluekarttataso</b> on m&auml;&auml;ritett&auml;v&auml;.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Valitse etäisyys, jolta lohkot luodaan ja tiedot koostetaan</h2></div>
+        <hr/>
+        <div>
+            <p>Niiden lohkojen muodostamiseen k&auml;ytetty et&auml;isyys, joihin l&auml;ht&ouml;aineiston pisteet koostetaan. Neli&ouml;lohkoissa koko tarkoittaa neli&ouml;n korkeutta. Kuusikulmioissa koko tarkoittaa kuusikulmion korkeutta (rinnakkaisilta sivuilta).  
+            </p>
+            <p>Joko  <b>Lohkon koko</b> lohkoille tai <b>Aluekarttataso</b> on m&auml;&auml;ritett&auml;v&auml;.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Koosta käyttäen aikavälejä (valinnainen)</h2></div>
+        <hr/>
+        <div>
+            <p>Jos aika on otettu k&auml;ytt&ouml;&ouml;n l&auml;ht&ouml;aineiston karttatasossa ja jos ajan tyyppin&auml; on hetki, voit k&auml;ytt&auml;&auml; analysointiin aikav&auml;lej&auml;. Voit m&auml;&auml;ritt&auml;&auml; kolme parametria, kun k&auml;yt&auml;t aikaa:
+                <ul>
+                    <li> <b>Aikav&auml;lijakso</b>
+                    </li>
+                    <li> <b>Miten usein aikav&auml;li&auml; toistetaan</b>
+                    </li>
+                    <li> <b>Aika, johon aikav&auml;lit kohdistetaan</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Jos sinulla on esimerkiksi vuotta kuvaava aineistoja  haluat k&auml;ytt&auml;&auml; analysointiin viikon  mittaisia aikav&auml;lej&auml;, aseta  <b>Aikav&auml;li</b> 1 <code>viikkoon</code>. 
+            </p>
+            <p>Jos sinulla on esimerkiksi vuotta kuvaava aineisto ja haluat k&auml;ytt&auml;&auml; sen analysointiin kuukauden ensimm&auml;ist&auml; viikkoa, aseta  <b>Aikav&auml;li </b>1 <code>viikkoon</code>, <b>Miten usein aikav&auml;li&auml; toistetaan</b> 1 <code>kuukauteen</code> ja <b>Aika, johon aikav&auml;lit kohdistetaan p&auml;iv&auml;ykseen</b> 1. <code>tammikuuta kello 12.00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Aikavälijakso</h2></div>
+        <hr/>
+        <div>
+            <p>Aikav&auml;li, jota k&auml;ytet&auml;&auml;n aikav&auml;lien luomiseen.  <b>Aikav&auml;lijakso-parametria</b> voidaan k&auml;ytt&auml;&auml; yksin tai toiminnon <b>Miten usein aikav&auml;li&auml; toistetaan</b> tai <b>Aika, johon aikav&auml;lit kohdistetaan</b> -parametrin kanssa.
+            </p>
+            <p>Jos esimerkiksi haluat luoda aikav&auml;lit, jotka toteutuvat joka maanantai kello 9.00 - 10.00, aseta  <b>Aikav&auml;li</b> 1 <code>tuntiin </code>, <b>Miten usein aikav&auml;li&auml; toistetaan</b> 1 <code>viikkoon </code>ja <b>Aika, johon aikav&auml;lit kohdistetaan</b> kello <code>9:&auml;&auml;n maanantaina</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Miten usein aikaväliä toistetaan</h2></div>
+        <hr/>
+        <div>
+            <p> Aika, jota k&auml;ytet&auml;&auml;n aikav&auml;lin laskemiseen. <b>Miten usein aikav&auml;li&auml; toistetaan -parametri&auml;</b> voidaan k&auml;ytt&auml;&auml; yksin, tai <b>Aikav&auml;lijakso-</b> tai <b>Viiteaika-parametrin</b> tai sek&auml; <b>Aikav&auml;lijakso-</b> ja <b>Aika, johon aikav&auml;lit kohdistetaan -parametrien kanssa</b>.
+            </p>
+            <p> Jos esimerkiksi haluat luoda aikav&auml;lin, joka toteutuu joka maanantai kello 9.00 - 10.00, aseta <b>Aikav&auml;li</b> 1 <code>tuntiin</code>, <b>Miten usein aikav&auml;li&auml; toistetaan</b> 1 <code>viikkoon </code>ja <b>Aika, johon aikav&auml;lit kohdistetaan</b> kello <code>9:&auml;&auml;n maanantaina</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Aika, johon aikavälit kohdistetaan</h2></div>
+        <hr/>
+        <div>
+            <p>P&auml;iv&auml;m&auml;&auml;r&auml; ja kellonaika, joita k&auml;ytet&auml;&auml;n aikaleikkeiden kohdistamiseen. Aikav&auml;li alkaa kohdasta ja jatkuu t&auml;st&auml; ajasta taaksep&auml;in. Jos viiteaikaa ei valita, aikav&auml;li kohdistetaan aikaan 1.1.1970. 
+            </p>
+            <p> Jos esimerkiksihaluat luoda aikav&auml;lin, joka toteutuu joka maanantai kello 9.00 - 10.00, aseta <b>Aikav&auml;li</b> 1 <code>tuntiin</code>, <b>Miten usein aikav&auml;li&auml; toistetaan</b> 1 <code>viikkoon </code>ja <b>Aika, johon aikav&auml;lit kohdistetaan</b> kello <code>9:&auml;&auml;n maanantaina</code>.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Lisää tilastotiedot (valinnainen)</h2></div>
+        <hr/>
+        <div>
+            <p> Voit laskea tilastotiedot kohteista, joista on laadittu yhteenveto.Voit laskea seuraavat numerokentist&auml;:
+                <ul>
+                    <li>M&auml;&auml;r&auml;: laskee muiden kuin nolla-arvojen m&auml;&auml;r&auml;n.Voidaan k&auml;ytt&auml;&auml; numerokentiss&auml; tai merkkijonoissa. Arvojen [nolla, 0, 2] nolla-arvojen m&auml;&auml;r&auml; on 2.
+                    </li>
+                    <li>Summa: kunkin kent&auml;n numeroarvojen summa. Numeroarvojen [nolla, nolla, 3] summa on 3.
+                    </li>
+                    <li>Keskiarvo: numeroarvojen keskiarvo. Arvojen [0, 2, nolla] keskiarvo on 1.
+                    </li>
+                    <li>Minimi: numerokent&auml;n minimiarvo. Arvojen [0, 2, nolla] minimiarvo on 0. 
+                    </li>
+                    <li>Maksimiarvo: numerokent&auml;n maksimiarvo. Arvojen [0, 2, nolla] maksimiarvo on 2.
+                    </li>
+                    <li>Alue: numerokent&auml;n alue. T&auml;m&auml; lasketaan minimiarvoina, jotka on v&auml;hennetty maksimiarvosta. Arvojen [0, nolla, 1] alue on 1. Arvojen [nolla, 4] alue on 0.
+                    </li>
+                    <li>Varianssi: numerokent&auml;n varianssi reitill&auml;. Arvon [1] varianssi on nolla. Arvojen [nolla, 1,0, 1,1] varianssi on 0,25.
+                    </li>
+                    <li>Vakio keskihajonta: numerokent&auml;n keskihajonta. Arvon [1] varianssi on nolla. Arvojen [nolla, 1,0, 1,1] vakio keskihajonta on 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Voit laskea seuraavat merkkijonokentist&auml;:
+                <ul>
+                    <li>M&auml;&auml;r&auml;: muiden kuin nolla-merkkijonojen m&auml;&auml;r&auml;.
+                    </li>
+                    <li>Mik&auml; tahansa: T&auml;m&auml; tilastotieto on satunnainen otos m&auml;&auml;ritetyn kent&auml;n merkkijonoarvosta.
+                    </li>
+                </ul>
+                Kaikki tilastotiedot lasketaan muina kuin nolla-arvoina. Tuloskarttataso sis&auml;lt&auml;&auml; uuden kent&auml;n jokaiselle lasketulle tilastotiedolle. Voit lis&auml;t&auml; niin paljon tilastotietoja kuin haluat valitsemalla ominaisuustiedon ja tilastotiedon. 
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>Koordinaatistotieto (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;m&auml; on esijulkaisun tilap&auml;inen parametri k&auml;sittelyn koordinaatistotiedon m&auml;&auml;ritt&auml;miseen. Monet Big Data -ty&ouml;kalut edellytt&auml;v&auml;t, ett&auml; projisoitua koordinaattij&auml;rjestelm&auml;&auml; k&auml;ytet&auml;&auml;n k&auml;sittelyn koordinaatistotietona. Oletusarvon mukaan ty&ouml;kalu k&auml;ytt&auml;&auml; l&auml;ht&ouml;aineiston koordinaattij&auml;rjestelm&auml;&auml;, mutta ty&ouml;kalua ei voi suorittaa, jos kyseess&auml; on maantieteellinen koordinaattij&auml;rjestelm&auml;. Jos haluat m&auml;&auml;ritt&auml;&auml; projisoidun koordinaattij&auml;rjestelm&auml;n, anna WKID. Jos haluat esimerkiksi m&auml;&auml;ritt&auml;&auml;  <b>Web Mercator</b> -koordinaattij&auml;rjestelm&auml;n, anna <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Valitse ArcGIS Data Store -tietokanta, johon tulokset tallennetaan</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-tulokset tallennetaan aineistos&auml;il&ouml;&ouml;n ja julkaistaan karttatasona   Portal for ArcGIS -portaalissa. Useimmissa tapauksissa tulokset pit&auml;&auml; tallentaa spatiotemporaaliseen tietokantaan (t&auml;m&auml; on oletusarvo). Joissakin tapauksissa, tulosten tallentaminen relaatiotietokantaan on hyv&auml; vaihtoehto. Tiedot kannattaa tallentaa relaatiotietokantaan seuraavista syist&auml;: 
+                <ul>
+                    <li>Voitk&auml;ytt&auml;&auml; portaalissa olevia tuloksiaportaaliyhteisty&ouml;h&ouml;n.
+                    </li>
+                    <li>Voit ottaa k&auml;ytt&ouml;&ouml;n tulosten synkronointitoiminnot.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Relaatiotietokantaa ei tule k&auml;ytt&auml;&auml;, jos GeoAnalytics-tulosten m&auml;&auml;r&auml; kasvaa ja sinun t&auml;ytyy hy&ouml;dynt&auml;&auml; spatiotemporaalisen big data -tietokannan toimintoja suurten tietom&auml;&auml;rien k&auml;sittelyyn.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Luotavan karttatason nimi.  Jos kirjoitat kohteeseen ArcGIS Data Store, tulokset tallennetaan  <b>Oma sis&auml;lt&ouml;</b> -osioon ja lis&auml;t&auml;&auml;n karttaan. Jos kirjoitat Big Data -tiedostojakoon, tulokset tallennetaan Big Data -tiedostojakoon ja lis&auml;t&auml;&auml;n sen manifest-tiedostoon. Tuloksia  ei lis&auml;t&auml; karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttataso on jo olemassa, ty&ouml;kalua ei voi suorittaa.
+            </p>
+            <p>Kun kirjoitat kohteeseen  ArcGIS Data Store  (relaatiotietokantaan perustuvaan tai spatiotemporaaliseen Big Data -s&auml;il&ouml;&ouml;n) k&auml;ytt&auml;m&auml;ll&auml; avattavaa  <b>Tallenna tulos kohteeseen</b> -luetteloa, voit m&auml;&auml;ritt&auml;&auml; kansion nimen <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

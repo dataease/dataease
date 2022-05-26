@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Schwerpunkte suchen</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="Schwerpunkte suchen"></h2>
+        <hr/>
+    <p>Dieses Werkzeug kann mit einem Multipoint-, Linien- oder Fl&auml;chen-Feature-Layer verwendet werden, um den repr&auml;sentativen Mittelpunkt jedes Features zu bestimmen.
+    </p>
+    <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur die Features im Multipoint-, Linien- oder Fl&auml;chen-Eingabe-Layer analysiert, die in der aktuellen Kartenausdehnung sichtbar sind. Wenn diese Option deaktiviert ist, werden alle Features im Eingabe-Layer analysiert, auch diejenigen, die sich au&szlig;erhalb der aktuellen Kartenausdehnung befinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Den Layer auswählen, dessen Features zum Generieren von Schwerpunkten verwendet werden</h2></div>
+        <hr/>
+        <div>
+            <p> Der Multipoint-, Linien- oder Fl&auml;chen-Layer, der zum Ermitteln der Schwerpunkte verwendet wird.
+            </p>
+            <p>Neben einem Layer aus Ihrer Karte k&ouml;nnen Sie auch die Option  <b>Analyse-Layer ausw&auml;hlen</b> unten in der Dropdown-Liste ausw&auml;hlen. Mit dieser Option &ouml;ffnen Sie eine Galerie, in der Sie zu Datasets aus verschiedenen Quellen navigieren und diese f&uuml;r Ihre Analysen ausw&auml;hlen k&ouml;nnen. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>Anzeigen von Ausgabeverzeichnissen</h2></div>
+        <hr/>
+        <div>
+            <p> Wenn <b>Am echten Schwerpunkt</b> aktiviert ist (Standardeinstellung), wird in der Ausgabe die tats&auml;chliche Position des Schwerpunkts f&uuml;r jedes Eingabe-Feature zur&uuml;ckgegeben. Die Schwerpunkte sind wie folgt verortet:
+                <ul>
+                    <li>Multipoint-Features: Der Ausgabeschwerpunkt befindet sich an den durchschnittlichen X- und Y-Koordinaten aller Punkte im Multipoint-Feature.
+                    </li>
+                    <li>Linien-Features: Der Ausgabeschwerpunkt befindet sich an den gewichteten durchschnittlichen X- und Y-Koordinaten der Mittelpunkte aller Liniensegmente im Linien-Feature. Die Gewichtung basiert auf der L&auml;nge des Segments.
+                    </li>
+                    <li>Fl&auml;chen-Features: Der Ausgabeschwerpunkt befindet sich am Mittelpunkt der Fl&auml;che.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Wenn  <b>In Eingabe-Features</b> aktiviert ist, werden die Ausgabe-Punkt-Features in das jeweilige Eingabe-Feature aufgenommen bzw. befinden sich innerhalb des Eingabe-Features. Die resultierenden Punkt-Features werden wie folgt angezeigt:
+                <ul>
+                    <li>Multipoint-Features: Der Ausgabeschwerpunkt ist lagegleich mit einem der Punkte in der Multipoint-Gruppe.
+                    </li>
+                    <li>Linien-Features: Der Ausgabeschwerpunkt befindet sich auf der Linie. Wenn die Linie geschwungen ist, befindet sich der Ausgabeschwerpunkt auf dem Mittelpunkt der Linie. 
+                    </li>
+                    <li>Fl&auml;chen-Features: Der Ausgabepunkt befindet sich innerhalb des Fl&auml;chen-Features.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird.  Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer-Name bereits vorhanden ist, werden Sie dazu aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>&Uuml;ber das Dropdown-Men&uuml;  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert werden soll.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

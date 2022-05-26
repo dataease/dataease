@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>集水域の作成</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="集水域の作成"></h2>
+        <hr/>
+    <p>このツールは、入力レイヤーの各ポイントを対象とした集水域または上流域を特定するエリアを作成します。
+    </p>
+    <p>たとえば、水系汚染を表すポイント フィーチャがあり、可能性のある汚染源を特定する必要があるとします。汚染源は、汚染箇所ポイントの上流集水域内のどこかにあるはずなので、このツールを使用して、汚染源を含む集水域を特定します。
+    </p>
+    <p>入力ポイントの場所が重要です。それらが排水管路上に正確に位置していない場合、生成される集水域は非常に小さくなり、解析に役立たない可能性があります。 <b>[最近隣の排水管までの距離を検索]</b> を使用すると、入力ポイントの場所を調整できるため、それらのポイントを排水管路に正確に一致させて、排水管路に位置するポイントに流れ込む集水域を特定することができます。集水域を特定するために調整された場所は、出力レイヤーに書き込まれます。入力ポイントは変更されません。
+    </p>
+    <p>結果は、集水域と集水域の計算に使用される調整されたポイントの 2 つのレイヤーを含むグループ レイヤーになります。
+    </p>
+    <p>生成される集水域には、入力ポイントのすべての属性と、これ以外に次のような属性が含まれます。
+        <ul>
+            <li> <i>PourPtID</i> - 入力ポイントからの ID 値が含まれます。
+            </li>
+            <li> <i>Area Square Kilometers</i> - 上流集水域の面積 (平方キロメートル) が含まれます。
+            </li>
+            <li> <i>Description</i> および <i>DataResolution</i> - 経路の計算に使用される水文解析データに関連する情報が含まれます。
+            </li>
+        </ul>
+        
+    </p>
+    <p> <b>[現在のマップ表示範囲を使用]</b> をオンにすると、現在のマップ範囲のフィーチャのみを使用して集水域を計算します。オフの場合、入力レイヤーのすべてのフィーチャが、現在のマップ範囲内になくても解析されます。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>集水域の計算に使用されるポイント フィーチャ</h2></div>
+        <hr/>
+        <div>
+            <p>集水域 (上流域) は、各ポイントに対して計算されます。
+            </p>
+            <p>マップからレイヤーを選択するだけでなく、ドロップダウン リストの下部にある  <b>[解析レイヤーの選択]</b> を選択することもできます。このオプションを選択すると、解析で使用するためにさまざまなソースのデータセットを参照して選択できるギャラリーが開きます。 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>最近隣の排水管までの距離を検索</h2></div>
+        <hr/>
+        <div>
+            <p>入力ポイントが排水管路から離れた場所にある場合、生成される集水域は非常に小さくなり、上流の汚染源の特定などの解析にあまり役立たない可能性があります。排水管路上にあるポイントに流れ込む集水域を特定するには、ほとんどの場合において、入力ポイントを最近隣の排水管路にスナップすることが推奨されます。最近隣の排水管路を特定するには、検索距離を指定します。検索距離を指定しない場合、ツールは控えめな検索距離を計算して使用します。
+            </p>
+            <p>入力ポイントの正確な場所を使用するには、検索距離をゼロに指定します。
+            </p>
+            <p>解析目的の場合、排水管路は、標準的な水文解析モデルを使用して Esri によって事前に計算されています。検索距離内に排水管路がない場合、最も大きな累積流量を含む検索距離内の場所が使用されます。
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p>これは、 <b>[マイ コンテンツ]</b> で作成され、マップに追加されるレイヤーの名前です。デフォルト名は、ツール名と入力レイヤー名に基づいて設定されます。レイヤー名がすでに存在する場合は、別の名前を指定するよう求められます。
+            </p>
+            <p> <b>[出力の保存先]</b> ドロップダウン メニューを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+            <p> このツールを実行してもクレジットを消費しません。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>إعادة تعيين القيم</h2><p/>
+        <h2><img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" alt="أداة تخطيط القيم للبوابة الإلكترونية"></h2>
+        <hr/>
+    <p>تتيح هذه الأداة لك تغيير أو إعادة تصنيف قيم البكسل للبيانات النقطية. يتم إعادة تخطيط قيم البكسل بتحديد نطاق قيم البيكسل في الخريطة لقيمة بكسل ناتجة. ويمكن أن تكون قيمة البكسل الناتجة قيمة صحيحة أو قيمة NoData، وهي وحدات بكسل لا تحتوي على قيم معروفة مرتبطة بها.
+    </p>
+    <p>عند التأشير على  <b>استخدام مدى الخريطة الحالي</b> لن يتم إعادة تخطيط إلا تلك الخلايا المرئية ضمن المدى الحالي للخريطة. وإذا لم يتم التأشير عليها، سيتم معالجة كل الخلايا في البيانات النقطية، حتى إذا كانت خارج مدى الخريطة الحالي.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>البيانات المدخلة</h2></div>
+        <hr/>
+        <div>
+            <p>البيانات المُدخًلَة التي سيتم إعادة تخطيط قيمها.
+            </p>
+        </div>
+    </div>
+    <div id="RemapList">
+        <div><h2>إعادة تعيين قيم البكسل لقيم جديدة</h2></div>
+        <hr/>
+        <div>
+            <p>لقد أدخلت نطاق القيم بتحديد قيمة دنيا وعليا، ومن ثم قمت بتعيين قيمة ناتجة أو قيمة NoData للنطاق المحدد.
+            </p>
+            <p>لإعادة تخطيط نطاق قيم جديد، انقر على  <b>إضافة</b>، التي تضيف صفًا. انقر على كل قيمة لتحرير الجدول للنطاقات والقيم اللازمة المُعاد تخطيطها. عند تحديد نطاقات القيم، توجد قاعدتين هامّتين يتم توظيفهما:
+                <ul>
+                    <li>تكون القيمة الدنيا في النطاق شاملة، وتكون القيمة الدنيا في النطاق استثنائية.
+                    </li>
+                    <li>يتم معالجة الصفوف في الجدول من القمة إلى الأسفل.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>ويعرض الجدول أدناه أن القيمة الدنيا مُضمّنة ضمن الناتج، ولكن لا يتم تضمين القيمة العليا في الناتج.
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>20
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;19
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+                <td>
+                    <p>51
+                    </p>
+                </td>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>يُعد ترتيب النطاقات المحددة في الجدول هامًا للغاية. يتم معالجة الصف العلوي من الجدول أولاً، ومن ثمّ يتم معالجة الصف الذي يقع أدناه. يعرض الجدولان أدناه طريقة إنتاج نفس نطاقات القيم لنتائج أخرى؛ وذلك بسبب ترتيب صفوف الجدول.
+            </p> 
+            <p>يعرض الجدول التالي القيمة الناتجة عند فرز العمود الأول رقميًا:
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;14
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>15&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>يعرض الجدول التالي كيفية إنشاء ترتيب مختلف للصفوف قيم ناتجة مختلفة:
+            </p> 
+            <table border="1">
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>ويتم توظيف كلا القاعدتين لإعادة ترتيب القيم. ونظرًا لمعالجة كل صف من القمة إلى الأسفل، تأخذ هذه القيمة الأولوية عند تحديد الناتج، حتى عند استخدام نفس النطاقات.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>اسم طبقة النتيجة</h2></div>
+        <hr/>
+        <div>
+            <p>سيتم إنشاء اسم الطبقة في  <b>المحتوى</b> وسيتم إضافته إلى الخريطة. يستند الاسم الافتراضي إلى اسم الأداة واسم الطبقة المدخلة. إذا وُجدت الطبقة بالفعل، سيطلب منك كتابة اسم آخر.
+            </p>
+            <p>يمكنك تحديد اسم مجلد في  <b>محتواي</b> حيث سيتم حفظ النتيجة باستخدام المربع المنسدل <b>حفظ النتيجة في</b>
+            </p>
+        </div>
+    </div>
+</div>
+</html>

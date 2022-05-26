@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/ca/CalculateDistance",{inputLayerLabel:"Trieu la capa d'ubicaci\u00f3 de r\u00e0ster o entitat per calcular la dist\u00e0ncia",inputRaster:"Trieu la capa d'entitats o r\u00e0ster per representar les barreres (opcional)",maxDistanceLabel:"Dist\u00e0ncia m\u00e0xima que es calcular\u00e0 (opcional)",outputCellSize:"Mida de la cel\u00b7la de sortida (opcional)",distanceMethod:"M\u00e8tode de dist\u00e0ncia",resultDistLayerName:"Nom de la capa de dist\u00e0ncia de resultats",
+resultDirectionLayerName:"Nom de la capa de direcci\u00f3 de resultats (opcional)",resultAllocationLayerName:"Nom de la capa d'assignaci\u00f3 de resultats (opcional)",outputBackDirectionName:"Nom de la capa de direcci\u00f3 inversa de resultats (opcional)",outputLayerName:"Dist\u00e0ncia calculada de ${layername}",allocationFieldLabel:"Trieu el camp d'assignaci\u00f3 (opcional)",itemDescription:"Capa d'entitats generada en executar Calcula la dist\u00e0ncia a ${layername}. ",itemTags:"Resultat de l'an\u00e0lisi, CalculateDistance, ${layername}, ${fieldname}",
+itemSnippet:"Capa d'entitats generada des de CalculateDistance.",planar:"Pla",geodesic:"Geod\u00e8sic",selectDistance:"-- seleccioneu --"});

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>ポイント クラスターの検索 (Find Point Clusters)</h2><p/>
+        <h2><img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" alt="ポイント クラスターの検索 (Find Point Clusters)"></h2>
+        <hr/>
+    <p> [ポイント クラスターの検索 (Find Point Clusters)] ツールは、空間分布に基づき周辺ノイズ内でポイント フィーチャのクラスターを検索します。
+    </p>
+    <p>たとえば、ある非政府組織が、害虫によって運ばれる特定の病気を調査しているとします。分析範囲内の世帯を表すポイント データセットがあり、それらの世帯の一部は感染しており、一部は感染していません。アナリストは、 [ポイント クラスターの検索 (Find Point Clusters)] ツールを使用することによって、感染した世帯のクラスターを決定し、害虫の処理および駆除を開始する必要のあるエリアを正確に示すことができます。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>クラスターの検索対象となるレイヤーを選択します。</h2></div>
+        <hr/>
+        <div>
+            <p>クラスターが検出されるポイント レイヤー。レイヤーは投影空間参照であるか、または  <b>[分析環境]</b> を使用して、処理中の空間参照を投影座標系に設定する必要があります。
+            </p>
+            <p>マップからレイヤーを選択できるだけでなく、ドロップダウン リストの下部にある  <b>[解析レイヤーの選択]</b> を選択し、ビッグ データ ファイル共有データセットまたはフィーチャ レイヤーのコンテンツを参照して選択することもできます。
+            </p>
+        </div>
+    </div>
+    <div id="clusterMethod">
+        <div><h2>使用するクラスター分析手法を選択</h2></div>
+        <hr/>
+        <div>
+            <p>ポイント フィーチャのクラスターを周辺ノイズから区別するために使用されるクラスター分析手法。指定距離または自動調整クラスター分析アルゴリズムのいずれかを使用できます。
+            </p>
+            <p>[指定距離 (DBSCAN)] では、指定された検索範囲を使用し、密なクラスターを疎なノイズから分離します。[指定距離 (DBSCAN)] は処理が高速になりますが、存在する可能性があるすべてのクラスターを定義するために使用できる非常に明確な検索範囲がある場合にのみ適しています。[指定距離 (DBSCAN)] では密度がほぼ同じクラスターが検索されます。
+            </p>
+            <p>[自己調整 (HDBSCAN)] は、検索範囲を指定する必要はありませんが、より時間のかかる手法です。[自己調整 (HDBSCAN)] では、[指定距離 (DBSCAN)] に類似したポイントのクラスターが検索されますが、変化する検索範囲を使用して、さまざまな密度のクラスターを考慮に入れます。
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>クラスターと見なす最小ポイント数</h2></div>
+        <hr/>
+        <div>
+            <p>このパラメーターは、選択したクラスター分析手法に応じて異なる方法で使用されます。
+            </p>
+            <p>
+                <ul>
+                    <li>[指定距離 (DBSCAN)] - あるポイントからクラスターの形成を開始するには、そのポイントから特定の距離内にある必要があるフィーチャの数を指定します。この距離は  <b>[検索範囲を設定]</b> パラメーターを使用して定義されます。
+                    </li>
+                    <li>[自己調整 (HDBSCAN)] - 密度の推定時に考慮される各ポイントに隣接するフィーチャの数 (そのポイント自体を含む) を指定します。この数は、クラスターの抽出時に許容される最小クラスター サイズでもあります。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>検索範囲を設定</h2></div>
+        <hr/>
+        <div>
+            <p>[指定距離 (DBSCAN)] を使用する場合、このパラメーターは  <b>[クラスターと見なす最小ポイント数]</b> が検出される必要がある範囲を示す距離になります。使用するクラスター分析手法として [自己調整 (HDBSCAN)] が選択された場合、このパラメーターは使用されません。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p> 作成されるレイヤーの名前。 ArcGIS Data Store に書き込んでいる場合、結果は  <b>[マイ コンテンツ]</b> に保存され、マップに追加されます。ビッグ データ ファイル共有に書き込んでいる場合、結果はビッグ データ ファイル共有に格納され、そのマニフェストに追加されます。この場合、結果はマップに追加されません。 デフォルトの名前は、ツール名と入力レイヤー名に基づいて設定されます。レイヤーがすでに存在する場合、このツールは正常に実行されません。
+            </p>
+            <p> <b>[出力の保存場所]</b> ドロップダウン ボックスを使用して ArcGIS Data Store (リレーショナル データ ストアまたはビッグ データ ストア) に書き込むときは、結果が保存される  <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

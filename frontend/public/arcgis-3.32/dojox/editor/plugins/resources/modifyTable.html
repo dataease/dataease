@@ -1,0 +1,58 @@
+<div class="dijitDialog" tabindex="-1" role="dialog" aria-labelledby="${id}_title">
+	<div dojoAttachPoint="titleBar" class="dijitDialogTitleBar">
+	<span dojoAttachPoint="titleNode" class="dijitDialogTitle" id="${id}_title">${modifyTableTitle}</span>
+	<span dojoAttachPoint="closeButtonNode" class="dijitDialogCloseIcon" dojoAttachEvent="onclick: onCancel" title="${buttonCancel}">
+		<span dojoAttachPoint="closeText" class="closeText" title="${buttonCancel}">x</span>
+	</span>
+	</div>
+    <div dojoAttachPoint="containerNode" class="dijitDialogPaneContent">
+        <table class="etdTable">
+          <tr><td>
+                <label>${backgroundColor}</label>
+            </td><td colspan="2">
+                <span class="colorSwatchBtn" dojoAttachPoint="backgroundCol"></span>
+            </td></tr><tr><td>
+                <label>${borderColor}</label>
+            </td><td colspan="2">
+                <span class="colorSwatchBtn" dojoAttachPoint="borderCol"></span>
+            </td></tr><tr><td>
+                <label>${align}</label>
+            </td><td colspan="2">	
+                <select dojoAttachPoint="selectAlign" dojoType="dijit.form.FilteringSelect">
+                  <option value="default">${default}</option>
+                  <option value="left">${left}</option>
+                  <option value="center">${center}</option>
+                  <option value="right">${right}</option>
+                </select>
+            </td></tr>
+            <tr><td>
+                <label>${tableWidth}</label>
+            </td><td>
+                <span dojoAttachPoint="selectWidth" dojoType="dijit.form.TextBox" value="100"></span>
+            </td><td>
+                <select dojoAttachPoint="selectWidthType" hasDownArrow="true" dojoType="dijit.form.FilteringSelect">
+                  <option value="percent">${percent}</option>
+                  <option value="pixels">${pixels}</option>
+                </select></td></tr>	
+            <tr><td>
+                <label>${borderThickness}</label>
+            </td><td>
+                <span dojoAttachPoint="selectBorder" dojoType="dijit.form.TextBox" value="1"></span>
+            </td><td>
+                ${pixels}
+            </td></tr><tr><td>
+                <label>${cellPadding}</label>
+            </td><td>
+                <span dojoAttachPoint="selectPad" dojoType="dijit.form.TextBox" value="0"></span>
+            </td><td class="cellpad"></td></tr><tr><td>
+                <label>${cellSpacing}</label>
+            </td><td>
+                <span dojoAttachPoint="selectSpace" dojoType="dijit.form.TextBox" value="0"></span>
+            </td><td class="cellspace"></td></tr>
+        </table>
+        <div class="dialogButtonContainer">
+            <div dojoType="dijit.form.Button" dojoAttachEvent="onClick: onSet">${buttonSet}</div>
+            <div dojoType="dijit.form.Button" dojoAttachEvent="onClick: onCancel">${buttonCancel}</div>
+        </div>
+	</div>
+</div>

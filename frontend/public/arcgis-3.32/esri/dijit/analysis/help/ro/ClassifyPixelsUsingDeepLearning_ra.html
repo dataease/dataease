@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Clasificare pixeli folosind învățare aprofundată</h2><p/>
+        <h2><img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" alt="Clasificare pixeli folosind &icirc;nvățare aprofundată"></h2>
+        <hr/>
+    <p>Acest instrument execută un model de &icirc;nvățare aprofundată antrenat pe un raster de intrare pentru a produce un raster clasificat și fiecare pixel valid are o etichetă de clasă atribuită.
+    </p>
+    <p>Dacă se bifează  <b>Utilizare extindere curentă a hărții</b>, va fi analizată doar zona raster care este vizibilă &icirc;n zona de vizualizare curentă a hărții. Dacă nu se bifează, va fi analizată toată zona raster, chiar dacă se află &icirc;n afara zonei de vizualizare curentă a hărţii.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Alegeți imaginea utilizată pentru a clasifica pixelii</h2></div>
+        <hr/>
+        <div>
+            <p>Imaginea de intrare pentru clasificare.
+            </p>
+            <p>Poate fi o adresă URL a serviciului de imagini, un strat raster sau un strat de serviciu de imagine.
+            </p>
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Alegeți un model de învățare aprofundată folosit pentru a clasifica pixelii</h2></div>
+        <hr/>
+        <div>
+            <p>Element Pachet de &icirc;nvățare aprofundată de intrare ( <code>.dlpk</code>).
+            </p>
+            <p>Pachetul de &icirc;nvățare aprofundată este compus din fișierul JSON de definire a modelului Esri ( <code>.emd</code>), fișierul modelului binar de &icirc;nvățare aprofundată, și opțional, se va folosi funcția raster Python.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Specificați argumentele modelului de învățare aprofundată</h2></div>
+        <hr/>
+        <div>
+            <p>Argumentele funcției sunt definiți &icirc;n clasa funcțiilor raster Python la care se referă modelul de intrare. Aici găsiți listați parametri suplimentari de &icirc;nvățare aprofundată și argumente pentru experimente și rafinare, cum ar fi un prag de &icirc;ncredere pentru reglarea sensibilității.
+            </p>
+            <p>Numele argumentelor sunt populate de instrument prin citirea modulului Python de pe serverul de analiză raster.
+            </p>  
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputClassifiedRaster">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic ce va fi creat &icirc;n  <b>Resursele mele</b> şi va fi adăugat pe hartă. Numele implicit se bazează pe numele instrumentului şi numele stratului tematic de intrare. Dacă stratul tematic rezultat există deja, vi se va solicita să furnizaţi un alt nume.
+            </p>
+            <p>Puteți specifica numele folderului &icirc;n  <b>Resursele mele</b> unde se va salva rezultatul folosind caseta drop-down <b>Salvați rezultatele &icirc;n</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

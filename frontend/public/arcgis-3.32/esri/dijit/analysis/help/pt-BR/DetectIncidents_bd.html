@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Detectar Incidentes</h2><p/>
+        <h2><img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" alt="Detectar Incidentes"></h2>
+        <hr/>
+    <p> Esta ferramenta funciona com uma camada de pontos, linhas, &aacute;reas ou tabelas habilitadas ao tempo que representa um instante no tempo.   Utilizando fei&ccedil;&otilde;es ordenadas sequencialmente, denominadas trilhas, esta ferramenta determina quais fei&ccedil;&otilde;es s&atilde;o incidentes de interesse. Os incidentes s&atilde;o determinados pelas condi&ccedil;&otilde;es que voc&ecirc; especifica.
+    </p>
+    <p>Primeiro, a ferramenta determina quais fei&ccedil;&otilde;es pertencem a um caminho utilizando um ou mais campos. Com a utiliza&ccedil;&atilde;o do tempo em cada fei&ccedil;&atilde;o, os caminhos s&atilde;o consecutivamente ordenados e a condi&ccedil;&atilde;o do incidente &eacute; aplicada. As fei&ccedil;&otilde;es que atendem a condi&ccedil;&atilde;o de incidente inicial s&atilde;o marcadas como um incidente. Voc&ecirc; pode opcionalmente aplicar uma condi&ccedil;&atilde;o de incidente final; quando a condi&ccedil;&atilde;o final for verdadeira, a fei&ccedil;&atilde;o n&atilde;o &eacute; mais um incidente.  Os resultados ser&atilde;o retornados com as fei&ccedil;&otilde;es originais&mdash;com novas colunas representando o nome do incidente&mdash;e indica quais fei&ccedil;&otilde;es atendem a condi&ccedil;&atilde;o de incidente. Voc&ecirc; pode retornar para todas as fei&ccedil;&otilde;es originais ou somente as fei&ccedil;&otilde;es que s&atilde;o incidentes.
+    </p>
+    <p>Por exemplo, suponha que voc&ecirc; tenha medi&ccedil;&otilde;es de GPS dos furac&otilde;es a cada 10 minutos. Cada medi&ccedil;&atilde;o de GPS registra o nome do furac&atilde;o, local, tempo de registro e velocidade do vento. Com a utiliza&ccedil;&atilde;o destes campos, voc&ecirc; pode criar um incidente onde qualquer medi&ccedil;&atilde;o com uma velocidade de vento maior que 208 km/h &eacute; um incidente titulado  <code>Catastr&oacute;fico</code>. Ao n&atilde;o configurar uma condi&ccedil;&atilde;o final, o incidente terminaria se a fei&ccedil;&atilde;o n&atilde;o mais atender a condi&ccedil;&atilde;o inicial (a velocidade do vento diminui para menos que 208).
+    </p>
+    <p>Utilizando outro exemplo, suponha que voc&ecirc; esteja monitorando as concentra&ccedil;&otilde;es de um produto qu&iacute;mico em seu abastecimento de &aacute;gua local utilizando um campo denominado  <code>contaminateLevel</code>. Voc&ecirc; sabe que os n&iacute;veis recomendados s&atilde;o menores que 0.01 mg/L, e n&iacute;veis perigosos est&atilde;o acima de 0.03 mg/L. Para detectar incidentes onde um valor acima de 0,03mg/L &eacute; um incidente e continua sendo um incidente at&eacute; que os n&iacute;veis de contamina&ccedil;&atilde;o voltem ao normal, voc&ecirc; cria um incidente utilizando uma condi&ccedil;&atilde;o inicial de <code>contaminateLevel &gt; 0.03</code> e uma condi&ccedil;&atilde;o final de <code>contaminateLevel &lt; 0.01</code>. Isto marcar&aacute; qualquer sequ&ecirc;ncia onde os valores excedem 0.03mg/L at&eacute; que eles retornem a uma valor menor que 0.01.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Escolher camada para detectar incidentes</h2></div>
+        <hr/>
+        <div>
+            <p>Os pontos, linhas, &aacute;reas ou tabelas que ser&atilde;o utilizados para localizar incidentes. A camada de entrada deve ser de tempo habilitado com fei&ccedil;&otilde;es que representam um momento no tempo, como tamb&eacute;m ter um ou mais campos que podem ser utilizados para identificar caminhos.
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista suspensa para procurar por seu conte&uacute;do para um conjunto de dados de compartilhamento do arquivo de grandes dados ou camada de fei&ccedil;&atilde;o.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Selecionar um ou mais campos para identificar caminhos</h2></div>
+        <hr/>
+        <div>
+            <p>Os campos que representam o identificador do caminho. Voc&ecirc; pode utilizar um campo ou campos m&uacute;ltiplos para representar valores &uacute;nicos de caminhos.
+            </p>
+            <p>Por exemplo, se voc&ecirc; for reconstruir caminhos de furac&otilde;es, voc&ecirc; pode utilizar o nome de furac&atilde;o como o campo do caminho.
+            </p>
+        </div>
+    </div>
+    <div id="startConditionExpression">
+        <div><h2>Construir uma condição de expressão para significar o início de um incidente</h2></div>
+        <hr/>
+        <div>
+            <p>Adicione uma condi&ccedil;&atilde;o utilizando o construtor de express&atilde;o para determinar o que um incidente &eacute;. Se a condi&ccedil;&atilde;o voc&ecirc; especifica for verdade, a fei&ccedil;&atilde;o &eacute; um incidente. Se voc&ecirc; n&atilde;o especificar uma condi&ccedil;&atilde;o final, um incidente final quando a condi&ccedil;&atilde;o inicial n&atilde;o for mais verdadeira.
+            </p>
+            <p>Por exemplo, suponha que voc&ecirc; deseja ser alertado quando a soma de campos  <code>concentration_1</code> e <code>concentration_2</code> for maior que <code>concentration_3</code>.   Para fazer isto,  aplique uma condi&ccedil;&atilde;o <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; $feature[&quot;concentration_3&quot;])</code>.
+            </p>
+            <p>Se voc&ecirc; estava interessado em como as concentra&ccedil;&otilde;es mudaram ao longo do tempo, e queria ser alertado quando  <code>concentration_1</code> atual estivesse maior que as duas medidas anteriores de <code>concentration_2</code> voc&ecirc; poderia utilizar uma express&atilde;o como <code>$feature[&quot;concentration_1&quot;] &gt;   $track.field[&quot;concentration_2&quot;].history(-3,-1)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="endConditionExpression">
+        <div><h2>Construir uma condição de expressão para significar o fim de um incidente (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Opcionalmente, adicione uma condi&ccedil;&atilde;o utilizando o construtor de express&atilde;o para determinar o fim de um incidente. Se a condi&ccedil;&atilde;o final que voc&ecirc; especifica for verdadeira, a fei&ccedil;&atilde;o n&atilde;o &eacute; mais um incidente. Se voc&ecirc; n&atilde;o especificar uma condi&ccedil;&atilde;o final, um incidente final quando a condi&ccedil;&atilde;o inicial n&atilde;o for mais verdadeira.    
+            </p>
+            <p>Por exemplo, suponha que voc&ecirc; deseja ser alertado quando a soma dos campos   <code>concentration_1</code> e <code>concentration_2</code> for maior que <code>concentration_3</code>, e voc&ecirc; deseja que o incidente finalize se <code>concentration_4</code> for menor que <code>concentration_1</code>. Para fazer isto, aplique uma condi&ccedil;&atilde;o inicial de <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; ($join[&quot;income&quot;] * .20)</code> e uma condi&ccedil;&atilde;o final de <code>($feature[&quot;concentration_4&quot;] &lt; $feature[&quot;concentration_1&quot;])</code>.
+            </p>
+            <p>Se voc&ecirc; queria que um incidente terminasse quando a m&eacute;dia de  <code>concentration_1</code> atual e quatro medi&ccedil;&otilde;es anteriores fosse maior que a primeira medida, voc&ecirc; poderia utilizar uma express&atilde;o como <code>$track.field[&quot;concentration_1&quot;].history(-5) &gt; $track.field[&quot;concentration_1&quot;].history(0)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="outputMode">
+        <div><h2>Mostre-me</h2></div>
+        <hr/>
+        <div>
+            <p>Todos os m&eacute;todos de sa&iacute;da ir&atilde;o anexar campos das fei&ccedil;&otilde;es originais. H&aacute; dois caminhos para determinar quais fei&ccedil;&otilde;es s&atilde;o retornadas:
+                <ul>
+                    <li> <b>Todas as fei&ccedil;&otilde;es</b>&mdash;Este &eacute; o padr&atilde;o. Todas as fei&ccedil;&otilde;es na entrada ser&atilde;o retornadas.
+                    </li>
+                    <li> <b>Somente incidentes</b>&mdash;Este m&eacute;todo somente retornar&aacute; as fei&ccedil;&otilde;es que s&atilde;o incidentes. Quaisquer fei&ccedil;&otilde;es que n&atilde;o s&atilde;o localizadas para serem incidentes n&atilde;o ser&atilde;o retornadas.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analisar dados com intervalos de tempo (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Especifique se voc&ecirc; deseja detectar incidentes utilizando intervalos de tempo que segmentam suas fei&ccedil;&otilde;es de entrada para an&aacute;lise. Se voc&ecirc; utilizar intervalos de tempo, dever&aacute; definir o intervalo de tempo que deseja utilizar e, opcionalmente, definir o hor&aacute;rio de refer&ecirc;ncia. Se voc&ecirc; n&atilde;o definir um hor&aacute;rio de refer&ecirc;ncia, 1&ordm; de Janeiro de 1970 ser&aacute; utilizado. 
+            </p>
+            <p>Por exemplo, se voc&ecirc; definir o limite de tempo como 1 dia, come&ccedil;ando &agrave;s 9:00 AM do dia 1&ordm; de Janeiro de 1990, cada caminho ser&aacute; truncado &agrave;s 9:00 am para todos os dias e analisado neste segmento. 
+            </p>
+            <p>O uso de intervalos de tempo &eacute; uma maneira r&aacute;pida de acelerar o tempo de computa&ccedil;&atilde;o, pois cria rapidamente caminhos menores para an&aacute;lise. Se a divis&atilde;o por um intervalo de tempo recorrente fizer sentido para sua an&aacute;lise, &eacute; recomendado para o processamento de grandes dados.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p> O nome da camada que ser&aacute; criada.  Se voc&ecirc; estiver gravando em um ArcGIS Data Store, seus resultados ser&atilde;o salvos em  <b>Meu Conte&uacute;do</b> e adicionados no mapa. Se voc&ecirc; estiver gravando em um compartilhamento do arquivo de grandes dados, seus resultados ser&atilde;o armazenados compartilhamento do arquivo de grandes dados  e adicionados em seu   manifesto. N&atilde;o ser&atilde;o adicionados no mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se a camada j&aacute; existe, a ferramenta falhar&aacute;.
+            </p>
+            <p>Ao gravar no  ArcGIS Data Store  (armazenamento de grandes dados de espa&ccedil;o-tempo ou relacional) utilizando a caixa suspensa  <b>Salvar resultados em</b> , voc&ecirc; pode especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Conectar orígenes con destinos</h2><p/>
+        <h2><img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" alt="Conectar or&iacute;genes con destinos"></h2>
+        <hr/>
+    <p>Conectar or&iacute;genes con destinos mide el tiempo de recorrido o la distancia entre pares de puntos. La herramienta puede notificar distancias en l&iacute;nea recta, distancias basadas en un modo de viaje, como por ejemplo a pie o en coche; o bien las duraciones del trayecto sobre la base de un modo de viaje. Si utiliza esta herramienta, podr&aacute; realizar lo siguiente:
+    </p>
+    <p>
+        <ul>
+            <li>Calcula la distancia o el tiempo total que los trabajadores emplean en sus desplazamientos de casa al trabajo.
+            </li>
+            <li>Mida a qu&eacute; distancia viajan los clientes para comprar en sus establecimientos. Use esta informaci&oacute;n para definir el alcance de su mercado, en especial al elegir los destinatarios de las campa&ntilde;as publicitarias o elegir las ubicaciones de los nuevos establecimientos.
+            </li>
+            <li>Calcular el kilometraje esperado para su flota de veh&iacute;culos. Despu&eacute;s de eso, ejecute la herramienta Resumir dentro de para conocer el kilometraje por estado o por otra regi&oacute;n.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Debes proporcionar puntos iniciales y finales, y la herramienta devuelve una capa que contiene l&iacute;neas de rutas, incluidas las mediciones, entre los pares de or&iacute;genes y destinos. 
+    </p>
+    <p>Si  <b>Usar la extensi&oacute;n del mapa actual</b> se ha activado, solo se tendr&aacute;n en cuenta en el an&aacute;lisis las entidades que est&eacute;n visibles en la extensi&oacute;n de mapa actual.  
+Si no se ha activado, se tendr&aacute;n en cuenta todas las entidades de la capa de entrada, aunque est&eacute;n fuera de la extensi&oacute;n de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="originsLayer">
+        <div><h2>Elija la capa de puntos que representa las ubicaciones de origen</h2></div>
+        <hr/>
+        <div>
+            <p>Elija la capa de puntos que representa el origen o los or&iacute;genes.  La herramienta admite un m&aacute;ximo de  5.000 or&iacute;genes y  5.000 destinos. </p>
+            <p>Si elige una capa que tiene exactamente un origen, se conectar&aacute; con todos los destinos.
+            </p>
+            <p>Adem&aacute;s de elegir una capa del mapa, puede seleccionar  <b>Elegir capa de an&aacute;lisis</b>, que se encuentra al final de la lista desplegable. Esta opci&oacute;n abre una galer&iacute;a en la que puede buscar y seleccionar datasets de varias fuentes para usarlos en su an&aacute;lisis. 
+            </p>
+        </div>
+    </div>
+    <div id="destinationsLayer">
+        <div><h2>Elegir la capa de los destinos</h2></div>
+        <hr/>
+        <div>
+            <p>Elija la capa que representa el destino o los destinos con los que deben conectarse los or&iacute;genes. La herramienta admite un m&aacute;ximo de  5.000 or&iacute;genes y  5.000 destinos. </p>
+            <p>Si elige una capa que tiene exactamente un destino, todos los or&iacute;genes se conectan con ese destino. 
+            </p>
+            <p>Si hay un origen y muchos destinos, la herramienta conecta el origen con cada uno de los destinos.
+            </p>
+            <p>Adem&aacute;s de elegir una capa del mapa, puede seleccionar  <b>Elegir capa de an&aacute;lisis</b>, que se encuentra al final de la lista desplegable. Esta opci&oacute;n abre una galer&iacute;a en la que puede buscar y seleccionar datasets de varias fuentes para usarlos en su an&aacute;lisis. 
+            </p>
+            <p> Si hay muchos or&iacute;genes y muchos destinos, debes tener dos campos que describan los pares origen-destino: <b>Campo de Id. de ruta en or&iacute;genes</b> y <b>Campo de Id. coincidente en destinos</b>. La herramienta conecta los pares origen-destino durante el an&aacute;lisis. Por ejemplo, imagine que tiene dos or&iacute;genes con los valores de campo de Id. <code>Rosie</code> y <code>Harold</code> y dos destinos con los mismos valores de Id. El origen <code>Rosie</code> se conectar&aacute; con el destino <code>Rosie</code> y <code>Harold</code> se conectar&aacute; con el destino <code>Harold</code>. No se realizar&aacute;n otras conexiones ni mediciones.
+            </p>
+            <p>Si hay igual n&uacute;mero de or&iacute;genes y destinos, los valores de Id. deben ser &uacute;nicos en cada capa. Por ejemplo, la capa de destinos no puede tener dos valores  <code>Rosie</code>. Los valores de las capas de origen y destino deben coincidir exactamente para formar pares; <code>Harold</code> no se conectar&aacute; con el valor <code>Harodl</code>, que est&aacute; mal escrito. 
+            </p>
+            <p>La herramienta tambi&eacute;n admite conectar cada origen a m&aacute;s de un destino o viceversa. En tal caso, sigue necesitando dos campos que describan los pares de origen-destino. Sin embargo, solo una de las capas (ya sea la capa de origen o la de destino) debe tener valores de Id. &uacute;nicos.
+            </p>
+        </div>
+    </div>
+    <div id="measurementType">
+        <div><h2>Medir</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Elija si desea conectar los or&iacute;genes con los destinos mediante la distancia en l&iacute;nea recta o un modo de viaje. Las rutas resultantes seguir&aacute;n carreteras o caminos y respetar&aacute;n las reglas aplicables, como por ejemplo las v&iacute;as de sentido &uacute;nico y los giros prohibidos en coche o en cami&oacute;n.  Los modos de viaje disponibles vienen determinados por el administrador de su organizaci&oacute;n.  
+            </p>
+            <p>Al elegir  <b>Tiempo de conducci&oacute;n</b>, <b>Tiempo de conducci&oacute;n (medio rural)</b> o <b>Tiempo en cami&oacute;n</b>, dispone de distintas opciones para medir el tiempo de recorrido.
+                <ul>
+                    <li>
+                        <p>Desactive  <b>Utilizar tr&aacute;fico</b> para buscar las rutas m&aacute;s r&aacute;pidas con velocidades predeterminadas.
+                        </p>
+                        <p>Esta es la opci&oacute;n que debe elegir si desea una medici&oacute;n de tiempo de recorrido general, y no una que se calcule utilizando las condiciones de tr&aacute;fico variables para una hora de salida espec&iacute;fica.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Active  <b>Utilizar tr&aacute;fico</b> para buscar las rutas m&aacute;s r&aacute;pidas basadas en una hora de inicio dada y unas condiciones de tr&aacute;fico variables. Si adem&aacute;s eliges la opci&oacute;n <b>Tr&aacute;fico en directo</b>, la hora de salida desde los or&iacute;genes se define en la hora actual, y se toman como referencia las velocidades de tr&aacute;fico actuales y previstas de los sensores y las fuentes para crear las rutas. Las velocidades de tr&aacute;fico previstas se calculan en funci&oacute;n de las velocidades de tr&aacute;fico en directo, las velocidades hist&oacute;ricas y eventos actuales como las condiciones meteorol&oacute;gicas. Las velocidades de tr&aacute;fico se predicen con 12 horas de antelaci&oacute;n, de modo que puede mover la barra deslizante para establecer la hora de salida hasta  12 horas m&aacute;s tarde. </p>
+                        <p>Utiliza esta configuraci&oacute;n de tr&aacute;fico en directo para averiguar los tiempos de recorrido si se sale ahora, dentro de una hora, etc.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Al activar  <b>Utilizar tr&aacute;fico</b> y elegir <b>Tr&aacute;fico basado en las condiciones t&iacute;picas para</b> un d&iacute;a y una hora, la herramienta busca las rutas m&aacute;s r&aacute;pidas bas&aacute;ndose en las velocidades medias hist&oacute;ricas para cada intervalo de cinco minutos de una semana normal. Los resultados incluyen el tr&aacute;fico pero eliminan la influencia de las condiciones de tr&aacute;fico y los eventos de ese momento, que pueden variar considerablemente de lo habitual.
+                        </p>
+                        <p>Puede utilizar esta configuraci&oacute;n de tr&aacute;fico hist&oacute;rica para preguntar, por ejemplo: &quot;En general, &iquest;cu&aacute;nto se tarda en llegar a estos destinos saliendo a las 11:30 de la ma&ntilde;ana de un mi&eacute;rcoles?&quot;.
+                        </p>
+                        <p>La hora que establezca utilizar&aacute; la zona horaria en la que se encuentran sus or&iacute;genes. Es decir, si estableces la hora a las 8:00 de la ma&ntilde;ana y tienes dos or&iacute;genes, uno en la ciudad de Nueva York y otro en Los &Aacute;ngeles, las rutas se generar&aacute;n para una hora de salida definida a las 8:00 de la ma&ntilde;ana hora del Este y las 8:00 de la ma&ntilde;ana hora del Pac&iacute;fico, respectivamente.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Tenga en cuenta que, cuando un veh&iacute;culo se aleja del origen, el tiempo pasa y las condiciones de tr&aacute;fico cambian. La herramienta Conectar or&iacute;genes con destinos tiene en cuenta estas variaciones si se activa  <b>Utilizar tr&aacute;fico</b>; sin embargo, no todas las regiones admiten tr&aacute;fico. Haga clic en el v&iacute;nculo <b>Ver disponibilidad</b> de la herramienta para averiguar si se ofrece en su &aacute;rea de estudio.
+            </p>
+            <p> <b>Tiempo en cami&oacute;n</b> puede utilizar velocidades de viaje din&aacute;micas basadas en el tr&aacute;fico, pero solo hasta el l&iacute;mite de velocidad permitido para camiones. Por ejemplo, si la velocidad din&aacute;mica de una calle basada en el tr&aacute;fico en directo es de 65 millas por hora, pero el l&iacute;mite de velocidad para camiones en esa calle es de 55 millas por hora, el c&aacute;lculo utilizar&aacute; 55 millas por hora para esa calle.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Seleccionar capas de barrera</h2></div>
+        <hr/>
+        <div>
+            <p> Una o varias entidades que act&uacute;an como restricciones temporales (barreras) al viajar por las calles subyacentes. Puede especificar las barreras mediante entidades poligonales, de puntos o l&iacute;neas.
+            </p>
+            <p>Una barrera de punto puede modelar un &aacute;rbol ca&iacute;do, un accidente, una l&iacute;nea el&eacute;ctrica ca&iacute;da o cualquier cosa que bloquee completamente el tr&aacute;fico en una posici&oacute;n concreta a lo largo de la calle. Se permite el desplazamiento por la calle, pero no por la barrera. Puede especificar hasta 250 entidades para que act&uacute;en como barreras de punto.
+            </p>
+            <p>Una barrera de l&iacute;nea proh&iacute;be viajar a cualquier punto en que la barrera interseque las calles. Por ejemplo, un desfile o una protesta que bloquee el tr&aacute;fico por varios segmentos de calle se puede modelar con una barrera de l&iacute;nea. Si el n&uacute;mero de las entidades de calle intersecadas por todas las barreras de l&iacute;nea supera 500, la herramienta devuelve un error.
+            </p>
+            <p>Una barrera de pol&iacute;gono proh&iacute;be viajar a cualquier punto en que el pol&iacute;gono interseque las calles. Un uso de este tipo de barrera consiste en modelar inundaciones cubriendo &aacute;reas de la red de calles que hacen inviables los viajes por carretera. Si el n&uacute;mero de las entidades de calle intersecadas por todas las barreras de pol&iacute;gono supera 2.000, la herramienta devuelve un error.
+            </p>
+        </div>
+    </div>
+    <div id="routeShape">
+        <div><h2>Forma de la ruta</h2></div>
+        <hr/>
+        <div>
+            <p>Elija la forma de la ruta que conecta cada origen a su destino al utilizar un modo de viaje:
+            </p>
+            <ul>
+                <li> <b>Seguir calles</b>: la forma se basa en la red de calles subyacente. Esta es la mejor opci&oacute;n cuando desea generar las rutas entre or&iacute;genes y destinos.
+                </li>
+                <li> <b>L&iacute;nea recta</b>: la forma es una l&iacute;nea recta que conecta el par origen-destino. Esta es la mejor opci&oacute;n cuando desea generar diagramas de ara&ntilde;a o l&iacute;neas de deseo (por ejemplo, para mostrar qu&eacute; tiendas visitan los clientes).
+                </li>
+            </ul>
+            
+            <p>La mejor ruta entre un origen y su correspondiente destino siempre se calcula en funci&oacute;n del modo de viaje, independientemente de la forma de ruta elegida.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>El nombre de la capa de entidades que se crear&aacute; en  <b>Mi contenido</b> y se agregar&aacute; al mapa. Si la capa de entidades ya existe, se le pedir&aacute; que indique otro nombre. La capa de entidades contendr&aacute; una capa para cada uno de los elementos siguientes: rutas, or&iacute;genes sin asignar, y destinos sin asignar cuando algunos or&iacute;genes no se puedan conectar a sus destinos.
+            </p>
+            <p>Si selecciona  <b>Incluir capas de rutas</b>, cada ruta del resultado se guarda tambi&eacute;n como una capa de rutas. Las capas de rutas incluyen toda la informaci&oacute;n de una determinada ruta, por ejemplo, las paradas asignadas a la ruta y las indicaciones del viaje. Crear capas de rutas resulta &uacute;til si desea compartir rutas concretas con otros miembros de su organizaci&oacute;n o si desea modificar a&uacute;n m&aacute;s las rutas utilizando el bot&oacute;n <b>Indicaciones</b> del Visor de mapas. Las capas de rutas utilizan el nombre proporcionado para la capa de entidades como prefijo y se agrega el nombre de ruta generado como parte del an&aacute;lisis para crear un nombre &uacute;nico para cada capa de rutas.
+            </p>
+            <p>El n&uacute;mero m&aacute;ximo de capas de ruta que se pueden crear es  1,000. Si el resultado contiene m&aacute;s de  1,000 rutas y la opci&oacute;n  <b>Incluye capas de ruta</b> est&aacute; activada, la herramienta solo crear&aacute; el servicio de entidades de salida.
+            </p>
+            <p>En el men&uacute; desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute;n la capa de entidades y las capas de rutas, si se han creado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

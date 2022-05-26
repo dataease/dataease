@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>다중 변수 격자에서 보강(Enrich From Multi-Variable Grid)</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="다중 변수 격자에서 보강(Enrich From Multi-Variable Grid)"></h2>
+        <hr/>
+    <p> 다중 변수 격자에서 보강 도구는 다중 변수 격자에서 포인트 레이어로 속성을 효율적으로 조인합니다.
+    </p>
+    <p>다중 변수 격자는 다중 변수 격자 생성 도구로 만든 레이어로, 다중 레이어의 속성을 단일 폴리곤의 격자로 컴파일합니다.  보강을 위해 다중 변수 격자를 사용하면 포인트 데이터에 크고 다양한 정보 컬렉션을 신속하게 추가하여 추가적인 공간 분석에 사용할 수 있습니다.
+    </p>
+    <p>예를 들어 작년 한 해 동안 한 도시에서 발생한 새로운 범죄 사건의 레이어를 받았다고 가정해 보겠습니다. 범죄 빈도와 다양한 인구 통계, 경제적, 지리적 요소 간의 관계를 모델링하려고 합니다. 이러한 요소를 설명하는 데이터에 접근할 수는 있지만 지오메트리 유형이 서로 다른 다섯 가지 레이어에 저장됩니다. 또한 일부 레이어는 빅데이터 파일 공유에 저장되는 반면 다른 레이어는 피처 서비스로 저장됩니다. 이 정보를 저장하기 위해 다중 변수 격자를 생성한 후  다중 변수 격자에서 보강 도구를 사용하여 범죄 사건에 격자를 조인하면 도구를 단 두 번만 실행하여 다양한 속성을 포인트 레이어에 효율적으로 조인할 수 있습니다. 그러면 조인된 속성을 설명 변수로 사용하고 결과 레이어로 범죄 빈도 모델을 생성할 수 있습니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>보강할 포인트 피처 선택</h2></div>
+        <hr/>
+        <div>
+            <p>다중 변수 격자로 보강될 포인트 피처입니다.
+            </p>
+            <p>맵에서 레이어를 선택하는 것 이외에, 드롭다운 목록의 하단에 있는  <b>Analysis Layer 선택</b>을 선택하여 빅데이터 파일 공유 데이터셋 또는 피처 레이어의 콘텐츠를 찾아볼 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>보강할 다중 변수 격자 선택</h2></div>
+        <hr/>
+        <div>
+            <p>입력 포인트 피처에 조인될 속성을 포함하는 다중 변수 격자 레이어입니다. 이 레이어는 다중 변수 격자 생성 도구를 사용하여 생성되어야 하며 호스팅 피처 레이어여야 합니다. 빅데이터 파일 공유에 저장된 다중 변수 격자 레이어는 이 도구의 입력으로 지원되지 않습니다.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>추가할 변수 선택</h2></div>
+        <hr/>
+        <div>
+            <p>포인트 피처가 격자와 교차할 때마다 입력 포인트 피처에 조인될 다중 변수 격자 레이어의 속성입니다.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> 생성될 레이어의 이름입니다. ArcGIS Data Store에 작성하는 경우  결과는  <b>내 콘텐츠</b>에 저장되고 맵에 추가됩니다. 빅데이터 파일 공유에 작성하는 경우  결과는 빅데이터 파일 공유에 저장되고 해당 매니페스트에 추가됩니다. 이러한 결과는 맵에 추가되지 않습니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어가 이미 있으면 도구를 사용할 수 없습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

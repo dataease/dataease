@@ -1,0 +1,48 @@
+-------------------------------------------------------------------------------
+DojoX Date
+-------------------------------------------------------------------------------
+Version 0.9
+Release date: 5/17/2007
+-------------------------------------------------------------------------------
+Project state:
+varies
+
+Buddhist, Hebrew, Islamic calendars: stable
+posix, php: beta
+timezone: experimental
+
+-------------------------------------------------------------------------------
+Credits
+	Paul Sowden (dojox.date.posix)
+	Neil Roberts (dojox.date.php)
+	Hossam Aldin Katory (dojox.date.islamic, dojox.date.hebrew)
+	Helena Halperin, Moshe Wajnberg, Tomer Mahlin (dojox.date.hebrew)
+	Nathan Toone (dojox.date.relative, dojox.date.tzdate, dojox.date.timezone)
+-------------------------------------------------------------------------------
+Project description
+
+Placeholder for any kind of date operations, including formatters that are
+common to other languages (posix and php).
+
+-------------------------------------------------------------------------------
+Dependencies:
+
+Depends only on the Dojo Core.
+-------------------------------------------------------------------------------
+Documentation
+
+See the API documentation for details.
+-------------------------------------------------------------------------------
+Installation instructions
+
+Grab the following from the Dojo SVN Repository:
+http://svn.dojotoolkit.org/var/src/dojo/dojox/trunk/date/*
+
+Install into the following directory structure:
+/dojox/date/
+
+...which should be at the same level as your Dojo checkout.
+
+To use the non-Gregorian calendars, you must do a complete build of dojo.cldr.
+See util/buildscripts/cldr/README for details.
+-------------------------------------------------------------------------------

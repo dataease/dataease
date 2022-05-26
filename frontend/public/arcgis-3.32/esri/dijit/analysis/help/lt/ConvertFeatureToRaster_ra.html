@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Konvertuoti elementus į rastrą</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="Įrankis, skirtas konvertuoti elementus į rastrą"></h2>
+        <hr/>
+    <p>&Scaron;is įrankis konvertuoja elementus į rastrinį duomenų rinkinį.
+    </p>
+    <p>Bet kuri elementų klasė, kurioje yra ta&scaron;kinių, linijinių ar plotinių elementų, gali būti konvertuota į rastrinį duomenų rinkinį.
+    </p>
+    <p>Gardelės centrą apibrėžia i&scaron;vesties rastro pikselio reik&scaron;mė.
+    </p>
+    <p>I&scaron;vesties rastro tipą apibrėžia įvesties lauko tipas. Jei laukas yra sveikasis skaičius, i&scaron;vesties rastras taip pat bus sveikasis skaičius; jei lauke naudojamas slankusis kablelis, jis bus naudojamas ir i&scaron;vesties rastre.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pasirinkite elementų sluoksnį, kurį norite konvertuoti</h2></div>
+        <hr/>
+        <div>
+            <p>Įvesties elementų sluoksnis, kurį norite konvertuoti į rastrinį duomenų rinkinį.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Pasirinkite lauką</h2></div>
+        <hr/>
+        <div>
+            <p>Pasirinkite lauką, kuris bus naudojamas priskiriant reik&scaron;mes i&scaron;vesties rastrui.
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Išvesties gardelės dydis</h2></div>
+        <hr/>
+        <div>
+            <p>I&scaron;vesties rastrų gardelės dydis ir matavimo vienetai.
+            </p>
+            <p>Galimi matavimo vienetai: mylios, pėdos, kilometrai ir metrai. Numatytasis matavimo vienetas yra pėdos.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Sluoksnio, kuris bus sukurtas puslapyje  <b>Turinys</b> ir įtrauktas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau egzistuoja, būsite papra&scaron;yti pateikti kitą pavadinimą.
+            </p>
+            <p>Galite nurodyti aplanko  <b>Turinyje</b>, kuriame rezultatai bus įra&scaron;yti naudojant i&scaron;&scaron;okantįjį meniu <b>Rezultatą įra&scaron;yti į</b>, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Temukan Klaster Titik</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="Temukan Klaster Titik"></h2>
+        <hr/>
+    <p>Alat ini menemukan klaster fitur titik dalam kebisingan di sekitar berdasarkan distribusi spasialnya.
+    </p>
+    <p>Jika  <b>Gunakan jangkauan peta saat ini</b> dicentang, hanya fitur dalam layer titik input dalam jangkauan peta saat ini yang akan dianalisis.  Jika tidak dicentang, semua fitur pada layer titik input akan dianalisis, meskipun berada di luar jangkauan peta saat ini.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Pilih layer yang memiliki klaster</h2></div>
+        <hr/>
+        <div>
+            <p>Layer titik tempat klaster akan ditemukan. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Jumlah titik minimal untuk dapat dianggap sebagai klaster</h2></div>
+        <hr/>
+        <div>
+            <p>Jumlah fitur minimum untuk dapat dianggap sebagai klaster.  Klaster apa pun dengan fitur yang lebih sedikit daripada yang disediakan akan dianggap sebagai kebisingan. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Batasi rentang pencarian menjadi (opsional)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Jarak maksimum untuk mempertimbangkan fitur menjadi bagian dari klaster yang sama.  Jika dibiarkan kosong, alat akan menjalankan HDBSCAN, yang menggunakan beragam jarak untuk memisahkan klaster beragam densitas dari derau tersebar. Jika nilai disediakan, alat akan menjalankan DBSCAN, yang menggunakan jarak tertentu untuk memisahkan klaster padat dari derau tersebar.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Ini adalah nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta.  Nama default ditetapkan berdasarkan nama layer input. Jika nama layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Dengan menggunakan  <b>Simpan hasil di</b> menu drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> sebagai tempat penyimpanan hasil.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Rasti panašias vietas</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="Rasti pana&scaron;ias vietas"></h2>
+        <hr/>
+    <p>Pagal nurodytus kriterijus, įrankis Rasti Pana&scaron;ias Vietas nustato pana&scaron;ius objektus paie&scaron;kos sluoksnyje. Įrankis gali atsakyti į tokius klausimus kaip 
+        <ul>
+            <li>Kurios parduotuvės yra pana&scaron;iausios į pirmaujančias pagal klientų grupes?
+            </li>
+            <li>Kurios kitos gyvenvietės patenka į didžiausios rizikos grupę pagal gyvenviečių, kuriose i&scaron;plito liga, požymius?
+            </li>
+        </ul>
+        Norint atsakyti į &scaron;iuos klausimus, reikia nurodyti pradinių vietų duomenis, paie&scaron;kos vietų rinkinį ir laukus, atitinkančius užduotus kriterijus. Pirmajame įvesties sluoksnyje turi būti pradinės arba atskaitos vietos.  Pavyzdžiui, tai gali būti sluoksnis, sudarytas i&scaron; pirmaujančių parduotuvių ar gyvenviečių, kuriose i&scaron;plito liga. Tuomet nurodomas paie&scaron;kos vietų sluoksnis. Tai gali būti kitos parduotuvės ar gyvenvietės. Galiausiai, nurodomi laukai, naudojami pana&scaron;umo nustatymui. Rasti Pana&scaron;ias Vietas įrankis visiems paie&scaron;kos sluoksnio objektams suteiks pana&scaron;umo į analizės objektus įvertį pagal visus nurodytus laukus.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pasirinkite sluoksnį, kuriame yra pradinės vietos</h2></div>
+        <hr/>
+        <div>
+            <p>Sluoksnis, kuriame yra atitinkamos pradinės vietos. 
+            </p>
+            <p>Galite ne tik nurodyti sluoksnį i&scaron; žemėlapio, bet ir apačioje pasirinkti  <b>Pasirinkti analizės sluoksnį</b>, kad galėtumėte turinyje ie&scaron;koti didelių duomenų rinkinio arba elemento sluoksnio.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>Galite naudoti visas vietas arba sukurti išranką</h2></div>
+        <hr/>
+        <div>
+            <p>Naudokite i&scaron;rinkimo mygtukus analizės objektų atrinkimui. &Scaron;i parinktis galima tik tuo atveju, jeigu elementai yra pavaizduoti žemėlapyje (nepasiekiama bendrinant didelį duomenų failą).&nbsp; Pavyzdžiui, jei įvesties sluoksnį sudaro visos vietos &ndash; tiek atskaitos objektai, tiek paie&scaron;kos objektai &ndash; reikės atrinkti atskaitos objektus naudojant i&scaron;rinkimo įrankius. Jei sukurti du sluoksniai, vienas su atskaitos objektais ir kitas su paie&scaron;kos objektais, i&scaron;rinkimo atlikti nereikės.
+            </p>
+            <p>Jei yra daugiau nei vienas atskaitos objektas, pana&scaron;umo nustatymui bus sukurtas vienas objektas, atitinkantis kriterijų vidutinę reik&scaron;mę.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>Ieškoti panašių vietų</h2></div>
+        <hr/>
+        <div>
+            <p>Objektai &scaron;iame sluoksnyje bus įvertinti nuo pana&scaron;iausio iki mažiausiai pana&scaron;aus. 
+            </p>
+            <p>Galite ne tik nurodyti sluoksnį i&scaron; žemėlapio, bet ir apačioje pasirinkti  <b>Pasirinkti analizės sluoksnį</b>, kad galėtumėte turinyje ie&scaron;koti didelių duomenų rinkinio arba elemento sluoksnio.
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>Panašumas pagal</h2></div>
+        <hr/>
+        <div>
+            <p>Laukai, pagal kuriuos bus nustatomas pana&scaron;umas. Jei pasirinkti gyventojų skaičiaus ir pajamų laukai, paie&scaron;kos objektai su žemiausiu (geriausiu) rodikliu bus tie, kurie turės į atskaitos objektus pana&scaron;iausias gyventojų skaičiaus ir pajamų reik&scaron;mes.
+            </p>
+        </div>
+    </div>
+    <div id="matchMethod">
+        <div><h2>Nustatyti didžiausią ir mažiausią panašų naudojimą</h2></div>
+        <hr/>
+        <div>
+            <p>Pasirinktas metodas apibrėžia atitikties nustatymą. 
+                <ul>
+                    <li> <b>Lauko reik&scaron;mių</b> metodas naudoja standartizuotų reik&scaron;mių kvadratinius skirtumus. Tai numatytasis metodas.
+                    </li>
+                    <li> <b>Lauko profilių</b> metodas naudoja kosinuso pana&scaron;umo skaičiavimą, kad būtų galima palyginti standartizuotų reik&scaron;mių profilį. Naudojant atributų profilius būtina naudoti bent du analizės laukus.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>Parodykite man</h2></div>
+        <hr/>
+        <div>
+            <p>Galima pasirinkti rodyti visus paie&scaron;kos objektus nuo pana&scaron;iausio iki mažiausiai pana&scaron;aus arba nurodyti rezultato objektų kiekį. 
+                <ul>
+                    <li>Jeigu nurodomos  <b>visos vietos nuo pana&scaron;iausios iki mažiausiai pana&scaron;ios</b>, į rezultatų sluoksnį bus įtraukti visi paie&scaron;kos objektai pagal pana&scaron;umo eilę. Pateikiama daugiausiai 10 000 rezultatų.
+                    </li>
+                    <li>Jeigu nurodomas  <code>daugiausiai, mažiausiai ar daugiausiai ir mažiausiai</code> <code>pana&scaron;ių</code> <b>vietų skaičius</b>, nustatoma, kiek daugiausiai, daugiausiai ar mažiausiai ir mažiausiai pana&scaron;ių kandidatų bus įtraukta į rezultato sluoksnį. Didžiausia leistina reik&scaron;mė yra 10 000.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="appendFields">
+        <div><h2>Pasirinkite laukus, kuriuos norite įtraukti į rezultatus</h2></div>
+        <hr/>
+        <div>
+            <p>Taip pat į duomenis galima įtraukti laukus i&scaron; paie&scaron;kos sluoksnio. Numatyta, kad įtraukiami visi laukai.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p> Pavadinimas sluoksnio, kuris bus sukurtas. Jei įra&scaron;ote į ArcGIS Data Store, jūsų rezultatai bus įra&scaron;yti į  <b>Turinį</b> ir įtraukti į žemėlapį. Jei įra&scaron;ote į didelių duomenų failo bendrinimą, jūsų rezultatai bus saugomi didelių duomenų failo bendrinime ir pridedami į jo deklaraciją. Jie nebus įtraukti į žemėlapį. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau yra, įrankis neveiks.
+            </p>
+            <p>Rezultato sluoksnis bus sudarytas i&scaron; atskaitos vietų ir nurodyto paie&scaron;kos objektų skaičiaus. Jei toks sluoksnio pavadinimas jau egzistuoja, turėsite jį pakeisti.
+            </p>
+            <p>Kai ra&scaron;ote į   ArcGIS Data Store  (releacinių arba erdvėlaikinių didelių duomenų saugyklą) naudodami i&scaron;&scaron;okantįjį meniu  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

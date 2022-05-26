@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/tr/EnrichFromMultiVariableGrid",{choosePointLyrLabel:"Zenginle\u015ftirilecek nokta detaylar\u0131n\u0131 se\u00e7in",chooseMVgridLyrLabel:"Zenginle\u015ftirmenin yap\u0131laca\u011f\u0131 \u00e7ok de\u011fi\u015fkenli grid\u2019i se\u00e7in",chooseVariables:"Eklenecek de\u011fi\u015fkenleri se\u00e7in",outputLayerName:"${gridLayer}\u2019den zenginle\u015ftirilmi\u015f ${inputFeatures}",itemDescription:"${inputFeatures} i\u00e7in \u00c7ok De\u011fi\u015fkenli K\u0131lavuzdan Zenginle\u015ftir \u00e7\u00f6z\u00fcm\u00fc \u00e7al\u0131\u015ft\u0131r\u0131larak olu\u015fturulan detay katman\u0131.",
+itemTags:"Analiz Sonucu, \u00c7ok De\u011fi\u015fkenli K\u0131lavuzdan Zenginle\u015ftir, ${inputFeatures}, ${gridLayer}",itemSnippet:"Detay katman\u0131 \u00c7ok De\u011fi\u015fkenli K\u0131lavuzdan Zenginle\u015ftir ile olu\u015fturuldu."});

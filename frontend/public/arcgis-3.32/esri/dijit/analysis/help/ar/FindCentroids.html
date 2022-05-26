@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>بحث عن المراكز الهندسية</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="بحث عن المراكز الهندسية"></h2>
+        <hr/>
+    <p>تعامل هذه الأداة مع طبقة طبقة معالم متعددة النقاط أو خط أو منطقة لتحديد المركز التمثيلي لكل معلم.
+    </p>
+    <p>إذا تم التأشير على  <b>&lrm;استخدام نطاق الخريطة الحالي</b> لن يتم تحليل إلا طبقة متعددة النقاط أو الخط أو المنطقة المدخلة المرئية داخل مدى الخريطة الحالي. إذا لم يتم التأشير عليها، سيتم تحليل المعالم في الطبقة المدخلة مؤقتًا، حتى إذا كانت خارج نطاق الخريطة الحالي.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>اختر الطبقة التي سيتم استخدام معالمها لإنشاء مراكز هندسية</h2></div>
+        <hr/>
+        <div>
+            <p> سيتم استخدام الطبقة متعددة النقاط أو طبقة الخط أو طبقة المنطقة للبحث عن المراكز الهندسية.
+            </p>
+            <p>بالإضافة إلى اختيار طبقة من الخريطة، يمكنك تحديد  <b>اختيار طبقة التحليل </b> الموجودة أسفل القائمة المنسدلة. يفتح هذا الخيار معرضًا حيث يمكنك استعراض مجموعات البيانات وتحديدها من مصادر متعددة لاستخدامها في التحليل. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>عرض المواقع الناتجة</h2></div>
+        <hr/>
+        <div>
+            <p> عند التأشير على <b>في المركز الهندسي الصحيح</b> (افتراضيًا)، سيقوم الناتج بإرجاع الموقع الصحيح للمركز الهندسي لكل معلم مدخل. سيتم تحديد مواقع المراكز الهندسية كما يلي:
+                <ul>
+                    <li>المعالم متعددة النقاط - سيتم تحديد موقع المركز الهندسي الناتج عند متوسط إحداثيات x وy لكل النقاط في المعلم متعدد النقاط.
+                    </li>
+                    <li>المعالم الخطية - سيتم تحديد موقع المركز الهندسي الناتج عند متوسط إحداثيات x وy المرجحة لمنتصف نقاط كل مقاطع الخط في المعلم الخطي. يعتمد الترجيح على طول المقطع.
+                    </li>
+                    <li>معالم المنطقة - سيتم تحديد موقع المركز الهندسي الناتج في مركز المنطقة.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>عند التأشير على  <b>تضمين بواسطة المعالم المدخلة</b>، سيتم تضمين المعالم النقطية الناتجة بواسطة كل معلم مدخل أو بداخله. ستظهر المعالم النقطية الناتجة كما يلي:
+                <ul>
+                    <li>المعالم متعددة النقاط - سيكون المركز الهندسي الناتج متوافقًا مع النقاط في المجموعة متعددة النقاط.
+                    </li>
+                    <li>المعالم الخطية - سيكون المركز الهندسي الناتج على الخط. إذا كان الخط منحنيًا، فإن الناتج سيكون في منتصف الخط. 
+                    </li>
+                    <li>معالم المنطقة - ستكون النقطة الناتجة داخل معلم المنطقة.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>اسم طبقة النتيجة</h2></div>
+        <hr/>
+        <div>
+            <p>هذا هو اسم الطبقة الذي سيتم إنشاؤه في  <b>محتوياتي</b> وإضافتها للخريطة.  يستند الاسم الافتراضي إلى اسم الأداة واسم الطبقة المدخلة. إذا وُجدت الطبقة بالفعل، سيطلب منك كتابة اسم آخر.
+            </p>
+            <p>عند استخدام القائمة المنسدلة  <b>حفظ النتائج في </b> يمكن تحديد اسم المجلد في <b>المحتويات </b> حيث يتم حفظ النتائج.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

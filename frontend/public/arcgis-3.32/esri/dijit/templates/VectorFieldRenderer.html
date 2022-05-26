@@ -1,0 +1,135 @@
+<div data-dojo-attach-point="_vectorFieldRendererContainer" class="esriVFRContainer">
+  <table class="esriVFRTable">
+    <tr>
+      <td colspan="2">
+        <label class="esriVFRSymbolTitle">${_i18n.widgets.vectorFieldRenderer.symbolTypeLabelTitle}</label>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <table class="esriVFRTypeBlock">
+
+          <tr>
+            <td>
+              <div class="esriVFRTypeList" data-dojo-type="dijit/form/FilteringSelect" data-dojo-attach-point="rendererTypeSelect" data-dojo-attach-event="onChange: _selectRendererStyle"></div>
+            </td>
+            <td class="esriVFRColorPickerCell">
+              <div class="esriVFRColorButton" data-dojo-type="dijit/form/DropDownButton" data-dojo-attach-point="colorPickerButton">
+                <span></span>
+                <div data-dojo-type="esri/dijit/ColorPicker" data-dojo-attach-point="symbolColorPicker" class="esriVFRColorPicker"></div>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <label>${_i18n.widgets.vectorFieldRenderer.dataTypeLabelTile}</label>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <select data-dojo-type="dijit/form/Select" data-dojo-attach-point="flowAngleSelect" class="esriVFRFlowAngleList" data-dojo-attach-event="onChange: _setPropertiesChanged">
+          <option value="FLOW_FROM" selected="selected">${_i18n.widgets.vectorFieldRenderer.angleFromAlias}</option>
+          <option value="FLOW_TO">${_i18n.widgets.vectorFieldRenderer.angleToAlias}</option>
+        </select>
+      </td>
+    </tr>
+
+    <tr>
+      <td colspan="2">
+        <label>${_i18n.widgets.vectorFieldRenderer.symbolDensityLabelTitle}</label>
+        <label class="esriVFRBold" data-dojo-attach-point="symbolDensitySliderValueLabel"></label>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2" class="esriVFRTileSizeSlider">
+        <div data-dojo-attach-point="symbolDensitySliderDiv"></div>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <label>${_i18n.widgets.vectorFieldRenderer.symbolSizeLabelTitle}</label>
+        <label class="esriVFRBold" data-dojo-attach-point="symbolSizeSliderValueLabel"></label>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2" class="esriVFRSymbolSizeSlider">
+        <div data-dojo-attach-point="symbolSizeSliderDiv"></div>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <div data-dojo-type="dijit/TitlePane" data-dojo-props="open: false" data-dojo-attach-point="advancedSettingsPane">
+          <table class="esriVFRAdvSettingsTable">
+            <colgroup>
+              <col class="esriAdvSettingsCol1" />
+              <col class="esriAdvSettingsCol2" />
+            </colgroup>
+            <tr>
+              <td colspan="2">
+                <label>${_i18n.widgets.vectorFieldRenderer.unitLabelTitle}</label>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label>${_i18n.widgets.vectorFieldRenderer.inputUnitLabelTitle}</label>
+              </td>
+              <td>
+                <select data-dojo-type="dijit/form/Select" class="esriVFRUnitsList" data-dojo-attach-point="inputDataUnitSelect" data-dojo-attach-event="onChange: _onInputUnitChange">
+                  <option value="NO_UNIT"></option>
+                  <option value="esriMetersPerSecond">${_i18n.widgets.vectorFieldRenderer.esriMetersPerSecond}</option>
+                  <option value="esriKilometersPerHour">${_i18n.widgets.vectorFieldRenderer.esriKilometersPerHour}</option>
+                  <option value="esriKnots">${_i18n.widgets.vectorFieldRenderer.esriKnots}</option>
+                  <option value="esriFeetPerSecond">${_i18n.widgets.vectorFieldRenderer.esriFeetPerSecond}</option>
+                  <option value="esriMilesPerHour">${_i18n.widgets.vectorFieldRenderer.esriMilesPerHour}</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label>${_i18n.widgets.vectorFieldRenderer.outputUnitLabelTitle}</label>
+              </td>
+              <td>
+                <select data-dojo-type="dijit/form/Select" class="esriVFRUnitsList" disabled="disabled" data-dojo-attach-point="outputDataUnitSelect" data-dojo-attach-event="onChange: _onOutputUnitChange">
+                  <option value="NO_UNIT"></option>
+                  <option value="esriMetersPerSecond">${_i18n.widgets.vectorFieldRenderer.esriMetersPerSecond}</option>
+                  <option value="esriKilometersPerHour">${_i18n.widgets.vectorFieldRenderer.esriKilometersPerHour}</option>
+                  <option value="esriKnots">${_i18n.widgets.vectorFieldRenderer.esriKnots}</option>
+                  <option value="esriFeetPerSecond">${_i18n.widgets.vectorFieldRenderer.esriFeetPerSecond}</option>
+                  <option value="esriMilesPerHour">${_i18n.widgets.vectorFieldRenderer.esriMilesPerHour}</option>
+                </select>
+              </td>
+            </tr>
+            <tr class="esriVFRDataRangeLabelRow">
+              <td colspan="2">
+                <label>${_i18n.widgets.vectorFieldRenderer.dataValueRangeLabelTitle}</label><label data-dojo-attach-point="dataValueRangeUnit">.</label>
+              </td>
+            </tr>
+            <tr class="esriVFRMinValueRow">
+              <td>
+                <label>${_i18n.widgets.vectorFieldRenderer.minAlias}</label>
+              </td>
+              <td>
+                <input type="text" data-dojo-type="dijit/form/NumberTextBox" class="esriVFRMinMagInput" data-dojo-attach-point="minMagnitudeInput" data-dojo-attach-event="onChange: _setPropertiesChanged"/>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label>${_i18n.widgets.vectorFieldRenderer.maxAlias}</label>
+              </td>
+              <td>
+                <input type="text" data-dojo-type="dijit/form/NumberTextBox" class="esriVFRMaxMagInput" data-dojo-attach-point="maxMagnitudeInput" data-dojo-attach-event="onChange: _setPropertiesChanged"/>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2" data-dojo-type="dijit/form/Button" data-dojo-attach-event="onClick: _onClickApplyVectorFieldRenderer" data-dojo-attach-point="applyButton">${_i18n.widgets.vectorFieldRenderer.applyLabelTitle}
+      </td>
+    </tr>
+  </table>
+</div>

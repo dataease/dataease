@@ -1,0 +1,3 @@
+//>>built
+define("dojox/collections/Queue",["dojo/_base/kernel","dojo/_base/array","./_base"],function(f,g,d){d.Queue=function(e){var a=[];e&&(a=a.concat(e));this.count=a.length;this.clear=function(){a=[];this.count=a.length};this.clone=function(){return new d.Queue(a)};this.contains=function(b){for(var c=0;c<a.length;c++)if(a[c]==b)return!0;return!1};this.copyTo=function(b,c){b.splice(c,0,a)};this.dequeue=function(){var b=a.shift();this.count=a.length;return b};this.enqueue=function(b){this.count=a.push(b)};
+this.forEach=function(b,c){f.forEach(a,b,c)};this.getIterator=function(){return new d.Iterator(a)};this.peek=function(){return a[0]};this.toArray=function(){return[].concat(a)}};return d.Queue});

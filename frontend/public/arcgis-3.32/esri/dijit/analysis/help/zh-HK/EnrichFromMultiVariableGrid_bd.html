@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>從多變數網格豐富化</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="從多變數網格豐富化"></h2>
+        <hr/>
+    <p> 從多變數網格豐富化工具可有效地將屬性從多變數網格加入到點圖層。
+    </p>
+    <p>一個多變數網格是使用「建立多變數網格」工具所建立的任何圖層，會將屬性從多個圖層編譯至多邊形的單一網格中。您可以針對豐富化使用多變數網格，快速地將大量和多樣化的資訊集合新增至點資料，從而供後續的空間分析使用。
+    </p>
+    <p>例如，假設您已取得整座城市在去年已發生的新犯罪事件圖層。您想要製作犯罪頻率，與各種人口統計、經濟和地理因子之間的關係模型。您擁有用來說明這些因子的資料存取權，但它儲存於幾何類型各異的五個不同的圖層中。此外，部分圖層是儲存於大數據檔案分享，而其他圖層則是儲存為圖徵 服務。藉由建立多變數網格來儲存此資訊，然後使用 從多變數網格豐富化工具將網格加入犯罪事件中，您只要執行兩個工具即可有效地將廣泛的屬性加入點圖層。您接著可以將加入的屬性作為說明變數，並使用結果圖層來開始建立犯罪頻率的模型。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>選擇要豐富化的點圖徵</h2></div>
+        <hr/>
+        <div>
+            <p>多變數網格將豐富化的點圖徵。
+            </p>
+            <p>除了從地圖選擇圖層外，您也可以選擇下拉式清單底部的 <b>選擇分析圖層</b>，以瀏覽到大數據檔案分享資料集或圖徵圖層的內容。
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>選擇要從中豐富化的多變數網格</h2></div>
+        <hr/>
+        <div>
+            <p>包含將加入到輸入點圖徵之屬性的多變數網格圖層。必須已使用「建立多變數網格」工具建立圖層，且該圖層必須是託管圖徵圖層。不支援將大數據檔案分享中儲存的多變數網格圖層作為此工具的輸入。
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>選擇要新增的變數</h2></div>
+        <hr/>
+        <div>
+            <p>每當點圖徵與網格相交時，將加入到輸入點圖徵的多變數網格圖層中的屬性。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p> 將建立之圖層的名稱。若是寫入到 ArcGIS Data Store，您的結果將儲存於<b>我的內容</b>並新增至地圖中。若是寫入到大數據檔案分享，您的結果將儲存於大數據檔案分享並新增至其資訊清單中。不會將它新增到地圖。預設名稱參照工具名稱以及輸入圖層名稱。如果圖層已存在，工具將失敗。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

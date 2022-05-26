@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/GroupToggleButton","require dojo/_base/declare dojo/_base/lang dojo/_base/connect dojo/has dojo/dom-class dijit/form/ToggleButton ../../kernel".split(" "),function(a,e,f,c,g,d,h,k){a=e([h],{groupName:"defaultGroup",declaredClass:"esri.dijit.analysis.GroupToggleButton",postMixInProperties:function(){this.inherited(arguments);this.unselectChannel="/ButtonGroup/"+this.groupName;c.subscribe(this.unselectChannel,this,"doUnselect")},postCreate:function(){this.inherited(arguments);
+d.add(this.domNode,"esriGroupButton")},doUnselect:function(b){b!==this&&this.checked&&this.set("checked",!1)},_setCheckedAttr:function(b,a){this.inherited(arguments);b&&c.publish(this.unselectChannel,[this]);d.toggle(this.focusNode,"esriGroupChecked",b)}});g("extend-esri")&&f.setObject("dijit.analysis.GroupToggleButton",a,k);return a});

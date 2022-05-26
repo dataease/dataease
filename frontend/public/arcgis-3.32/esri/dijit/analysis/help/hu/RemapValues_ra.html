@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Újraleképezési értékek</h2><p/>
+        <h2><img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" alt="&Uacute;jralek&eacute;pez&eacute;si &eacute;rt&eacute;kek eszk&ouml;z port&aacute;lhoz"></h2>
+        <hr/>
+    <p>Ezzel az eszk&ouml;zzel lehetős&eacute;ge ad&oacute;dik m&oacute;dos&iacute;tani vagy m&aacute;sik oszt&aacute;lyba sorolni a raszteres adatok pixel&eacute;rt&eacute;keit. A pixel&eacute;rt&eacute;kek &uacute;jralek&eacute;pez&eacute;se a kimeneti pixel&eacute;rt&eacute;kk&eacute; lek&eacute;pezni k&iacute;v&aacute;nt pixel&eacute;rt&eacute;kek egy tartom&aacute;ny&aacute;nak meghat&aacute;roz&aacute;s&aacute;val t&ouml;rt&eacute;nik. A kimeneti pixel&eacute;rt&eacute;k lehet &eacute;rv&eacute;nyes &eacute;rt&eacute;k vagy NoData &eacute;rt&eacute;k, vagyis olyan pixelek, amelyekhez nincs ismert &eacute;rt&eacute;k rendelve.
+    </p>
+    <p>Az  <b>Aktu&aacute;lis t&eacute;rk&eacute;pkiterjed&eacute;s haszn&aacute;lata</b> bejel&ouml;l&eacute;s&eacute;vel a program csak az aktu&aacute;lis t&eacute;rk&eacute;pkiterjed&eacute;sen l&aacute;that&oacute; cell&aacute;k &uacute;jralek&eacute;pez&eacute;s&eacute;t v&eacute;gzi el. Ha nincs bejel&ouml;lve, akkor a raszter &ouml;sszes cell&aacute;j&aacute;t feldolgozza, akkor is, ha azok k&iacute;v&uuml;l esnek az aktu&aacute;lis t&eacute;rk&eacute;pkiterjed&eacute;sen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Bemeneti adatok</h2></div>
+        <hr/>
+        <div>
+            <p>A bemeneti adatok, amelyek &eacute;rt&eacute;keit &uacute;jra le kell k&eacute;pezni.
+            </p>
+        </div>
+    </div>
+    <div id="RemapList">
+        <div><h2>Pixelértékek újraleképezése új értékekre</h2></div>
+        <hr/>
+        <div>
+            <p>Adja meg az &eacute;rt&eacute;ktartom&aacute;nyt egy minimum &eacute;s egy maximum &eacute;rt&eacute;k megad&aacute;s&aacute;val, majd rendeljen kimeneti &eacute;rt&eacute;ket vagy NoData &eacute;rt&eacute;ket a megadott tartom&aacute;nyhoz.
+            </p>
+            <p>Egy &uacute;j &eacute;rt&eacute;ktartom&aacute;ny &uacute;jralek&eacute;pez&eacute;s&eacute;hez kattintson a  <b>Hozz&aacute;ad&aacute;s</b> gombra, amellyel egy sort ad hozz&aacute;. Az egyes &eacute;rt&eacute;kekre kattintva m&oacute;dos&iacute;thatja a t&aacute;bl&aacute;zatot a sz&uuml;ks&eacute;ges tartom&aacute;nyokra &eacute;s &uacute;jralek&eacute;pezett &eacute;rt&eacute;kre. Az &eacute;rt&eacute;ktartom&aacute;nyok megad&aacute;sakor k&eacute;t fontos szab&aacute;lyra kell &uuml;gyelni:
+                <ul>
+                    <li>A tartom&aacute;ny minimum &eacute;rt&eacute;ke beletartozik a tartom&aacute;nyba, a maximum &eacute;rt&eacute;k azonban nem.
+                    </li>
+                    <li>A t&aacute;bl&aacute;zatban l&eacute;vő sorok feldolgoz&aacute;sa fel&uuml;lről lefel&eacute; t&ouml;rt&eacute;nik.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Az al&aacute;bbi t&aacute;bl&aacute;zat mutatja, hogy a minimum &eacute;rt&eacute;k szerepel a kimenetben, de a maximum &eacute;rt&eacute;k nem.
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>20
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;19
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+                <td>
+                    <p>51
+                    </p>
+                </td>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Fontos a t&aacute;bl&aacute;zatban megadott tartom&aacute;nyok sorrendje is. Elősz&ouml;r a t&aacute;bl&aacute;zat legfelső sora, majd az alatta l&eacute;vő sor ker&uuml;l feldolgoz&aacute;sra. Az al&aacute;bbi k&eacute;t t&aacute;bl&aacute;zat mutatja, hogy a t&aacute;bl&aacute;zat sorainak sorrendje miatt ugyanazok az &eacute;rt&eacute;ktartom&aacute;nyok elt&eacute;rő eredm&eacute;nyeket adhatnak.
+            </p> 
+            <p>Az al&aacute;bbi t&aacute;bl&aacute;zat az első oszlop numerikus rendez&eacute;se eset&eacute;n kapott kimeneti &eacute;rt&eacute;ket mutatja:
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;14
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>15&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Az al&aacute;bbi t&aacute;bl&aacute;zat azt mutatja be, hogyan vezethet a sorok elt&eacute;rő rendez&eacute;se elt&eacute;rő kimeneti &eacute;rt&eacute;kekhez:
+            </p> 
+            <table border="1">
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Az &eacute;rt&eacute;kek &aacute;trendez&eacute;s&eacute;hez mindk&eacute;t szab&aacute;lyt alkalmazza a program. Mivel mindegyik sort fel&uuml;lről lefel&eacute; dolgozza fel, ezek az &eacute;rt&eacute;kek előnyt &eacute;lveznek a kimenet meghat&aacute;roz&aacute;sakor, m&eacute;g akkor is, amikor a tartom&aacute;nyok megegyeznek.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve. Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az Eredm&eacute;ny ment&eacute;si helye leg&ouml;rd&uuml;lő mezőben megadhatja a  <b>Saj&aacute;t tartalom</b>mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z <b>menti az eredm&eacute;nyt</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

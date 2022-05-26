@@ -1,0 +1,74 @@
+<div class="${_css.base}">
+  <div class="esriFloatLeading esriCalcHelp" data-dojo-attach-point="_helpNode">
+    <a href="#" data-dojo-attach-point="_helpurlNode" target='_help' class="">${i18n.learnMore}</a>
+  </div>
+  <div data-dojo-type="dijit/layout/ContentPane" data-dojo-attach-point="_headerPane" style="width:99%;margin-top:0.5em; margin-bottom: 0.5em;">
+    <div data-dojo-attach-point="_header" class="${_css.titleLabel}">
+       <div class="esriAlignLeading">${i18n.expBuilderTitle}</div>
+    </div>
+    <div class="${_css.titleDividerLine}"></div>
+  </div>  
+  <div data-dojo-type="dijit/form/Form" data-dojo-attach-point="_expressionForm" style="height:100%;width:99%;">
+    <div class="esriFloatLeading" data-dojo-attach-point="_selCalcFieldDiv" style="width:100%;padding-bottom:0.5em;">
+      <div><label class="esriLeadingMargin1">${i18n.selectCalField}</label></div>
+      <select class="esriLeadingMargin1 ${_css.selectField}" data-dojo-type="dijit/form/Select" data-dojo-attach-point="_selCalcField"></select>
+    </div>
+    <div style="width:100%;padding-bottom:0.5em;" class="esriFloatLeading">
+      <label class="esriLeadingMargin1" data-dojo-attach-point="_calcFieldLabel"></label>
+    </div>
+    <input class="esriFloatLeading esriLeadingMargin1 ${_css.expressionBox}" dir="ltr" data-dojo-type="dijit/form/SimpleTextarea" data-dojo-attach-point="_exprBox" data-dojo-props="rows:${expressionBoxRows} ,cols:${expressionBoxCols},required:true,intermediateChanges:true"></input>
+    <div class="esriFloatLeading ${_css.actionBtnContainer}">
+      <div class="esriFloatLeading esriLeadingMargin1" style="width:70%;padding-bottom:0.5em;" dir="ltr" data-dojo-attach-point="_operatorCtr"></div>
+      <div data-dojo-type="dijit/form/Button" class="${_css.actionButton} esriFloatTrailing esriTrailingMargin1" data-dojo-props="label:'${i18n.remove}',iconClass:'${_css.clearIcon}',showLabel: false, disabled:true" data-dojo-attach-event="onClick:_handleRemoveBtnClick" data-dojo-attach-point="_removeBtn"></div>
+      <div data-dojo-type="dijit/form/Button" class="${_css.actionButton} esriFloatTrailing esriTrailingMargin1" data-dojo-props="label:'${i18n.validate}',iconClass:'${_css.validateIcon}',showLabel: false, disabled:true" data-dojo-attach-event="onClick:_handleValidationBtnClick" data-dojo-attach-point="_validateBtn"></div>
+    </div>
+    <div class="${_css.fieldFunctionContainer}">
+      <div class="esriFloatLeading ${_css.fieldContainer}">
+        <div class="${_css.fieldLabelDiv}"><label class="esriLeadingMargin1 ${_css.titleLabel}">${i18n.fields}</label></div>
+        <div class="${_css.fieldTypeContainer}">
+          <label class="esriLeadingMargin1 esriSelectLabel">
+            <input type="radio" data-dojo-type="dijit/form/RadioButton" data-dojo-attach-point="_strRadioBtn" data-dojo-props="'class':'esriSelectLabel'" name="functionType" value="StrType"/>
+            ${i18n.stringLabel}
+          </label>
+          <label class="esriLeadingMargin1 esriSelectLabel">
+            <input type="radio" data-dojo-type="dijit/form/RadioButton" data-dojo-attach-point="_numRadioBtn" data-dojo-props="'class':'esriSelectLabel'" name="functionType" value="NumType"/> 
+            ${i18n.numeric}
+          </label>
+          <label class="esriLeadingMargin1 esriSelectLabel">
+            <input type="radio" data-dojo-type="dijit/form/RadioButton" data-dojo-attach-point="_dateRadioBtn"  data-dojo-props="'class':'esriSelectLabel'" name="functionType" value="DateType"/>
+            ${i18n.dateLabel}
+          </label>
+        </div>
+        <div class="esriLeadingMargin1 ${_css.fieldListContainer}" dir="ltr" data-dojo-attach-point="_attributeListCtr">
+        </div>
+      </div>
+      <div class="esriFloatTrailing ${_css.functionContainer}">
+        <div class="${_css.functionLabelDiv}">
+          <label class="${_css.titleLabel}">${i18n.functions}</label>
+        </div>
+        <div data-dojo-attach-point="_helpersListCtr" dir="ltr" class="${_css.functionListContainer}">
+        </div>
+      </div>
+    </div>
+    <div class="esriLeadingMargin05 ${_css.formWarning} esriRoundedBox" data-dojo-attach-point="_errorMessagePane" style="clear:both;display:none;">
+      <a href="#" title="${i18n.close}" class="esriFloatTrailing esri-icon-close" title='${i18n.close}' data-dojo-attach-event="onclick:_handleCloseMsg">
+      </a>
+      <span data-dojo-attach-point="_bodyNode" style="width:100%;height:100%;"></span>
+    </div>
+    <div class="${_css.actionDividerLine}"></div>
+    <div  class="esriFloatTrailing esriTrailingMargin2 esriCalcFieldActionCtr" data-dojo-attach-point="_buttonCtr">
+      <div data-dojo-type="dijit/form/Button"  class="${_css.addButton}" data-dojo-attach-point="_addBtn" data-dojo-attach-event="onClick:_handleAddButtonClick">
+        ${calculateLabel}
+      </div>
+       <div data-dojo-type="dijit/form/Button" class="esriLeadingMargin05 ${_css.closeButton}" data-dojo-attach-point="_closeBtn" data-dojo-attach-event="onClick:_handleCloseButtonClick">
+        ${i18n.close}
+      </div>
+    </div>
+  </div>
+  <div data-dojo-attach-point="_arcadeExpressionEditorDlg">
+  </div>
+  <div class="dijitDialogUnderlayWrapper" data-dojo-attach-point="_underlay" style="position:absolute;z-index:949;display:none;top:0px;left:0px;width:100%;height:100%;">
+    <div class="dijitDialogUnderlay" tabindex="-1" style="width:100%;height:100%"></div>
+    <div class="${_css.loadingIcon}" style="height:100%;"></div>
+  </div>
+</div>  

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Créer un champ de vision</h2><p/>
+        <h2><img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" alt="Outil Cr&eacute;er un champ de vision"></h2>
+        <hr/>
+    <p>Cet outil identifie les zones visibles &agrave; un point d'observation en tenant compte de la topographie de la surface. Les emplacements ponctuels en entr&eacute;e peuvent repr&eacute;senter soit des points d'observation (par exemple, des personnes au sol ou des vigies dans une tour de guet) soit des objets observ&eacute;s (par exemple, des &eacute;oliennes, des ch&acirc;teaux d'eau, des v&eacute;hicules ou d'autres personnes). Les r&eacute;sultats d&eacute;finissent les zones qui peuvent &ecirc;tre vues depuis l'emplacement des points d'observation.
+    </p>
+    <p>Les points d'observation et les objets observ&eacute;s peuvent se trouver &agrave; une certaine hauteur au-dessus du sol, laquelle permet de d&eacute;terminer la visibilit&eacute;. Par exemple, un champ de vision calcul&eacute; pour des &eacute;oliennes de 90&nbsp;m&egrave;tres et des personnes mesurant 1,80&nbsp;m&egrave;tre au sol sera g&eacute;n&eacute;ralement plus important qu'un champ de vision calcul&eacute; pour des &eacute;oliennes de 60&nbsp;m&egrave;tres et des personnes mesurant 1,50&nbsp;m&egrave;tre.
+    </p>
+    <p>La couche de r&eacute;sultats enregistre le nombre de fois que chaque emplacement de cellule du raster de surface en entr&eacute;e peut &ecirc;tre vu par les points d'observation en entr&eacute;e. Les cellules non visibles se voient attribuer des valeurs NoData.
+    </p>
+    <p>Si l'option  <b>Utiliser l'&eacute;tendue courante de la carte</b> est s&eacute;lectionn&eacute;e, seuls la surface du raster et les points d'observation visibles dans l'&eacute;tendue de la carte actuelle seront analys&eacute;s. Si l&rsquo;option n&rsquo;est pas s&eacute;lectionn&eacute;e, tous les points d&rsquo;observation qui se trouvent dans la couche en entr&eacute;e seront analys&eacute;s, m&ecirc;me s&rsquo;ils se trouvent en dehors de l&rsquo;&eacute;tendue courante de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="elevationSurface">
+        <div><h2>Surface d'altitude</h2></div>
+        <hr/>
+        <div>
+            <p>La surface d'altitude &agrave; utiliser pour calculer le champ de vision.
+            </p>
+            <p>Si l'unit&eacute; verticale de la surface en entr&eacute;e est diff&eacute;rente de l'unit&eacute; horizontale, lorsque les valeurs d'altitude sont repr&eacute;sent&eacute;es en pieds, par exemple, et que le syst&egrave;me de coordonn&eacute;es est en m&egrave;tres, la surface doit pr&eacute;senter un syst&egrave;me de coordonn&eacute;es verticales d&eacute;fini. Cela s'explique par le fait que l'outil utilise les unit&eacute;s verticale (Z) et horizontale (XY) afin de calculer un facteur Z pour l'analyse du champ de vision. Sans syst&egrave;me de coordonn&eacute;es verticales, et donc sans informations disponibles sur l'unit&eacute;&nbsp;Z, l'outil suppose que l'unit&eacute;&nbsp;Z est identique &agrave; l'unit&eacute;&nbsp;XY. Par cons&eacute;quent, un facteur&nbsp;Z interne &eacute;quivalent &agrave; 1,0 sera utilis&eacute; pour l'analyse, ce qui risque de produire des r&eacute;sultats inattendus.
+            </p>
+            <p>La surface d'altitude peut &ecirc;tre un entier ou une virgule flottante.
+            </p>
+        </div>
+    </div>
+    <div id="observerFeatures">
+        <div><h2>Entités ponctuelles qui représentent des points d'observation</h2></div>
+        <hr/>
+        <div>
+            <p>Les entit&eacute;s ponctuelles qui repr&eacute;sentent les emplacements des points d'observation lors du calcul des champs de vision.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimiser pour</h2></div>
+        <hr/>
+        <div>
+            <p>La m&eacute;thode d'optimisation &agrave; utiliser pour calculer le champ de vision.
+            </p>
+            <ul>
+                <li>Speed &mdash; 
+Cette m&eacute;thode optimise la vitesse de traitement en compromettant l&eacute;g&egrave;rement la pr&eacute;cision du r&eacute;sultat pour am&eacute;liorer les performances. Il s&rsquo;agit de l&rsquo;option par d&eacute;faut.
+
+                </li>
+                <li>Accuracy &mdash; 
+Cette m&eacute;thode est optimis&eacute;e pour produire des r&eacute;sultats pr&eacute;cis, mais la dur&eacute;e de traitement est prolong&eacute;e.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Distance d\'affichage maximum</h2></div>
+        <hr/>
+        <div>
+            <p>Indiquez une distance limite o&ugrave; s'arr&ecirc;te le calcul des zones visibles. Au-del&agrave; de cette distance, il est impossible de d&eacute;terminer si les points d'observation et les autres objets peuvent se voir.
+            </p>
+            <p>Vous pouvez sp&eacute;cifier une valeur num&eacute;rique repr&eacute;sentant une distance lin&eacute;aire ou s&eacute;lectionner un champ num&eacute;rique &agrave; partir des entit&eacute;s d&rsquo;observation en entr&eacute;e. Si un champ est fourni, les valeurs contenues dans le champ doivent utiliser la m&ecirc;me unit&eacute; que la coordonn&eacute;e&nbsp;xy de la surface d&rsquo;altitude en entr&eacute;e.
+            </p>
+            <p>Les valeurs importantes prolongent la dur&eacute;e de calcul. Si aucune valeur n'est sp&eacute;cifi&eacute;e, une distance maximum par d&eacute;faut est calcul&eacute;e en fonction de la r&eacute;solution et de l'&eacute;tendue de la surface d'altitude en entr&eacute;e.
+            </p>
+            <p>Ce param&egrave;tre est utile pour mod&eacute;liser certains ph&eacute;nom&egrave;nes. En limitant l'&eacute;tendue de la visibilit&eacute;, par exemple, vous pouvez mod&eacute;liser des conditions m&eacute;t&eacute;orologiques, comme un l&eacute;ger brouillard. De m&ecirc;me, en limitant l'&eacute;tendue de la visibilit&eacute;, vous pouvez contr&ocirc;ler l'heure du jour en simulant l'effet du cr&eacute;puscule.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistanceField">
+        <div><h2>Distance d\'affichage maximum</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="minimumDistance">
+        <div><h2>Distance de visualisation minimale</h2></div>
+        <hr/>
+        <div>
+            <p>Indiquez une distance &agrave; laquelle le calcul des zones visibles doit commencer. Les cellules de la surface les plus proches de cette distance ne sont pas visibles dans la sortie, mais peuvent toutefois bloquer la visibilit&eacute; des cellules comprises entre les distances de visualisation minimum et maximum.
+            </p>
+            <p>Vous pouvez sp&eacute;cifier une valeur num&eacute;rique repr&eacute;sentant une distance lin&eacute;aire ou s&eacute;lectionner un champ num&eacute;rique &agrave; partir des entit&eacute;s d&rsquo;observation en entr&eacute;e. Si un champ est fourni, les valeurs contenues dans le champ doivent utiliser la m&ecirc;me unit&eacute; que la coordonn&eacute;e&nbsp;xy de la surface d&rsquo;altitude en entr&eacute;e.
+            </p>
+            <p>Ce param&egrave;tre permet de contr&ocirc;ler la zone d'analyse du champ de vision &agrave; une distance sp&eacute;cifique du point d'observation. Par exemple, si vous &eacute;valuez la visibilit&eacute; depuis le haut d'un b&acirc;timent vers un parc distant, vous pouvez d&eacute;finir une distance de visualisation minimum pour exclure les zones environnantes qui ne pr&eacute;sentent aucun int&eacute;r&ecirc;t et augmenter ainsi la vitesse de traitement.
+            </p>
+        </div>
+    </div>
+    <div id="minimumDistanceField">
+        <div><h2>Distance de visualisation minimale</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="viewingDistance3D">
+        <div><h2>La distance est en 3D</h2></div>
+        <hr/>
+        <div>
+            <p>Indiquez si les param&egrave;tres de distance d'affichage minimum et maximum sont mesur&eacute;s en&nbsp;3D ou en&nbsp;2D. Lorsque l'option est s&eacute;lectionn&eacute;e, les distances de visualisation sont consid&eacute;r&eacute;es comme des distances&nbsp;3D. Si elle n'est pas s&eacute;lectionn&eacute;e, elles sont consid&eacute;r&eacute;es comme des distances&nbsp;2D.
+            </p> 
+            <p>Une distance&nbsp;2D repr&eacute;sente la simple distance lin&eacute;aire mesur&eacute;e entre un point d'observation et une cible &agrave; l'aide de leurs emplacements projet&eacute;s au niveau de la mer. Une distance&nbsp;3D produit une valeur plus r&eacute;aliste en tenant compte de leur hauteur relative.
+            </p>  
+        </div>
+    </div>
+    <div id="observersElevation">
+        <div><h2>Altitude des emplacements des points d'observation</h2></div>
+        <hr/>
+        <div>
+            <p>Indiquez l'altitude des emplacements de vos points d'observation.
+            </p>
+            <p>Vous pouvez sp&eacute;cifier une valeur num&eacute;rique repr&eacute;sentant l'altitude de tous les points d'observation ou utiliser un champ qui indique l'altitude de chaque point d'observation. Si un champ est fourni, la valeur contenue dans le champ doit utiliser la m&ecirc;me unit&eacute; que la coordonn&eacute;e Z de la surface d'altitude en entr&eacute;e.
+            </p>
+        </div>
+    </div>
+    <div id="observersElevationField">
+        <div><h2>Altitude des emplacements des points d'observation</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="observersHeight">
+        <div><h2>Hauteur des points d'observation</h2></div>
+        <hr/>
+        <div>
+            <p>Saisissez la hauteur au-dessus du sol de vos points d'observation.
+            </p> 
+            <p>Vous pouvez sp&eacute;cifier une valeur num&eacute;rique pour la hauteur ou un champ &agrave; partir des entit&eacute;s d'observation en entr&eacute;e. Si un champ est fourni, la valeur contenue dans le champ doit utiliser la m&ecirc;me unit&eacute;&nbsp;z que la surface d&rsquo;altitude en entr&eacute;e.
+            </p>
+            <p>La valeur par d&eacute;faut est 1,80&nbsp;m. Si vous observez &agrave; partir d'un emplacement en hauteur, comme une tour d'observation ou un b&acirc;timent &eacute;lev&eacute;, utilisez cette hauteur &agrave; la place. Pendant le calcul du champ de vision, si cette valeur est sp&eacute;cifi&eacute;e, elle est ajout&eacute;e &agrave; l'altitude du point d'observation. Sinon, elle est ajout&eacute;e &agrave; la valeur&nbsp;z de la surface interpol&eacute;e.
+            </p>
+        </div>
+    </div>
+    <div id="observersHeightField">
+        <div><h2>Hauteur des points d'observation</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="targetHeight">
+        <div><h2>Hauteur de la cible</h2></div>
+        <hr/>
+        <div>
+            <p>Indiquez la hauteur des structures ou des personnes au sol qui servent &agrave; &eacute;tablir la visibilit&eacute;.
+            </p>
+            <p>Vous pouvez sp&eacute;cifier une valeur num&eacute;rique pour la hauteur ou un champ &agrave; partir des entit&eacute;s d'observation en entr&eacute;e. Si un champ est fourni, la valeur contenue dans le champ doit utiliser la m&ecirc;me unit&eacute;&nbsp;z que la surface d&rsquo;altitude en entr&eacute;e.
+            </p>
+            <p>Le champ de vision r&eacute;sultant identifie les zones dans lesquelles un point d'observation peut voir ces objets au sol. L'inverse est &eacute;galement vrai&nbsp;: les objets au sol peuvent voir un point d'observation. 
+            </p>
+            <p>Voici quelques exemples de param&egrave;tres de hauteur cible&nbsp;:
+            </p>
+            <ul>
+                <li>Si vos points en entr&eacute;e repr&eacute;sentent des &eacute;oliennes et que vous souhaitez identifier l'endroit &agrave; partir duquel les personnes au sol voient les &eacute;oliennes, saisissez la hauteur moyenne d'une personne (environ 1,80&nbsp;m).
+                    
+
+                </li>
+                <li>Si vos points en entr&eacute;e repr&eacute;sentent des postes de vigie incendie et que vous souhaitez d&eacute;terminer quels postes de vigie peuvent voir un panache de fum&eacute;e d'au moins 6&nbsp;m&egrave;tres, saisissez 6&nbsp;m comme hauteur cible.
+                    
+
+                </li>
+                <li>Si vos points en entr&eacute;e repr&eacute;sentent des panoramas le long de routes ou de pistes et que vous souhaitez d&eacute;terminer les endroits o&ugrave; les &eacute;oliennes d'au moins 121&nbsp;m&egrave;tres sont visibles, saisissez 121&nbsp;m comme hauteur.
+                    
+
+                </li>
+                <li>Si vos points en entr&eacute;e repr&eacute;sentent des panoramas et que vous souhaitez d&eacute;terminer la surface au sol que les personnes post&eacute;es au panorama peuvent voir, saisissez z&eacute;ro comme hauteur cible. 
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="targetHeightField">
+        <div><h2>Hauteur des points d'observation</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="resultAglLayer">
+        <div><h2>Hauteur en sortie pour devenir visible</h2></div>
+        <hr/>
+        <div>
+            <p>Le nom du r&eacute;sultat AGL en sortie. Le raster AGL obtenu est un raster dans lequel la valeur de chaque cellule correspond &agrave; la hauteur minimale devant &ecirc;tre ajout&eacute;e &agrave; une cellule (qui, sinon, ne serait pas visible) pour la rendre visible par au moins un observateur. La valeur 0 sera attribu&eacute;e aux cellules qui &eacute;taient d&eacute;j&agrave; visibles dans ce raster en sortie.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Le nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans  <b>My Content (Mon contenu)</b>, dans lequel le r&eacute;sultat sera enregistr&eacute; via la zone de liste d&eacute;roulante <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

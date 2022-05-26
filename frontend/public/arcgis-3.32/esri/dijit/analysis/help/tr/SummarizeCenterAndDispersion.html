@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Merkez ve Dağılımı Özetle</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="Merkez ve Dağılımı &Ouml;zetle"></h2>
+        <hr/>
+    <p>Bu ara&ccedil;, merkezi detayları ve y&ouml;nsel dağılımları bulur.
+Aşağıdaki gibi soruları yanıtlamak i&ccedil;in kullanılabilir:
+        <ul>
+            <li>Merkez nerede?
+            </li>
+            <li>Hangi detaya diğer t&uuml;m detaylardan en rahat erişilebilir?
+            </li>
+            <li>Detaylar ne kadar dağınık, derli toplu veya t&uuml;mleşiktir?
+            </li>
+            <li>Y&ouml;nsel eğilimler var mı?
+            </li>
+        </ul>
+        
+    </p>
+    <p> <b>Ge&ccedil;erli harita kapsamını kullan</b> işaretli ise, yalnızca ge&ccedil;erli harita kapsamında g&ouml;r&uuml;n&uuml;r olan girdi katmanındaki detaylar analiz edilir. İşaretli değilse, girdi katmanındaki t&uuml;m detaylar, ge&ccedil;erli harita kapsamının dışında bile olsa analiz edilir.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Tanımlanacak katmanı seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Merkezi detayları ve y&ouml;nsel dağılımları bulmak i&ccedil;in kullanılacak nokta, &ccedil;izgi veya alan katmanı.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>Özet türleri</h2></div>
+        <hr/>
+        <div>
+            <p>Merkezi ve dağılımı &ouml;zetleme y&ouml;ntemi. 
+            </p>
+            <ul>
+                <li>Merkez detayı - Bir veri k&uuml;mesinde en merkezi konumda bulunan detayı tanımlar.
+                </li>
+                <li>Ortalama merkez - Bir dizi detay i&ccedil;in coğrafi merkezi (veya yoğunlaşma merkezini) tanımlar.
+                </li>
+                <li>Ortanca merkezi - Bir veri k&uuml;mesindeki detaylara olan toplam &Ouml;klid mesafesini en aza indiren yeri tanımlar.
+                </li>
+                <li>Elips - Coğrafi detayların mekansal &ouml;zelliklerini &ouml;zetlemek i&ccedil;in standart sapma elipsleri oluşturur: merkezi eğilim, dağılım ve y&ouml;nsel eğilimler. Elipsler 1, 2 veya 3 standart sapma olarak boyutlandırılabilir.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>Öğeye göre ağırlıklandır (isteğe bağlı)</h2></div>
+        <hr/>
+        <div>
+            <p>Konumları nispi &ouml;nemlerine g&ouml;re ağırlıklandırmak i&ccedil;in kullanılan alan. 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>Öğeye göre grupla (isteğe bağlı)</h2></div>
+        <hr/>
+        <div>
+            <p>Merkezi detayların veya dağılımların ayrı hesaplamaları i&ccedil;in detayları gruplandırmada kullanılan alan. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p>Bu,  <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adıdır.  Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman adı zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır men&uuml;s&uuml;n&uuml; kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

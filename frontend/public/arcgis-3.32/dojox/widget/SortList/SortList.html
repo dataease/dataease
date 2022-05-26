@@ -1,0 +1,9 @@
+<div class="sortList" id="${id}">
+		<div class="sortListTitle" dojoAttachPoint="titleNode">
+		<div class="dijitInline sortListIcon">&thinsp;</div>
+		<span dojoAttachPoint="focusNode">${title}</span>
+		</div>
+		<div class="sortListBodyWrapper" dojoAttachEvent="onmouseover: _set, onmouseout: _unset, onclick:_handleClick" dojoAttachPoint="bodyWrapper">
+		<ul dojoAttachPoint="containerNode" class="sortListBody"></ul>
+	</div>
+</div>

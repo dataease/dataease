@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Priloži podatke</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="Dijagram radnog tijeka za prilaganje podataka"></h2>
+        <hr/>
+    <p>Ovaj alat prilaže podatke postojećem hostiranom sloju geoobjekata. Priloži podatke mijenja izvorni ulazni sloj i ne generira novi izlazni sloj. Možete upariti polja na temelju naziva polja i vrste polja ili možete primijeniti naprednije načine uparivanja.
+    </p>
+    <p>U nastavku su primjeri: 
+        <ul>
+            <li>Zaposlenik ste velikog osiguravajućeg dru&scaron;tve koja mjesečno vodi evidenciju o prodaji. Za va&scaron;e godi&scaron;nje izvje&scaron;će treba usporediti podatke iz pojedinačnih mjeseci radi analize. Da biste pokrenuli analizu prodaje, možete iskoristiti značajku Priloži podatke i ažurirati svoj sloj Godi&scaron;njeIzvje&scaron;će_2018 nakon &scaron;to va&scaron;i mjesečni podaci postanu dostupni. Budući da znate da va&scaron;a organizacija održava dosljedni sustav svaki mjesec, možete upotrijebiti zadani način kartiranja polja za učinkovito prilaganje geoobjekata na temelju naziva i vrste polja.
+            </li>
+            <li>Deset skupina za za&scaron;titu okoli&scaron;a prikuplja stotine tisuća klimatskih mjerenja unutar svoje nadležnosti. Te organizacije žele ujediniti svoje podatke kako bi bolje razumjele uzorke u regiji i svijetu. Svaka organizacija određuje shemu za svoj skup podataka. Svaka od njih naznači različite nazive polja za podatke o temperaturi i brzini vjetra. S obzirom na razliku u nazivima polja između skupova podataka, kartiranje polja može se iskoristiti da bi se odredilo kako priložiti mjerenja temperature i brzine vjetra svojim odgovarajućim poljima.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izaberite sloj kojem ćete priložiti</h2></div>
+        <hr/>
+        <div>
+            <p>Tablica, točka, linija ili poligonalni geoobjekt kojima će se priložiti podaci.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>Sloj kojemu prilažete izmijenit će se tijekom izvr&scaron;avanja alata. Prije nego &scaron;to nastavite, provjerite želite li izmijeniti ovaj sloj.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>Osim odabira sloja s va&scaron;e karte, možete odabrati  <b>Izaberi sloj za analizu</b> na dnu padajućeg popisa za pretraživanje va&scaron;ih sadržaja za hostirani sloj geoobjekta.
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>Izaberite sloj koji ćete priložiti</h2></div>
+        <hr/>
+        <div>
+            <p>Tablica, točka, linija ili poligonalni geoobjekt za prilaganje ulaznom sloju.
+            </p>
+            <p>Osim odabira sloja s va&scaron;e karte, možete odabrati  <b>Izaberi sloj za analizu</b> na dnu padajućeg popisa za pretraživanje va&scaron;ih sadržaja za skup podataka za dijeljenje datoteka velikih podataka ili sloj geoobjekta.
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>Priložite sve geoobjekte ili definirajte podskup (neobavezno)</h2></div>
+        <hr/>
+        <div>
+            <p>Prepoznaje geoobjekte za prilaganje. Ovaj je parametar neobavezan.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>Izaberite kako priložiti polja (neobavezno)</h2></div>
+        <hr/>
+        <div>
+            <p>Označava kako se polja sloja za prilaganje prilažu ulaznom sloju. Prema zadanim postavkama, priložit će se sva uparena ulazna polja i polja za prilaganje. Polja su uparena ako imaju isti naziv polja i istu vrstu polja. Dodatno možete odabrati način uparivanja polja ili izračunati Arcade izraze za popunjavanje vrijednosti polja.
+            </p>
+            <p>Na primjer, imate ulazni sloj s poljima  <i>field_number</i>, <i>field_string</i>, <i>date_field</i>, <i>unused_field</i> i sloj za prilaganje s poljima <i>field_string</i>, <i>field_number</i> i <i>MY_DATE_FIELD</i>.
+                <ul>
+                    <li>Prema zadanim postavkama, alat će se podudarati s poljem  <i>field_number</i> u ulaznom sloju s poljem <i>field_number</i> u sloju za prilaganje, a polje <i>field_string</i> u ulaznom sloju s poljem <i>field_string</i> u sloju za prilaganje.
+                    </li>
+                    <li>Prema zadanim postavkama, polja  <i>date_field</i> i <i>unused_field</i> ulaznog sloja popunit će se vrijednostima <i>null</i> jer na sloju za prilaganje nemaju polja za uparivanje.
+                    </li>
+                    <li>Također možete priložiti vrijednosti poljima koja se prema zadanim postavkama nisu automatski uparila. Na primjer,  <i>date_field</i> u ulaznom sloju može se upariti s poljem za prilaganje <i>MY_DATE_FIELD</i>. Da biste to napravili, upotrijebite padajući izbornik pored polja <i>date_field</i> u prvom stupcu i odaberite <i>MY_DATE_FIELD</i> u padajućem izborniku u drugom stupcu.
+                    </li>
+                </ul>
+                 Jo&scaron; jedan primjer, ulazni sloj ima brojčana polja <i>value_1</i>, <i>value_2</i>, <i>value_3</i> i <i>my_Average</i>, a sloj za prilaganje ima brojčana polja <i>value_1</i>, <i>value_2</i> i <i>value_3</i>.
+                <ul>
+                    <li>Prema zadanim postavkama,  <i>value_1</i>, <i>value_2</i> i <i>value_3</i> uparit će se i priložiti.
+                    </li>
+                    <li>Osim zadanog načina rada, vrijednosti se mogu izračunati za polje  <i>my_Average</i>. Napravite to za vi&scaron;e polja i matematičkih radnji tako da odaberete opciju u padajućem izborniku <b>Izraz</b> u stupcu pored <i>my_Average</i> i izradite prilagođeni Arcade izraz kao &scaron;to je <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Apvienot slāņus</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Apvienot slāņus"></h2>
+        <hr/>
+    <p>&Scaron;is rīks apvieno divus elementu slāņus, lai izveidotu vienu izvades slāni.  Sapludināmajiem slāņiem jābūt ar vienādu ģeometrijas tipu un laika tipu. Jūs varat kontrolēt, kā no ievades slāņiem lauki ir savienoti un kopēti. Piemēram:
+        <ul>
+            <li>Man ir trīs slāņi Anglijai, Velsai un Skotijai, un es vēlos vienu Lielbritānijas slāni. 
+            </li>
+            <li>Man ir 2 slāņi un katrs satur informāciju par zemes gabaliem un tiem blakus eso&scaron;ajiem zemes gabaliem. Es vēlos savienot tos kopā viena slānī, saglabājot tikai tos atribūtus, kam ir tāds pats nosaukums un veids no 2 ievades slāņiem.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izvēlieties slāni</h2></div>
+        <hr/>
+        <div>
+            <p>Slānis ar tabulāru, punktu, līniju vai laukumu, kurā tiks sapludināts otrais elementa slānis. Visi &scaron;ī slāņa lauki tiks iekļauti rezultātu slānī.
+            </p>
+        </div>
+    </div>
+    <div id="mergeLayer">
+        <div><h2>Izvēlieties slāni, ko apvienot</h2></div>
+        <hr/>
+        <div>
+            <p>Elementu slānis, ko sapludināt ar ievades slāni. Sapludināmajam slānim jābūt ar tādu pa&scaron;u ģeometrijas tipu un laika tipu kā ievades slānim.
+            </p>
+        </div>
+    </div>
+    <div id="mergingAttributes">
+        <div><h2>Modificēt apvienojamos laukus</h2></div>
+        <hr/>
+        <div>
+            <p>Pēc noklusējuma izvadē tiks iekļauti visi abu ievades slāņu lauki. Var mainīt lauku iekļau&scaron;anu izvadē no slāņa uz sapludinā&scaron;anu ar &scaron;ādām opcijām:
+                <ul>
+                    <li> <b>Pārsaukt</b>&mdash;izvadē lauks tiks pārsaukts.
+                    </li>
+                    <li> <b>Noņemt</b>&nbsp;&mdash; lauks tiks noņemts no izvades.
+                    </li>
+                    <li> <b>Saskaņot</b> &mdash; lauku nosaukumi tiek izveidoti ekvivalenti.  Apvienotā slāņa lauka vērtības tiks kopētas uz saskaņoto izvades lauku.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ja abos slāņos ir lauki ar identisku nosaukumu un datu tipu, abu lauku saturs tiks apvienots vienā laukā ar &scaron;ādu nosaukumu. Tas neattiecas uz laukiem, kuriem parametrā  <b>Mainīt lauku apvieno&scaron;anu</b> ir izmantota opcija <b>Saskaņot</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p> Slāņa nosaukums, kas tiks izveidots. Ja rakstāt uz ArcGIS Data Store, rezultāti tiks saglabāti mapē  <b>Mans saturs</b> un pievienoti kartei. Ja rakstā uz lielu datu failu koplietojumu,, rezultāti tiks saglabāti lielajā datu failu koplietojumā un pievienot  tā sarakstam. Tas netiks pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja slānis jau pastāv, rīks nedarbosies.
+            </p>
+            <p>Rakstot uz   ArcGIS Data Store  (relāciju vai telpas un laika lielo datu krātuvi), izmantojot nolaižamo lodziņu  <b>Saglabāt rezultātu,</b> var norādīt mapes nosaukumu mapē <b>Mans saturs,</b> kurā tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

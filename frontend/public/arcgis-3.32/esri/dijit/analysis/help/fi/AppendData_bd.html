@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Liitä aineisto</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="Liit&auml; aineisto -ty&ouml;nkulkukaavio "></h2>
+        <hr/>
+    <p>T&auml;m&auml; ty&ouml;kalu liitt&auml;&auml; tiedot aiempaan is&auml;nn&ouml;ityyn kohdekarttatasoon. Liit&auml; aineisto -toiminto muokkaa alkuper&auml;ist&auml; l&auml;ht&ouml;aineiston karttatasoa eik&auml; luo uutta tulosaineiston karttatasoa. Voit yhdist&auml;&auml; kentti&auml; kent&auml; nimen ja tyypin perusteella tai voit k&auml;ytt&auml;&auml; kehittyneempi&auml; yhdist&auml;mistapoja.
+    </p>
+    <p>Seuraavat ovat esimerkkej&auml;: 
+        <ul>
+            <li>Olet t&ouml;iss&auml; isossa vakuutusyhti&ouml;ss&auml;, miss&auml; p&auml;&auml;st&auml;&auml;n kuukausittain myyntienn&auml;tyksiin. Kuukausitiedot kootaan analysoitavaksi vuosikertomusta varten. Myyntianalyysi&auml; varten voit hy&ouml;dynt&auml;&auml; Liit&auml; aineisto -toimintoa p&auml;ivitt&auml;&auml;ksesi AnnualReport_2018-tason, kun kuukausikohtaiset lukusi ovat saatavilla. Koska tied&auml;t, ett&auml; organisaatiosi yll&auml;pit&auml;&auml; joka kuukausi yhten&auml;ist&auml; mallia, voit k&auml;ytt&auml;&auml; oletuskent&auml;n yhdist&auml;mismenetelm&auml;&auml;, jolla voit tehokkaasti liitt&auml;&auml; ominaisuuksia kent&auml;n nimen ja tyypin perusteella.
+            </li>
+            <li>Jokainen kymmenest&auml; ymp&auml;rist&ouml;ryhm&auml;st&auml; ker&auml;&auml; satoja tuhansia ilmastomittauksia omalta hallintoalueeltaan. N&auml;m&auml; organisaatiot haluavat koota tiedot yhteen, jotta alueellisia ja globaaleja toimintatapoja ymm&auml;rrett&auml;isiin paremmin. Kukin organisaatio m&auml;&auml;rittelee mallin omaa aineistryhm&auml;&auml;ns&auml; varten. L&auml;mp&ouml;tilalle ja tuulennopeustiedolle annetaan eri kentt&auml;nimet.  Aineistoryhmien v&auml;liset kentt&auml;nimierot huomi oiden yhdist&auml;mist&auml; voi hy&ouml;dynt&auml;&auml; siihen, miten l&auml;mp&ouml;tila- ja tuulennopeusmittaukset liitet&auml;&auml;n omiin kenttiins&auml;.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse karttataso, johon liitetään</h2></div>
+        <hr/>
+        <div>
+            <p>Taulu, piste, viiva tai aluekohteet, joihin tiedot liitet&auml;&auml;n.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>Tasoa, johon liitet&auml;&auml;n, muokataan ty&ouml;kalun k&auml;yt&ouml;n yhteydess&auml;. Ennen kuin jatkat, varmista, ett&auml; haluat muokata t&auml;t&auml; tasoa.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>Sen lis&auml;ksi, ett&auml; voit valita karttatason kartasta, voit valita  <b>Valitse analyysikarttataso</b> -vaihtoehdon avattavan luettelon alareunasta ja selata is&auml;nn&ouml;idyn kohdekarttatason sis&auml;lt&ouml;&auml;.
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>Valitse liitettävä karttataso</h2></div>
+        <hr/>
+        <div>
+            <p>Taulu, piste, viiva tai aluekohteet, jotka liitet&auml;&auml;n l&auml;ht&ouml;aineiston karttatasoon.
+            </p>
+            <p>Sen lis&auml;ksi, ett&auml; voit valita karttatason kartasta, voit valita  <b>Valitse analyysikarttataso</b> -vaihtoehdon avattavan luettelon alareunasta ja selata Big Data -tiedostoresurssin aineistoryhm&auml;n tai karttatason sis&auml;lt&ouml;&ouml;n.
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>Liitä kaikki kohteet tai määritä alijoukko (valinnainen)</h2></div>
+        <hr/>
+        <div>
+            <p>Tunnistaa liitett&auml;v&auml;t kohteet. T&auml;m&auml; parametri on valinnainen.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>Valitse, miten kentät liitetään (valinnainen)</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;ritt&auml;&auml;, miten liitetyn karttatason kent&auml;t liitet&auml;&auml;n l&auml;ht&ouml;aineiston karttatasoon. Oletuksena liitet&auml;&auml;n kaikki t&auml;sm&auml;&auml;v&auml;t l&auml;ht&ouml;aineiston ja liitetyn tason kent&auml;t. Kent&auml;t t&auml;sm&auml;&auml;v&auml;t, jos niill&auml; on sama kentt&auml;nimi ja -tyyppi. Voit vaihtoehtoisesti valita, miten kent&auml;t t&auml;sm&auml;ytet&auml;&auml;n tai laskea Arcade-lausekkeet kentt&auml;arvojen t&auml;ytt&auml;miseksi.
+            </p>
+            <p>Sinulla voi esimerkiksi olla l&auml;htokarttataso, jossa on  <i>field_number</i>, <i>field_string</i>, <i>date_field</i>, <i>unused_field</i> -kent&auml;t sek&auml; liitetty taso, jossa on <i>field_string</i>, <i>field_number</i>, ja <i>MY_DATE_FIELD</i> -kent&auml;t.
+                <ul>
+                    <li>Ty&ouml;kalu t&auml;sm&auml;ytt&auml;&auml; oletuksena  <i>field_number</i> :n l&auml;ht&ouml;aineiston karttatasossa <i>field_number</i> :iin liitetyss&auml; tasossa sek&auml; <i>field_string</i> :n l&auml;ht&ouml;aineiston karttatasossa <i>field_string</i> :iin liitetyss&auml; tasossa.
+                    </li>
+                    <li>L&auml;ht&ouml;aineiston karttatason  <i>date_field</i> ja <i>unused_field</i> -kent&auml;t t&auml;ytet&auml;&auml;n oletuksena arvoilla <i>null</i> , koska liitetyss&auml; tasossa ei ole t&auml;sm&auml;&auml;v&auml;&auml; kentt&auml;&auml; .
+                    </li>
+                    <li>Voit vaihtoehtoisesti liitt&auml;&auml; arvot kenttiin, joita ei automaattisesti t&auml;sm&auml;ytetty oletuksena. Esimerkiksi  <i>date_field</i> l&auml;ht&ouml;karttatasossa voidaan t&auml;sm&auml;ytt&auml;&auml; liitettyyn kentt&auml;&auml;n <i>MY_DATE_FIELD</i>. Klikkaa t&auml;ll&ouml;in alaspudotusvalikkoa, joka on <i>date_field</i> :n vieress&auml; ensimm&auml;isess&auml; sarakkeessa ja valitse <i>MY_DATE_FIELD</i> toisen sarakkeen alaspudotusvalikosta.
+                    </li>
+                </ul>
+                 Toisena esimerkkin&auml; l&auml;ht&ouml;karttatasossa on numerokent&auml;t <i>value_1</i>, <i>value_2</i>, <i>value_3</i>, ja <i>my_Average</i>, ja liitetyss&auml; kent&auml;ss&auml; on numerokent&auml;t <i>value_1</i>, <i>value_2</i>, ja <i>value_3</i>.
+                <ul>
+                    <li>Oletuksena  <i>value_1</i>, <i>value_2</i>, ja <i>value_3</i> t&auml;sm&auml;ytet&auml;&auml;n ja liitet&auml;&auml;n.
+                    </li>
+                    <li>Oletusten lis&auml;ksi arvot voidaan laskea my&ouml;s  <i>my_Average</i> -kentt&auml;&auml; varten. T&auml;m&auml; onnistuu useiden kenttien ja matemaattisten toimintojen avulla, kun valitset <b>Expression</b> -kohdan alaspudotusvaihtoehdon sarakkeesta, joka on <i>my_Average</i> -kohdan vieress&auml; ja luot mukautetun Arcade-lausekkeen, kuten <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

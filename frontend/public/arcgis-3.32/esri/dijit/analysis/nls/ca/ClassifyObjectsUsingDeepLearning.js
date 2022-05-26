@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/ca/ClassifyObjectsUsingDeepLearning",{toolDefine:"Classifica els objectes amb Aprenentatge profund",inputFeaturesLabel:"Trieu la capa web per als objectes (opcional)",outputLayerName:"${layername}_classifiedObjects",modelLabel:"Trieu el model d'aprenentatge profund utilitzat per classificar els objectes",modelArgsLabel:"Especifiqueu els arguments del model d'aprenentatge profund",classLabelFieldLabel:"Definiu el nom del camp de l'etiqueta de la classe (opcional)",processingModeLabel:"Mode de processament",
+processAsMosaicLabel:"Processa com a imatge en mosaic",processAsItemsLabel:"Processa tots els elements de r\u00e0ster per separat",queryModelArgsMsg:"S'estan consultant els arguments del model...",valueLabel:"Valor",nameLabel:"Nom",analysisLayerLabel:"Trieu la imatge utilitzada per classificar objectes",itemDescription:"Servei d'imatges d'an\u00e0lisi generat amb l'opci\u00f3 Classifica els objectes amb Aprenentatge profund",itemTags:"Resultat de l'an\u00e0lisi del r\u00e0ster, Classifica els objectes amb Aprenentatge profund, ${layername}",
+itemSnippet:"Servei d'imatges d'an\u00e0lisi generat amb l'opci\u00f3 Classifica els objectes amb Aprenentatge profund"});

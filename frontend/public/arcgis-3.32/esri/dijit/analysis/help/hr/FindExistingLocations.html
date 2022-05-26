@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Pronađi postojeće lokacije</h2><p/>
+        <h2><img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" alt="Pronađi postojeće lokacije"></h2>
+        <hr/>
+    <p>Ovaj alat odabire postojeće geoobjekte u području proučavanja koji zadovoljavaju niz kriterija koji odredite. Ti se kriteriji mogu temeljiti na atributnim upitima (npr. parcele koje su prazne) i prostornim upitima (npr. unutar jedne milje od rijeke). 
+    </p>
+    <p>Ako je označena opcija  <b>Upotrijebi trenutačni obuhvat karte</b>, analizirat će se samo geoobjekti u sloju unosa koji su vidljivi unutar trenutačnog obuhvata karte.  Ako opcija nije označena, analizirat će se svi geoobjekti, čak i ako se nalaze izvan trenutačnog obuhvata karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayers">
+        <div><h2>Odaberite sloj koji sadrži geoobjekte koje želite pronaći pomoću atributivnih i prostornih upita</h2></div>
+        <hr/>
+        <div>
+            <p>Točkasti, linijski ili poligonalni sloj za koji želite pronaći geoobjekte na temelju kombinacije upita atributa i prostornih upita koji su naznačeni u nastavku.
+            </p>
+            <p>Osim odabira sloja iz karte, možete odabrati opciju  <b>Izaberi sloj za analizu</b> koja se nalazi na dnu popisa padajućeg izbornika. Ova opcija otvara galeriju u kojoj možete pretraživati i odabrati skupove podataka iz raznih izvora te ih koristiti u svojoj analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="Expression">
+        <div><h2>Izradi upit za traženje geoobjekata</h2></div>
+        <hr/>
+        <div>
+            <p>Kliknite na gumb  <b>Dodaj izraz</b> za definiranje izraza.  Možete dodati vi&scaron;e izraza.  Nakon &scaron;to unesete izraze i kliknete na gumb <b>Pokreni analizu</b>, geoobjekti u va&scaron;em sloju unosa filtrirat će se kroz sve izraze.  Geoobjekti koji zadovoljavaju sve izraze ispisani su na sloju rezultata.
+            </p>
+            <p>Dvije su osnovne vrste izraza koje možete stvoriti; atributi i prostorni.  Izrazi atributa upiti su o vrijednostima polja, primjerice  <code>gdje je naziv &bdquo;San Francisco&rdquo;</code>.  Četiri su vrste prostornih izraza:
+                <ul>
+                    <li> <b>unutar udaljenosti od</b>: geoobjekt mora biti unutar udaljenosti od geoobjekta u drugom sloju.  Na primjer, pronađi parcele koje su unutar 500 metara od rijeke Los Angeles.
+                    </li>
+                    <li> <b>potpuno sadrži</b>: geoobjekt mora sadržavati čitav geoobjekt u drugom sloju.  Na primjer, pronađi slivove koji potpuno sadrže parcele predviđene za industrijsku uporabu.  Nijedan dio parcele ne smije biti izvan sliva.
+                    </li>
+                    <li> <b>potpuno unutar</b>: geoobjekt mora biti potpuno okružen geoobjektom u drugom sloju.  Na primjer, pronađi &scaron;kolske okruge koji su potpuno unutar granica grada.  Nijedan dio &scaron;kolskog okruga ne smije biti izvan granica grada.
+                    </li>
+                    <li> <b>presjek</b>: geoobjekt sadrži dio geoobjekta u drugom sloju.  Na primjer, pronađi parcele koje se sijeku s rijekama.  Bilo koji dio rijeke koji prolazi kroz parcelu ili dodiruje njenu granicu je siječe.
+                    </li>
+                    <li> <b>najbliže do</b>: geoobjekt mora biti najbliži geoobjektu u drugom sloju. Na primjer, pronađite restoran koji je najbliži odgovarajućem hotelu.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Svaki prostorni izraz ima odgovarajuću negaciju osim  <b>najbliže do</b>, <b>nije unutar udaljenosti od</b>, <b>ne sadrži potpuno</b>, <b>nije potpuno unutar</b> i <b>ne siječe se</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OuputName">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja koji će se stvoriti u dijelu  <b>Moj sadržaj</b> i dodati karti.  Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako naziv sloja već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Upotrebom padajućeg izbornika  <b>Spremi rezultat u</b> možete odrediti naziv mape u dijelu <b>Moj sadržaj</b> gdje će se spremiti rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

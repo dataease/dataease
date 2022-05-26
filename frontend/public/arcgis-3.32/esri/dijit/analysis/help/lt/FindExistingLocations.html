@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Rasti esamas vietas</h2><p/>
+        <h2><img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" alt="Rasti esamas vietas"></h2>
+        <hr/>
+    <p>&Scaron;is įrankis pažymi esamus elementus tiriamame plote, atitinkančius nurodytus kriterijus. &Scaron;ie kriterijai gali būti sudaryti i&scaron; atributinių užklausų (pavyzdžiui, sklypai, kurie yra laisvi) ir erdvinių užklausų (pavyzdžiui, mylios atstumu nuo upės). 
+    </p>
+    <p>Jei  <b>Naudoti esamą žemėlapio aprėptį</b> pažymėta, bus analizuojami tik tie įvesties sluoksnio elementai, kurie patenka į esamo žemėlapio aprėptį  Jei nepažymėtas, analizuojami visi elementai, net jei jie yra už esamos žemėlapio aprėpties ribų.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayers">
+        <div><h2>Pasirinkite sluoksnį su elementais, kuriuos norėtumėte rasti naudodami atributą arba erdvines užklausas</h2></div>
+        <hr/>
+        <div>
+            <p>Ta&scaron;kų, linijų arba plotų sluoksnis, kuriame norite rasti elementus, remdamiesi toliau nurodytų atributų ar erdvinių užklausų kombinacija.
+            </p>
+            <p>Pasirinkę sluoksnį žemėlapyje, galite pasirinkti  <b>Pasirinkite analizės sluoksnį</b>, kurį rasite i&scaron;plečiamo sąra&scaron;o apačioje. &Scaron;i parinktis atidaro galeriją, kurioje galite ie&scaron;koti duomenų rinkinių i&scaron; įvairių &scaron;altinių ir juos pasirinkti naudoti savo analizėje. 
+            </p>
+        </div>
+    </div>
+    <div id="Expression">
+        <div><h2>Sukurkite užklausą elementams rasti</h2></div>
+        <hr/>
+        <div>
+            <p>Paspauskite  <b>Pridėti i&scaron;rai&scaron;ką</b> mygtuką, kad įvestumėte i&scaron;rai&scaron;ką. Galite pridėti kelias i&scaron;rai&scaron;kas. Įvedus i&scaron;rai&scaron;kas ir paspaudus mygtuką <b>Vykdyti analizę</b>, įvesties sluoksnio elementai filtruojami pagal kiekvieną i&scaron;rai&scaron;ką.  Elementai, tinkantys pagal visas i&scaron;rai&scaron;kas yra įra&scaron;omi į rezultatų sluoksnį.
+            </p>
+            <p>Yra du pagrindiniai i&scaron;rai&scaron;kų, kurias galite sukurti, tipai: atributinės ir erdvinės. Atributinės i&scaron;rai&scaron;kos yra laukų reik&scaron;mių užklausos, tokios, kaip  <code>kur pavadinimas yra 'San Franciskas'</code>. Yra keturi erdvinių i&scaron;rai&scaron;kų tipai:
+                <ul>
+                    <li> <b>nutolęs atstumu</b>: elementas turi būti nutolęs tam tikru atstumu nuo kito sluoksnio elemento.  Pavyzdžiui, rasti sklypus, esančius 500 metrų nuo Los Andželo upės.
+                    </li>
+                    <li> <b>pilnai talpina</b>: elementas turi pilnai talpinti visą kito sluoksnio elementą.  Pavyzdžiui, rasti baseinus, į kuriuos pilnai patenka pramonės paskirties sklypai. Jokia sklypo dalis negali būti už baseino ribų.
+                    </li>
+                    <li> <b>pilnai viduje</b>: elementas turi būti pilnai supamas kito sluoksnio elemento.  Pavyzdžiui, rasti mokyklų apylinkes, kurios pilnai patenka į miesto ribas. Jokia mokyklos apylinkės dalis negali būti už miesto ribų.
+                    </li>
+                    <li> <b>kerta</b>: elementas talpina kito sluoksnio elemento dalį.  Pavyzdžiui, rasti sklypus, kurie kerta upes. Bet kuri upės dalis, kertanti sklypą arba liečianti sklypą, laikoma kertančia sklypą.
+                    </li>
+                    <li> <b>arčiausiai prie</b>: elementas turi būti arčiausiai prie kito sluoksnio elemento. Pavyzdžiui, raskite restoraną, kuris yra arčiausiai kiekvieno vie&scaron;bučio.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Kiekviena erdvinė i&scaron;rai&scaron;ka turi atitinkamą neiginį, i&scaron;skyrus  <b>arčiausiai prie</b>; <b>nėra pasirinktu atstumu</b>, <b>netalpina pilnai</b>, <b>nėra pilnai viduje</b> ir <b>nesikerta</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OuputName">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Tai sluoksnio, kuris bus sukurtas ir patalpintas  <b>Turinyje</b> ir pridėtas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnio pavadinimas jau egzistuoja, jūsų papra&scaron;ys pateikti kitą pavadinimą.
+            </p>
+            <p>I&scaron;plečiamajame meniu pasirinkę  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

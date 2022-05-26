@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Konvertera geoobjekt till raster</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="Verktyget Konvertera geoobjekt till raster"></h2>
+        <hr/>
+    <p>Det h&auml;r verktyget konverterar geoobjekt till ett rasterdataset.
+    </p>
+    <p>Alla geoobjektsklasser som inneh&aring;ller punkt-, linje- eller polygongeoobjekt kan konverteras till ett rasterdataset.
+    </p>
+    <p>Cellcentret anv&auml;nds f&ouml;r att avg&ouml;ra v&auml;rdet f&ouml;r utdatarasterpixeln.
+    </p>
+    <p>Indataf&auml;lttypen avg&ouml;r typen av utdataraster. Om f&auml;ltet &auml;r heltal blir utdatarastret heltal; om det &auml;r flyttal blir utdata flyttal.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Välj geoobjektslager att konvertera</h2></div>
+        <hr/>
+        <div>
+            <p>Indatageoobjektslagret som ska konverteras till ett rasterdataset.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Välj fält</h2></div>
+        <hr/>
+        <div>
+            <p>V&auml;lj det f&auml;lt som ska anv&auml;ndas f&ouml;r att tilldela v&auml;rden till utdatarastret.
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Utdatacellstorlek</h2></div>
+        <hr/>
+        <div>
+            <p>Cellstorleken och enheten f&ouml;r utdatarastren.
+            </p>
+            <p>De tillg&auml;ngliga enheterna &auml;r engelska mil, fot, kilometer och meter. Standardalternativet &auml;r fot.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Du kan ange namnet p&aring; en mapp i  <b>Mitt inneh&aring;ll</b> d&auml;r resultatet sparas med listrutan <b>Spara resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

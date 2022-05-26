@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Otkrivanje objekata pomoću dubokog učenja</h2><p/>
+        <h2><img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" alt="Otkrivanje objekata pomoću dubokog učenja"></h2>
+        <hr/>
+    <p>Ovaj alat pokreće obučeni model dubokog učenja na ulaznom rasteru kako bi proizveo razred geoobjekata koji sadrži objekte koje pronađe. Geoobjekti mogu biti granični okviri ili poligoni oko pronađenih objekata ili točaka u sredi&scaron;tima objekata.
+    </p>
+    <p>Ako je označena opcija  <b>Upotrijebi trenutačni obuhvat karte</b>, pretvorit će se samo ćelije rastera koje su vidljive unutar trenutačnog obuhvata karte. Ako nije označena, analizirat će se svi geoobjekti, čak i ako se nalaze izvan trenutačnog obuhvata karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Odaberite sliku za otkrivanje objekata</h2></div>
+        <hr/>
+        <div>
+            <p>Ulazna slika koja se upotrebljava za otkrivanje objekata.
+            </p> 
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Odaberite model dubokog učenja za otkrivanje objekata</h2></div>
+        <hr/>
+        <div>
+            <p>Stavka ulaznog paketa za duboko učenje ( <code>.dlpk</code>).
+            </p>
+            <p>Paket za duboko učenje sastoji se od JSON datoteke definicije Esrijevog modela ( <code>.emd</code>), datoteke binarnog modela dubokog učenja i opcionalno, rasterske funkcije Python.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Odredi argumente modela dubokog učenja</h2></div>
+        <hr/>
+        <div>
+            <p>Argumenti funkcija definirani su u razredu rasterske funkcije Python referenciranom u ulaznom modelu. Ovdje navodite dodatne parametre dubokog učenja i argumente za eksperimente i usavr&scaron;avanje, kao &scaron;to je prag pouzdanosti za pode&scaron;avanje osjetljivosti.
+            </p>
+            <p>Nazivi argumenata popunjavaju se alatom iz čitanja modula Python na poslužitelju za analize rastera.
+            </p>
+        </div>
+    </div>
+    <div id="runNMS">
+        <div><h2>Uklonite dvostruke geoobjekte iz izlaznih vrijednosti (neobavezno)</h2></div>
+        <hr/>
+        <div>
+            <p>Izvodi ne maksimalno potiskivanje, gdje se identificiraju duplikati objekata i uklanjaju se duplikati geoobjekata s nižom vrijednosti pouzdanosti. 
+                <ul>
+                    <li>Neoznačeno &ndash; svi otkriveni objekti nalazit će se u razredu izlaznih geoobjekata. To je zadano.
+                        
+
+                    </li>
+                    <li>Označeno &ndash; uklanja otkrivene duplikate objekata.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="confidenceScoreField">
+        <div><h2>Polje za ocjenu pouzdanosti</h2></div>
+        <hr/>
+        <div>
+            <p>Polje u usluzi geoobjekata koje sadrži ocjene pouzdanosti kao izlazne vrijednosti prema metodi otkrivanja objekta
+            </p>
+            <p>Ovaj je parametar potreban kada provjerite parametar  <b>Ne maksimalno potiskivanje</b>.
+            </p>
+        </div>
+    </div>
+    <div id="classValueField">
+        <div><h2>Polje za vrijednost razreda</h2></div>
+        <hr/>
+        <div>
+            <p>Polje vrijednosti razreda u usluzi izlaznih geoobjekata. Ako nije navedeno, alat će upotrijebiti standardna polja vrijednosti razreda  <i>Classvalue</i> i <i>Value</i>. Ako ta polja ne postoje, svi će se geoobjekti tretirati kao isti razred objekata.
+            </p>
+        </div>
+    </div>
+    <div id="maxOverlapRatio">
+        <div><h2>Maksimalni omjer preklapanja</h2></div>
+        <hr/>
+        <div>
+            <p>Maksimalni omjer preklapanja za dva preklapajuća geoobjekta, koji se definira kao omjer područja presijecanja iznad područja gdje se spajaju. Zadana je vrijednost 0.
+            </p>
+        </div>
+    </div>
+    <div id="outputObjects">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će se stvoriti u stavci  <b>Moj sadržaj</b> i dodati karti. Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako sloj već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Možete odrediti naziv mape u  <b>Mojem sadržaju</b> gdje će se rezultat spremiti pomoću padajućeg izbornika <b>Spremi rezultat u</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

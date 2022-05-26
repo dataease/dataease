@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Zaznaj incidente</h2><p/>
+        <h2><img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" alt="Zaznaj incidente"></h2>
+        <hr/>
+    <p> To orodje deluje s časovno omogočenim slojem točk, linij, poligonov ali tabel, ki predstavljajo trenutek v času. Z uporabo zaporedno razvr&scaron;čenih geoobjektov, imenovanih sledi, to orodje določa, kateri geoobjekti so interesni incidenti. Incidenti so določeni s pogoji, ki jih sami navedete.
+    </p>
+    <p>Najprej orodje s pomočjo enega ali več polj določi, kateri geoobjekti pripadajo sledi. Z uporabo časa pri vsakem geoobjektu se sledi razvr&scaron;čajo po vrstnem redu in se uporabi pogoj incidenta. Geoobjekti, ki izpolnjujejo začetne pogoje incidenta, so označeni kot incident. Po želji lahko uporabite končni pogoj incidenta, in sicer ko je končni pogoj resničen, geoobjekt ni več incident. Vrnjeni bodo rezultati z izhodi&scaron;čnimi geoobjekti &ndash; z novimi stolpci, ki predstavljajo ime incidenta &ndash; in bodo opredelili, kateri geoobjekt izpolnjuje pogoj incidenta. Vrnete lahko vse izhodi&scaron;čne geoobjekte ali samo geoobjekte, ki so incidenti.
+    </p>
+    <p>Na primer, predpostavimo, da imate GPS-meritve orkanov vsakih 10 minut. Vsaka GPS-meritev beleži ime orkana, lokacijo, čas beleženja in hitrost vetra. S temi polji lahko ustvarite incident, pri katerem je vsaka meritev s hitrostjo vetra več kot 208 km/h incident z imenom  <code>Katastrofa</code>. Če ne nastavite končnega pogoja, se bo incident končal, če geoobjekt več ne izpolnjuje začetnega pogoja (hitrost vetra se upočasni na manj kot 208 km/h).
+    </p>
+    <p>Če uporabimo &scaron;e en primer: recimo, da ste opazovali koncentracije kemikalije v lokalnem zajetju vode z uporabo polja  <code>contaminateLevel</code>. Veste, da zna&scaron;ajo priporočene stopnje koncentracije manj kot 0,01 mg/l, nevarne stopnje pa več kot 0,03 mg/l. Za zaznavanje incidentov, pri katerih je vrednost nad 0,03 mg/l incident in incident tudi ostane, dokler se ravni onesnaženosti ne vrnejo na normalne vrednosti, ustvarite incident z uporabo začetnega pogoja <code>contaminateLevel &gt; 0,03</code> in končnega pogoja <code>contaminateLevel &lt; 0.01</code>. S tem bo označeno zaporedje, kjer vrednosti presegajo 0,03 mg/l, dokler ne dosežejo vrednosti, manj&scaron;e od 0,01.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izberite sloj za zaznavanje incidentov iz</h2></div>
+        <hr/>
+        <div>
+            <p>Točke, linije, poligoni ali tabele, ki se bodo uporabljali za iskanje incidentov. Vhodni sloj mora biti časovno omogočen z geoobjekti, ki predstavljajo trenutek v času, prav tako morajo imeti eno ali več polj, ki jih je mogoče uporabiti za identifikacijo sledi.
+            </p>
+            <p>Poleg izbire sloja s svoje karte lahko na dnu spustnega seznama izberete  <b>Izberi sloj za analizo</b>, da po svoji vsebini poi&scaron;čete delitev datotek velikih podatkov ali geoobjektni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Izberite enega ali več polj za identifikacijo sledi</h2></div>
+        <hr/>
+        <div>
+            <p>Polja, ki predstavljajo identifikator sledi. Za prikaz enoličnih vrednosti sledi lahko uporabite eno ali več polj.
+            </p>
+            <p>Na primer, pri rekonstruiranju sledi orkanov lahko kot polje sledi uporabite ime orkana.
+            </p>
+        </div>
+    </div>
+    <div id="startConditionExpression">
+        <div><h2>Izgradite pogojni izraz, da označite začetek incidenta</h2></div>
+        <hr/>
+        <div>
+            <p>Dodajte pogoj s pomočjo graditelja izrazov, da ugotovite, za kak&scaron;en incident gre. Če je pogoj, ki ste ga navedli, resničen, je geoobjekt incident. Če niste navedli končnega pogoja, se incident konča, ko začetni pogoj ni več resničen.
+            </p>
+            <p>Na primer, predpostavimo, da želite biti opozorjeni, ko je vsota polj  <code>concentration_1</code> in <code>concentration_2</code> večja od polja <code>concentration_3</code>. To lahko storite z uporabo pogoja <code>($feature[&quot;concentration_1&quot;] + $feature[&quot;concentration_2&quot;]) &gt; $feature[&quot;concentration_3&quot;])</code>.
+            </p>
+            <p>Če vas zanima, kako so se koncentracije spreminjale skozi čas in ste želite biti opozorjeni, ko je trenutna  <code>concentration_1</code> večja od dveh prej&scaron;njih meritev <code>concentration_2</code>, lahko uporabite izraz, kot je <code>$feature[&quot;concentration_1&quot;] &gt;   $track.field[&quot;concentration_2&quot;].history(-3,-1)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="endConditionExpression">
+        <div><h2>Izgradite pogoj izraza, ki označuje zaključek incidenta (izbirno)</h2></div>
+        <hr/>
+        <div>
+            <p>Po želji dodajte pogoj s pomočjo graditelja izrazov, da določite konec incidenta. Če je končni pogoj, ki ste ga navedli, resničen, geoobjekt ni več incident. Če niste navedli končnega pogoja, se incident konča, ko začetni pogoj ni več resničen.    
+            </p>
+            <p>Na primer, predpostavimo, da želite biti opozorjeni, ko je vsota polj  <code>concentration_1</code> in <code>concentration_2</code> večja od polja <code>concentration_3</code>, in želite, da se incident konča, če je vsota polja <code>concentration_4</code> manj&scaron;a od polja <code>concentration_1</code>. To lahko storite z uporabo začetnega pogoja <code>($feature[&quot;concentration_1&quot;] + $feature[&quot;concentration_2&quot;]) &gt; ($join[&quot;income&quot;] * .20)</code> in končnega pogoja <code>($feature[&quot;concentration_4&quot;] &lt; $feature[&quot;concentration_1&quot;])</code>.
+            </p>
+            <p>Če želite, da se incident končna, ko je srednja vrednost trenutne  <code>concentration_1</code> in &scaron;tirih prej&scaron;njih meritev večja od prve meritve, lahko uporabite izraz, kot je <code>$track.field[&quot;concentration_1&quot;].history(-5) &gt; $track.field[&quot;concentration_1&quot;].history(0)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="outputMode">
+        <div><h2>Pokaži mi</h2></div>
+        <hr/>
+        <div>
+            <p>Z vsemi metodami rezultatov bodo polja dodana izhodi&scaron;čnim geoobjektom. Na dva načina je mogoče določiti, kateri geoobjekti bodo vrnjeni:
+                <ul>
+                    <li> <b>Vsi geoobjekti</b> &ndash; to je privzeto. Vrnjeni bodo vsi geoobjekti v vhodu.
+                    </li>
+                    <li> <b>Samo incidenti</b> &ndash; s to metodo bodo vrnjeni geoobjekti, ki so incidenti. Vsi geoobjekti, za katere ni ugotovljeno, da so incidenti, ne bodo vrnjeni.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analizirajte podatke s časovnimi intervali (po želji)</h2></div>
+        <hr/>
+        <div>
+            <p>Določite, ali želite incidente zaznati s časovnimi intervali, ki segmentirajo va&scaron;e vhodne geoobjekte za analizo. Če boste uporabili časovne intervale, morate nastaviti časovni interval, ki ga želite uporabiti, in po želji nastaviti referenčni čas. Če referenčnega časa ne nastavite, bo uporabljen Jan 1, 1970. 
+            </p>
+            <p>Na primer, če nastavite časovno omejitev na en dan, ki se začne 1. januarja 1990 ob 9.00 zjutraj, bo vsaka sled odrezana ob 9.00 zjutraj vsak dan in analizirana v tem segmentu. 
+            </p>
+            <p>S časovnimi intervali lahko hitro pospe&scaron;ite čas izračunavanja, saj hitro ustvarja manj&scaron;e sledi za analizo. Če je za va&scaron;o analizo ustrezna razdelitev s ponavljajočim se časovnim intervalom, se ta priporoča za procesiranje velikih podatkov.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p> To je ime sloja, ki bo ustvarjen. Če zapisujete v ArcGIS Data Store, bodo va&scaron;i rezultati shranjeni v  <b>Moji vsebini</b> in dodani na karto. Če zapisujete v delitev datotek velikih podatkov, bodo va&scaron;i rezultati shranjeni v delitev datotek velikih podatkov in dodani v njen manifest. Ne bodo dodani v skupino. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, orodje ne bo uspe&scaron;no.
+            </p>
+            <p>Ko zapisujete v  ArcGIS Data Store (relacijsko ali prostorsko-časovno shrambo velikih podatkov) s pomočjo spustnega menija  <b>Shrani rezultat v</b>, lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

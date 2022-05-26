@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Apkopot centru un izkliedi</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="Apkopot centru un izkliedi"></h2>
+        <hr/>
+    <p>&Scaron;is rīks atrod centrālos elementus un virziena sadalījumus.
+Tas var tikt izmantots, lai atbildētu, piemēram, uz &scaron;ādiem jautājumiem:
+        <ul>
+            <li>Kur ir centrs?
+            </li>
+            <li>Kur&scaron; no visiem elementiem ir vispieejamākais?
+            </li>
+            <li>Cik izkaisīti, kompakti vai integrēti ir elementi?
+            </li>
+            <li>Vai ir kādas virziena tendences?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Ja ir atzīmēta iespēja  <b>Lietot pa&scaron;reizējo kartes pārklājumu</b>, tiks analizēti tikai ievades slāņa redzamās daļas elementi pa&scaron;reizējā kartes pārklājumā.  Ja noņemsiet atzīmi no izvēles rūtiņas, tiks analizēti visi ievades slāņa elementi&nbsp;&mdash; arī tie, kas atrodas ārpus pa&scaron;reizējā kartes pārklājuma.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Izvēlēties aprakstāmo slāni</h2></div>
+        <hr/>
+        <div>
+            <p>Punktu, līniju vai platību slānis, kas tiks izmantots, lai atrastu centrālos elementus un virziena sadalījumus.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>Kopsavilkuma veidi</h2></div>
+        <hr/>
+        <div>
+            <p>Centra un izkliedes apkopo&scaron;anas metode. 
+            </p>
+            <ul>
+                <li>Centrālais elements&nbsp;&mdash; identificē elementu, kas atrodas vistuvāk datu kopas centram.
+                </li>
+                <li>Vidējais centrs&nbsp;&mdash; identificē elementu kopuma ģeogrāfisko centru (vai koncentrācijas centru).
+                </li>
+                <li>Mediānas centrs&nbsp;&mdash; identificē atra&scaron;anās vietu, kas samazina datu kopas elementu kopējo Eiklīda attālumu.
+                </li>
+                <li>Elipse&nbsp;&mdash; izveido standartnoviržu elipses, lai apkopotu ģeogrāfisko elementu telpiskās īpa&scaron;ības: centrālā tendence, izkliede un virziena tendences. Elipsēm var būt 1, 2 vai 3 standartnovirzes.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>Vērtēt pēc (pēc izvēles)</h2></div>
+        <hr/>
+        <div>
+            <p>Lauks tiek izmantots, lai vērtētu atra&scaron;anās vietas pēc to relatīvā svarīguma. 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>Grupēt pēc (pēc izvēles)</h2></div>
+        <hr/>
+        <div>
+            <p>Lauks tiek izmantots, lai veiktu atsevi&scaron;ķus centrālo elementu vai izkliedes aprēķinus grupu elementiem. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Tas ir slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slāņa nosaukums jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Lietojot iespēju  <b>Saglabāt rezultātu</b> nolaižamā saraksta izvēlnē, jūs varat norādīt mapes nosaukumu sadaļā <b>Mans saturs</b>, kur tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

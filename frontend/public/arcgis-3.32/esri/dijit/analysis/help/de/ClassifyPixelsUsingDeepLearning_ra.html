@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Pixel mit Deep Learning klassifizieren</h2><p/>
+        <h2><img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" alt="Pixel mit Deep Learning klassifizieren"></h2>
+        <hr/>
+    <p>Dieses Werkzeug f&uuml;hrt ein trainiertes Deep-Learning-Modell auf einem Eingabe-Raster zur Erstellung eines klassifizierten Rasters aus, wobei jedem g&uuml;ltigen Pixel eine Klassenbeschriftung zugewiesen ist.
+    </p>
+    <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, wird nur die Raster-Fl&auml;che analysiert, die in der aktuellen Kartenausdehnung sichtbar ist. Wenn diese Option deaktiviert ist, wird auch dann das gesamte Raster analysiert, wenn es sich au&szlig;erhalb der aktuellen Kartenausdehnung befindet.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Bild für die Klassifizierung von Pixeln auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Das zu klassifizierende Eingabebild.
+            </p>
+            <p>Hierbei kann es sich um die URL f&uuml;r einen Image-Service, einen Raster-Layer oder einen Image-Service-Layer handeln.
+            </p>
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Deep-Learning-Modell für die Klassifizierung von Pixeln auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Das Eingabe-Deep-Learning-Paketelement ( <code>.dlpk</code>).
+            </p>
+            <p>Das Deep-Learning-Paket besteht aus der JSON-Datei mit der Esri Modelldefinition ( <code>.emd</code>), der bin&auml;ren Datei des Deep-Learning-Modells und optional aus der zu verwendenden Python-Raster-Funktion.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Argumente für das Deep-Learning-Modell angeben</h2></div>
+        <hr/>
+        <div>
+            <p>Die Funktionsargumente werden in der Python-Raster-Funktionsklasse definiert, die vom Eingabemodell referenziert wird. Hier geben Sie zus&auml;tzliche Deep-Learning-Parameter und Argumente f&uuml;r Experimente und Verfeinerungen wie den Konfidenzschwellenwert zur Anpassung der Empfindlichkeit an.
+            </p>
+            <p>Die Namen der Argumente werden vom Werkzeug durch Lesen des Python-Moduls im Raster-Analyse-Server ausgef&uuml;llt.
+            </p>  
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputClassifiedRaster">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, werden Sie aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>Sie k&ouml;nnen den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis &uuml;ber das Dropdown-Feld <b>Ergebnis speichern in</b> gespeichert wird.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

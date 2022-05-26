@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Loo vaateväli</h2><p/>
+        <h2><img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" alt="Vaatepiirkonna loomine"></h2>
+        <hr/>
+    <p>Vaatev&auml;lja loomise t&ouml;&ouml;riistaga saate luua alad, kus vaatleja saab n&auml;ha maapinnal olevaid objekte. Sisendivaatluse punktid v&otilde;ivad t&auml;histada kas vaatlejaid (nt maapinnal v&otilde;i vaatetornis asuvaid inimesi) v&otilde;i vaadeldavaid objekte (nt tuuleturbiinid, veetornid, s&otilde;idukid v&otilde;i teised inimesed). Tulemuseks saadud alad on piirkonnad, kus vaatlejad n&auml;evad vaadeldavaid objekte ja vastupidi, vaadeldavad objektid n&auml;evad vaatlejaid.
+    </p>
+    <p>Nii vaatlejatel kui ka vaadeldavatel objektidel v&otilde;ib olla kindel k&otilde;rgus maapinnast ning seda k&otilde;rgust kasutatakse n&auml;htavuse m&auml;&auml;ratlemisel. N&auml;iteks 120 m k&otilde;rguse tuuleturbiini ja maapinnal seisva 180 cm pikkuse inimese jaoks arvutatud vaatev&auml;li on &uuml;ldjuhul suurem kui 60 m k&otilde;rguse tuuleturbiini ja 180 cm pikkuse inimese korral.
+    </p>
+    <p>Pange t&auml;hele, et vaatev&auml;lja arvutamisel ei v&otilde;eta arvesse takistusi (nt puid v&otilde;i hooneid). Arvutamisel l&auml;htutakse sisuliselt lagedast maapinnast, kus pole peale vaatleja ja vaadeldavate objektide mitte midagi muud.
+    </p>
+    <p>Tulemkiht sisaldab n&auml;htavaid piirkondi kujutavaid pindobjekte. V&auml;ljal  <i>Frequency</i> registreeritakse iga ala n&auml;gevate seisupunktide arv. Kui teil on n&auml;iteks viis sisendpunkti, millest iga&uuml;ks t&auml;histab tulet&otilde;rje vaatlustorni, kuvatakse v&auml;ljal <i>Frequency</i> v&auml;&auml;rtused vahemikus &uuml;ks kuni viis: alasid, mille v&auml;&auml;rtus on &uuml;ks, saab n&auml;ha ainult &uuml;hest tornist, samas kui alasid, mille v&auml;&auml;rtus on viis, n&auml;eb k&otilde;igist tornidest. Tulemkiht sisaldab ka v&auml;lja <i>DEMResolution</i>, millel registreeritakse vaatev&auml;ljade loomiseks kasutatud digitaalse k&otilde;rgusmudeli (DEM) resolutsioon.
+    </p>
+    <p>Kui ruut  <b>Kasuta praegust kaardi ulatust</b> on m&auml;rgitud, luuakse anal&uuml;&uuml;s ainult nende vaatluspunktide kohta, mis on kaardil praegu n&auml;htavad.  Kui see ruut pole m&auml;rgitud, kasutatakse anal&uuml;&uuml;si koostamisel k&otilde;iki sisendkihis olevaid vaatluspunkte ka siis, kui neid pole praegu kaardil n&auml;ha.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Punktobjektid, mis tähistavad vaatleja asukohti</h2></div>
+        <hr/>
+        <div>
+            <p>Vaatluspunktidena kasutatavad punktobjektid. 
+            </p>
+            <p>Lisaks kaardil asuvale kihile saate valida variandi  <b>Vali anal&uuml;&uuml;sikiht</b>, mille leiate ripploendi allosast. See variant avab galerii, mida saate sirvida ja kus saate erinevatest allikatest valida anal&uuml;&uuml;sil kasutamiseks andmestikke. 
+            </p>
+        </div>
+    </div>
+    <div id="ObserverHeight">
+        <div><h2>Vaatleja asukohtade kõrgus</h2></div>
+        <hr/>
+        <div>
+            <p>See on Teie vaatluskohtade k&otilde;rgus maapinnast.    Vaikev&auml;&auml;rtus v&otilde;rdub ligikaudu keskmise inimese kasvuga.  
+            </p>
+        </div>
+    </div>
+    <div id="TargetHeight">
+        <div><h2>Muude maapinnal olevate objektide kõrgus</h2></div>
+        <hr/>
+        <div>
+            <p>See v&auml;&auml;rtus t&auml;histab n&auml;htavuse arvutamiseks kasutatavat rajatiste k&otilde;rgust maapinnast v&otilde;i inimeste pikkust. Tulemuseks saadav vaatev&auml;li h&otilde;lmab alasid, kus vaatluspunkt n&auml;eb neid teisi objekte.  Sama kehtib ka vastupidi: teised objektid n&auml;evad vaatluspunkti. 
+            </p>
+            <p>
+                <ul>
+                    <li>Kui Teie vaatluspunktid t&auml;histavad n&auml;iteks tuuleturbiine ja soovite m&auml;&auml;ratleda, kus n&auml;evad maapinnal seisvad inimesed turbiine, sisestage keskmise inimese kasv (ligikaudu 180 cm).  Tulemuseks on alad, kus maapinnal seisev inimene n&auml;eb tuuleturbiine.
+                    </li>
+                    <li>Kui Teie vaatluspunktid t&auml;histavad tulet&otilde;rje vaatlustorne ja soovite kindlaks m&auml;&auml;rata, millistest vaatlustornidest n&auml;eb v&auml;hemalt 6 m k&otilde;rgust suitsujuga, sisestage k&otilde;rguseks 6 m.  Tulemuseks on alad, kus tulet&otilde;rje vaatlustornist on v&otilde;imalik n&auml;ha v&auml;hemalt 6 m k&otilde;rgust suitsujuga.
+                    </li>
+                    <li>Kui Teie vaatluspunktid t&auml;histavad looduse imetlemiseks m&otilde;eldud vaatluskohta maantee v&otilde;i teeraja &auml;&auml;res ja soovite kindlaks m&auml;&auml;rata, kust n&auml;eb v&auml;hemalt 120 m k&otilde;rgusi tuuleturbiine, sisestage k&otilde;rguseks 120 m.  Tulemused on alad, kus vaatluskohas seisev inimene n&auml;eb v&auml;hemalt 120 m k&otilde;rgusi tuuleturbiine.
+                    </li>
+                    <li>Kui Teie vaatluspunktid t&auml;histavad looduse imetlemiseks m&otilde;eldud vaatluskohta ja soovite kindlaks m&auml;&auml;rata, kui suurt maa-ala vaatluskohas seisvad inimesed n&auml;evad, sisestage v&auml;&auml;rtuseks null.  Tulemuseks on alad, mida vaatluskohast n&auml;eb.  
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="MaximumDistance">
+        <div><h2>Suurim vaatamiskaugus</h2></div>
+        <hr/>
+        <div>
+            <p>See t&auml;histab kaugust, millest alates n&auml;htavate alade arvutamine peatub. Sellest kaugusest edasi pole teada, kas vaatluspunktid ja muud objektid on &uuml;ksteise vaatev&auml;ljas. Suurte v&auml;&auml;rtuste korral kulub arvutamiseks rohkem aega. Suurim lubatud v&auml;&auml;rtus on 50 km (31 miili).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>See on selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile.  Vaikenimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui samanimeline kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>Rippmen&uuml;&uuml;  <b>Salvesta tulemused</b> kaudu saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemus salvestatakse.
+            </p>
+            <p> Selle t&ouml;&ouml;riista k&auml;itamine ei kasuta krediiti.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

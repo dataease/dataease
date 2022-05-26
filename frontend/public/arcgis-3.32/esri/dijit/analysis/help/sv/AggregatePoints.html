@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Aggregera punkter</h2><p/>
+        <h2><img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" alt="Aggregera punkter"></h2>
+        <hr/>
+    <p>Det h&auml;r verktyget arbetar med ett lager punktgeoobjekt och ett lager omr&aring;desgeoobjekt. F&ouml;rst avg&ouml;rs vilka punkter som hamnar inom respektive omr&aring;de. Efter att den geografiska analysen f&ouml;r punkter inom olika omr&aring;den &auml;r f&auml;rdig, ber&auml;knas statistik f&ouml;r alla punkter i respektive omr&aring;de. Den mest grundl&auml;ggande statistiken &auml;r r&auml;kningen av antalet punkter i omr&aring;det, men du kan &auml;ven skaffa annan statistik. 
+    </p>
+    <p>Anta till exempel att du har punktgeoobjekt i form av platser f&ouml;r kaf&eacute;er och omr&aring;desgeoobjekt i form av l&auml;n, och nu vill summera kaffef&ouml;rs&auml;ljningen per l&auml;n. Om vi antar att kaf&eacute;erna har attributet  <i>TOTAL_SALES</i> kan du ber&auml;kna summan av alla <i>TOTAL_SALES</i> i varje l&auml;n eller minsta och h&ouml;gsta <i>TOTAL_SALES</i>
+ i varje l&auml;n eller standardavvikelsen f&ouml;r all f&ouml;rs&auml;ljning i respektive l&auml;n.
+    </p>
+    <p>Om  <b>Anv&auml;nd aktuell kartutbredning</b> markeras, analyseras bara de geoobjekt i indatapunktlagret och omr&aring;deslagret som visas i den aktuella kartutbredningen. Om alternativet inte &auml;r markerat analyseras alla geoobjekt i b&aring;de indatapunktlagret och omr&aring;deslagret, &auml;ven om de ligger utanf&ouml;r den aktuella kartutbredningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Välj ett lager som innehåller punkter som ska aggregeras till områden</h2></div>
+        <hr/>
+        <div>
+            <p>Punktlagret som ska aggregeras till omr&aring;den.
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager p&aring; din karta kan du v&auml;lja  <b>V&auml;lj analyslager</b>, som du hittar l&auml;ngst ned i listrutan. Det alternativet &ouml;ppnar ett galleri d&auml;r du kan bl&auml;ddra till och v&auml;lja dataupps&auml;ttningar fr&aring;n diverse k&auml;llor som du kan anv&auml;nda i din analys. 
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Välj ett lager som innehåller aggregeringsområden</h2></div>
+        <hr/>
+        <div>
+            <p>Omr&aring;deslagret som punkterna ska aggregeras till. Alla punkter som hamnar inom gr&auml;nserna f&ouml;r omr&aring;den i lagret r&auml;knas, och du kan v&auml;lja att summera dem med valfri statistik.  
+            </p>
+            <p>Du kan v&auml;lja mellan ett omr&aring;deslager som du anger eller lagringsplatser som genereras n&auml;r verktyget k&ouml;rs.   N&auml;r lagringsplatser skapas avg&ouml;r siffran och enheterna som angivits f&ouml;r  <b>Kvadrat</b> kvadratens h&ouml;jd och l&auml;ngd. F&ouml;r <b>Hexagon</b> avg&ouml;r siffran och enheterna som angivits avst&aring;ndet mellan parallella sidor.
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager p&aring; din karta kan du v&auml;lja  <b>V&auml;lj analyslager</b>, som du hittar l&auml;ngst ned i listrutan. Det alternativet &ouml;ppnar ett galleri d&auml;r du kan bl&auml;ddra till och v&auml;lja dataupps&auml;ttningar fr&aring;n diverse k&auml;llor som du kan anv&auml;nda i din analys. 
+            </p>
+        </div>
+    </div>
+    <div id="KeepBoundaryNoPoints">
+        <div><h2>Behåll områden utan punkter</h2></div>
+        <hr/>
+        <div>
+            <p>Fastst&auml;ller om omr&aring;den som inte inneh&aring;ller n&aring;gra punkter ska visas i resultatlagret. Om alternativet inte markeras visas omr&aring;den utan punkter inte i resultatet. Om alternativet markeras visas omr&aring;den utan punkter i resultatet.  
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Lägg till statistik</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan ber&auml;kna statistik om attributen i indatapunktlagret, till exempel summa, medelv&auml;rde, minsta v&auml;rde, h&ouml;gsta v&auml;rde och standardavvikelse. Resultatlagret inneh&aring;ller ett nytt attribut f&ouml;r varje statistiskt v&auml;rde som ber&auml;knas. Du kan l&auml;gga till valfri m&auml;ngd statistiska v&auml;rden genom att v&auml;lja ett attribut och statistik (en ny listruta visas).
+ 
+            </p>
+            <p>Om lagret som ska summeras inte har n&aring;gra nummerf&auml;lt kommer ingen ytterligare statistik att vara tillg&auml;nglig.
+            </p>
+        </div>
+    </div>
+    <div id="GroupByField">
+        <div><h2>Välj fält att gruppera efter</h2></div>
+        <hr/>
+        <div>
+            <p> Du kan skapa statistiska grupper med hj&auml;lp av ett attribut i indatapunktlagret. Om du till exempel f&ouml;renar brott inom olika grannskap kan du ha attributet <i>Crime_type</i> med fem olika brottstyper.  Varje unik brottstyp utg&ouml;r en grupp, och den statistik du v&auml;ljer ber&auml;knas f&ouml;r varje unikt v&auml;rde f&ouml;r attributet <i>Crime_type</i>.  Statistiken f&ouml;r varje grupp visas i resultatlagrets popupf&ouml;nster tillsammans med antalet punkter. N&auml;r du v&auml;ljer ett grupperingsattribut skapas tv&aring; resultat: resultatlagret och en resultattabell som inneh&aring;ller statistik f&ouml;r varje unik grupp.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Lägg till minoritet, majoritet</h2></div>
+        <hr/>
+        <div>
+            <p>Den h&auml;r kryssrutan aktiveras n&auml;r du v&auml;ljer ett f&auml;lt att gruppera efter. Om du vill ta reda p&aring; vilket attributv&auml;rde inom varje grupp som &auml;r i minoritet (minst dominant) eller majoritet (mest dominant) inom varje gr&auml;ns v&auml;ljer du  <b>L&auml;gg till minoritet, majoritet</b>. N&auml;r du v&auml;ljer <b>L&auml;gg till minoritet, majoritet</b> l&auml;ggs tv&aring; nya f&auml;lt till i resultatlagret. Om du &auml;ven v&auml;ljer <b>L&auml;gg till procenttal</b> l&auml;ggs tv&aring; ytterligare f&auml;lt till i resultatlagret som inneh&aring;ller procenttalen f&ouml;r minoritetens och majoritetens attributv&auml;rden inom varje grupp.
+            </p>
+            <p>Om du till exempel &auml;r stadsplanerare och vill ta reda p&aring; vilka tre arter som &auml;r i minoritet och vilka som &auml;r i majoritet i alla stadens parker, aggregerar du dina tr&auml;ddata med dina parkomr&aring;den och markerar det h&auml;r alternativet.
+            </p>
+        </div>
+    </div>
+    <div id="PercentPoints">
+        <div><h2>Lägg till procenttal</h2></div>
+        <hr/>
+        <div>
+            <p>Den h&auml;r kryssrutan aktiveras n&auml;r du v&auml;ljer ett f&auml;lt att gruppera efter. V&auml;lj  <b>L&auml;gg till procenttal</b> om du vill ta reda p&aring; procenttalet f&ouml;r varje attributv&auml;rde inom varje grupp. Ett nytt f&auml;lt l&auml;ggs till i resultattabellen som inneh&aring;ller procenttalet f&ouml;r varje attributv&auml;rde inom varje grupp. Om du &auml;ven markerar <b>L&auml;gg till minoritet, majoritet</b> l&auml;ggs tv&aring; ytterligare f&auml;lt till i resultatlagret som inneh&aring;ller procenttalen f&ouml;r minoritetens och majoritetens attributv&auml;rden inom varje grupp.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagernamnet redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Om du anv&auml;nder listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

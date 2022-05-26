@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Olayları Algıla</h2><p/>
+        <h2><img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" alt="Olayları Algıla"></h2>
+        <hr/>
+    <p> Bu ara&ccedil;, zamana bağlı olarak nokta, &ccedil;izgi, alan veya tabloların zamanla etkinleştirilmiş bir katmanı ile &ccedil;alışır. Bu ara&ccedil;, par&ccedil;alar adı verilen sıralı olarak d&uuml;zenlenmiş detayları kullanarak, hangi detayların ilgi odağı olaylar olduğunu belirler. Olaylar belirttiğiniz koşullara g&ouml;re belirlenir.
+    </p>
+    <p>&Ouml;nce, ara&ccedil; bir veya daha fazla alan kullanarak hangi detayların bir par&ccedil;aya ait olduğunu belirler. Her detaydaki zamanı kullanarak par&ccedil;alar sıralı olarak d&uuml;zenlenir ve olay koşulu uygulanır. Başlangı&ccedil;taki olay koşulunu karşılayan detaylar bir olay olarak işaretlenir. İsteğe bağlı olarak biten bir olay koşulunu uygulayabilirsiniz; son koşul doğru olduğunda, detay artık bir olay değildir. Sonu&ccedil;lar, olay ismini temsil eden yeni s&uuml;tunlarla birlikte orijinal detaylarla birlikte getirilir ve hangi detayın olay koşullarını karşıladığını g&ouml;sterir. T&uuml;m orijinal detayları veya sadece olay olan detayları geri y&uuml;kleyebilirsiniz.
+    </p>
+    <p>&Ouml;rneğin, her 10 dakikada bir yapılan kasırga GPS &ouml;l&ccedil;&uuml;mleriniz var. Her GPS &ouml;l&ccedil;&uuml;m&uuml; fırtınanın adını, konumunu, kayıt zamanını ve r&uuml;zgar hızını kaydeder. Bu alanları kullanarak, 208 km/saatten daha b&uuml;y&uuml;k bir r&uuml;zgar hızı olan herhangi bir &ouml;l&ccedil;&uuml;m&uuml;n  <code>Katastrofik</code> başlığıyla bir olay oluşturabilirsiniz. Bir bitiş koşulu ayarlanmazsa, detay artık başlangı&ccedil; koşulunu karşılamadığında olay sona erer (r&uuml;zgar hızı yavaşlayarak 208'in altına d&uuml;şer).
+    </p>
+    <p>Başka bir &ouml;rnekte,  <code>contaminateLevel</code> adlı bir alanı kullanarak yerel su kaynağınızdaki bir kimyasalın konsantrasyonlarını izlediğinizi varsayalım. &Ouml;nerilen seviyelerin 0,01 mg/L'nin altında olduğunu ve tehlikeli seviyelerin 0,03 mg/L'nin &uuml;zerinde olduğunu biliyorsunuz. 0,03mg/L&rsquo;nin &uuml;zerindeki bir değerin bir olay olduğu ve kontaminasyon seviyeleri normale d&ouml;n&uuml;nceye kadar bir olay olmaya devam ettiği olayları tespit etmek i&ccedil;in <code>contaminateLevel &gt; 0,03</code> başlangı&ccedil; koşulunu ve <code>contaminateLevel &lt; 0,01</code> bitiş koşulunu kullanarak bir olay yaratırsınız. Bu, değerlerin 0,03 mg/L'yi aştığı herhangi bir sekansı, 0,01'den k&uuml;&ccedil;&uuml;k bir değere d&ouml;n&uuml;nceye kadar işaretler.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Olayların algılanacağı katmanı seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Olayları bulmak i&ccedil;in kullanılacak noktalar, &ccedil;izgiler, alanlar/b&ouml;lgeler veya tablolar. Girdi katmanı, zamanda bir anı temsil eden detaylarla birlikte zaman etkin olmalı ve par&ccedil;aları tanımlamak i&ccedil;in kullanılabilecek bir veya daha fazla alana sahip olmalıdır.
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;ebileceğiniz gibi, a&ccedil;ılan listenin en altından  <b>Analiz Katmanını Se&ccedil;</b> &ouml;gesini belirleyerek b&uuml;y&uuml;k veri dosya paylaşımı veri k&uuml;mesi veya detay katmanı i&ccedil;eriğinize g&ouml;z atabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>İzleri tanımlamak için bir veya birkaç alan seçin</h2></div>
+        <hr/>
+        <div>
+            <p>İz tanımlayıcısını g&ouml;steren alanlar. Par&ccedil;aların benzersiz değerlerini g&ouml;stermek i&ccedil;in bir alanı veya birden fazla alanı kullanabilirsiniz.
+            </p>
+            <p>&Ouml;rneğin, fırtına izlerini yeniden oluştururken, iz alanı olarak fırtınanın adını kullanabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="startConditionExpression">
+        <div><h2>Bir olayın başlangıcını belirtmek için bir ifade koşulu oluşturun</h2></div>
+        <hr/>
+        <div>
+            <p>Bir olayın ne olduğunu belirlemek i&ccedil;in ifade oluşturucuyu kullanarak bir koşul ekleyin. Belirttiğiniz koşul doğruysa, detay bir olaydır. Bir bitiş koşulu belirtmezseniz bir olay, başlangı&ccedil; koşulu artık doğru olmadığında sona erer.
+            </p>
+            <p>&Ouml;rneğin,  <code>concentration_1</code> ve <code>concentration_2</code> alanlarının toplamı <code>concentration_3</code>'ten daha b&uuml;y&uuml;k olduğunda uyarılmak istediğinizi varsayalım. Bunu yapmak i&ccedil;in, şu koşulu uygulayın: <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; $feature[&quot;concentration_3&quot;])</code>.
+            </p>
+            <p>Konsantrasyonların zamanla nasıl değiştiğini merak ettiyseniz ve mevcut  <code>concentration_1</code> değeri &ouml;nceki iki <code>concentration_2</code> konsantrasyon değerinden daha b&uuml;y&uuml;k olduğunda uyarılmak istediyseniz, <code>$feature[&rdquo;concentration_1&rdquo;] &gt;   $track.field[&rdquo;concentration_2&rdquo;].history(-3,-1)</code> gibi bir ifade kullanabilirdiniz.
+            </p>
+        </div>
+    </div>
+    <div id="endConditionExpression">
+        <div><h2>Bir olayın sonunu belirtmek için bir ifade koşulu oluşturun (isteğe bağlı)</h2></div>
+        <hr/>
+        <div>
+            <p>İsteğe bağlı olarak bir olayın bitişini belirlemek i&ccedil;in ifade oluşturucuyu kullanarak bir koşul ekleyin. Belirttiğiniz bitiş koşulu doğruysa, detay artık bir olay değildir. Bir bitiş koşulu belirtmezseniz bir olay, başlangı&ccedil; koşulu artık doğru olmadığında sona erer.    
+            </p>
+            <p>&Ouml;rneğin,  <code>concentration_1</code> ve <code>concentration_2</code> alanlarının toplamı <code>concentration_3</code>'ten daha b&uuml;y&uuml;k olduğunda uyarılmak istediğinizi ve olayın <code>concentration_4</code> <code>concentration_1</code>'den k&uuml;&ccedil;&uuml;k olduğunda bitmesini istediğinizi varsayalım. Bunu yapmak i&ccedil;in, başlangı&ccedil; koşulu olarak <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; ($join[&quot;income&quot;] * .20)</code> ve bitiş koşulu olarak <code>($feature[&quot;concentration_4&quot;] &lt; $feature[&quot;concentration_1&quot;])</code> koşulunu uygulayın.
+            </p>
+            <p>Mevcut  <code>concentration_1</code> ile &ouml;nceki d&ouml;rt &ouml;l&ccedil;&uuml;m&uuml;n ortalaması ilk &ouml;l&ccedil;&uuml;mden daha b&uuml;y&uuml;k olduğunda bir olayın bitmiş olmasını istediyseniz, <code>$track.field[&rdquo;concentration_1&rdquo;].history(-5) &gt; $track.field[&rdquo;concentration_1&rdquo;].history(0)</code> gibi bir ifade kullanabilirdiniz.
+            </p>
+        </div>
+    </div>
+    <div id="outputMode">
+        <div><h2>Bana göster</h2></div>
+        <hr/>
+        <div>
+            <p>T&uuml;m &ccedil;ıktı y&ouml;ntemleri, alanları orijinal detayların sonuna ekleyecektir. Hangi detayların getirileceğini belirlemenin iki yolu vardır:
+                <ul>
+                    <li> <b>T&uuml;m detaylar</b>&mdash;Bu varsayılandır. Girdideki t&uuml;m detaylar getirilir.
+                    </li>
+                    <li> <b>Yalnızca olaylar</b>&mdash;Bu y&ouml;ntem, yalnızca olay olan detayları getirir. Olay olmadığı tespit edilen herhangi bir detay getirilmez.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Zaman aralıkları arasında verileri analiz edin (isteğe bağlı)</h2></div>
+        <hr/>
+        <div>
+            <p>Girdi detaylarınızı analiz i&ccedil;in segmentlere ayıran zaman aralıklarını kullanarak olayları tespit etmek isteyip istemediğinizi belirtin. Zaman aralıklarını kullanıyorsanız, kullanmak istediğiniz zaman aralığını ayarlamanız gerekir ve isteğe bağlı olarak referans zamanını da ayarlayabilirsiniz. Bir referans zamanı ayarlamadığınızda, 1 Ocak 1970 kullanılacaktır. 
+            </p>
+            <p>&Ouml;rneğin, zaman sınırını 1 g&uuml;n olarak ayarlarsanız, 1 Ocak 1990&rsquo;da saat 09:00&rsquo;dan başlayarak her iz, her g&uuml;n saat 09:00&rsquo;da kesilir ve o segment i&ccedil;inde analiz edilir. 
+            </p>
+            <p>Zaman aralıklarını kullanmak, hesaplama s&uuml;resini hızlandırmanın hızlı bir yoludur, &ccedil;&uuml;nk&uuml; analiz i&ccedil;in daha k&uuml;&ccedil;&uuml;k izler oluşturur. Tekrar eden bir zaman aralığına b&ouml;l&uuml;nmesi analiziniz i&ccedil;in anlamlıysa, b&uuml;y&uuml;k veri işleme i&ccedil;in &ouml;nerilir.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> Oluşturulacak katmanın adı. Bir ArcGIS Data Store&lsquo;a yazdığınızda, sonu&ccedil;larınız  <b>İ&ccedil;eriğime</b> kaydedilir ve haritaya eklenir. Bir b&uuml;y&uuml;k veri dosya paylaşımına yazdığınızda,  sonu&ccedil;larınız b&uuml;y&uuml;k veri dosya paylaşımı i&ccedil;ine kaydedilir ve   manifestosuna eklenir.  haritaya eklenmez. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Detay katmanı zaten varsa ara&ccedil; &ccedil;alışmaz.
+            </p>
+            <p> ArcGIS Data Store&lsquo;a yazarken (ilişkisel ya da mekan-zamansal b&uuml;y&uuml;k veri deposu)  <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır kutusunu kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

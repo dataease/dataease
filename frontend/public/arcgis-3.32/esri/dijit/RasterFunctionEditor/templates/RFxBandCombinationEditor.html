@@ -1,0 +1,33 @@
+<div class="esriRFxBandCombinationEditor">
+  <table class="esriRFxArgsEditor__table">
+    <tr class="esriRFxArgsEditor__tr--arg-name esriRFxBandCombinationEditor--method">
+      <td data-dojo-attach-point="methodLabel">${_i18n.methodLabel}</td>
+    </tr>
+    <tr class="esriRFxArgsEditor__tr--arg-widget esriRFxBandCombinationEditor--method" >
+      <td>
+        <div data-dojo-type="dijit/form/Select" data-dojo-attach-point="methodSelect" data-dojo-attach-event="onChange: onBandComboMethodChange"></div>
+      </td>
+    </tr>
+    <tr class="esriRFxArgsEditor__tr--arg-name esriRFxBandCombinationEditor--band">
+      <td>${_i18n.bandLabel}</td>
+    </tr>
+    <tr class="esriRFxArgsEditor__tr--arg-widget esriRFxBandCombinationEditor--band">
+      <td>
+        <div data-dojo-type="dijit/form/Select" data-dojo-attach-point="bandNameSelect" data-dojo-attach-event="onChange: onBandChange"
+          data-dojo-attach-props="labelAttr: 'label'"></div>
+        <div data-dojo-type="dijit/form/Select" data-dojo-attach-point="bandIdSelect" data-dojo-attach-event="onChange: onBandChange"
+          data-dojo-attach-props="labelAttr: 'label'"></div>
+        <div data-dojo-type="dijit/form/Select" data-dojo-attach-point="bandWavelengthSelect" data-dojo-attach-event="onChange: onBandChange"
+          data-dojo-attach-props="labelAttr: 'label'"></div>
+      </td>
+    </tr>
+    <tr class="esriRFxArgsEditor__tr--arg-name esriRFxBandCombinationEditor--combination">
+      <td>${_i18n.combinationLabel}</td>
+    </tr>
+    <tr class="esriRFxArgsEditor__tr--arg-widget esriRFxBandCombinationEditor--combination">
+      <td>
+        <div data-dojo-type="dijit/form/TextBox" data-dojo-attach-point="bandCombinationTextbox" data-dojo-attach-event="onChange: onBandCombinationChange"></div>
+      </td>
+    </tr>
+  </table>
+</div>

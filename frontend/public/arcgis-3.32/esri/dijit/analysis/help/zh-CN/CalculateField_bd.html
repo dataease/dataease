@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>计算字段</h2><p/>
+        <h2><img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" alt="计算字段"></h2>
+        <hr/>
+    <p> 该工具使用输入图层来计算新字段或现有字段的值。构建一个 Arcade 表达式来计算用于填充要素的值。如果您的数据启用了时间且时间类型为时刻，则可以选择构建追踪感知型表达式。
+    </p>
+    <p>例如，假设您要修改名为  <i>TotalSales</i> 的现有字段。您希望该字段表示 2016 年和 2017 年总销售额的总和。可以在表达式中使用这些字段，计算字段值为 <pre>$feature[&quot;Sales2016&quot;] + $feature[&quot;Sales2017&quot;]</pre>。
+    </p>
+    <p>再举一个例子，假设您拥有记录城市中公交车的位置、时间、ID 和速度的 GPS 测量结果。我们希望创建一个名为  <i>SpeedFrom3</i> 的新字段，用于计算每个要素最后 3 次记录的 GPS 测量结果的平均速度。对于此计算，我们将使用追踪感知型计算，其中轨迹为由公交车 ID 表示的公交车。用于确定前 3 个时间步长和当前时间步长的平均速度的计算为 <pre>average($track.field[&quot;speed&quot;].history(-4))</pre>。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>选择要计算字段值的图层</h2></div>
+        <hr/>
+        <div>
+            <p>要计算字段值的点、线、面或表。
+            </p>
+            <p>除了从地图中选择图层外，还可以在下拉列表的底部选择 <b>选择分析图层</b>，以浏览至大数据文件共享数据集或要素图层中的内容。
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>计算字段的字段值</h2></div>
+        <hr/>
+        <div>
+            <p>要计算值的新字段或现有字段，以及该字段的数据类型。如果您正在针对已存在的字段计算值，则不需要匹配数据类型。
+            </p>
+        </div>
+    </div>
+    <div id="expression">
+        <div><h2>构建表达式以计算字段值</h2></div>
+        <hr/>
+        <div>
+            <p>使用表达式构建器添加表达式，以计算字段值。
+            </p>
+            <p>例如，假设我们要添加名为  <i>income</i> 和 <i>bonus</i> 的字段的值。为此，请添加表达式 <code>$feature[&quot;income&quot;] + $feature[&quot;bonus&quot;]</code>。
+            </p>
+        </div>
+    </div>
+    <div id="trackInfo">
+        <div><h2>表达式为跟踪感知型</h2></div>
+        <hr/>
+        <div>
+            <p>指定表达式是否为追踪感知型。追踪感知型表达式将包含类似  <pre>$track.field[&quot;fieldname&quot;].history(...)</pre> 的格式。追踪感知型表达式需要用于标识单个轨迹的字段。轨迹可以由点、线、面或表构成，仅要求输入具有轨迹标识符，并且数据启用了时间且时间类型为时刻。
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>使用时间间隔分析数据</h2></div>
+        <hr/>
+        <div>
+            <p>指定是否希望使用时间间隔计算轨迹的值，该时间间隔将对输入进行分段分析。如果使用时间间隔，则必须设置要使用的时间间隔，并可选择设置参考时间。如果您没有设置参考时间，则将使用 1970 年 1 月 1 日。
+            </p>
+            <p>例如，如果您将时间界限设置为 1 天，开始于 1990 年 1 月 1 日上午 9:00，则追踪会在每天上午 9:00 被截断，并就该段进行分析。
+            </p>
+            <p>使用时间间隔是一种加快计算速度的快速方法，因为它可以快速创建较小的追踪以进行分析。如果您的分析更适合按重复的时间间隔进行分割，则建议使用大数据处理。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p> 要创建的图层的名称。如果您要写入 ArcGIS Data Store，则您的结果将保存在<b>我的内容</b>并添加到地图中。如果您要写入大数据文件共享，则您的结果将存储于大数据文件共享中，并添加到其清单。结果将不会添加到地图中。默认名称基于工具名称以及输入图层名称。如果该图层已存在，将无法使用该工具。
+            </p>
+            <p>如果写入  ArcGIS Data Store（关系或时空大数据存储），可以使用<b>将结果保存在</b>下拉框指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

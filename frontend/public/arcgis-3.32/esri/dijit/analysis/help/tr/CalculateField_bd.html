@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Alan Hesapla</h2><p/>
+        <h2><img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" alt="Alan Hesapla"></h2>
+        <hr/>
+    <p> Bu ara&ccedil;, yeni veya mevcut bir alanın değerlerini hesaplamak i&ccedil;in bir girdi katmanı ile &ccedil;alışır. Detayları doldurmak i&ccedil;in kullanacağınız değerleri hesaplamak i&ccedil;in bir Arcade ifadesi oluşturun. Verileriniz zaman etkin ise veya anlık d&ouml;nen t&uuml;rde bir &ouml;rnek ise, par&ccedil;a duyarlı (track aware) ifadeleri isteğe bağlı olarak oluşturabilirsiniz.
+    </p>
+    <p>&Ouml;rneğin,  <i>TotalSales</i> adlı mevcut bir alanı değiştirmek istiyorsunuz. Alanın 2016 ve 2017'deki toplam satışların toplamını g&ouml;stermesini istiyorsunuz. İfadedeki bu alanları kullanarak, alan değerini <pre>$feature[&quot;Sales2016&quot;] + $feature[&quot;Sales2017&quot;]</pre> olarak hesaplarsınız.
+    </p>
+    <p>Başka bir &ouml;rnekte, bir şehirde bulunan otob&uuml;slerin yerini, zamanını, otob&uuml;s&uuml;n kimlik bilgilerini ve hızını kaydeden GPS &ouml;l&ccedil;&uuml;mleriniz olduğunu varsayalım. Her detay i&ccedil;in kaydedilen son 3 GPS &ouml;l&ccedil;&uuml;m&uuml;n&uuml;n hız ortalamasını g&ouml;steren  <i>SpeedFrom3</i> adında yeni bir alan oluşturmak istiyoruz. Bu hesaplama i&ccedil;in, par&ccedil;anın (track) kimlik bilgileriyle g&ouml;sterilen bir otob&uuml;s olduğu, par&ccedil;a duyarlı bir hesaplama kullanabilirsiniz. &Ouml;nceki 3 zaman adımı ile şimdiki zaman adımının ortalama hızını belirlemek i&ccedil;in kullanılacak hesaplama şu şekildedir: <pre>average($track.field[&quot;speed&quot;].history(-4))</pre>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Alan değerlerini hesaplamak için katman seç</h2></div>
+        <hr/>
+        <div>
+            <p>Alan değerlerinin hesaplanacağı noktalar, &ccedil;izgiler, alanlar/b&ouml;lgeler veya tablo.  
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;ebileceğiniz gibi, a&ccedil;ılan listenin en altından  <b>Analiz Katmanını Se&ccedil;</b> &ouml;gesini belirleyerek b&uuml;y&uuml;k veri dosya paylaşımı veri k&uuml;mesi veya detay katmanı i&ccedil;eriğinize g&ouml;z atabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Alan için alan değerlerini hesapla</h2></div>
+        <hr/>
+        <div>
+            <p>Alan değerlerinin hesaplandığı ve o alanın veri t&uuml;r&uuml;n&uuml;n bulunduğu yeni veya mevcut alan. Değerleri mevcut bir alan &uuml;zerinde hesaplıyorsanız, veri t&uuml;r&uuml;n&uuml; eşleştirmeniz gerekmez. 
+            </p>
+        </div>
+    </div>
+    <div id="expression">
+        <div><h2>Alan değerlerini hesaplamak için bir ifade oluştur</h2></div>
+        <hr/>
+        <div>
+            <p>Alan değerlerini hesaplamak i&ccedil;in ifade oluşturucuyu kullanarak bir ifade ekleyin. 
+            </p>
+            <p>&Ouml;rneğin,  <i>income</i> ve <i>bonus</i> adlı birer alana değer eklemek istediğimizi varsayalım. Bunun i&ccedil;in, <code>$feature[&quot;income&quot;] + $feature[&quot;bonus&quot;] </code>ifadesini ekleyin.
+            </p>
+        </div>
+    </div>
+    <div id="trackInfo">
+        <div><h2>İfade izlemeye duyarlı</h2></div>
+        <hr/>
+        <div>
+            <p>İfadenin par&ccedil;a duyarlı olup olmadığını belirleyin. Par&ccedil;a duyarlı bir ifade,  <pre>$track.field[&quot;fieldname&quot;].history(...)</pre> gibi bir bi&ccedil;ime sahip olacaktır. Par&ccedil;a duyarlı ifadeler, ayrı izlemeleri tanımlayan alanlar gerektirir. Par&ccedil;alar; noktalar, &ccedil;izgiler, alanlar/b&ouml;lgeler veya tablolardan oluşabilir ve yalnızca girdinin bir par&ccedil;a tanımlayıcıya sahip olmasını ve verilerin anlık d&ouml;nen t&uuml;rde olmaya uygun olmasını gerektirir.
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Zaman aralıkları arasında verileri analiz edin</h2></div>
+        <hr/>
+        <div>
+            <p>Girdilerinizi analiz i&ccedil;in segmentlere ayıran zaman aralıklarını kullanarak izleriniz i&ccedil;in değerleri hesaplamak isteyip istemediğinizi belirtin. Zaman aralıklarını kullanıyorsanız, kullanmak istediğiniz zaman aralığını ayarlamanız gerekir ve isteğe bağlı olarak referans zamanını da ayarlayabilirsiniz. Bir referans zamanı ayarlamadığınızda, 1 Ocak 1970 kullanılacaktır. 
+            </p>
+            <p>&Ouml;rneğin, zaman sınırını 1 g&uuml;n olarak ayarlarsanız, 1 Ocak 1990&rsquo;da saat 09:00&rsquo;dan başlayarak her iz, her g&uuml;n saat 09:00&rsquo;da kesilir ve o segment i&ccedil;inde analiz edilir. 
+            </p>
+            <p>Zaman aralıklarını kullanmak, hesaplama s&uuml;resini hızlandırmanın hızlı bir yoludur, &ccedil;&uuml;nk&uuml; analiz i&ccedil;in daha k&uuml;&ccedil;&uuml;k izler oluşturur. Tekrar eden bir zaman aralığına b&ouml;l&uuml;nmesi analiziniz i&ccedil;in anlamlıysa, b&uuml;y&uuml;k veri işleme i&ccedil;in &ouml;nerilir.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> Oluşturulacak katmanın adı. Bir ArcGIS Data Store&lsquo;a yazdığınızda, sonu&ccedil;larınız  <b>İ&ccedil;eriğime</b> kaydedilir ve haritaya eklenir. Bir b&uuml;y&uuml;k veri dosya paylaşımına yazdığınızda,  sonu&ccedil;larınız b&uuml;y&uuml;k veri dosya paylaşımı i&ccedil;ine kaydedilir ve   manifestosuna eklenir.  haritaya eklenmez. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Detay katmanı zaten varsa ara&ccedil; &ccedil;alışmaz.
+            </p>
+            <p> ArcGIS Data Store&lsquo;a yazarken (ilişkisel ya da mekan-zamansal b&uuml;y&uuml;k veri deposu)  <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır kutusunu kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Ligar Feições</h2><p/>
+        <h2><img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" alt="Ligar Fei&ccedil;&otilde;es"></h2>
+        <hr/>
+    <p>A ferramenta Ligar Fei&ccedil;&otilde;es trabalha com duas camadas e associa os atributos de uma fei&ccedil;&atilde;o para outra com base em relacionamentos de atributos e espaciais. A ferramenta determina todas as fei&ccedil;&otilde;es de entrada que atendem &agrave;s condi&ccedil;&otilde;es de liga&ccedil;&atilde;o especificadas e acrescenta a camada de liga&ccedil;&atilde;o na camada de destino. 
+    </p>
+    <p>A ferramenta Ligar Fei&ccedil;&otilde;es pode ser aplicada para pontos, linhas, &aacute;reas e tabelas. Uma liga&ccedil;&atilde;o espacial exige que seus dados tenham uma geometria. 
+    </p>
+    <p>Se  <b>Utilizar extens&atilde;o de mapa atual</b> estiver selecionada, somente as fei&ccedil;&otilde;es vis&iacute;veis dentro da extens&atilde;o de mapa atual ser&atilde;o analisadas.  Se n&atilde;o estiver selecionada, todas as fei&ccedil;&otilde;es em ambas a camada de destino e a camada de liga&ccedil;&atilde;o ser&atilde;o analisadas, mesmo que estiverem fora da extens&atilde;o de mapa atual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Escolher camada de destino</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de destino que ter&aacute; atributos da camada de liga&ccedil;&atilde;o anexada &agrave; sua tabela.
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> localizado na parte inferior da lista suspensa. Esta op&ccedil;&atilde;o abre uma galeria onde voc&ecirc; pode procurar e selecionar conjunto de dados de v&aacute;rias fontes para utilizar em sua an&aacute;lise. 
+            </p> 
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>Escolher a camada para ligar na camada de destino</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de liga&ccedil;&atilde;o com os atributos que ser&atilde;o anexados &agrave; camada de destino.
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> localizado na parte inferior da lista suspensa. Esta op&ccedil;&atilde;o abre uma galeria onde voc&ecirc; pode procurar e selecionar conjunto de dados de v&aacute;rias fontes para utilizar em sua an&aacute;lise. 
+            </p>
+        </div>
+    </div>
+    <div id="joinType">
+        <div><h2>Selecione os tipos de ligação</h2></div>
+        <hr/>
+        <div>
+            <p>Voc&ecirc; pode aplicar uma liga&ccedil;&atilde;o espacial, liga&ccedil;&atilde;o de atributo ou uma combina&ccedil;&atilde;o dos dois. 
+                <ul>
+                    <li> <b>Espacial</b>&mdash;Utiliza  um relacionamento espacial espec&iacute;fico para ligar fei&ccedil;&otilde;es. Este exige que ambas as camadas tenham uma geometria.
+                    </li>
+                    <li> <b>Atributo</b>&mdash;Liga as fei&ccedil;&otilde;es baseado em campos id&ecirc;nticos.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Escolher um relacionamento espacial</h2></div>
+        <hr/>
+        <div>
+            <p>O relacionamento espacial que determinar&aacute; se fei&ccedil;&otilde;es ser&atilde;o ligadas umas &agrave;s outras. Os relacionamentos dispon&iacute;veis depender&atilde;o do tipo de geometria (ponto, linha, pol&iacute;gonos) sendo utilizado como as fei&ccedil;&otilde;es de entrada. Os relacionamentos dispon&iacute;veis incluem o seguinte:
+                <ul>
+                    <li> <b>Id&ecirc;ntico a</b>&mdash;As fei&ccedil;&otilde;es na camada de destino ser&atilde;o correspondidas se forem id&ecirc;nticas &agrave;s fei&ccedil;&otilde;es na camada de liga&ccedil;&atilde;o.
+                    </li>
+                    <li> <b>Interseccionam</b>&mdash;As fei&ccedil;&otilde;es na camada de destino ser&atilde;o correspondidas se intersceccionarem fei&ccedil;&otilde;es na camada de liga&ccedil;&atilde;o.
+                    </li>
+                    <li> <b>Cont&eacute;m completamente</b>&mdash;As fei&ccedil;&otilde;es ser&atilde;o correspondidas se as fei&ccedil;&otilde;es na camada de destino tiverem completamente as fei&ccedil;&otilde;es na camada de liga&ccedil;&atilde;o.
+                    </li>
+                    <li> <b>Completamente dentro</b>&mdash;As fei&ccedil;&otilde;es ser&atilde;o correspondidas se as fei&ccedil;&otilde;es na camada de destino estiverem completamente dentro das fei&ccedil;&otilde;es da camada de liga&ccedil;&atilde;o.
+                    </li>
+                    <li> <b>Dentro de uma dist&acirc;ncia de</b>&mdash;As fei&ccedil;&otilde;es na camada de destino ser&atilde;o correspondidas se estiverem dentro de uma dist&acirc;ncia especificada das fei&ccedil;&otilde;es na camada de liga&ccedil;&atilde;o.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>Ligação de atributo</h2></div>
+        <hr/>
+        <div>
+            <p>O relacionamento de atributo que determinar&aacute; se fei&ccedil;&otilde;es ser&atilde;o ligadas umas &agrave;s outras. As fei&ccedil;&otilde;es s&atilde;o correspondidas quando os valores de campo na camada de liga&ccedil;&atilde;o s&atilde;o iguais aos valores de campo na camada de destino. 
+            </p>
+            <p>Por exemplo, suponha que voc&ecirc; tenha uma camada geogr&aacute;fica de todo o munic&iacute;pio para endere&ccedil;os residenciais (inclusive um campo  <i>ZIP</i>) e um conjunto de dados tabelar para demografias de sa&uacute;de por C&oacute;digo Postal (inclusive um campo denominado <i>HEALTHZIP</i>). Voc&ecirc; pode ligar o conjunto de dados de sa&uacute;de aos dados residenciais por combina&ccedil;&atilde;o do campo <i>ZIP</i> ao <i>HEALTHZIP</i>, que resultar&aacute; em uma camada de resid&ecirc;ncias com os dados de sa&uacute;de correspondentes.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Escolher operação de ligação</h2></div>
+        <hr/>
+        <div>
+            <p>Determina como as liga&ccedil;&otilde;es entre a camada de destino e a camada de liga&ccedil;&atilde;o ser&atilde;o tratadas se v&aacute;rias fei&ccedil;&otilde;es na camada de liga&ccedil;&atilde;o tiverem o mesmo relacionamento na camada de destino. A seguir est&atilde;o as duas opera&ccedil;&otilde;es de liga&ccedil;&atilde;o das quais escolher:
+                <ul>
+                    <li> <b>Liga&ccedil;&atilde;o um para um</b>&mdash;Esta op&ccedil;&atilde;o liga as fei&ccedil;&otilde;es na camada de alvo a uma fei&ccedil;&atilde;o &uacute;nica na camada de liga&ccedil;&atilde;o. Como as fei&ccedil;&otilde;es s&atilde;o ligadas &eacute; determinado pelo par&acirc;metro <b>Adicionar estat&iacute;sticas</b> ou <b>Definir qual registro &eacute; mantido</b> . Se <b>Adicionar estat&iacute;sticas</b> for utilizado, todas as fei&ccedil;&otilde;es ligadas correspondentes ser&atilde;o resumidas para cada fei&ccedil;&atilde;o na camada alvo. A contagem de fei&ccedil;&otilde;es ligadas ser&aacute; adicionada por padr&atilde;o. Se <b>Definir qual registro &eacute; mantido</b>
+ for utilizado, voc&ecirc; pode optar por manter o primeiro registro correspondente (padr&atilde;o) ou manter um registro correspondente baseado em uma express&atilde;o. Uma express&atilde;o pode utilizar um campo num&eacute;rico
+(op&ccedil;&atilde;o para maior ou menor registro) ou um campo de data (op&ccedil;&atilde;o para o mais novo ou mais antigo).
+                    </li>
+                    <li> <b>Liga&ccedil;&atilde;o um para muitos</b>&mdash;Esta op&ccedil;&atilde;o liga todas as fei&ccedil;&otilde;es correspondentes na camada de liga&ccedil;&atilde;o &agrave; camada de destino.  A camada resultante conter&aacute; m&uacute;ltiplos registros da fei&ccedil;&atilde;o de destino.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Por exemplo, suponha que desejamos localizar os supermercados dentro de 5 quil&ocirc;metros de um mercado de agricultores.   Neste caso, a camada sendo ligada tem uma &uacute;nica fei&ccedil;&atilde;o representando um mercado de agricultores, e as fei&ccedil;&otilde;es de liga&ccedil;&atilde;o representam os supermercados locais que t&ecirc;m atributos como total de vendas anual. Utilizando a ferramenta  <b>Ligar Fei&ccedil;&otilde;es</b>, voc&ecirc; descobre que cinco supermercados atendem estes crit&eacute;rios. Se voc&ecirc; especificar uma opera&ccedil;&atilde;o de liga&ccedil;&atilde;o como <b>Liga&ccedil;&atilde;o um para muitos</b>, voc&ecirc; acabar&aacute; com cinco fei&ccedil;&otilde;es no seu resultado, cada linha representando o mercado de agricultores e um supermercado. Se voc&ecirc; especificar um relacionamento de <b>Liga&ccedil;&atilde;o um para um</b>, voc&ecirc; acabar&aacute; com uma fei&ccedil;&atilde;o representando o mercado de agricultores e as informa&ccedil;&otilde;es resumidas dos supermercados, como a contagem (5), e outra estat&iacute;stica opcional como a soma de vendas anuais.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Adicionar estatísticas (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Se uma op&ccedil;&atilde;o de  <b>Liga&ccedil;&atilde;o um para um</b> estiver selecionada, para campos num&eacute;ricos, voc&ecirc; poder&aacute; resumir e calcular estat&iacute;sticas em fei&ccedil;&otilde;es ligadas.   Por padr&atilde;o, a contagem das fei&ccedil;&otilde;es de liga&ccedil;&atilde;o correspondentes ser&aacute; calculada e adicionada &agrave; camada resultante.  Se voc&ecirc; optar por n&atilde;o adicionar estat&iacute;sticas adicionais, a primeira fei&ccedil;&atilde;o correspondente na camada de liga&ccedil;&atilde;o ser&aacute; ligada &agrave; primeira fei&ccedil;&atilde;o correspondente na camada de destino.   Voc&ecirc; pode calcular um ou mais dos seguintes:
+            </p>
+            <ul>
+                <li>Soma
+                </li>
+                <li>M&iacute;nimo
+                </li>
+                <li>M&aacute;ximo
+                </li>
+                <li>M&eacute;dia
+                </li>
+                <li>Desvio Padr&atilde;o
+                </li>
+            </ul>
+            
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa.  O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se o nome da camada j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Salvar resultado em</b>, &eacute; poss&iacute;vel especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+        </div>
+    </div>
+    <div id="isView">
+        <div><h2>Crie resultados como visualização da camada de feição hospedada</h2></div>
+        <hr/>
+        <div>
+            <p> Criar resultados como uma visualiza&ccedil;&atilde;o da camada de fei&ccedil;&atilde;o hospedada permite que os dados sejam atualizados conforme as altera&ccedil;&otilde;es da fonte de dados.  As visualiza&ccedil;&otilde;es da camada de fei&ccedil;&atilde;o hospedadas contendo liga&ccedil;&otilde;es ser&atilde;o somente para leitura e n&atilde;o consomem cr&eacute;ditos da an&aacute;lise e armazenamento.
+            </p>
+            <p>Voc&ecirc; pode criar uma visualiza&ccedil;&atilde;o da camada de fei&ccedil;&atilde;o hospedada nos resultados da an&aacute;lise, se todas as seguintes condi&ccedil;&otilde;es forem atendidas:
+                <ul>
+                    <li>Voc&ecirc; &eacute; o propriet&aacute;rio de ambas as camadas.
+                    </li>
+                    <li>Ambas as camadas s&atilde;o camadas de fei&ccedil;&atilde;o hospedadas.
+                    </li>
+                    <li>Voc&ecirc; est&aacute; executando uma liga&ccedil;&atilde;o baseada em atributo.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

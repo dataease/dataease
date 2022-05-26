@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Fusionner les limites</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Dissoudre les limites"></h2>
+        <hr/>
+    <p>Les surfaces qui se chevauchent ou partagent une limite commune sont combin&eacute;es pour former une surface unique.
+    </p>
+    <p>Vous pouvez contr&ocirc;ler quelles limites sont combin&eacute;es en sp&eacute;cifiant un champ. Par exemple, si vous avez une couche de comt&eacute;s et que chaque comt&eacute; poss&egrave;de un attribut  <pre>State_Name</pre>, vous pouvez fusionner les limites &agrave; l'aide de l'attribut <pre>State_Name</pre>.  Les comt&eacute;s seront combin&eacute;s si leur attribut <pre>State_Name</pre> poss&egrave;de la m&ecirc;me valeur. Le r&eacute;sultat est une couche de limites d&rsquo;&Eacute;tats.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choisissez la couche surfacique dont les limites seront fusionnées</h2></div>
+        <hr/>
+        <div>
+            <p>La couche contenant les entit&eacute;s surfaciques qui seront fusionn&eacute;es. 
+            </p>
+            <p>Outre le fait de choisir une couche de votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante pour parcourir votre contenu et rechercher une couche d&rsquo;entit&eacute;s ou un jeu de donn&eacute;es de partage de fichiers Big Data.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveFields">
+        <div><h2>Choix du mode de dissolution</h2></div>
+        <hr/>
+        <div>
+            <p>Sp&eacute;cifie la m&eacute;thode utilis&eacute;e pour fusionner les champs.
+            </p>
+            <p>Vous avez le choix entre deux m&eacute;thodes pour combiner les entit&eacute;s des surfaces :
+                <ul>
+                    <li> <b>Areas that overlap or are adjacent (Surfaces qui se superposent ou qui sont adjacentes)</b>&nbsp;: deux surfaces ou plus dont les limites se superposent seront combin&eacute;es en une seule surface. En outre, les surfaces adjacentes (c'est-&agrave;-dire qui partagent une limite commune) seront combin&eacute;es en une seule surface.
+                    </li>
+                    <li> <b>Areas with the same field value (Surfaces avec la m&ecirc;me valeur de champ)</b>&nbsp;: deux surfaces ou plus seront combin&eacute;es en une seule surface si elles ont la m&ecirc;me valeur de champ.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Créer des entités multi-parties</h2></div>
+        <hr/>
+        <div>
+            <p>Les entit&eacute;s multi-parties sont une repr&eacute;sentation d&rsquo;un lieu ou d&rsquo;une chose ayant plusieurs parties mais sont d&eacute;finies comme une seule entit&eacute; parce que ne r&eacute;f&eacute;ren&ccedil;ant qu&rsquo;un jeu d&rsquo;attributs. Dans une couche d&rsquo;&Eacute;tats, par exemple, l&rsquo;&Eacute;tat d&rsquo;Hawa&iuml; peut &ecirc;tre consid&eacute;r&eacute; comme une entit&eacute; multi-parties, car ses parties g&eacute;om&eacute;triques sont class&eacute;es comme faisant partie d&rsquo;un seul &Eacute;tat.
+            </p>
+            <p> <b>Cr&eacute;er des entit&eacute;s multi-parties</b> propose deux options&nbsp;:
+                <ul>
+                    <li>True (activ&eacute;)&nbsp;: le service en sortie peut contenir des entit&eacute;s multi-parties.
+                    </li>
+                    <li>False (d&eacute;sactiv&eacute;)&nbsp;: le service en sortie ne contient que des entit&eacute;s &agrave; une seule partie et des entit&eacute;s individuelles sont cr&eacute;&eacute;es pour chaque partie. Il s&rsquo;agit de l&rsquo;option par d&eacute;faut.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Ajouter des statistiques (facultatif)</h2></div>
+        <hr/>
+        <div>
+            <p>Lorsque les surfaces sont combin&eacute;es, vous pouvez synth&eacute;tiser leurs valeurs attributaires par des statistiques pertinentes. Si, par exemple, vous fusionnez la limite entre les comt&eacute;s en fonction du champ  <pre>State_Name</pre> et que chaque comt&eacute; poss&egrave;de un champ <i>Population</i>, vous pouvez calculer la somme <pre>Population</pre> pour cet &Eacute;tat.
+            </p>
+            <p> Vous pouvez calculer des statistiques sur des entit&eacute;s synth&eacute;tis&eacute;es. Dans les champs num&eacute;riques,  vous pouvez calculer ce qui suit&nbsp;:
+                <ul>
+                    <li>Count (Total)&nbsp;: calcule le nombre de valeurs non Null. Il peut &ecirc;tre utilis&eacute; sur des champs num&eacute;riques ou des cha&icirc;nes. Le total de [Null, 0, 2] est &eacute;gal &agrave; 2.
+                    </li>
+                    <li>Somme&nbsp;: somme des valeurs num&eacute;riques dans un champ. La somme de [Null, 0, 3] est &eacute;gale &agrave; 3.
+                    </li>
+                    <li>Moyenne&nbsp;: moyenne des valeurs num&eacute;riques. La moyenne de [0, 2, Null] est &eacute;gale &agrave; 1.
+                    </li>
+                    <li>Min&nbsp;: valeur minimale d'un champ num&eacute;rique. La valeur minimale de [0, 2, Null] est &eacute;gale &agrave; 0. 
+                    </li>
+                    <li>Max&nbsp;: valeur maximale d'un champ num&eacute;rique. La valeur maximale de [0, 2, Null] est &eacute;gale &agrave; 2.
+                    </li>
+                    <li>Plage&nbsp;: plage d'un champ num&eacute;rique. Elle est calcul&eacute;e pour correspondre aux valeurs minimales soustraites de la valeur maximale. La plage de [0, Null, 1] est &eacute;gale &agrave; 1. La plage de [Null, 4] est &eacute;gale &agrave; 0.
+                    </li>
+                    <li>Variance&nbsp;: variance d'un champ num&eacute;rique dans une piste. La variance de [1] est la valeur Null. La variance de [null, 1,0,1,1] est &eacute;gale &agrave; 0,25.
+                    </li>
+                    <li>Ecart type&nbsp;: &eacute;cart type d'un champ num&eacute;rique. L'&eacute;cart type de [1] est la valeur Null. L&rsquo;&eacute;cart type de [null, 1,0,1,1] est &eacute;gale &agrave; 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Dans les champs de type cha&icirc;ne,  vous pouvez calculer ce qui suit&nbsp;:
+                <ul>
+                    <li>Total&nbsp;: le nombre de cha&icirc;nes diff&eacute;rentes de la valeur Null.
+                    </li>
+                    <li>Tout&nbsp;: cette statistique est un &eacute;chantillon al&eacute;atoire d'une valeur de cha&icirc;ne dans le champ sp&eacute;cifi&eacute;.
+                    </li>
+                </ul>
+                Toutes les statistiques sont calcul&eacute;es sur des valeurs non nulles. La couche obtenue contient un nouveau champ pour chaque statistique calcul&eacute;e. Vous pouvez ajouter des statistiques en choisissant un attribut et une statistique. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la couche &agrave; cr&eacute;er. Si vous &eacute;crivez sur une instance ArcGIS Data Store, les r&eacute;sultats seront enregistr&eacute;s dans  <b>My Content (Mon contenu)</b> et ajout&eacute;s &agrave; la carte. Si vous &eacute;crivez sur un partage de fichiers Big Data, les r&eacute;sultats seront enregistr&eacute;s dans le partage de fichiers Big Data et ajout&eacute;s &agrave; son manifeste. Il ne sera pas ajout&eacute; &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, l'outil &eacute;choue.
+            </p>
+            <p>Lors de l&rsquo;&eacute;criture sur  ArcGIS Data Store (r&eacute;pertoire de donn&eacute;es relationnelles ou spatio-temporelles) via la zone de liste d&eacute;roulante  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>, vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> o&ugrave; le r&eacute;sultat sera enregistr&eacute;.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

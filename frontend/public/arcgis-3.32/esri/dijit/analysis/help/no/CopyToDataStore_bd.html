@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Kopier til Data Store</h2><p/>
+        <h2><img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" alt="Kopier til Data Store"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet vil ta et inndatalag og kopiere det til et datalager. Du kan kopiere resultater til  ArcGIS Data Store (stordatalager for relasjons- eller geotemporale data) og opprette et lag i portalen din, eller du kan kopiere resultatene til et fildelingsomr&aring;de for stordata. 
+    </p>
+    <p>Du kan f.eks. kopiere geoobjekter som er lagret i en  <code>big data-fildeling</code> til et <code>relasjonelt datalager</code> og spesifisere at bare geoobjekter innenfor den gjeldende kartutstrekningen blir kopiert. Dette skaper en hosted geoobjekttjeneste med bare de geoobjektene som var innenfor den angitte kartutstrekningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Velg kartlag å kopiere</h2></div>
+        <hr/>
+        <div>
+            <p>Laget eller tabellen som skal kopieres. 
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> nederst i rullegardinlisten, for &aring; bla gjennom innholdet p&aring; et fildelingsomr&aring;de for stordata eller et geoobjektlag.
+            </p>
+        </div>
+    </div>
+    <div id="selection">
+        <div><h2>Du kan bruke alle geoobjekter eller et utvalg (valgfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan eventuelt bruke valgknappen til &aring; angi lokasjonene som skal kopieres.
+            </p>
+        </div>
+    </div>
+    <div id="outputDataStore">
+        <div><h2>Velg data lager å kopiere til</h2></div>
+        <hr/>
+        <div>
+            <p>Datalageret som laget kopieres til. Denne parameteren overstyrer valget i  <b>Analysemilj&oslash;er</b>. Alternativene er f&oslash;lgende:
+                <ul>
+                    <li> <b>ArcGIS Data Store</b> ArcGIS Data Store <ul>
+                            <li> <b>Geotemporalt</b> &ndash; Dette er standardalternativet.
+                            </li>
+                            <li> <b>Relasjonsdata</b>
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li> <b>Maler for stordata fildelingsomr&aring;de</b>
+                        <ul>
+                            <li>En liste over tilgjengelige maler for stordata fildelingsomr&aring;de  <b>bigDataFileShareName-templateName</b>. Maler for stordata fildelingsomr&aring;de m&aring; konfigureres f&oslash;r verkt&oslash;yet kj&oslash;res.
+                            </li>
+                        </ul>
+                        
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; laget som opprettes. Hvis du skriver til en ArcGIS Data Store, blir resultatene dine lagret i  <b>Mitt innhold</b> og lagt til kartet. Hvis du skriver til et fildelingsomr&aring;de for stordata, blir resultatene lagret i fildelingsomr&aring;det for stordata og lagt til dets innholdsoversikt. De blir ikke lagt til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget allerede eksisterer, vil verkt&oslash;yet mislykkes.
+            </p>
+            <p>N&aring;r du skriver til  ArcGIS Data Store (fildelingsomr&aring;de for relasjons- eller geotemporale stordata) via rullegardinlisten  <b>Lagre resultat i</b>, kan du angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatet skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

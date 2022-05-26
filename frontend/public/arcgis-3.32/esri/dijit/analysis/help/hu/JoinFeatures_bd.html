@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Vektoros elemek összekapcsolása</h2><p/>
+        <h2><img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" alt="Vektoros elemek &ouml;sszekapcsol&aacute;sa"></h2>
+        <hr/>
+    <p>A Vektoros elemek &ouml;sszekapcsol&aacute;sa eszk&ouml;z k&eacute;t r&eacute;teggel dolgozik. A Vektoros elemek &ouml;sszekapcsol&aacute;sa t&eacute;rbeli, időbeli vagy attrib&uacute;tumok k&ouml;z&ouml;tti, illetve a h&aacute;rom valamilyen kombin&aacute;ci&oacute;j&aacute;b&oacute;l &aacute;ll&oacute; &ouml;sszef&uuml;gg&eacute;sek alapj&aacute;n &ouml;sszekapcsolja egy vektoros elem attrib&uacute;tumait egy m&aacute;sik&eacute;val. Az eszk&ouml;z meghat&aacute;rozza az &ouml;sszes bemenő vektoros elemet, amely teljes&iacute;ti a megadott &ouml;sszekapcsol&aacute;si felt&eacute;teleket, &eacute;s a m&aacute;sodik bemenő r&eacute;teget az elsőh&ouml;z kapcsolja. Lehetős&eacute;g van az &ouml;sszes vektoros elem egyező vektoros elemhez kapcsol&aacute;s&aacute;ra vagy az egyező vektoros elemek &ouml;sszegz&eacute;s&eacute;re is.
+    </p>
+    <p>A Vektoros elemek &ouml;sszekapcsol&aacute;sa alkalmazhat&oacute; pontokra, vonalakra, ter&uuml;letekre &eacute;s t&aacute;bl&aacute;zatokra. Az időbeli &ouml;sszekapcsol&aacute;shoz a bemeneti adatoknak időb&eacute;lyeggel ell&aacute;tott adatoknak kell lenni&uuml;k, m&iacute;g t&eacute;rbeli &ouml;sszekapcsol&aacute;shoz az adatoknak geometri&aacute;val kell rendelkezni&uuml;k. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Célréteg kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>A r&eacute;teg, amelynek t&aacute;bl&aacute;j&aacute;hoz az eszk&ouml;z hozz&aacute;fűzi az &ouml;sszekapcsolt r&eacute;teg attrib&uacute;tumait.
+            </p>
+            <p>A  <b>K&ouml;zel</b> t&eacute;rbeli kapcsolatot alkalmaz&oacute; elemz&eacute;s vet&uuml;leti koordin&aacute;ta-rendszert ig&eacute;nyel. A <b>Feldolgoz&aacute;si koordin&aacute;ta-rendszert</b> az <b>Elemz&eacute;si k&ouml;rnyezetekben</b> &aacute;ll&iacute;thatja be. Ha a feldolgoz&aacute;si koordin&aacute;ta-rendszer nem vet&uuml;leti koordin&aacute;ta-rendszerre van &aacute;ll&iacute;tva, az eszk&ouml;z ennek be&aacute;ll&iacute;t&aacute;s&aacute;t k&eacute;ri az <b>elemz&eacute;s futtat&aacute;sakor</b> .
+            </p>
+            <p>Ahelyett, hogy egy r&eacute;teget v&aacute;laszt a t&eacute;rk&eacute;p&eacute;ről, v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n l&eacute;vő  <b>Eredm&eacute;nyr&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is, ha a saj&aacute;t tartalomban szeretne big data-f&aacute;jlmegoszt&oacute; adathalmazt vagy vektoros r&eacute;teget keresni.
+            </p>
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>Célréteggel összekapcsolni kívánt réteg kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>Az &ouml;sszekapcsolt r&eacute;teg az attrib&uacute;tumokkal, amelyeket az eszk&ouml;z hozz&aacute;fűz a c&eacute;lr&eacute;teghez.
+            </p>
+            <p>Ahelyett, hogy egy r&eacute;teget v&aacute;laszt a t&eacute;rk&eacute;p&eacute;ről, v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n l&eacute;vő  <b>Eredm&eacute;nyr&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is, ha a saj&aacute;t tartalomban szeretne big data-f&aacute;jlmegoszt&oacute; adathalmazt vagy vektoros r&eacute;teget keresni.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Összekapcsolási művelet kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>Meghat&aacute;rozza a c&eacute;l &eacute;s az &ouml;sszekapcsolt r&eacute;teg k&ouml;z&ouml;tti &ouml;sszekapcsol&aacute;s kezel&eacute;s&eacute;t a kimenetben, ha t&ouml;bb &ouml;sszekapcsoland&oacute; vektoros elem kapcsol&oacute;dik azonos m&oacute;don az &ouml;sszekapcsolt r&eacute;teghez. K&eacute;tf&eacute;le &ouml;sszekapcsol&aacute;si művelet k&ouml;z&uuml;l lehet v&aacute;lasztani:
+                <ul>
+                    <li> <b>Egy az egyhez &ouml;sszekapcsol&aacute;s</b> &ndash; ez a lehetős&eacute;g &ouml;sszes&iacute;ti az &ouml;sszes egyező vektoros elemet az &ouml;sszekapcsolt vektoros elemekkel.
+                    </li>
+                    <li> <b>Egy a sokhoz &ouml;sszekapcsol&aacute;s</b> &ndash; ez a lehetős&eacute;g az &ouml;sszes egyező vektoros elemet &ouml;sszekapcsolja az &ouml;sszekapcsolt r&eacute;teggel.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Tegy&uuml;k fel p&eacute;ld&aacute;ul, hogy &eacute;lelmiszer&uuml;zleteket k&iacute;v&aacute;n keresni egy termelői piact&oacute;l 2 kilom&eacute;ter t&aacute;vols&aacute;gban.   Ebben az esetben a c&eacute;lr&eacute;teg egyetlen vektoros eleme a termelői piacnak felel meg, az &ouml;sszekapcsolt r&eacute;teg pedig a helyi &eacute;lelmiszer&uuml;zleteknek, &eacute;s olyan attrib&uacute;tumokkal rendelkezik, mint az &eacute;ves teljes &aacute;rbev&eacute;tel. A Vektoros elemek &ouml;sszekapcsol&aacute;sa eszk&ouml;z haszn&aacute;lat&aacute;val meg&aacute;llap&iacute;tja, hogy &ouml;t &eacute;lelmiszer&uuml;zlet felel meg a krit&eacute;riumoknak. Az  <b>Egy a sokhoz &ouml;sszekapcsol&aacute;s</b> &ouml;sszekapcsol&aacute;si művelet megad&aacute;s&aacute;val az eredm&eacute;ny &ouml;t vektoros elemet tartalmazna, ahol az egyes sorok a termelői piacnak &eacute;s egy &eacute;lelmiszer-&aacute;ruh&aacute;znak feleln&eacute;nek meg. Az <b>Egy az egyhez &ouml;sszekapcsol&aacute;s</b> kapcsolat megad&aacute;s&aacute;val az eredm&eacute;ny egy vektoros elem lenne, amely a termelői piacot &eacute;s az &eacute;lelmiszer-&aacute;ruh&aacute;zak &ouml;sszes&iacute;tett adatait tartalmazn&aacute;, mint p&eacute;ld&aacute;ul a darabsz&aacute;m (2), &eacute;s m&aacute;s statisztikai adatokat, mint p&eacute;ld&aacute;ul az &eacute;ves &aacute;rbev&eacute;tel &ouml;sszege.
+            </p>
+        </div>
+    </div>
+    <div id="joinOptions">
+        <div><h2>Válasszon egy vagy több összekapcsolást</h2></div>
+        <hr/>
+        <div>
+            <p>A haszn&aacute;lt &ouml;sszekapcsol&aacute;si lehetős&eacute;get adja meg. A k&ouml;vetkező &ouml;sszekapcsol&aacute;si t&iacute;pusok k&ouml;z&uuml;l alkalmazhat egyet, kettőt vagy h&aacute;rmat: 
+                <ul>
+                    <li> <b>T&eacute;rbeli</b> &ndash; a megadott t&eacute;rbeli kapcsolatot haszn&aacute;lja a vektoros elemek &ouml;sszekapcsol&aacute;s&aacute;hoz. Ehhez mindk&eacute;t r&eacute;tegnek geometri&aacute;val kell rendelkeznie.
+                    </li>
+                    <li> <b>Időbeli</b> &ndash; időbeli kapcsolatot haszn&aacute;l a vektoros elemek &ouml;sszekapcsol&aacute;s&aacute;hoz. Ehhez arra van sz&uuml;ks&eacute;g, hogy mindk&eacute;t r&eacute;teg időb&eacute;lyeggel ell&aacute;tott legyen.
+                    </li>
+                    <li> <b>Attrib&uacute;tum</b> &ndash; egyenlő mezők alapj&aacute;n &ouml;sszekapcsolja a vektoros elemeket.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Térbeli kapcsolat kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>A t&eacute;rbeli kapcsolat, amely meghat&aacute;rozza, hogy a vektoros elemek &ouml;sszekapcsol&oacute;dnak-e. Az al&aacute;bbi el&eacute;rhető kapcsolatok a bemenő vektoros elemk&eacute;nt haszn&aacute;lt geometria t&iacute;pus&aacute;t&oacute;l (pont, polyline, polygon) f&uuml;ggenek:
+                <ul>
+                    <li> <b>Metszi</b> &ndash; a vektoros elemeket akkor p&aacute;ros&iacute;tja, ha azok metszik egym&aacute;st.
+                    </li>
+                    <li> <b>Egyenlő</b> &ndash; a vektoros elemeket akkor p&aacute;ros&iacute;tja, ha azonos geometri&aacute;val rendelkeznek.
+                    </li>
+                    <li> <b>K&ouml;zel</b> &ndash; a vektoros elemeket akkor p&aacute;ros&iacute;tja, ha azok megadott t&aacute;vols&aacute;gon bel&uuml;l vannak egym&aacute;st&oacute;l. A c&eacute;lr&eacute;tegnek vet&uuml;leti koordin&aacute;ta-rendszerben kell lennie, vagy az alkalmazott t&eacute;rbeli referenci&aacute;t vet&uuml;leti koordin&aacute;ta-rendszerre kell &aacute;ll&iacute;tani az <b>Elemz&eacute;si k&ouml;rnyezetek</b> seg&iacute;ts&eacute;g&eacute;vel, ha t&eacute;rbeli <b>K&ouml;zel</b> kapcsolatot alkalmaz.
+                    </li>
+                    <li> <b>Tartalmazza</b> &ndash; a vektoros elemeket akkor p&aacute;ros&iacute;tja, ha a kapcsol&oacute;d&oacute; vektoros elemek tartalmazz&aacute;k a c&eacute;lr&eacute;teget.
+                    </li>
+                    <li> <b>Bel&uuml;l</b> &ndash; a vektoros elemeket akkor p&aacute;ros&iacute;tja, ha a c&eacute;lr&eacute;teg a kapcsol&oacute;d&oacute; vektoros elemeken bel&uuml;l tal&aacute;lhat&oacute;.
+                    </li>
+                    <li> <b>&Eacute;rinti</b> &ndash; a vektoros elemeket akkor p&aacute;ros&iacute;tja, ha a c&eacute;l vektoros elemet &eacute;rintő hat&aacute;rvonallal rendelkeznek.
+                    </li>
+                    <li> <b>Keresztezi</b> &ndash; a vektoros elemeket akkor p&aacute;ros&iacute;tja, ha egym&aacute;st keresztező kont&uacute;rral rendelkeznek.
+                    </li>
+                    <li> <b>&Aacute;tfedi</b> &ndash; a vektoros elemeket akkor p&aacute;ros&iacute;tja, ha azok &aacute;tfedik egym&aacute;st.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearSpatial">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            <p> Egy t&eacute;rbeli k&ouml;zel kapcsolatn&aacute;l alkalmazott sugarat adja meg.
+            </p>
+            <p>Ha p&eacute;ld&aacute;ul rendelkez&eacute;sre &aacute;llna egy atomerőművet le&iacute;r&oacute; adathalmaz &eacute;s egy lak&oacute;&eacute;p&uuml;leteket le&iacute;r&oacute; adathalmaz, akkor megadhatna egy k&ouml;zel kapcsolatot 1 kilom&eacute;teres t&eacute;rbeli t&aacute;vols&aacute;ggal az atomerőmű 1 kilom&eacute;teres k&ouml;rzet&eacute;ben tal&aacute;lhat&oacute; h&aacute;zak keres&eacute;s&eacute;hez.
+            </p> 
+        </div>
+    </div>
+    <div id="temporalRelationship">
+        <div><h2>Válasszon időbeli kapcsolatot</h2></div>
+        <hr/>
+        <div>
+            <p>Az időbeli kapcsolat, amely meghat&aacute;rozza, hogy a vektoros elemek &ouml;sszekapcsol&oacute;dnak-e. Ez a lehetős&eacute;g csak akkor &eacute;rhető el, ha mindk&eacute;t r&eacute;teg időb&eacute;lyeggel ell&aacute;tott, &eacute;s a rendelkez&eacute;sre &aacute;ll&oacute; kapcsolatok a bemeneti vektoros elemekhez haszn&aacute;lt idő t&iacute;pus&aacute;t&oacute;l f&uuml;ggenek (azonnali vagy intervallum). Az el&eacute;rhető időbeli kapcsolatok az al&aacute;bbiak:
+                <ul>
+                    <li> <b>Tal&aacute;lkozik</b> &ndash; a vektoros elemeket akkor p&aacute;ros&iacute;tja, ha az első vektoros elem tal&aacute;lkozik a m&aacute;sodikkal.
+                    </li>
+                    <li> <b>Ez tal&aacute;lkozik vele</b> &ndash; a vektoros elemeket akkor p&aacute;ros&iacute;tja, ha a m&aacute;sodik vektoros elem tal&aacute;lkozik az elsővel.
+                    </li>
+                    <li> <b>&Aacute;tfedi</b> &ndash; a vektoros elemeket akkor p&aacute;ros&iacute;tja, ha az első vektoros elem &aacute;tfedi a m&aacute;sodikat.
+                    </li>
+                    <li> <b>Ez fedi &aacute;t</b> &ndash; a vektoros elemeket akkor p&aacute;ros&iacute;tja, ha a m&aacute;sodik vektoros elem fedi &aacute;t az elsőt.
+                    </li>
+                    <li> <b>K&ouml;zben</b> &ndash; a vektoros elemeket akkor p&aacute;ros&iacute;tja, ha az első vektoros elem a m&aacute;sodikkal egy időben van.
+                    </li>
+                    <li> <b>Tartalmazza</b> &ndash; a vektoros elemeket akkor p&aacute;ros&iacute;tja, ha az első vektoros elem tartalmazza a m&aacute;sodikat.
+                    </li>
+                    <li> <b>Egyenlő</b> &ndash; a vektoros elemeket akkor p&aacute;ros&iacute;tja, ha az első vektoros elem egyenlő a m&aacute;sodikkal.
+                    </li>
+                    <li> <b>Befejezi</b> &ndash; a vektoros elemeket akkor p&aacute;ros&iacute;tja, ha az első vektoros elem befejezi a m&aacute;sodikat.
+                    </li>
+                    <li> <b>Ez fejezi be</b> &ndash; a vektoros elemeket akkor p&aacute;ros&iacute;tja, ha a m&aacute;sodik vektoros elem fejezi be az elsőt.
+                    </li>
+                    <li> <b>Elind&iacute;tja</b> &ndash; a vektoros elemeket akkor p&aacute;ros&iacute;tja, ha az első vektoros elem elind&iacute;tja a m&aacute;sodikat.
+                    </li>
+                    <li> <b>Ez ind&iacute;tja el</b> &ndash; a vektoros elemeket akkor p&aacute;ros&iacute;tja, ha a m&aacute;sodik vektoros elem ind&iacute;tja el az elsőt.
+                    </li>
+                    <li> <b>Metszi</b> &ndash; a vektoros elemeket akkor p&aacute;ros&iacute;tja, ha az idők egy&aacute;ltal&aacute;n metszik egym&aacute;st.
+                    </li>
+                    <li> <b>K&ouml;zel</b> &ndash; a vektoros elemeket &ouml;sszekapcsolja, ha azok egym&aacute;shoz k&ouml;zel vannak egy meghat&aacute;rozott idő szerint.
+                    </li>
+                    <li> <b>K&ouml;zel előtte</b> &ndash; a vektoros elemeket &ouml;sszekapcsolja, ha az első vektoros elem a m&aacute;sodik előtt van, &eacute;s egy megadott időn bel&uuml;l.
+                    </li>
+                    <li> <b>K&ouml;zel ut&aacute;na</b> &ndash; a vektoros elemeket &ouml;sszekapcsolja, ha az első vektoros elem a m&aacute;sodik ut&aacute;n van, &eacute;s egy megadott időn bel&uuml;l.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearTemporal">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            
+            <p>Egy időbeli k&ouml;zel kapcsolatn&aacute;l alkalmazott időbeli sugarat adja meg. Időbeli k&ouml;zel kapcsolat a  <b>K&ouml;zel</b>, a <b>K&ouml;zvetlen&uuml;l előtte</b> &eacute;s a <b>K&ouml;zel ut&aacute;na</b>.
+            </p>
+            <p>Ha p&eacute;ld&aacute;ul rendelkez&eacute;sre &aacute;ll egy haj&oacute;z&aacute;si baleseteket tartalmaz&oacute; r&eacute;teg &eacute;s egy hurrik&aacute;n GPS-es nyomvonal&aacute;t tartalmaz&oacute; r&eacute;teg, akkor megkeresheti a hurrik&aacute;n nyomvonal&aacute;t&oacute;l t&eacute;rben (1 kilom&eacute;ter) &eacute;s időben (5 &oacute;ra) megadott t&aacute;vols&aacute;gon bel&uuml;l eső haj&oacute;z&aacute;si baleseteket. Ennek eredm&eacute;nyek&eacute;ppen megkapn&aacute; azokat a hurrik&aacute;nhoz kapcsol&oacute;d&oacute; haj&oacute;z&aacute;si baleseteket, amelyek t&eacute;rben &eacute;s időben k&ouml;zel estek egym&aacute;shoz.
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>Válassza ki az összekapcsolandó mezőket</h2></div>
+        <hr/>
+        <div>
+            <p>Egy r&eacute;teg mezőinek &eacute;rt&eacute;keit p&aacute;ros&iacute;tja egy m&aacute;sik r&eacute;teg mezőinek &eacute;rt&eacute;keivel. 
+            </p>
+            <p>Ha p&eacute;ld&aacute;ul rendelkez&eacute;sre &aacute;llna egy lakc&iacute;meket (bele&eacute;rtve egy  <i>ZIP</i> mezőt) tartalmaz&oacute; megyei f&ouml;ldrajzi r&eacute;teg &eacute;s egy ir&aacute;ny&iacute;t&oacute;sz&aacute;m ( <i>HEALTHZIP</i> nevű mező) alapj&aacute;n eg&eacute;szs&eacute;g&uuml;gyi demogr&aacute;fiai adatokat tartalmaz&oacute;, t&aacute;bl&aacute;zatos adathalmaz, akkor a(z) <i>ZIP</i> mező &eacute;s a(z) <i>HEALTHZIP</i> mező p&aacute;ros&iacute;t&aacute;s&aacute;val &ouml;sszekapcsolhatn&aacute; az eg&eacute;szs&eacute;g&uuml;gyi adathalmazt a lakc&iacute;meket tartalmaz&oacute; adathalmazzal. Ez a lak&oacute;c&iacute;mek r&eacute;teg&eacute;t adn&aacute; eredm&eacute;ny&uuml;l a megfelelő eg&eacute;szs&eacute;g&uuml;gyi adatokkal.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Statisztika hozzáadása (opcionális)</h2></div>
+        <hr/>
+        <div>
+            <p>Statisztik&aacute;kat sz&aacute;m&iacute;t az &ouml;sszekapcsolt vektoros elemeken, ha az &ouml;sszekapcsol&aacute;si művelet  <b>Egy az egyhez &ouml;sszekapcsol&aacute;s</b>. Az eszk&ouml;z alap&eacute;rtelmez&eacute;s szerint minden statisztik&aacute;t kisz&aacute;m&iacute;t.
+            </p>
+            <p>Statisztik&aacute;kat sz&aacute;m&iacute;that &ouml;sszes&iacute;tett vektoros elemeken. Numerikus mezők&ouml;n a k&ouml;vetkező statisztik&aacute;k sz&aacute;m&iacute;that&oacute;k: 
+                <ul>
+                    <li>Sz&aacute;m &ndash; a nem null &eacute;rt&eacute;kek darabsz&aacute;m&aacute;t sz&aacute;m&iacute;tja ki. Numerikus mezők&ouml;n vagy karakterl&aacute;ncokon haszn&aacute;lhat&oacute;. A [null, 0, 2] darabsz&aacute;ma 2.
+                    </li>
+                    <li>&Ouml;sszeg &ndash; egy mezőben l&eacute;vő numerikus &eacute;rt&eacute;kek &ouml;sszege. A [null, null, 3] &ouml;sszege 3.
+                    </li>
+                    <li>&Aacute;tlag &ndash; a numerikus &eacute;rt&eacute;kek &aacute;tlaga. A [0, 2, null] &aacute;tlaga 1.
+                    </li>
+                    <li>Min &ndash; egy numerikus mező legkisebb &eacute;rt&eacute;ke. A [0, 2, null] minimuma 0. 
+                    </li>
+                    <li>Max &ndash; egy numerikus mező legnagyobb &eacute;rt&eacute;ke. A [0, 2, null] maximuma 2.
+                    </li>
+                    <li>Terjedelem &ndash; egy numerikus mező terjedelme. Ennek kisz&aacute;m&iacute;t&aacute;s&aacute;hoz az eszk&ouml;z a legkisebb &eacute;rt&eacute;keket vonja ki a legnagyobb &eacute;rt&eacute;kből. A [0, null, 1] terjedelme 1. A [null, 4] terjedelme 0.
+                    </li>
+                    <li>Variancia &ndash; egy numerikus mező varianci&aacute;ja egy k&ouml;vet&eacute;sben. Az [1] varianci&aacute;ja null &eacute;rt&eacute;kű. A [null, 1, 0, 1, 1] varianci&aacute;ja 0,25.
+                    </li>
+                    <li>Sz&oacute;r&aacute;s &ndash; egy numerikus mező sz&oacute;r&aacute;sa. Az [1] sz&oacute;r&aacute;sa null &eacute;rt&eacute;kű. A [null, 1, 0, 1, 1] sz&oacute;r&aacute;sa 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Karakterl&aacute;nc t&iacute;pus&uacute; mezők&ouml;n a k&ouml;vetkező statisztik&aacute;k sz&aacute;m&iacute;that&oacute;k:
+                <ul>
+                    <li>Sz&aacute;m &ndash; a nem null karakterl&aacute;ncok darabsz&aacute;ma.
+                    </li>
+                    <li>B&aacute;rmelyik &ndash; ez a statisztika a megadott mezőben l&eacute;vő karakterl&aacute;nc egy v&eacute;letlenszerű mint&aacute;ja.
+                    </li>
+                </ul>
+                Mindegyik statisztika sz&aacute;m&iacute;t&aacute;sa nem null &eacute;rt&eacute;keken t&ouml;rt&eacute;nik. Az eredm&eacute;ny&uuml;l kapott r&eacute;teg kisz&aacute;m&iacute;tott statisztikai adatonk&eacute;nt egy-egy &uacute;j mezőt fog tartalmazni. Attrib&uacute;tum &eacute;s statisztika kiv&aacute;laszt&aacute;s&aacute;val tetszőleges sz&aacute;m&uacute; statisztika hozz&aacute;adhat&oacute;.
+            </p>
+            <p>Mindegyik statisztika sz&aacute;m&iacute;t&aacute;sa nem null &eacute;rt&eacute;keken t&ouml;rt&eacute;nik. Az eredm&eacute;ny&uuml;l kapott r&eacute;teg kisz&aacute;m&iacute;tott statisztikai adatonk&eacute;nt egy-egy &uacute;j mezőt fog tartalmazni. Egy attrib&uacute;tum &eacute;s egy statisztika kiv&aacute;laszt&aacute;s&aacute;val tetszőleges sz&aacute;m&uacute; statisztika hozz&aacute;adhat&oacute;.
+            </p>
+        </div>
+    </div>
+    <div id="joinCondition">
+        <div><h2>Hozza létre a vektoros elemek összekapcsolásának alapjául szolgáló kifejezést (opcionális)</h2></div>
+        <hr/>
+        <div>
+            <p>Egy felt&eacute;telt alkalmaz meghat&aacute;rozott mezőkre. Az eszk&ouml;z csak az ezeket a felt&eacute;teleket kiel&eacute;g&iacute;tő mezőkkel rendelkező vektoros elemeket kapcsolja &ouml;ssze.
+            </p>
+            <p>Ha p&eacute;ld&aacute;ul egy adathalmaznak csak azokon a vektoros elemein szeretne alkalmazni egy &ouml;sszekapcsol&aacute;st, amelyekn&eacute;l  <i>health_spending</i> nagyobb, mint <i>income</i> 20 sz&aacute;zal&eacute;ka, akkor haszn&aacute;lja a k&ouml;vetkező &ouml;sszekapcsol&aacute;si felt&eacute;telt: <code>$target[&quot;health_spending&quot;] &gt; ($join[&quot;income&quot;] * .20)</code>; haszn&aacute;lja az első adathalmaz (az adathalmaz, amelyhez a vektoros elemeket kapcsolja) <i>health_spending</i> mezőj&eacute;t &eacute;s a m&aacute;sodik adathalmaz (a kapcsolt adathalmaz) <i>income</i> mezőj&eacute;t.
+            </p>
+            <p>Az &ouml;sszekapcsol&aacute;si felt&eacute;telek a kifejez&eacute;skalkul&aacute;tor seg&iacute;ts&eacute;g&eacute;vel alkalmazhat&oacute;k.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Adattár kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>A geoanalitikai eredm&eacute;nyek ment&eacute;se egy adatt&aacute;rban t&ouml;rt&eacute;nik, &eacute;s a(z)  Portal for ArcGIS vektoros r&eacute;tegeik&eacute;nt szerepelnek. Az eredm&eacute;nyeket t&ouml;bbnyire a t&eacute;rbeli-időbeli adatt&aacute;rban aj&aacute;nlott t&aacute;rolni, &eacute;s az alap&eacute;rtelmezett be&aacute;ll&iacute;t&aacute;s is ez. Egyes esetekben j&oacute; v&aacute;laszt&aacute;s lehet az eredm&eacute;nyek ment&eacute;se a rel&aacute;ci&oacute;s adatt&aacute;rban. Az al&aacute;bbi &eacute;rvek sz&oacute;lnak az eredm&eacute;nyek rel&aacute;ci&oacute;s adatt&aacute;rban t&ouml;rt&eacute;nő t&aacute;rol&aacute;sa mellett: 
+                <ul>
+                    <li>Az eredm&eacute;nyek port&aacute;lok k&ouml;z&ouml;tti egy&uuml;ttműk&ouml;d&eacute;sben haszn&aacute;lhat&oacute;k.
+                    </li>
+                    <li>Enged&eacute;lyezheti az eredm&eacute;nyekkel val&oacute; szinkroniz&aacute;l&aacute;si lehetős&eacute;geket
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Nem aj&aacute;nlott a rel&aacute;ci&oacute;s adatt&aacute;r haszn&aacute;lata, ha a geoanalitikai eredm&eacute;nyek mennyis&eacute;g&eacute;nek n&ouml;veked&eacute;se v&aacute;rhat&oacute;, &eacute;s ki kell haszn&aacute;lni a t&eacute;rbeli-időbeli big data-adatt&aacute;r k&eacute;pess&eacute;geit a nagy adatmennyis&eacute;g kezel&eacute;s&eacute;re.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p> A l&eacute;trehozand&oacute; r&eacute;teg neve.  Ha egy ArcGIS Data Store helyre &iacute;r, akkor  eredm&eacute;nyei a  <b>Saj&aacute;t tartalom</b> alatt lesznek elmentve, &eacute;s hozz&aacute; lesznek adva a t&eacute;rk&eacute;phez. Ha egy big data f&aacute;jlmegoszt&oacute;ba &iacute;r, akkor eredm&eacute;nyei a big data f&aacute;jlmegoszt&oacute;ba lesznek elmentve, &eacute;s hozz&aacute; lesznek adva annak jegyz&eacute;kf&aacute;jlj&aacute;hoz. Nem lesznek hozz&aacute;adva a t&eacute;rk&eacute;phez. Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a művelet sikertelen lesz.
+            </p>
+            <p>Ha   ArcGIS Data Store (rel&aacute;ci&oacute;s vagy t&eacute;rbeli-időbeli big data adatt&aacute;rba) &iacute;r az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő mező haszn&aacute;lat&aacute;val, akkor megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

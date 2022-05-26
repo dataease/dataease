@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Find Existing Locations</h2><p/>
+        <h2><img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" alt="Find Existing Locations"></h2>
+        <hr/>
+    <p>This tool selects existing features in your
+study area that meet a series of criteria you specify. These criteria can be based on attribute queries (for example, parcels that are vacant) and spatial queries (for example,  within one mile of a river).
+
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only the features in the input layer that are visible within the current map extent will be analyzed.  If unchecked, all features will be analyzed, even if they are outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayers">
+        <div><h2>Choose layer containing features you want to find using attribute and spatial queries</h2></div>
+        <hr/>
+        <div>
+            <p>The point, line, or area layer for which you want to find features based on a combination of attribute and spatial queries specified below.
+            </p>
+            <p>בנוסף לבחירת שכבה מהמפה שלך, באפשרותך לבחור באפשרות  <b>בחר שכבת ניתוח</b> בתחתית הרשימה הנפתחת. אפשרות זו פותחת גלריה שבה באפשרותך לעיין ולבחור ערכות נתונים ממקורות שונים לצורך שימוש בניתוח. 
+            </p>
+        </div>
+    </div>
+    <div id="Expression">
+        <div><h2>Build a query to find features</h2></div>
+        <hr/>
+        <div>
+            <p>Click the  <b>Add Expression</b> button to define an expression.  You can add multiple expressions.  After entering the expressions and clicking the <b>Run Analysis</b> button, features in your input layer are filtered through each expression.  Those features that satisfy all expressions are written to the result layer.
+            </p>
+            <p>There are two basic types of expressions you can create; attribute and spatial.  Attribute expressions are queries on field values, such as  <code>where name is 'San Francisco'</code>.  There are four types of spatial expressions:
+                <ul>
+                    <li> <b>within a distance of</b>: the feature must be within a distance of a feature in another layer.  For example, find parcels within 500 meters of the Los Angeles river.
+                    </li>
+                    <li> <b>completely contains</b>: the feature must contain all of a feature in another layer.  For example, find watersheds that completely contain parcels zoned for industrial use.  No part of the parcel can be outside of the watershed.
+                    </li>
+                    <li> <b>completely within</b>: the feature must be entirely surrounded by a feature in another layer.  For example, find school districts that are completely within the boundary of a city.  No part of the school district can be outside of the city boundary.
+                    </li>
+                    <li> <b>intersects</b>: the feature contains a part of a feature in another layer.  For example, find parcels that intersect rivers.  Any part of the river that passes through the parcel, or touches the boundary of the parcel, intersects the parcel.
+                    </li>
+                    <li> <b>nearest to</b>: the feature must be nearest to a feature in another layer.  For example, find the restaurant that is closest to each hotel.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Each spatial expression has a corresponding negation, with the exception of  <b>nearest to</b>; <b>not within a distance of</b>, <b>does not completely contain</b>, <b>not completely within</b>, and <b>does not intersect</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OuputName">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>זהו השם של השכבה שתיווצר ב <b>התוכן שלי</b> ותתווסף למפה. שם ברירת המחדל מבוסס על שם הכלי ושם שכבת הקלט. אם שם השכבה כבר קיים, תתבקש לספק שם אחר.
+            </p>
+            <p>בעזרת התפריט הנפתח  <b>שמור תוצאה ב</b>, באפשרותך לציין את שם התיקייה ב <b>תוכן שלי</b> שבה התוצאה תישמר.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

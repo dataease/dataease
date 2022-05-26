@@ -1,0 +1,58 @@
+<div>
+  <div class="esriImageFilterSettingsDialog" data-dojo-type="dijit/Dialog" data-dojo-attach-point="dialog" title="${_i18n.formatFields}">
+    <table class="esriImageFilterSettingsContainerTable">
+      <tr> 
+        <td>
+          <fieldset class="esriImageFilterFieldFormat">
+
+            <div class="format formatNumber">
+              <select data-dojo-attach-point="_formatNumberSelect" class="esriImageFilterFieldFormatSelect formatNumber formatter format" data-dojo-type="dijit.form.Select">
+                <option value='0' selected="selected">0 ${_i18n.decimalPlaces}</option>
+                <option value='1'>1 ${_i18n.decimalPlace}</option>
+                <option value='2'>2 ${_i18n.decimalPlaces}</option>
+                <option value='3'>3 ${_i18n.decimalPlaces}</option>
+                <option value='4'>4 ${_i18n.decimalPlaces}</option>
+                <option value='5'>5 ${_i18n.decimalPlaces}</option>
+                <option value='6'>6 ${_i18n.decimalPlaces}</option>
+                <option value='7'>7 ${_i18n.decimalPlaces}</option>
+                <option value='8'>8 ${_i18n.decimalPlaces}</option>
+              </select>
+              <br />
+            </div>
+            <div class="formatNumber formatter formatInteger format">
+              <label class="checkbox">
+                <input data-dojo-attach-point="_formatNumberCheck" data-dojo-type="dijit.form.CheckBox" />&nbsp;${_i18n.separator}</label>
+            </div>
+            <div class="esriImageFilterFormatDate format">
+              <select data-dojo-attach-point="_formatDateSelect" class="esriImageFilterFieldFormatSelect formatter" data-dojo-type="dijit.form.Select">
+                <option value="shortDate" selected="selected">12/21/1997</option>
+                <option value="shortDateLE" selected="selected">21/12/1997</option>
+                <option value="longMonthDayYear">December 21, 1997</option>
+                <option value="dayShortMonthYear">21 Dec 1997</option>
+                <option value="longDate">Sunday, December 21, 1997</option>
+                <option value="longMonthYear">December 1997</option>
+                <option value="shortMonthYear">Dec 1997</option>
+                <option value="year">1997</option>
+              </select>
+              <div class="formatTime hide">
+                <label data-dojo-attach-point="timeCheckboxLbl" class="timeCheckbox disabled">
+                  <input data-dojo-attach-point="_formatTimeCheck" data-dojo-type="dijit.form.CheckBox" />&nbsp;${_i18n.showTime}</label>
+                <br />
+                <select data-dojo-attach-point="_formatTimeSelect" class="esriImageFilterFieldFormatSelect formatter hide" data-dojo-type="dijit.form.Select">
+                  <option value="ShortTime" selected="selected">6:00 PM</option>
+                  <option value="LongTime">6:00:00 PM</option>
+                  <option value="ShortTime24">18:00</option>
+                  <option value="LongTime24">18:00:00</option>
+                </select>
+              </div>
+            </div>
+          </fieldset>
+        </td>
+      </tr>
+    </table>
+    <div class="esriImageFilterConfirm">
+      <button class="jevent primary" data-dojo-type="dijit/form/Button" data-dojo-attach-event="onClick:_handleOKButtonClick">${_i18n.ok}</button>
+      <button class="jevent cancel" data-dojo-type="dijit/form/Button" data-dojo-attach-event="onClick:hide">${_i18n.cancel}</button>
+    </div>
+  </div>
+</div>

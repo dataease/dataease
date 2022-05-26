@@ -1,0 +1,22 @@
+<div class="esriGEReportPlayer_chartContainer esriGENonSelectable">
+    <div data-dojo-attach-point="chartLabel" class="chartContainer_chartLabel TrimWithEllipses"></div>
+
+    <div data-dojo-attach-point="noDataPlaceHolder" class="esriGENoDataPlaceHolder">
+        <div class="esriGENoDataPlaceHolderLabel">${nls.noChartData}</div>
+    </div>
+
+    <div data-dojo-attach-point="chartNormalViewDiv">
+        <div class="chartContainer_chartContainerWithAxis" data-dojo-attach-point="chartContainerWithAxis">
+            <div data-dojo-attach-point="chartContainerDiv"></div>
+        </div>
+        <div data-dojo-attach-point="tableContainerDiv"></div>
+        <div data-dojo-attach-point="legendContainerDiv" class="chartContainer_legendContainer"></div>
+        <div data-dojo-attach-point="comparisonSelectBlock" class="chartContainer_comparisonSelectBlock">
+            <div data-dojo-attach-point="comparisonLabel" class="chartContainer_comparisonLabel"></div>
+            <div data-dojo-attach-point="comparisonSelectDiv" class="chartContainer_comparisonSelectDiv"></div>
+        </div>
+    </div>
+
+    <div data-dojo-attach-point="errorDiv" class="esriGEReportPlayerPanelErrorMessage">${nls.chartLoadError}</div>
+    <div data-dojo-attach-point="missingVariablesDiv" class="chartContainer_missingVariablesMessage">${nls.chartContainerMissingVariables}</div>
+</div>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Geocodifica località da tabella</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="Geocodifica localit&agrave; da tabella"></h2>
+        <hr/>
+    <p>La geocodifica &egrave; un modo per convertire indirizzi in coordinate. Questo strumento consente di convertire indirizzi da una tabella, un file CSV o un file Excel in un feature layer o un file di output con le coordinate come colonne aggiuntive.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>Scegli una tabella di input</h2></div>
+        <hr/>
+        <div>
+            <p>La tabella di input con gli indirizzi da geocodificare. L'input deve essere una tabella, un file CSV o un file Excel.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Scegli un localizzatore</h2></div>
+        <hr/>
+        <div>
+            <p>Scegliere un servizio localizzatore rispetto al quale eseguire la geocodifica. Se il servizio localizzatore da utilizzare non &egrave; presente nel menu a discesa, contattare l'amministratore affinch&eacute; il servizio localizzatore venga configurato per la geocodifica batch.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>Paese</h2></div>
+        <hr/>
+        <div>
+            <p>Se tutti gli indirizzi sono relativi a un unico paese, selezionare il paese per garantire la massima precisione dei risultati. In caso contrario, lasciare questo parametro vuoto.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Seleziona campi di dati</h2></div>
+        <hr/>
+        <div>
+            <p>Il servizio localizzatore prevede determinati campi nei dati, ad esempio indirizzo, citt&agrave;, stato e codice postale. Abbinare i campi di dati nel file o nella tabella di input ai campi previsti dal localizzatore utilizzando le caselle a discesa. Pi&ugrave; campi indirizzo vengono mappati, pi&ugrave; precisi saranno i risultati. Se la tabella di input contiene tutti i suoi dati in un'unica colonna, selezionare  <b>Campo singolo</b> e scegliere un campo di dati dal menu a discesa. In caso contrario, selezionare <b>Pi&ugrave; campi</b> e abbinare i campi localizzatore appropriati a pi&ugrave; colonne del campo nella tabella.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Scegli un formato di output</h2></div>
+        <hr/>
+        <div>
+            <p>Formato dei risultati di output. Se si sceglie di creare un feature service, gli indirizzi della tabella di input verranno aggiunti alla mappa come un layer di feature punto. Le opzioni CSV e XLS consentono di aggiungere file con i risultati del processo di geocodifica geocoding a  <b>I miei contenuti</b> quando il processo viene completato.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome risultato di output</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa.  Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il nome del layer esiste gi&agrave;, verr&agrave; richiesto di fornire un altro nome.
+            </p>
+            <p>Utilizzare il men&ugrave; a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

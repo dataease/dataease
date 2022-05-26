@@ -1,0 +1,57 @@
+<div class="esriAnalysis">
+    <div data-dojo-type="dijit/layout/ContentPane" style="margin-top:0.5em; margin-bottom: 0.5em;">
+      <div data-dojo-attach-point="_aggregateToolContentTitle" class="analysisTitle breakWord">
+        <table class="esriFormTable" >
+          <tr>
+            <td class="esriToolIconTd"><div class="GPWidgetIcon"></div></td>
+            <td class="esriAlignLeading esriAnalysisTitle" data-dojo-attach-point="_toolTitle">
+              <label data-dojo-attach-point="_titleLbl"></label>
+            </td>
+            <td>
+              <div class="esriFloatTrailing" style="padding:0;">
+                  <div class="esriFloatLeading" data-dojo-attach-point="_toolDescHelpDiv">
+                    <a href="#" class='esriFloatLeading helpIcon' esriHelpTopic="toolDescription"></a>
+                  </div>
+                  <div class="esriFloatTrailing">
+                    <a href="#" data-dojo-attach-point="_closeBtn" title="${i18n.close}" class="esriAnalysisCloseIcon"></a>
+                  </div>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="toolHeaderLine"></div>
+    </div>
+    <div data-dojo-type="dijit/form/Form" data-dojo-attach-point="_form" readOnly="true">
+      <div class="section" data-dojo-attach-point="inputSectionNode"></div>
+    </div>
+    <div data-dojo-attach-point="_aggregateToolContentButtons" style="padding:5px;margin-top:5px;border-top:solid 1px #BBB;">
+      <div class="esriFormWarning esriRoundedBox" data-dojo-attach-point="_errorMessagePane" style="display:none;">
+        <a href="#" title="${i18n.close}" class="esriFloatTrailing esriAnalysisCloseIcon"></a>
+        <span data-dojo-attach-point="_bodyNode"></span>
+      </div>
+      <div class="esriExtentCreditsCtr">
+        <a class="esriFloatTrailing esriSmallFont"  href="#" data-dojo-attach-point="_showCreditsLink"></a>
+       <label data-dojo-attach-point="_chooseExtentDiv" class="esriSelectLabel esriExtentLabel">
+         <input type="radio" data-dojo-attach-point="_useExtentCheck" data-dojo-type="dijit/form/CheckBox" data-dojo-props="checked:true" name="extent" value="true"/>
+           ${i18n.useMapExtent}
+       </label>
+      </div>
+      <div class="esriExtentCreditsCtr">
+        <button data-dojo-type="dijit/form/Button" type="submit" style="width:100%;" data-dojo-attach-point="_saveBtn" data-dojo-attach-event="onClick:_handleSaveBtnClick" class="calcite btn large blue webtoolbtn">
+        ${i18n.runAnalysis}
+        </button>
+        <button data-dojo-type="dijit/form/Button" type= "button" class="calcite btn large transparent webtoolbtn" style="border:1px solid" data-dojo-attach-point="_cancelBtn" data-dojo-attach-event="onClick:_handleCancelBtnClick">
+        ${i18n.cancel}
+        </button>
+      </div>
+    </div>
+    <div class="output-pane" data-dojo-attach-point="outputPaneNode">
+      <div class="section info" data-dojo-attach-point="infoNode">
+        <a href="#" title="${i18n.close}" data-dojo-attach-point="_msgCloseIcon" style="padding:0;display:none;" class="esriFloatTrailing esriAnalysisCloseIcon" data-dojo-attach-event="onclick:_handleCloseMsg"></a>
+        <div data-dojo-attach-point="loadingNode" class="loading"></div>
+        <div data-dojo-attach-point="infoTextNode" class="text"></div>
+      </div>
+      <div class="section" data-dojo-attach-point="outputSectionNode"></div>
+    </div>
+  </div>

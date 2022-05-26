@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Muunna kohde rasteriksi</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="Muunna kohde rasteriksi -ty&ouml;kalu"></h2>
+        <hr/>
+    <p>T&auml;m&auml; ty&ouml;kalu muuntaa kohteet rasteriaineistoryhm&auml;ksi.
+    </p>
+    <p>Mik&auml; tahansa kohdeluokka, joka sis&auml;lt&auml;&auml; piste-, viiva- tai aluekohteita, voidaan muuntaa rasteriaineistoryhm&auml;ksi.
+    </p>
+    <p>Tulosaineiston rasterin pikseliarvo m&auml;&auml;ritet&auml;&auml;n solun keskikohdan avulla.
+    </p>
+    <p>L&auml;ht&ouml;aineiston kent&auml;n tyyppi m&auml;&auml;ritt&auml;&auml; tulosaineiston rasterin. Jos kentt&auml; on kokonaisluku, tulosaineiston rasteri on kokonaisluku. Jos kentt&auml; on liukuluku, tulosaineisto on liukuluku.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse muunnettava karttataso</h2></div>
+        <hr/>
+        <div>
+            <p>L&auml;ht&ouml;aineiston kohdekarttataso, joka muunnetaan rasteriaineistoryhm&auml;ksi.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Valitse kenttä</h2></div>
+        <hr/>
+        <div>
+            <p>Valitse kentt&auml;, jota k&auml;ytet&auml;&auml;n arvojen m&auml;&auml;ritt&auml;miseen tulosaineiston rasterille.
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Tulosaineiston solukoko</h2></div>
+        <hr/>
+        <div>
+            <p>Tulosaineiston rasterien solun koko ja yksikk&ouml;.
+            </p>
+            <p>K&auml;ytett&auml;viss&auml; olevat yksik&ouml;t ovat: maili, jalka kilometri ja metri. Oletuksena on jalka.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen karttatason nimi, joka luodaan  <b>Oma sis&auml;lt&ouml;</b> -kohtaan ja lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos taso on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Voit m&auml;&auml;ritt&auml;&auml; kansion nimen  <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan avattavan <b>Tallenna tulos kohteeseen</b> -valikon avulla.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

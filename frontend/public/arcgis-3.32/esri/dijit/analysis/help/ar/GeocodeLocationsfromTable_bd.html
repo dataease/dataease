@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>مواقع الكود الجغرافي من جدول</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="تكويد المواقع جغرافيًا من جدول"></h2>
+        <hr/>
+    <p>يعمل التكويد الجغرافي على تحويل العناوين إلى تنسيقات. تحول هذه الأداة العناوين من جدول مشاركة ملف بيانات ضخمة إلى طبقة معالم بإحداثيات كأعمدة إضافية.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>اختر جدول الإدخال</h2></div>
+        <hr/>
+        <div>
+            <p>الجدول المدخل مع العناوين للتكويد الجغرافي. 
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>اختيار محدد مواقع</h2></div>
+        <hr/>
+        <div>
+            <p>اختر خدمة محدد المواقع للتكويد الجغرافي مقابلها. إذا كانت خدمة محدد المواقع التي تريد استخدامها ليست في القائمة المنسدلة، اتصل بالمسئول لتكوين خدمة محدد المواقع للتكويد الجغرافي الدَّفعي.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>الدولة</h2></div>
+        <hr/>
+        <div>
+            <p>إذا كانت العناوين من دولة واحدة، حدد تلك الدولة لضمان نتائج أكثر دقة. أو اترك هذه المعلمة فارغة.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>حدد حقول البيانات</h2></div>
+        <hr/>
+        <div>
+            <p>تتوقع خدمة محدد المواقع حقولاً محددة في البيانات، مثل العنوان والمدينة والولاية والرمز البريدي أو رمز ZIP. مطابقة حقول البيانات في الملف المدخل أو الجدول الناتج بالحقول التي يتوقعها محدد المواقع باستخدام المربعات المنسدلة. كلما زادت الحقول التي تخططها، زادت دقة النتائج. إذا تضمن جدول المدخلات جميع البيانات في عمود واحد، حدد  <b>حقل واحد</b>,  واختر حقل البيانات من القائمة المنسدلة. وبخلاف ذلك، حدد <b>حقول متعددة</b>, وقم بتعيين حقول محدد المواقع المناسبة إلى أعمدة الحقل المتعددة في الجدول.
+            </p>
+        </div>
+    </div>
+    <div id="includeAttributes">
+        <div><h2>لكل موقع</h2></div>
+        <hr/>
+        <div>
+            <p>يتضمن حقول إضافية يتم إرجاعها بواسطة خدمة الموقع. إذا تم التأشير على هذا الخيار، سيتم إرجاع جميع الحقول التي تم إنشائها بواسطة محدد الموقع. إذا لم يتم التأشير على هذا الخيار، سيتم إرجاع البيانات المُدخلة مع الإحداثيات المكودة جغرافيًا. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>الاسم الناتج للمخرجات</h2></div>
+        <hr/>
+        <div>
+            <p> سيتم إنشاء اسم الطبقة في المحتوى. إذا كنت تقوم بالكتابة إلى ArcGIS Data Store، سيتم حفظ نتائجك في  <b>محتواي</b> وإضافته إلى الخريطة. إذا كنت تقوم بالكتابة إلى مشاركة ملف بيانات ضخمة، ستخزن نتائجك في مشاركة ملف البيانات الضخمة وإضافتها إلى البيان الخاص بها. لن تتم إضافتها إلى الخريطة. يستند الاسم الافتراضي إلى اسم الأداة واسم الطبقة المدخلة. إذا وُجِدَت الطبقة بالفعل، ستفشل الأداة.
+            </p>
+            <p>عند الكتابة إلى  ArcGIS Data Store (مخزن بيانات ضخمة للموضع المكاني والزماني أو ارتباطية) باستخدام مربع السهم المنسدل  <b>حفظ النتائج في</b>، يمكن تحديد اسم المجلد في <b>محتواي</b> حيث يتم حفظ النتائج.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

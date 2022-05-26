@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Oblicz odległość</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="Oblicz odległość"></h2>
+        <hr/>
+    <p>To narzędzie oblicza odległość euklidesową, kierunek i przydział na podstawie pojedynczego źr&oacute;dła lub zestawu źr&oacute;deł.
+    </p>
+    <p>Przykładowe zastosowania obejmują udzielanie odpowiedzi na następujące pytania:
+
+        <ul>
+            <li>Jaka jest odległość do najbliższego miasta?
+                
+
+            </li>
+            <li>Jaka jest odległość do najbliższej drogi?
+                
+
+            </li>
+            <li>Jaka jest odległość do najbliższego źr&oacute;dła wody pitnej?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jeśli zaznaczona jest opcja  <b>Użyj bieżącego zasięgu mapy</b>, analizowane będą tylko obiekty warstwy wejściowej widoczne w bieżącym zasięgu mapy. Jeśli opcja ta nie jest zaznaczona, przeanalizowane zostaną wszystkie obiekty warstwy wejściowej, nawet jeśli znajdują się one poza bieżącym zasięgiem mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Wybierz raster lub warstwę lokalizacji obiektów w celu obliczenia odległości do</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa definiująca źr&oacute;dła, do kt&oacute;rych będzie obliczona odległość. Warstwa może być usługą rastrową lub usługą obiektową.
+            </p>
+            <p>W przypadku usługi rastrowej typem wejściowym może być typ całkowitoliczbowy lub zmiennoprzecinkowy.
+            </p>
+            <p>W przypadku usługi obiektowej danymi wejściowymi mogą być punkty, linie lub poligony.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Maksymalna obliczana odległość</h2></div>
+        <hr/>
+        <div>
+            <p>Maksymalna odległość, kt&oacute;ra zostanie obliczona. Na przykład po wprowadzeniu wartości 10&nbsp;000 metr&oacute;w odległość euklidesowa od lokalizacji źr&oacute;dłowej będzie obliczana do tej wartości (w tym zakresie).
+            </p>
+            <p>Przy braku określenia wartości odległość będzie obliczana w zdefiniowanym zasięgu.
+            </p>
+            <p>Dostępnymi jednostkami są kilometry, metry, mile i stopy.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Wielkość komórki danych wynikowych</h2></div>
+        <hr/>
+        <div>
+            <p>Wielkość kom&oacute;rki i jednostka dla rastr&oacute;w wynikowych.
+            </p>
+            <p>Jednostkami mogą być kilometry, metry, mile i stopy.
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>Nazwa warstwy dla odległości wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Nazwa warstwy, kt&oacute;ra zostanie utworzona w obszarze  <b>Moje zasoby</b> i dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli warstwa już istnieje, wyświetlony zostanie komunikat z monitem o podanie innej nazwy.
+            </p>
+            <p>Za pomocą listy rozwijanej  <b>Zapisz wynik w</b> można podać nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>Nazwa warstwy dla kierunku wynikowego</h2></div>
+        <hr/>
+        <div>
+            <p>Nazwa warstwy, kt&oacute;ra zostanie utworzona w oknie  <b>Moje zasoby</b>. Należy podać nazwę, kt&oacute;ra nie istnieje aktualnie w obszarze <b>Moje zasoby</b>.
+            </p>
+            <p>Za pomocą listy rozwijanej  <b>Zapisz wynik w</b> można podać nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>Nazwa warstwy dla przydziału wynikowego</h2></div>
+        <hr/>
+        <div>
+            <p>Nazwa warstwy, kt&oacute;ra zostanie utworzona w oknie  <b>Moje zasoby</b>. Należy podać nazwę, kt&oacute;ra nie istnieje aktualnie w obszarze <b>Moje zasoby</b>.
+            </p>
+            <p>Za pomocą listy rozwijanej  <b>Zapisz wynik w</b> można podać nazwę folderu w obszarze <b>Moje zasoby</b>, gdzie zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>Wybierz pole przydziału</h2></div>
+        <hr/>
+        <div>
+            <p>Pole wejściowej warstwy źr&oacute;dłowej zawierające wartości definiujące poszczeg&oacute;lne źr&oacute;dła. Może to być pole całkowitoliczbowe lub znakowe źr&oacute;dłowego zestawu danych.
+            </p>
+            <p>Domyślnym polem jest  <i>Value</i>. W przypadku usługi obiektowej i braku pola <i>Value</i> zostanie użyte pierwsze dostępne pole całkowitoliczbowe lub znakowe. Jeśli nie istnieją poprawne pola, zostanie użyte pole z identyfikatorem obiektu (na przykład OID lub FID w zależności od typu obiektowej danej wejściowej).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

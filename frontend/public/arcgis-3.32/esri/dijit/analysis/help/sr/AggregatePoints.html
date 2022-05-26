@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Grupiši tačke</h2><p/>
+        <h2><img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" alt="Aggregate Points"></h2>
+        <hr/>
+    <p>Ova alatka radi sa slojem tačkastih geoobjekata i slojem geoobjekata oblasti. On prvo određuje koje tačke spadaju u svaku oblast. Nakon određivanja ove prostorne veze tačaka-u-oblasti, izračunavaju se statistika o svim tačkama u oblasti i vrednost se dodeljuje oblasti. Najosnovnija statistika jeste broj tačaka unutar oblasti, ali možete da dobijete i druge statističke podatke. 
+    </p>
+    <p>Na primer, pretpostavimo da imate tačkaste geoobjekte lokacija kafeterija i geoobjekte oblasti okruga, a želite da sumirate prodaju kafe po okrugu. Pretpostavljajući da kafeterije imaju atribut  <i>TOTAL_SALES</i>, možete da dobijete zbir svih <i>TOTAL_SALES</i> unutar svakog okruga ili minimalnu i maksimalnu vrednost za <i>TOTAL_SALES</i>
+unutar svakog okruga ili standardnu devijaciju celokupne prodaje unutar svakog okruga.
+    </p>
+    <p>Ako je opcija  <b>Koristi trenutni obuhvat mape</b> uključena, biće analizirani samo geoobjekti u ulaznom tačkastom sloju i sloju oblasti vidljivi unutar trenutnog obuhvata mape. Ako ova opcija nije uključena, biće analizirani svi geoobjekti u ulaznom tačkastom geoobjektu i sloju oblasti, čak i ako su izvan trenutnog obuhvata mape.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Odaberite sloj koji sadrži tačke za grupisanje u oblasti</h2></div>
+        <hr/>
+        <div>
+            <p>Tačkasti sloj koji će biti grupisan u oblasti.
+            </p>
+            <p>Pored biranja sloja sa mape, možete da selektujete  <b>Izaberi sloj za analizu</b> koji se nalazi na dnu padajuće liste. Ova opcija otvara galeriju gde možete da pregledate i birate skupove podataka iz raznih izvora za kori&scaron;ćenje u va&scaron;oj analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Odaberite sloj koji sadrži oblasti grupisanja</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj oblasti u koji će tačke biti grupisane. Sve tačke koje padnu unutar granica oblasti u ovom sloju biće uračunate i opciono sumirane koristeći statistiku po va&scaron;em izboru.  
+            </p>
+            <p>Možete da birate između sloja oblasti koji ćete vi obezbediti ili blokova koji se generi&scaron;u kada je pokrenut alat. Pri pravljenju blokova, za  <b>Kvadrat</b>, navedeni broj i jedinice određuju visinu i dužinu kvadrata. Za <b>&Scaron;estougao</b>, navedeni broj i jedinice određuju rastojanje između paralelnih stranica.
+            </p>
+            <p>Pored biranja sloja sa mape, možete da selektujete  <b>Izaberi sloj za analizu</b> koji se nalazi na dnu padajuće liste. Ova opcija otvara galeriju gde možete da pregledate i birate skupove podataka iz raznih izvora za kori&scaron;ćenje u va&scaron;oj analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="KeepBoundaryNoPoints">
+        <div><h2>Zadrži oblasti bez tačaka</h2></div>
+        <hr/>
+        <div>
+            <p>Određuje da li se oblasti koje ne sadrže nijednu tačku prikazuju u sloju sa rezultatima. Ako ova opcija nije izabrana, oblasti bez tačaka neće se prikazati u rezultatu. Ako je ova opcija izabrana, oblasti bez tačaka prikazaće se u rezultatu.  
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Dodaj statistiku</h2></div>
+        <hr/>
+        <div>
+            <p>Možete da izračunate statistiku o atributima ulaznog tačkastog sloja kao &scaron;to je zbir, srednja vrednost, minimum, maksimum i standardna devijacija. Sloj sa rezultatima sadržaće novi atribut za svaki izračunati statistički podatak. Možete da dodate bilo koji broj statističkih podataka tako &scaron;to ćete da odaberete atribut i statistiku (prikazaće se novo padajuće polje).
+ 
+            </p>
+            <p>Ako sloj za sumiranje nema nijedno numeričko polje, dodatna statistika neće biti dostupna.
+            </p>
+        </div>
+    </div>
+    <div id="GroupByField">
+        <div><h2>Odaberite polje po kojem ćete da grupišete</h2></div>
+        <hr/>
+        <div>
+            <p> Možete da kreirate statističke grupe koristeći atribut u ulaznom tačkastom sloju. Na primer, ako grupi&scaron;ete kriminalna dela prema granicama susedstava, možete da imate atribut <i>Crime_type</i> sa pet različitih tipova kriminalnih dela. Svaki jedinstveni tip kriminalnih dela formira grupu, a statistika koju odaberete biće izračunata za svaku jedinstvenu vrednost za <i>Crime_type</i>. Statistika za svaku grupu, kao i broj tačaka, biće prikazani u iskačućem prozoru sloja sa rezultatima. Kada odaberete atribut grupisanja, kreiraju se dva rezultata: sloj sa rezultatima i tabela sa rezultatima koja sadrži statistiku za svaku jedinstvenu grupu.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Dodaj manjinu, većinu</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo polje za potvrdu je omogućeno kada odaberete polje po kojem ćete da grupi&scaron;ete. Ako želite da saznate koje vrednosti atributa unutar svake grupe predstavljaju manjinu (najmanje zastupljenu vrednost) ili većinu (najzastupljeniju vrednost) unutar svake granice, selektujte  <b>Dodaj manjinu, većinu</b>. Kada selektujete <b>Dodaj manjinu, većinu</b>, dva nova polja se dodaju sloju sa rezultatima. Ako selektujete i <b>Dodaj procente</b>, dva dodatna polja dodaju se sloju sa rezultatima, koja sadrže procente vrednosti atributa manjine i većine unutar svake grupe.
+            </p>
+            <p>Na primer, ako ste urbanista i želite da saznate koje vrste drveća predstavljaju manjinu, a koje su u većini u svim gradskim parkovima, grupi&scaron;ite podatke o drveću sa oblastima parka, a zatim potvrdite ovu opciju.
+            </p>
+        </div>
+    </div>
+    <div id="PercentPoints">
+        <div><h2>Dodaj procente</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo polje za potvrdu je omogućeno kada odaberete polje po kojem ćete da grupi&scaron;ete. Selektujte opciju  <b>Dodaj procente</b> ako želite da pronađete procenat svake vrednosti atributa unutar svake grupe. Novo polje se dodaje tabeli sa rezultatima koja sadrži procente svake vrednosti atributa unutar svake grupe. Ako je selektovana i opcija <b>Dodaj manjinu, većinu</b>, dva dodatna polja dodaju se sloju sa rezultatima, koja sadrže procente vrednosti atributa manjine i većine unutar svake grupe.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja koji će biti kreiran u  <b>Mom sadržaju</b> i dodat na mapu. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako naziv sloja već postoji, bićete upitani da unesete drugi naziv.
+            </p>
+            <p>Koristeći padajući meni  <b>Sačuvaj rezultat u</b>, možete da navedete ime fascikle u <b>Mom sadržaju</b> u kojoj će rezultat biti sačuvan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

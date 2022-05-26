@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Trova hot spot</h2><p/>
+        <h2><img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" alt="Trova Hot Spot"></h2>
+        <hr/>
+    <p> Lo strumento Trova hot Spot consente di determinare la presenza di cluster statisticamente rilevanti nel modello spaziale dei dati.
+        <ul>
+            <li>I punti (reati, alberi, incidenti stradali) sono realmente organizzati in cluster? Come si pu&ograve; verificarlo?
+            </li>
+            <li>&Egrave; stato effettivamente individuato un hot spot di rilevanza statistica (ai fini della spesa, della mortalit&agrave; infantile, di punteggi di test elevati) oppure la mappa raffigurerebbe una situazione diversa se venisse cambiata la simbologia?
+            </li>
+        </ul>
+        Lo strumento Trova hot spot consente di rispondere con sicurezza a queste domande.
+    </p>
+    <p>&Egrave; possibile individuare cluster anche in modelli spaziali casuali. Gli occhi e il cervello umano provano inoltre naturalmente a individuare modelli anche quando non esistono. Di conseguenza pu&ograve; risultare difficile sapere se i modelli presenti nei dati sono il risultato di processi spaziali reali o semplicemente il risultato del caso. &Egrave; per questo motivo che ricercatori e analisti utilizzano metodi statistici, come Trova hot spot (Getis-Ord Gi*) per quantificare modelli spaziali. L'individuazione di cluster di rilevanza statistica nei dati consente di disporre di informazioni importantissime. Sapere dove e quando si verificano i cluster pu&ograve; offrire indizi importanti sui processi che portano alla creazione dei modelli visualizzati. Sapere, ad esempio, che il numero di furti in appartamento &egrave; particolarmente elevato in un determinato quartiere &egrave; essenziale per definire adeguate strategie di prevenzione, allocare risorse di polizia limitate, predisporre programmi di sorveglianza del quartiere, autorizzare investigazioni approfondite sui reati o identificare potenziali sospetti.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Scegli il layer per il quale verranno calcolati gli hot spot</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer di punti o area per il quale verranno trovati hot spot e cold. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Trova cluster di valori alti e bassi</h2></div>
+        <hr/>
+        <div>
+            <p>Questa analisi consente di rispondere alla domanda seguente: dove si raggruppano in cluster i valori alti e bassi?
+            </p>
+            <p>Se i dati sono punti e si sceglie  <b>Conteggi punti</b>, questo strumento valuter&agrave; la disposizione delle feature puntuali nello spazio e consentir&agrave; di rispondere alla seguente domanda: in che area i punti si raggruppano in cluster o si distribuiscono in modo imprevisto?
+            </p>
+            <p>Se si sceglie un campo, lo strumento valuter&agrave; la disposizione nello spazio dei valori associati a ciascuna feature e consentir&agrave; di rispondere alla seguente domanda: in che area i valori alti e bassi si raggruppano in cluster?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Calcolare i punti all'interno</h2></div>
+        <hr/>
+        <div>
+            <p>L'impostazione predefinita consiste nel calcolare i punti all'interno di una griglia creata dallo strumento e basata sui dati dei punti. In alternativa, &egrave; possibile contare i punti all'interno di una griglia esagonale o specificare un layer di area (che rispecchia in genere distretti amministrativi, ad esempio sezioni di spoglio, confini municipali o regioni/contee) per rispondere alla seguente domanda: dato il numero di punti calcolati in ogni feature area, sono presenti localit&agrave; con cluster spaziali di rilevanza statistica con valori alti o bassi?   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Definisci dove sono possibili i punti</h2></div>
+        <hr/>
+        <div>
+            <p>Tracciare o specificare un layer che definisce dove sono possibili incidenti per rispondere alla seguente domanda: nelle aree di confine sono presenti localit&agrave; con concentrazioni di punti straordinariamente alte o basse?   
+            </p>
+            <p>Le feature area tracciate o quelle nel layer di area specificato devono definire la possibile posizione dei punti. Per tracciare queste aree, fare clic sul pulsante  <b>Disegna</b> e quindi fare clic su una posizione sulla mappa per creare una forma di tipo area.  Per tracciare altre aree, fare clic di nuovo sull'apposito pulsante, quindi fare clic su un'altra posizione sulla mappa per continuare.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Suddividi per</h2></div>
+        <hr/>
+        <div>
+            <p>Talvolta potrebbe essere necessario analizzare i modelli che prendono in considerazione distribuzioni sottostanti. Ad esempio, se i punti rappresentano eventi criminosi, dividendo per la popolazione totale si dovrebbe avere come risultato un'analisi dei crimini pro capite, piuttosto che il totale non elaborato dei crimini.  La scelta di un attributo in funzione del quale viene effettuata la divisione &egrave; definita normalizzazione.
+            </p>
+            <p>Scegliendo  <i>Popolazione Esri</i> ciascuna feature di area verr&agrave; arricchita con i valori della popolazione che verranno poi utilizzati come attributo per cui dividere.  Questa opzione utilizzer&agrave; crediti.
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Opzioni di sovrapposizione</h2></div>
+        <hr/>
+        <div>
+            <p> Lo strumento individuer&agrave; le impostazioni ottimali per i valori predefiniti delle opzioni <b>Dimensione cella</b> e <b>Banda di distanza</b> in base alle caratteristiche dei dati disponibili. Tuttavia, in presenza di impostazioni specifiche per <b>Dimensioni cella</b> o <b>Banda di distanza</b> che rendano significativa l'analisi, per impostare tali valori &egrave; possibile utilizzare l'opzione <b>Opzioni di sovrapposizione</b>.
+            </p>
+            <p>Le impostazioni dell'opzione  <b>Opzioni di sovrapposizione</b> risultano utili anche quando vengono eseguite analisi su dataset diversi in quanto consentono di garantire la coerenza delle impostazioni delle opzioni <b>Banda di distanza</b> e <b>Dimensione cella</b> tra pi&ugrave; dataset.  &Egrave; quindi possibile confrontare adeguatamente i risultati, ad esempio le percentuali di individui obesi o diabetici oppure i tassi di criminalit&agrave; relativi a due anni diversi.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Dimensione cella</h2></div>
+        <hr/>
+        <div>
+            <p>Dimensione delle celle della griglia utilizzata per il calcolo dei punti al suo interno.  
+            </p>
+            <p>In caso di utilizzo di una griglia esagonale per il calcolo dei punti al suo interno, questa distanza viene utilizzata come altezza degli esagoni.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Banda di distanza</h2></div>
+        <hr/>
+        <div>
+            <p>Ogni feature viene analizzata all'interno del contesto di queste feature contigue all'interno della distanza specificata.  Lo strumento calcoler&agrave; automaticamente una distanza predefinita oppure &egrave; possibile utilizzare questa opzione per impostare una distanza specifica significativa per l'analisi. 
+            </p>
+            <p>Ad esempio, se si stanno analizzando i pattern relativi al pendolarismo e si conosce la distanza media del viaggio (15 miglia), &egrave; possibile utilizzare la banda di distanza di 15 miglia per l'analisi.
+            </p>
+        </div>
+    </div>
+    <div id="hotSpotsResultLayer">
+        <div><h2>Nome layer risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Specificare un nome per il layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa.  Nel layer risultante saranno visualizzati i cluster di rilevanza statistica con valori alti e bassi o conteggi di punti. Se il nome del layer dei risultati esiste gi&agrave;, verr&agrave; chiesto di rinominarlo.
+            </p>
+            <p>Utilizzare la casella a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella di <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

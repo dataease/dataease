@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="aoToolbox">
+        <p>Some sort of toolbox summary needs to go here. Maybe something about how this is the core toolbox and the other toolboxes differ from this one. Hah! 
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="regularsize">
+        <h2>Summarize Data</h2>
+        <hr/>
+        <p>These tools calculate total counts, lengths, areas, and basic descriptive statistics of features and their attributes within areas or near other features.
+            <ul>
+                <li> <b>Aggregate Points</b> calculates statistics about  points that fall within specified areas.
+                </li>
+                <li> <b>Summarize Nearby</b> calculates statistics for features and their  attributes that are within a specified  distance.
+                </li>
+                <li> <b>Summarize Within</b> calculates statistics for area features and attributes that overlap each other.
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="AggregatePointsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Aggregate Points</h2></td>
+                    <td>
+                    <img src="./images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" class="titleImage" alt="Aggregate Points">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Using a layer of
+point features and a layer of area features, this tool
+determines which points fall within each area and calculates statistics about all
+the points within each area. For example:
+                <ul>
+                    <li>Given point locations of crime incidents, count the number of crimes per county or other administrative district.
+                    </li>
+                    <li>Find the highest and lowest revenues for franchise locations by state.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeNearbyTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Summarize Nearby</h2></td>
+                    <td>
+                    <img src="./images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" class="titleImage" alt="Summarize Nearby">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Finds features that are within a specified distance of features in the input layer.   Distance can be measured along straight lines or viable paths of a travel mode.  Statistics are then calculated for the nearby features.  For example:
+                <ul>
+                    <li>Calculate the total population within five minutes of a proposed new store location.
+                    </li>
+                    <li>Calculate the number of freeway access ramps within five minutes of a proposed new store location to use as a measure of store accessibility.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeWithinTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Summarize Within</h2></td>
+                    <td>
+                    <img src="./images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" class="titleImage" alt="Summarize Within">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Finds areas (and portions of areas) that overlap between two
+layers and calculates statistics about the overlap. For example:
+                <ul>
+                    <li>Given a layer of watershed areas and a layer of land-use areas by land-use type, calculate total acreage of land-use type for each watershed. 
+                    </li>
+                    <li>Given a layer of parcels in a county and a layer of city boundaries, summarize the average value of vacant parcels within each city.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="EnrichLocationsCategory" class="smallsize">
+        <h2>Data Enrichment</h2>
+        <hr/>
+        <p>These tools help you explore the
+character of areas. Detailed demographic data and
+statistics are returned for your chosen areas. 
+            <ul>
+                <li> <b>Enrich Layer</b> retrieves information about the people, places, and businesses in a specific area, or within a selected travel time or distance from a location.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="EnrichLayerTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Enrich Layer</h2></td>
+                    <td>
+                    <img src="./images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" class="titleImage" alt="Enrich Layer">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Retrieves information about the people, places, and businesses in a specific area, or within a selected travel time or distance from a location.
+
+            </p>
+            <br/>
+        </div>
+    <div id="FindLocationsCategory" class="largesize">
+        <h2>Find Locations</h2>
+        <hr/>
+        <p>These tools are used to identify areas that
+meet a number of different criteria you specify.  These criteria can be based upon attribute queries (for example, parcels that are vacant) and spatial queries (for example, within 1 kilometer of a river).  The
+areas that are found can be selected from existing features (such as existing
+land parcels) or new features can be created where all the
+requirements are met.
+            <ul>
+                <li> <b>Find Existing Locations</b>  searches for existing areas in a layer that meet a series of criteria.
+                </li>
+                <li> <b>Derive New Locations</b> creates new areas from locations in your
+study area that meet a series of criteria.
+                </li>
+                <li> <b>Find Similar Locations</b> finds locations most similar to one or more reference locations based on criteria you specify.
+                </li>
+                <li> <b>Choose Best Facilities</b> choose the best locations for facilities by allocating locations that have demand for these facilities in a way that satisfies a given goal.
+                </li>
+                <li> <b>Create Viewshed</b> creates areas that are visible based on locations you specify.
+                </li>
+                <li> <b>Create Watersheds</b> creates catchment areas based on  locations you specify.
+                </li>
+                <li> <b>Trace Downstream</b> determine the flow paths in a downstream direction from the
+locations you specify.
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="FindExistingLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Find Existing Locations</h2></td>
+                    <td>
+                    <img src="./images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" class="titleImage" alt="Find Existing Locations">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Selects existing features in your
+study area that meet a series of criteria you specify. These criteria can be based on attribute queries (for example, parcels that are vacant) and spatial queries (for example,  within 1 mile of a river).
+
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveNewLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Derive New Locations</h2></td>
+                    <td>
+                    <img src="./images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" class="titleImage" alt="Derive New Locations">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Creates new features in your
+study area that meet a series of criteria you specify. These criteria can be based on attribute queries (for example, parcels that are vacant) and spatial queries (for example,  within 1 mile of a river).
+
+            </p>
+            <br/>
+        </div>
+        <div id="FindSimilarLocationsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Find Similar Locations</h2></td>
+                    <td>
+                    <img src="./images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" class="titleImage" alt="Find Similar Locations">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Finds the locations that are most similar to one or more reference locations based on criteria that you specify.
+            </p>
+            <br/>
+        </div>
+        <div id="ChooseBestFacilitiesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Choose Best Facilities</h2></td>
+                    <td>
+                    <img src="./images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" class="titleImage" alt="Choose Best Facilities">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Choose the best locations for facilities by allocating locations that have demand for these facilities in a way that satisfies a given goal.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Create Viewshed</h2></td>
+                    <td>
+                    <img src="./images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" class="titleImage" alt="Create Viewshed">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Creates areas that are visible based on locations you specify.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateWatershedsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Create Watersheds</h2></td>
+                    <td>
+                    <img src="./images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" class="titleImage" alt="Create Watersheds">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Creates catchment areas based on  locations you specify.
+            </p>
+            <br/>
+        </div>
+        <div id="TraceDownstreamTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Trace Downstream</h2></td>
+                    <td>
+                    <img src="./images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" class="titleImage" alt="Trace Downstream">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Determine the flow paths in a downstream direction from the
+locations you specify.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="regularsize">
+        <h2>Analyze Patterns</h2>
+        <hr/>
+        <p>These tools help you identify, quantify, and visualize spatial patterns in your data.  
+            <ul>
+                <li> <b>Calculate Density</b> takes known quantities of some phenomenon and spreads these quantities across the map.
+                </li>
+                <li> <b>Find Hot Spots</b>  identifies statistically significant clustering in the spatial pattern of your data.
+                </li>
+                <li> <b>Interpolate Points</b> predicts values at new locations based on measurements found in a collection of points.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Calculate Density</h2></td>
+                    <td>
+                    <img src="./images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" class="titleImage" alt="Calculate Density">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Density analysis takes known quantities of some phenomenon and spreads these quantities across the map. You can use this tool, for example,  to show concentrations of  lightning strikes or tornadoes, access to health care facilities, and population densities.
+            </p>
+            <br/>
+        </div>
+        <div id="FindHotSpotsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Find Hot Spots</h2></td>
+                    <td>
+                    <img src="./images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" class="titleImage" alt="Find Hot Spots">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>This tool creates a map showing any statistically significant spatial clustering present in your data.   Use this tool to uncover unexpected hot spots (red) and cold spots (blue) of high and low home values, crime densities, traffic accident fatalities, unemployment or biodiversity, for example.
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Interpolate Points</h2></td>
+                    <td>
+                    <img src="./images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" class="titleImage" alt="Interpolate Points">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>This  tool allows you to predict values at new locations based on measurements found in a collection of points. The tool takes point data with values at each point and returns areas classified by predicted values. You can use this tool, for example, to predict rainfall levels across a watershed based on measurements taken at individual rain gauges.
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="regularsize">
+        <h2>Use Proximity</h2>
+        <hr/>
+        <p>  These tools help you answer one of the most common questions posed in spatial analysis: &quot;What is near what?&quot;
+            <ul>
+                <li> <b>Connect Origins to Destinations</b> measures the travel time or distance between pairs of points.
+                </li>
+                <li> <b>Create Buffers</b> create areas of equal distance from
+features.
+                </li>
+                <li> <b>Create Drive-Time Areas</b> finds areas around
+locations that can be reached within a time period.
+                </li>
+                <li> <b>Find Nearest</b> identifies those places that are
+the closest to known locations.
+                </li>
+                <li> <b>Plan Routes</b> determines the best way to route a fleet of vehicles to visit many  stops.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ConnectOriginsToDestinationsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Connect Origins to Destinations</h2></td>
+                    <td>
+                    <img src="./images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" class="titleImage" alt="Connect Origins to Destinations">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Connect Origins to Destinations measures the travel time or distance between pairs of points. The tool can report straight-line distances, road distances, or travel times. Using this tool, you can
+            </p>
+            <p>
+                <ul>
+                    <li>Calculate the total distance or time commuters travel on their  home-to-work trips.
+                    </li>
+                    <li>Measure how far customers are traveling to shop at your stores. Use this information to define your market reach, especially when targeting advertising campaigns or choosing new store locations.
+                    </li>
+                    <li>Calculate the expected trip mileage for your fleet of vehicles. Afterward, run the Summarize Within tool to report mileage by state or other region.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>You provide starting and ending points, and the tool returns a layer containing route lines, including measurements, between the paired origins and destinations.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateBuffersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Create Buffers</h2></td>
+                    <td>
+                    <img src="./images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" class="titleImage" alt="Create Buffers">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>A buffer is an area that covers a given distance from a point, line, or area feature. 
+            </p>
+            <p>Buffers are typically used to create areas that can be further analyzed using other  tools such as Overlay Layers. For example, if the question is &quot;What buildings are within one mile of the school?&quot;, the answer can be found by creating a one-mile buffer around the school and overlaying the buffer with the layer containing building footprints.  The end result is a layer of  those buildings within one mile of the school.  
+            </p>
+            <br/>
+        </div>
+        <div id="CreateDriveTimeAreasTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Create Drive-Time Areas</h2></td>
+                    <td>
+                    <img src="./images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" class="titleImage" alt="Create Drive-Time Areas">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>A drive-time  area is the area that can be reached within a specified drive time or drive distance. Drive-time areas  can help you answer questions such as:
+                <ul>
+                    <li>Where can I go from here within a 30-minute drive?
+                    </li>
+                    <li>Where can I go from here within a 30-minute drive at 6:00 p.m. during rush hour?
+                    </li>
+                    <li>What areas of town can the fire department reach within five minutes? How would fire-response coverage improve by building a new fire station here?
+                    </li>
+                    <li>What market areas does my business cover? What areas are within 10 miles of my stores?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindNearestTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Find Nearest</h2></td>
+                    <td>
+                    <img src="./images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" class="titleImage" alt="Find Nearest">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Measures the cost of traveling between incidents and facilities and
+determines which are closer to the other. The result is a layer showing the best routes between incidents and
+facilities along with the  travel cost (time and distance) of each route.  For example, you can use this tool to find the closest hospital to an accident or the closest ATM to your current location.
+            </p>
+            <br/>
+        </div>
+        <div id="PlanRoutesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Plan Routes</h2></td>
+                    <td>
+                    <img src="./images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" class="titleImage" alt="Plan Routes">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>You provide a set of stops and the number of vehicles available to visit the stops, and Plan Routes determines how to efficiently assign the stops to the vehicles and route the vehicles to the stops.
+            </p>
+            <p>Use this tool to plan work for a mobile team of inspectors, appraisers, in-home support service providers, and others; deliver or pick up items from remote locations; or offer transportation services to people.
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="regularsize">
+        <h2>Manage Data</h2>
+        <hr/>
+        <p>These tools are used for both the day-to-day management of geographic data and for combining data prior to analysis.  
+            <ul>
+                <li> <b>Dissolve Boundaries</b> merges together areas that share a common boundary and a common attribute value.
+                </li>
+                <li> <b>Extract Data</b> creates new datasets by extracting features from your existing data.
+                </li>
+                <li> <b>Merge Layers</b> copies all the features from two or more existing layers
+into a new layer.
+                </li>
+                <li> <b>Overlay Layers</b> combines two or more layers into one single layer.  You can think of overlay as peering through a stack of maps and creating a single map containing all the information found in the stack.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="DissolveBoundariesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Dissolve Boundaries</h2></td>
+                    <td>
+                    <img src="./images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" class="titleImage" alt="Dissolve Boundaries">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Areas that overlap or share a common boundary are merged together to form a single area.    
+            </p>
+            <p>You can control which boundaries are merged by specifying a field. For example, if you have a layer of counties, and each county has a  <i>State_Name</i> attribute, you can dissolve boundaries using the <i>State_Name</i> attribute.  Adjacent counties will be merged together if they have the same value for <i>State_Name</i>.  The end result is a layer of state boundaries.
+            </p>
+            <br/>
+        </div>
+        <div id="ExtractDataTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Extract Data</h2></td>
+                    <td>
+                    <img src="./images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" class="titleImage" alt="Extract Data">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Creates a zip file, CSV, or KMZ of data from your layers and an area of interest that you specify.
+            </p>
+            <p> 
+            </p>
+            <br/>
+        </div>
+        <div id="MergeLayersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Merge Layers</h2></td>
+                    <td>
+                    <img src="./images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" class="titleImage" alt="Merge Layers">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Copies features from two or more existing layers into a new layer,    for example:
+                <ul>
+                    <li>I have three layers for England, Wales, and Scotland and I want a single layer of Great Britain. 
+                    </li>
+                    <li>I have 12 layers and each contains parcel information for contiguous townships.  I want to join them together into a single layer, keeping only the attributes that have the same name and type on the 12 input layers.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="OverlayLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Overlay Layers</h2></td>
+                    <td>
+                    <img src="./images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" class="titleImage" alt="Overlay Layers">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Overlay combines two or more layers into one single layer.  You can think of overlay as peering through a stack of maps and creating a single map containing all the information found in the stack,    for example:
+                <ul>
+                    <li>What parcels are within the 100-year floodplain? (Within is just another way of saying on top of.)
+                          
+                    </li>
+                    <li>What roads are within what counties?
+                    </li>
+                    <li>What land use is on top of what soil type?
+                         
+                    </li>
+                    <li>What wells are within abandoned military bases?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

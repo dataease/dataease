@@ -1,0 +1,12 @@
+@import "variables.less";
+@import "../common/TextArea.less";
+
+.mblTextArea {
+    &:active, &:focus {
+      .mblTextInputFocused-styles;
+    }
+
+    &[disabled] {
+      .mblTextInputDisabled-styles
+    }
+}

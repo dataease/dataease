@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/conversion/portalToEditorUtils/layout/ClassicReportSectionsParser",["esri/dijit/geoenrichment/utils/JsonXmlConverter"],function(e){return{parseSectionsClassic:function(a,b){e.queryJson(a,"section",!0).forEach(function(a){b.templateJson.sections.push(b.parsers.getParser("section").parseSection(a,b,{fixTableWidthsForPage:!0}))});this._splitSections(b)},_splitSections:function(a){a=a.templateJson;var b=[];a.sections.forEach(function(a){function d(){c=
+{type:a.type,stack:[]};b.push(c)}var c;d();a.stack.forEach(function(a){if("hr"===a.id){var b=!!c.stack.length;c.stack.push(a);b&&d()}else"table"===a.id?(c.stack.some(function(a){return"table"===a.id})&&d(),c.stack.push(a)):"pageBreak"===a.id?(c.stack.length&&d(),c.stack.push(a),d()):c.stack.push(a)})});b=b.filter(function(a){return!!a.stack.length});a.sections=b}}});

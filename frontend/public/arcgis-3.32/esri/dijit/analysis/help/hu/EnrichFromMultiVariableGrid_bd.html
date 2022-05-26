@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Bővítés többváltozós rácshálóból</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="Bőv&iacute;t&eacute;s t&ouml;bbv&aacute;ltoz&oacute;s r&aacute;csh&aacute;l&oacute;b&oacute;l"></h2>
+        <hr/>
+    <p>A  Bőv&iacute;t&eacute;s t&ouml;bbv&aacute;ltoz&oacute;s r&aacute;csh&aacute;l&oacute;b&oacute;l eszk&ouml;z hat&eacute;konyan kapcsol &ouml;ssze attrib&uacute;tumokat egy t&ouml;bbv&aacute;ltoz&oacute;s r&aacute;csh&aacute;l&oacute;b&oacute;l egy pontr&eacute;teggel.
+    </p>
+    <p>T&ouml;bbv&aacute;ltoz&oacute;s r&aacute;csh&aacute;l&oacute; b&aacute;rmely, a T&ouml;bbv&aacute;ltoz&oacute;s r&aacute;csh&aacute;l&oacute; fel&eacute;p&iacute;t&eacute;se eszk&ouml;zzel l&eacute;trehozott r&eacute;teg, amely t&ouml;bb r&eacute;tegből fog &ouml;ssze attrib&uacute;tumokat polygonok egyetlen r&aacute;csh&aacute;l&oacute;j&aacute;v&aacute;.  A t&ouml;bbv&aacute;ltoz&oacute;s r&aacute;csh&aacute;l&oacute; bőv&iacute;t&eacute;sre val&oacute; haszn&aacute;lata lehetőv&eacute; teszi inform&aacute;ci&oacute;k nagy &eacute;s k&uuml;l&ouml;nb&ouml;ző gyűjtem&eacute;nyeinek pontadathoz t&ouml;rt&eacute;nő gyors hozz&aacute;ad&aacute;s&aacute;t tov&aacute;bbi t&eacute;rbeli elemz&eacute;sekhez val&oacute; felhaszn&aacute;l&aacute;s c&eacute;lj&aacute;ra.
+    </p>
+    <p>Tegy&uuml;k fel p&eacute;ld&aacute;ul, hogy rendelkez&eacute;sre &aacute;ll egy adott v&aacute;rosban az elm&uacute;lt &eacute;vben t&ouml;rt&eacute;nt &uacute;j bűncselekm&eacute;nyekre vonatoz&oacute; r&eacute;teg. Modellezni akarja a bűncselekm&eacute;nyek gyakoris&aacute;ga &eacute;s k&uuml;l&ouml;nb&ouml;ző demogr&aacute;fiai, gazdas&aacute;gi &eacute;s geogr&aacute;fiai t&eacute;nyezők &ouml;sszef&uuml;gg&eacute;seit. Van hozz&aacute;f&eacute;r&eacute;se az eml&iacute;tett t&eacute;nyezőket le&iacute;r&oacute; adatokhoz, de azok &ouml;t, k&uuml;l&ouml;nb&ouml;ző geometriat&iacute;pusokhoz tartoz&oacute; r&eacute;tegben vannak t&aacute;rolva. Ezenk&iacute;v&uuml;l vannak r&eacute;tegek, amelyekbig data f&aacute;jlmegoszt&oacute;ban, m&iacute;g m&aacute;sok vektoroselem-szolg&aacute;ltat&aacute;sokban vannak t&aacute;rolva. Ha t&ouml;bbv&aacute;ltoz&oacute;s r&aacute;csh&aacute;l&oacute;t hoz l&eacute;tre ezen inform&aacute;ci&oacute;k t&aacute;rol&aacute;s&aacute;ra, majd a r&aacute;csh&aacute;l&oacute;t &ouml;ssszekapcsolja a  bűncselekm&eacute;nyekkel a  Bőv&iacute;t&eacute;s t&ouml;bbv&aacute;ltoz&oacute;s r&aacute;csh&aacute;l&oacute;b&oacute;l eszk&ouml;z seg&iacute;ts&eacute;g&eacute;vel, akkor   lehetős&eacute;ge van hat&eacute;konyan &ouml;sszekapcsolni attrib&uacute;tumok sz&eacute;les v&aacute;laszt&eacute;k&aacute;t az adott pontr&eacute;teggel.Az  &ouml;sszekapcsolt attrib&uacute;tumokat magyar&aacute;z&oacute; v&aacute;ltoz&oacute;kk&eacute;nt alkalmazhatja, &eacute;s fel&eacute;p&iacute;theti a bűncselekm&eacute;nyek gyakoris&aacute;g&aacute;nak modellj&eacute;t az eredm&eacute;nyr&eacute;teggel.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>Pontszerű vektorelemek kiválasztása a bővítéshez</h2></div>
+        <hr/>
+        <div>
+            <p>Azok a pontszerű vektorelemek, amelyeket bőv&iacute;teni k&iacute;v&aacute;n a t&ouml;bbv&aacute;ltoz&oacute;s r&aacute;csh&aacute;l&oacute;val.
+            </p>
+            <p>Ahelyett, hogy egy r&eacute;teget v&aacute;laszt a t&eacute;rk&eacute;p&eacute;ről, v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n l&eacute;vő  <b>Eredm&eacute;nyr&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is, ha a saj&aacute;t tartalomban szeretne big data-f&aacute;jlmegoszt&oacute; adathalmazt vagy vektoros r&eacute;teget keresni.
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>Többváltozós rácsháló kiválasztása a bővítéshez</h2></div>
+        <hr/>
+        <div>
+            <p>Az a t&ouml;bbv&aacute;ltoz&oacute;s r&aacute;csh&aacute;l&oacute;-r&eacute;teg, amely azokat az attrib&uacute;tumokat tartalmazza, amelyek &ouml;ssze lesznek kapcsolva a bemeneti pontszerű vektorelemekkel. Olyan t&aacute;rolt vektoros r&eacute;teget kell v&aacute;lasztani, amelynek l&eacute;trehoz&aacute;s&aacute;hoz a T&ouml;bbv&aacute;ltoz&oacute;s r&aacute;csh&aacute;l&oacute; fel&eacute;p&iacute;t&eacute;se eszk&ouml;zt haszn&aacute;lt&aacute;k.  A big data f&aacute;jlmegoszt&oacute;ban t&aacute;rolt r&aacute;csh&aacute;l&oacute;-r&eacute;tegeket ez az eszk&ouml;z nem t&aacute;mogatja bemenetk&eacute;nt.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>Válassza ki a hozzáadandó változókat</h2></div>
+        <hr/>
+        <div>
+            <p>A t&ouml;bbv&aacute;ltoz&oacute;s r&aacute;csh&aacute;l&oacute;-r&eacute;tegben tal&aacute;lhat&oacute; azon attrib&uacute;tumok, amelyek &ouml;ssze lesznek kapcsolva a bemeneti pontszerű vektorelemekkel, amennyiben a pontszerű vektorelemek metszik a r&aacute;csh&aacute;l&oacute;t.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Eredményréteg neve</h2></div>
+        <hr/>
+        <div>
+            <p> A l&eacute;trehozand&oacute; r&eacute;teg neve.  Ha egy ArcGIS Data Store helyre &iacute;r, akkor  eredm&eacute;nyei a  <b>Saj&aacute;t tartalom</b> alatt lesznek elmentve, &eacute;s hozz&aacute; lesznek adva a t&eacute;rk&eacute;phez. Ha egy big data f&aacute;jlmegoszt&oacute;ba &iacute;r, akkor eredm&eacute;nyei a big data f&aacute;jlmegoszt&oacute;ba lesznek elmentve, &eacute;s hozz&aacute; lesznek adva annak jegyz&eacute;kf&aacute;jlj&aacute;hoz. Nem lesznek hozz&aacute;adva a t&eacute;rk&eacute;phez. Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a művelet sikertelen lesz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpolér punkter</h2><p/>
+        <h2><img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" alt="Interpol&eacute;r punkter-v&aelig;rkt&oslash;j"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j giver dig mulighed for at forudsige v&aelig;rdier p&aring; nye placeringer baseret p&aring; m&aring;linger fra en samling af punkter. V&aelig;rkt&oslash;jet tager punktdata med v&aelig;rdier for hvert punkt og returnerer en raster med forudsagte v&aelig;rdier.
+    </p>
+    <p>Andre situationer, hvor dette v&aelig;rkt&oslash;j kan anvendes, er:
+
+        <ul>
+            <li>Et distrikt, hvor luftkvaliteten er et problem, har sensorer til m&aring;ling af forureningsniveauer. Interpol\&eacute;r punkter kan anvendes til at forudsige forureningsniveauer p&aring; steder, som ikke har sensorer, f.eks. steder med befolkninger i farezonen &ndash; skoler eller hospitaler.
+                
+
+            </li>
+            <li>Du kan forudsige metalkoncentrationer i afgr&oslash;der p&aring; basis af stikpr&oslash;ver taget fra individuelle planter.
+                
+
+            </li>
+            <li>Du kan forudsige ern&aelig;ringsniveauer i jord (nitrogen, fosfor, potassium osv.) og andre indikatorer (f.eks. elektrisk ledeevne), s&aring; deres relation til udbyttet kan studeres, og der kan doseres pr&aelig;cise m&aelig;ngder g&oslash;dning forskellige steder p&aring; marken.
+                
+
+            </li>
+            <li>Meteorologiske form&aring;l omfatter forudsigelse af temperaturer, nedb&oslash;r og tilknyttede variabler, f.eks. syreregn.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointFeatures">
+        <div><h2>Vælg det punktlag, der indeholder steder med kendte værdier</h2></div>
+        <hr/>
+        <div>
+            <p>Punktlaget indeholder de punkter, hvor v&aelig;rdierne er blevet m&aring;lt.
+            </p>
+        </div>
+    </div>
+    <div id="interpolateField">
+        <div><h2>Vælg felt, der skal interpoleres</h2></div>
+        <hr/>
+        <div>
+            <p>V&aelig;lg det felt, der indeholder de v&aelig;rdier, som du vil interpolere. Feltet skal v&aelig;re numerisk.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimér for</h2></div>
+        <hr/>
+        <div>
+            <p>Angiv, hvad du foretr&aelig;kker: hastighed kontra pr&aelig;cision.
+            </p>
+            <p>Mere pr&aelig;cise forudsigelser tager l&aelig;ngere tid at beregne. Denne parameter &aelig;ndrer standardv&aelig;rdierne for adskillige andre parametre for Interpol&eacute;r punkter med henblik p&aring; at optimere beregningshastigheden, pr&aelig;cisionen af resultaterne eller balancen mellem de to. V&aelig;rkt&oslash;jet vil som standard optimere balancen.
+            </p>
+        </div>
+    </div>
+    <div id="transformData">
+        <div><h2>Transformér data til normal distribution</h2></div>
+        <hr/>
+        <div>
+            <p>V&aelig;lg, om du vil transformere dine data til normal distribution.
+            </p>
+            <p>Interpolering er mest pr&aelig;cis for data, der f&oslash;lger en normal (klokkeformet) distribution. Hvis dine data ikke ser ud til at v&aelig;re normalt distribueret, b&oslash;r du udf&oslash;re en transformation.
+            </p>
+        </div>
+    </div>
+    <div id="sizeOfLocalModels">
+        <div><h2>Størrelse på lokale modeller</h2></div>
+        <hr/>
+        <div>
+            <p>Interpol&eacute;r punkter fungerer ved at oprette lokale interpoleringsmodeller, der blandes sammen for at oprette det endelige forudsigelseskort. Denne parameter styrer, hvor mange punkter der indeholdes i den enkelte lokale model. Mindre v&aelig;rdier vil g&oslash;re resultaterne mere lokale og kan afsl&oslash;re virkninger i lille skala, men dette kan ogs&aring; introducere noget ustabilitet i beregningerne. St&oslash;rre v&aelig;rdier vil v&aelig;re mere stabile, men dette vil ekskludere nogle lokale virkninger.
+            </p>
+            <p>V&aelig;rdien kan str&aelig;kke sig fra 30 til 500, men de typiske v&aelig;rdier ligger mellem 50 og 200.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfNeighbors">
+        <div><h2>Antal naboer</h2></div>
+        <hr/>
+        <div>
+            <p>Forudsigelser beregnes p&aring; baggrund af nabopunkter. Denne parameter styrer, hvor mange punkter der skal bruges til beregningen. Anvendelse af et st&oslash;rre antal nabopunkter vil generelt give mere pr&aelig;cise resultater, men det kan tage l&aelig;ngere tid at beregne resultaterne.
+            </p>
+            <p>Denne v&aelig;rdi kan str&aelig;kke sig fra 1 til 64, men de typiske v&aelig;rdier ligger mellem 5 og 15.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Størrelse på outputcelle</h2></div>
+        <hr/>
+        <div>
+            <p>Cellest&oslash;rrelse og enheder for output-rasterdata.
+            </p>
+            <p>De tilg&aelig;ngelige enheder er fod, miles, meter og kilometer.
+            </p>
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Output af forudsigelsesfejl</h2></div>
+        <hr/>
+        <div>
+            <p>V&aelig;lg, om du vil oprette en raster med standardfejl for de forudsagte v&aelig;rdier.
+            </p>
+            <p>Standardfejl er nyttige, fordi de giver oplysninger om de forudsagte v&aelig;rdiers p&aring;lidelighed. En enkel tommelfingerregel er, at den sande v&aelig;rdi falder inden for to standardfejl i den forudsagte v&aelig;rdi 95 % af tiden. Lad os antage, at en ny placering f&aring;r en forudsagt v&aelig;rdi p&aring; 50 med en standardfejl p&aring; 5. Det betyder, at v&aelig;rkt&oslash;jets bedste g&aelig;t er, at den sande v&aelig;rdi p&aring; stedet er 50, men den kan nemt v&aelig;re helt nede p&aring; 40 eller helt oppe p&aring; 60. For at beregne dette interval af rimelige v&aelig;rdier skal standardfejlen ganges med 2, og denne v&aelig;rdi skal l&aelig;gges til den forudsagte v&aelig;rdi for at f&aring; den &oslash;vre ende af intervallet og tr&aelig;kkes fra den forudsagte v&aelig;rdi for at f&aring; den nedre del af intervallet.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; det lag, som oprettes under  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Du kan angive navnet p&aring; en mappe i  <b>Mit indhold</b>, hvor resultatet bliver gemt ved at benytte rullelisten <b>Gem resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

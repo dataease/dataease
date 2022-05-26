@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Nokta Ara Değerlerini Hesapla</h2><p/>
+        <h2><img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" alt="Nokta Ara Değerlerini Hesapla"></h2>
+        <hr/>
+    <p>   Nokta Ara Değerlerini Hesaplama aracı, toplama noktalarından gelen &ouml;l&ccedil;&uuml;mlere dayanarak yeni konumlardaki değerleri tahmin etmenize olanak tanır. Ara&ccedil;, nokta verilerinin her noktadaki değerlerini alır ve tahmini değerlerle sınıflandırılan alanları d&ouml;nd&uuml;r&uuml;r. &Ouml;rneğin
+        <ul>
+            <li>Hava kalitesi y&ouml;netimi b&ouml;lgesinde, kirlilik d&uuml;zeyini &ouml;l&ccedil;en sens&ouml;rler bulunmaktadır. Nokta Ara Değerlerini Hesaplama, okul veya hastane gibi pop&uuml;lasyonu y&uuml;ksek risk grubunda olduğundan sens&ouml;r bulunmayan konumlardaki kirlilik d&uuml;zeylerini tahmin etmek i&ccedil;in kullanılır.
+            </li>
+            <li>Bitkilerden alınan &ouml;rneklere dayanarak mahsuldeki ağır metal konsantrasyonları tahmin edilir.
+            </li>
+            <li>Toprak besin d&uuml;zeyi (azot, fosfor, potasyum vb.) ve diğer g&ouml;stergeler (elektriksel iletkenlik gibi) tahmin edilerek, tarımsal mahsul &uuml;zerindeki etkileri araştırılır ve alan i&ccedil;indeki her konum i&ccedil;in hassas g&uuml;bre miktarları belirlenir.
+
+            </li>
+            <li>Meteorolojik uygulamalar sıcaklıkların, yağışların ve ilişkili diğer değişkenlerin (asit yağmuru gibi) tahmin edilmesini kapsar. 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Bilinen değerlere sahip konumları içeren nokta katmanını seç</h2></div>
+        <hr/>
+        <div>
+            <p>Ara değer hesaplama temeli olarak kullanılacak nokta katmanıdır.  
+
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;meye ek olarak, a&ccedil;ılır listenin alt kısmında bulunan  <b>Analiz Katmanı Se&ccedil;</b> se&ccedil;eneğini de se&ccedil;ebilirsiniz. Bu se&ccedil;enek, analizinizde kullanmak &uuml;zere &ccedil;eşitli kaynaklardan gelen veri k&uuml;melerine g&ouml;z atabileceğiniz ve se&ccedil;ebileceğiniz bir galeri a&ccedil;ar. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Ara değeri belirlenecek alanı seç</h2></div>
+        <hr/>
+        <div>
+            <p>Ara değerleri hesabı i&ccedil;in kullanmak istediğiniz değerlere sahip alanı se&ccedil;in.  
+            </p>
+        </div>
+    </div>
+    <div id="interpolateOption">
+        <div><h2>Şunun için optimize et:</h2></div>
+        <hr/>
+        <div>
+            <p>Hız veya hassaslık tercihinizi belirleyin. Daha hassas tahminlerin hesaplanmasının daha uzun s&uuml;receğini unutmayın.
+            </p> 
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Çıktı tahmin hataları</h2></div>
+        <hr/>
+        <div>
+            <p> İlgili se&ccedil;enek işaretlenirse, ara değer hesaplama i&ccedil;in bir standart hata katmanı da oluşturulur.  &Ccedil;ıktı katmanının adı, sonu&ccedil; katmanı adının sonuna 'Errors' (Hatalar) getirilmiş halidir.
+            </p>
+            <p>Standart hatalar, tahmin edilen değerlerin g&uuml;venilirliği hakkında bilgi sağladıklarından &ouml;nemlidir. Basit bir genel kural olarak doğru değerin, y&uuml;zde 95 olasılıkla tahmin edilen değerden iki standart sapma az ya da fazla olacağı kabul edilir. &Ouml;rneğin, yeni bir konum i&ccedil;in standart hatası 5 olan tahmini 50 değeri elde ediliyor.  Bu, s&ouml;z konusu aracın en iyi tahmininin konumdaki ger&ccedil;ek değer 50 olduğunda, bunu en d&uuml;ş&uuml;k 40 ya da en y&uuml;ksek 60 olarak &ouml;l&ccedil;ebileceği anlamına gelir.  Bu kabul edilebilir değer aralıklarını hesaplamak i&ccedil;in standart hatayı 2 ile &ccedil;arpın ve menzil &uuml;st sınırı i&ccedil;in bu değeri tahmini değere ekleyin, menzil alt sınırı i&ccedil;in de tahmini değerden &ccedil;ıkartın.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Sınıflandırma ölçütü</h2></div>
+        <hr/>
+        <div>
+            <p>Tahmin edilen değerlerin nasıl alan olarak sınıflandırılacağını belirleyin.
+                <ul>
+                    <li>Geometrik aralık - Alanlar geometrik seriye sahip sınıf aralıklarına dayanır. Bu y&ouml;ntem, her sınıf aralığının her sınıfta yaklaşık olarak aynı sayıda değere sahip olmasını ve aralıklar arasındaki değişimin tutarlı olmasını sağlar.
+                    </li>
+                    <li>Eşit aralık - Alanlar tahmin edilen değer aralığı her alan i&ccedil;in eşit olacak bi&ccedil;imde oluşturulur.
+                    </li>
+                    <li>Eşit alan; Alanlar her alandaki veri değeri sayısı eşit olacak bi&ccedil;imde oluşturulur. &Ouml;rneğin, verilerde k&uuml;&ccedil;&uuml;k değerlerden daha &ccedil;ok sayıda b&uuml;y&uuml;k değer varsa, b&uuml;y&uuml;k değerler i&ccedil;in daha fazla alan oluşturulur.
+                    </li>
+                    <li>El ile - Bu se&ccedil;enek alanlar i&ccedil;in kendi değer aralığınızı tanımlamanıza olanak tanır. Bu değerler, aşağıdaki  <b>Sınıf ayırma değerleri</b> parametresine girilir.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Sınıfların sayısı</h2></div>
+        <hr/>
+        <div>
+            <p>Sonu&ccedil; katmanındaki sınıf sayısını (tahmin edilen değer aralığı) belirtir. Her sınıf, alanların sınırını tanımlar. Bu sınıf değerleri, yukarıdaki 
+ <b>Sınıflandırma &ouml;l&ccedil;&uuml;t&uuml;</b> parametresi ile belirlenir.
+            </p>
+        </div>
+    </div>
+    <div id="classBreaks">
+        <div><h2>Sınıf kırılma değerleri</h2></div>
+        <hr/>
+        <div>
+            <p>İstenen sınıf kesme değerlerini aralarında boşluk bırakarak girin. &Ouml;rneğin, sınıf ayırma değerlerinin 1,5, 3 ve 7 olmasını istiyorsanız,  <code>1,5 3 7</code> girin.  Bu değerler, her sınıfın &uuml;st sınırını tanımlayarak sınıf sayısının girilen değer sayısına eşit olmasını sağlar. Tahmin değerleri girilen en y&uuml;ksek kesme değerinden daha b&uuml;y&uuml;k olan yerler i&ccedil;in alan oluşturulmaz. En az iki girmelisiniz, en &ccedil;ok 32 değer girebilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Çıktının kırpılacağı yer</h2></div>
+        <hr/>
+        <div>
+            <p>Sonucun &ccedil;izilmesini istediğiniz alanı belirtmek i&ccedil;in &ccedil;izim yapın ya da katman sağlayın. &Ouml;rneğin, g&ouml;l kirliliği &ouml;l&ccedil;&uuml;mlerinin ara değerlerini hesaplarken, bu parametrede g&ouml;l&uuml;n sınırını kullanabilirsiniz, &ccedil;ıktı da yalnızca g&ouml;l&uuml;n sınırları i&ccedil;inde &ccedil;izilir.
+            </p>
+        </div>
+    </div>
+    <div id="predictAtPointLayer">
+        <div><h2>Şu konumlarda tahmin yap</h2></div>
+        <hr/>
+        <div>
+            <p>Tahmin değerlerini hesaplamak i&ccedil;in &ccedil;izim yapın veya nokta konumlarını belirten bir katman sağlayın. Bu, belirli ilgi &ccedil;ekici konumlarda tahmin yapmanıza olanak tanır. &Ouml;rneğin, girdi katmanı kirlilik d&uuml;zeyi &ouml;l&ccedil;&uuml;mlerini temsil ediyorsa, bu parametreyi okul veya hastane gibi pop&uuml;lasyonu y&uuml;ksek risk grubundaki konumlardaki kirlilik d&uuml;zeylerini tahmin etmek i&ccedil;in kullanabilirsiniz.  Ardından bu bilgileri, s&ouml;z konusu yerlerdeki sağlık kurumlarına &ouml;neri olarak iletebilirsiniz.
+            </p>
+            <p>Veri olarak girilirse, bu ara&ccedil; belirtilen konumlarda &ccedil;ıktı olarak bir tahmin katmanı noktası verir. &Ccedil;ıktı katmanının adı, sonu&ccedil; katmanı adının sonuna 'Points' (Noktalar) getirilmiş halidir.  
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p>Bu,  <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adıdır.  Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman adı zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır men&uuml;s&uuml;n&uuml; kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

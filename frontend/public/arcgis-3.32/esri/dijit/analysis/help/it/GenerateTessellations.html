@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Genera tassellazioni</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="Genera tassellazioni"></h2>
+        <hr/>
+    <p>Questo strumento genera tassellazioni in un'area di studio sulla base di una forma e di una dimensione specificate.
+    </p>
+    <p>La casella di controllo  <b>Usa estensione mappa corrente</b> &egrave; disabilitata per questo strumento perch&eacute; l'estensione usata per generare tassellazioni &egrave; controllata dal parametro <b>Definisci estensione</b>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Scegli una forma</h2></div>
+        <hr/>
+        <div>
+            <p>La forma o geometria della tassellazione che si desidera creare.  Le forme disponibili sono  <code>Quadrato</code>, <code>Esagono</code>, <code>Esagono trasversale</code>, <code>Triangolo</code> o <code>Rombo</code>.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Definire area di studio</h2></div>
+        <hr/>
+        <div>
+            <p>L'estensione o area che sar&agrave; coperta dalle tassellazioni.  L'estensione pu&ograve; essere stabilita usando l'estensione attuale della mappa, l'estensione di un layer esistente o disegnando in modo interattivo un'area da usare come estensione.
+            </p>
+            <p>Se si &egrave; selezionato un feature layer per determinare l'estensione, sar&agrave; abilitata l'opzione per mantenere solo le tassellazioni di intersezione.  Se selezionata, nel layer risultante delle tassellazioni saranno generate solo le tassellazioni che coprono o intersecano le feature nel layer di estensione specificato. 
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Non selezionata
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="Copertura dell'estensione completa">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Selezionata
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="Copertura feature">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>Definisci le dimensioni del contenitore specificando</h2></div>
+        <hr/>
+        <div>
+            <p>La dimensione di ciascuna cella.  La dimensione della cella pu&ograve; essere stabilita specificando unit&agrave; quadrate o specificando una distanza calcolata adoperando le seguenti misurazioni, in cui d = Distanza: 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Square
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="Tassellazione a quadrato">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Esagono
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="Tassellazione a esagono">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Esagono trasversale
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="Tassellazione a esagono trasversale">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Triangolo
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="Tassellazione a triangolo">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Rombo
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="Tassellazione a rombo">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa.  Se il layer esiste gi&agrave;, verr&agrave; chiesto di fornire un altro nome.
+            </p>
+            <p>Utilizzare il men&ugrave; a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

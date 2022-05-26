@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Rekonstruer spor</h2><p/>
+        <h2><img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" alt="Rekonstruer spor"></h2>
+        <hr/>
+    <p> Dette verkt&oslash;yet fungerer med et tidsaktivert lag med enten punkter eller polygoner som representerer et <code>&oslash;yeblikk</code> i tid. Det fastsl&aring;r f&oslash;rst hvilke geoobjekter som tilh&oslash;rer et spor ved hjelp av en identifikator. Ved &aring; bruke tiden p&aring; hver lokasjon blir sporene organisert sekvensielt og omdannet til en linje eller en polygon som representerer banen for bevegelsen over tid. Inndataene kan eventuelt bufres av et felt, noe som vil skape en polygon p&aring; hver lokasjon. Disse bufrede punktene eller inndatapolygonene blir deretter sl&aring;tt sammen sekvensielt for &aring; opprette et polygonspor der bredden representerer det aktuelle attributtet. De resulterende sporene har en start- og slutt-tid, noe som tidsmessig representerer de f&oslash;rste og siste geoobjektene i et gitt spor. N&aring;r sporene er opprettet, blir statistikk om inndatageoobjektene beregnet og tilordnet utdatasporene. Den mest grunnleggende statistikken er antall punkter innenfor polygon, men du kan beregne annen statistikk ogs&aring;.
+    </p>
+    <p>Geoobjekter i tidsaktiverte lag kan representeres p&aring; en av to m&aring;ter:
+        <ul>
+            <li>Umiddelbart &ndash; Ett enkelt &oslash;yeblikk i tid
+            </li>
+            <li>Intervall &ndash; En start- og slutt-tid
+            </li>
+        </ul>
+        
+    </p>
+    <p>La oss for eksempel si at du har GPS-m&aring;linger av orkaner hvert 10. minutt. Hver GPS-m&aring;ling registrerer orkanens navn, lokasjon, tidspunktet for registreringen og vindhastigheten. Med denne informasjonen kan du lage spor for hver orkan med navnet som sporidentifikasjon, og spor for hver orkan vil bli generert. I tillegg kan du beregne statistikk, for eksempel gjennomsnittlig, h&oslash;yeste og laveste vindhastighet for hver orkan, i tillegg til antallet av m&aring;linger innenfor hvert spor.
+    </p>
+    <p>Med det samme eksempel kan du bufre sporene etter vindhastighet. Dette bufrer hver m&aring;ling etter vindhastigheten p&aring; den lokasjonen og sl&aring;r sammen de bufrede omr&aring;dene, noe som skaper et polygon som representerer sporbanen, i tillegg til endringer i vindhastigheten etter hvert som orkanen flytter seg.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Velg geoobjekter som sporene skal rekonstrueres fra</h2></div>
+        <hr/>
+        <div>
+            <p>Punkt- eller polygonlaget som blir rekonstruert i form av spor. Inndatalageret m&aring; v&aelig;re tidsaktivert med geoobjekter som representerer et &oslash;yeblikk i tid. Laget m&aring; v&aelig;re i et projisert koordinatsystem, eller den geografiske referansen for behandling m&aring; v&aelig;re satt til et projisert koordinatsystem i  <b>analysemilj&oslash;ene</b>, hvis det brukes buffer.
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> nederst i rullegardinlisten, for &aring; bla gjennom innholdet p&aring; et fildelingsomr&aring;de for stordata eller et geoobjektlag.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Velg et eller flere felt for å identifisere spor</h2></div>
+        <hr/>
+        <div>
+            <p>Feltene som representerer spor-ID-en. 
+            </p>
+            <p>Et eksempel: Hvis du skulle rekonstruere spor etter orkaner, kunne du brukt orkanens navn som sporfelt.
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Velg metoden brukt til å rekonstruere spor</h2></div>
+        <hr/>
+        <div>
+            <p>Metoden som brukes til &aring; sl&aring; sammen spor og bruke en buffer (hvis det er relevant).  <b>Planar</b>-metoden kan beregne resultatene raskere, men vil ikke bryte sporene rundt den internasjonale datolinjen eller ta h&oslash;yde for jordens faktiske form under bufring. <b>Geodetisk</b>-metoden bryter sporene rundt datolinjen hvis det er n&oslash;dvendig, og bruker en geodetisk buffer til &aring; ta h&oslash;yde for jordens form.
+            </p>
+        </div>
+    </div>
+    <div id="bufferField">
+        <div><h2>Opprett et uttrykk som inndatafunksjoner skal bufres med (valgfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Ligning som brukes til &aring; beregne bufferavstanden rundt inndatageoobjekter. Denne ligningen kan genereres ved hjelp av bufferkalkulatoren og grunnleggende operasjoner som f.eks. addisjon, subtraksjon, multiplikasjon og divisjon. Verdiene beregnes ved hjelp av analysekoordinatsystemet. Laget m&aring; v&aelig;re i et projisert koordinatsystem, eller den geografiske referansen for behandling m&aring; v&aelig;re satt til et projisert koordinatsystem i  <b>analysemilj&oslash;ene</b>, hvis det brukes buffer.
+            </p>
+            <p>En ligning som  <code>$feature.windspeed * 1000</code> ville benyttet en buffer p&aring; 1000 multiplisert med feltet <i>windspeed</i>. Du kan bruke flere enn ett felt i bufferkalkulatoren.
+            </p>
+            <p> Du kan ogs&aring; angi et sporingsf&oslash;lsomt uttrykk. Du kunne for eksempel beregne summen av feltverdien <i>windspeed</i> for det gjeldende geoobjektet og de to foreg&aring;ende geoobjektene med en ligning som <code>$track.field(windspeed).history(-3)</code>. P&aring; hver lokasjon beregnes og bufres summen av den gjeldende <i>windspeed</i> og de foreg&aring;ende to m&aring;lingene.
+            </p>
+        </div>
+    </div>
+    <div id="timeSplit">
+        <div><h2>Velg en tid som sporene skal deles på (valgfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Tiden som brukes til &aring; dele spor. Hvis inndatapunktene eller -polygonene har lengre varighet mellom seg enn tidsinndelingen, blir de delt inn i forskjellige spor.
+            </p>
+            <p>Hvis du angir en tidsinndeling og en avstandsinndeling, vil sporene bli delt n&aring;r en av eller begge betingelsene er oppfylt. 
+            </p>
+            <p>Tenk deg at du hadde punktgeoobjekter som representerte flyvninger med fly, hvor sporfeltet var flyets ID. Dette flyet kan ta flere turer, men likevel v&aelig;re representert som ett spor.  Hvis du visste at det er en pause p&aring; 1 time mellom flyvningene, kan du bruke  <code>1 time</code> som spordeler, og hver flyving vil bli delt inn i sitt eget spor.
+            </p>
+        </div>
+    </div>
+    <div id="splitTracks">
+        <div><h2>Del spor (valgfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan dele spor ved hjelp av tre forskjellige metoder. Du kan velge ingen, alle eller noen av delingsmetodene. 
+            </p>
+            <p>Delinger kan utf&oslash;res p&aring; f&oslash;lgende m&aring;ter:
+                <ul>
+                    <li> <b>Basert p&aring; en avstand mellom inndata</b> &ndash;&nbsp;Hvis inndatapunktene eller -polygonene har lengre avstand mellom seg enn avstanden som angis, vil de bli delt inn i forskjellige spor. Hvis du for eksempel anga en avstand p&aring; 10&nbsp;km, vil sekvensielle punkter over 10&nbsp;km bli til separate spor.
+                    </li>
+                    <li> <b>Basert p&aring; et tidsrom mellom inndata</b> &ndash;&nbsp;Hvis inndatapunktene eller -polygonene har st&oslash;rre avstand mellom seg enn avstandsinndelingen, blir de delt inn i forskjellige spor. For eksempel dersom du hadde punktgeoobjekter som representerte flyvninger med fly, hvor sporfeltet var flyets ID. Dette flyet kan ta flere turer, men likevel v&aelig;re representert som ett spor.  Hvis du visste at det er en pause p&aring; 1 time mellom flyvningene, kan du bruke <code>1 time</code> som spordeler, og hver flyving vil bli delt inn i sitt eget spor.
+                    </li>
+                    <li> <b>Ved definerte tidsintervaller</b> &ndash;&nbsp;Delinger ved hjelp av regelmessige intervaller, angitt av et tidsintervall og et referansetidspunkt. Hvis du ikke angir et referansetidspunkt, brukes 1.&nbsp;januar&nbsp;1970. Hvis du for eksempel har angitt 1&nbsp;&aring;r med referansetidspunkt 2.&nbsp;februar 1990 kl.&nbsp;10:00, deles sporene 2.&nbsp;februar 1990 kl.&nbsp;10:00, 2.&nbsp;Februar 1991, og s&aring; videre p&aring; samme tid hvert &aring;r.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Hvis du angir flere alternativer for deling, vil sporene bli delt n&aring;r en av eller flere av betingelsene er oppfylt. 
+            </p>
+        </div>
+    </div>
+    <div id="distanceSplit">
+        <div><h2>Velg en avstand som sporene skal deles på (valgfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Avstanden som brukes til &aring; dele spor. Hvis inndatapunktene eller -omr&aring;dene har st&oslash;rre avstand mellom seg enn avstandsinndelingen, blir de delt inn i forskjellige spor.
+            </p>
+            <p>Hvis du angir en tidsinndeling og en avstandsinndeling, vil sporene bli delt n&aring;r en av eller begge betingelsene er oppfylt. 
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Legg til statistikk (valgfritt)</h2></div>
+        <hr/>
+        <div>
+            <p> Du kan beregne statistikk p&aring; geoobjekter som er summert. Du kan beregne f&oslash;lgende p&aring; numeriske felt:
+                <ul>
+                    <li>Antall&nbsp;&ndash; Beregner antall verdier som ikke er null. Det kan brukes p&aring; numeriske felt eller strenger. Antallet for [null, 0, 2] er 2.
+                    </li>
+                    <li>Sum &ndash; Summen av numeriske verdier i et felt. Summen av [null, null, 3] er 3.
+                    </li>
+                    <li>Gjennomsnitt &ndash; Gjennomsnittet for numeriske verdier. Gjennomsnittet av [0, 2, null] er 1.
+                    </li>
+                    <li>Min &ndash; Minimumsverdien for et numerisk felt. Minimum av [0, 2, null] er 0. 
+                    </li>
+                    <li>Maks &ndash; Maksimumsverdien for et numerisk felt. Maksimumsverdien for [0, 2, null] er 2.
+                    </li>
+                    <li>Omr&aring;de &ndash; Omr&aring;det for et numerisk felt. Beregnes som den maksimale verdien minus minimumsverdien. Omr&aring;det av [0, null, 1] er 1. Omr&aring;det av [null, 4] er 0.
+                    </li>
+                    <li>Varians &ndash; Variansen for et numerisk felt i et spor. Variansen for [1] er null. Variansen for [null, 1,0,1,1] er 0,25.
+                    </li>
+                    <li>Standardavvik &ndash; Standardavviket for et numerisk felt. Standardavviket for [1] er null. Standardavviket for [null, 1,0,1,1] er 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du kan beregne f&oslash;lgende p&aring; strengfelter:
+                <ul>
+                    <li>Antall &ndash; Antallet strenger som ikke er null.
+                    </li>
+                    <li>Noen &ndash; Denne statistikken er en tilfeldig pr&oslash;ve av en strengverdi i det spesifiserte feltet.
+                    </li>
+                </ul>
+                All statistikk beregnes p&aring; ikke-nullverdier. Resultatlaget inneholder et nytt felt for hver beregnet statistikk. Du kan legge til flere statistikker ved &aring; velge et attributt og statistikk. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Velg ArcGIS Data Store som resultatene skal lagres i</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-resultater lagre s p&aring; et datalager og vises som et geoobjektlag i  Portal for ArcGIS. Resultatene b&oslash;r i de fleste tilfeller lagres i et geotemporalt datalager, og dette er standarden. I enkelte tilfeller, er det en god l&oslash;sning &aring; lagre resultatene i relasjonsdatalageret. Du kan velge &aring; lagre resultatene i relasjonsdatalageret av f&oslash;lgende grunner: 
+                <ul>
+                    <li>Du kan bruke resultater i portal-til-portal-samarbeid.
+                    </li>
+                    <li>Du kan aktivere synkroniseringsfunksjoner for resultatene dine.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du b&oslash;r ikke bruke relasjonsdatalageret hvis du forventer at GeoAnalytics-resultatene skal &oslash;ke, og du &oslash;nsker &aring; dra fordeler av det geotemporale stordatalagerets funksjoner til &aring; h&aring;ndtere store mengder data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; laget som opprettes. Hvis du skriver til en ArcGIS Data Store, blir resultatene dine lagret i  <b>Mitt innhold</b> og lagt til kartet. Hvis du skriver til et fildelingsomr&aring;de for stordata, blir resultatene lagret i fildelingsomr&aring;det for stordata og lagt til dets innholdsoversikt. De blir ikke lagt til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget allerede eksisterer, vil verkt&oslash;yet mislykkes.
+            </p>
+            <p>N&aring;r du skriver til  ArcGIS Data Store (fildelingsomr&aring;de for relasjons- eller geotemporale stordata) via rullegardinlisten  <b>Lagre resultat i</b>, kan du angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatet skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

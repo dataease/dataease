@@ -1,0 +1,41 @@
+<div class='esri-rfx-weighted-overlay-editor'>
+  <table class='esri-rfx-args-editor__table'>
+    <tr class='esri-rfx-args-editor__tr--arg-name'>
+      <td data-dojo-attach-point='weightedOverlayTableLabel'>${_i18n.weightedOverlayTable}</td>
+    </tr>
+    <tr class="esri-rfx-args-editor__tr--arg-widget">
+      <td>
+        <div data-dojo-attach-point='gridNode1'></div>
+      </td>
+    </tr>
+
+    <tr class='esri-rfx-args-editor__tr--arg-row' data-dojo-attach-point='sumOfInfluenceRow'>
+      <td>
+        <div class="esri-rfx-args-editor__div--arg-td">
+          <span class="esri-rfx-args-editor__span--left" data-dojo-attach-point='sumOfInfluenceLabel'>${_i18n.sumOfInfluence}</span>
+          <span class="esri-rfx-args-editor__span--right" data-dojo-attach-point='sumOfInfluence'>100</span>
+        </div>
+      </td>
+    </tr>
+
+    <tr class='esri-rfx-args-editor__tr--arg-name'>
+      <td data-dojo-attach-point='remapTableLabel'>${_i18n.remapTable}</td>
+    </tr>
+    <tr class="esri-rfx-args-editor__tr--arg-widget">
+      <td>
+        <div data-dojo-attach-point='gridNode2'></div>
+      </td>
+    </tr>
+
+    <tr class='esri-rfx-args-editor__tr--arg-row' data-dojo-attach-point='scalesRow'>
+      <td>
+        <div class="esri-rfx-args-editor__div--arg-td">
+          <span class="esri-rfx-args-editor__span--left" data-dojo-attach-point='scalesLabel'>${_i18n.scales}</span>
+          <span class="esri-rfx-args-editor__span--right" data-dojo-attach-point='scalesSpan'>
+            <div data-dojo-type="esri/dijit/RasterFunctionEditor/RFxScalesInput" data-dojo-attach-point="scalesInput"></div>
+          </span>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>

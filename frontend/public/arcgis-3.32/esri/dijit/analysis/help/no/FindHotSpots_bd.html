@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Finn hotspots</h2><p/>
+        <h2><img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" alt="Finn hotspots"></h2>
+        <hr/>
+    <p>Finn hotspots-verkt&oslash;yet finner ut om det er noen statistisk signifikante samlinger i det geografiske m&oslash;nsteret i dataene dine. 
+        <ul>
+            <li>Er punktene (kriminalitet, tr&aelig;r eller trafikkulykker) virkelig samlet i klynger?  Hvordan kan du v&aelig;re sikker?
+            </li>
+            <li>Har du virkelig oppdaget en statistisk signifikant hotspot, eller ville kartet fortelle en annen historie hvis du endret m&aring;ten det symboliseres p&aring;?
+            </li>
+        </ul>
+        Finn hotspots-verkt&oslash;yet hjelper deg med &aring; besvare disse sp&oslash;rsm&aring;lene p&aring; en p&aring;litelig m&aring;te.
+    </p>
+    <p>Til og med tilfeldige geografiske m&oslash;nstre kan ha et visst klyngepreg. I tillegg pr&oslash;ver &oslash;ynene og hjernen v&aring;r &aring; finne m&oslash;nstre der det egentlig ikke er noe m&oslash;nster. Dermed kan det v&aelig;re vanskelig &aring; vite om m&oslash;nstrene i dataene er resultatet av faktiske geografiske prosesser eller bare tilfeldigheter. Det er grunnen til at forskere og analytikere bruker statistiske metoder som Finn hotspots (Getis-Ord Gi*) til &aring; kvantifisere geografiske m&oslash;nstre. N&aring;r du finner statistisk signifikante samlinger i dataene dine, har du verdifull informasjon. Ved &aring; vite hvor og n&aring;r samlingene forekommer, kan du f&aring; viktige ledetr&aring;der om prosessene som f&oslash;rer til m&oslash;nstrene du ser. Hvis du f.eks. vet at innbrudd i private hjem er konsekvent h&oslash;yere i bestemte omr&aring;der, er det viktig informasjon hvis du skal iverksette effektive tiltak for &aring; forebygge, utplassere politiressurser, igangsette nabovaktordninger, autorisere grundige etterforskninger eller identifisere mulige mistenkte.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Velg laget som det skal beregnes hotspots for</h2></div>
+        <hr/>
+        <div>
+            <p>Punktlaget som det skal finnes hotspots og coldspots i.
+            </p>
+            <p>Denne analysen bruker beholdere og krever et projisert koordinatsystem. Du kan angi  <b>Behandlende koordinatsystem</b> i <b>Analysemilj&oslash;er</b>. Hvis koordinatsystemet for behandling ikke er angitt som et projisert koordinatsystem, blir du bedt om &aring; angi det n&aring;r du bruker funksjonen <b>Kj&oslash;r analyse</b> .
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> nederst i rullegardinlisten, for &aring; bla gjennom innholdet p&aring; et fildelingsomr&aring;de for stordata eller et geoobjektlag.
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Finn klynger med høye og lave verdier</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Denne analysen besvarer f&oslash;lgende sp&oslash;rsm&aring;l: Hvor samler h&oslash;ye og lave verdier seg i klynger geografisk?
+            </p>
+            <p>Hvis dataene dine er punkter og du velger  <b>punkttellinger</b>, evaluerer dette verkt&oslash;yet den romlige plasseringen til punktgeoobjektene for &aring; besvare f&oslash;lgende sp&oslash;rsm&aring;l: Hvor er punktene uventet samlet eller spredt?
+            </p>
+            <p>Hvis du velger et felt, evaluerer dette verkt&oslash;yet den romlige plasseringen av verdiene som er knyttet til hvert geoobjekt for &aring; besvare f&oslash;lgende sp&oslash;rsm&aring;l: Hvor der det klynger av h&oslash;ye og lave verdier?
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Velg lagerplasstørrelse for aggregering</h2></div>
+        <hr/>
+        <div>
+            <p>Avstanden som brukes til &aring; generere kvadratiske beholdere som skal brukes &aring; analysere inndatapunkter med.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Finn hotspot ved hjelp av tidssteg (valgfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Hvis tid er aktivert i dette punktlaget og det er av typen umiddelbart, kan du analysere med tidssteg.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Tidsstegintervall</h2></div>
+        <hr/>
+        <div>
+            <p>Tidsintervall som brukes til &aring; generere tidssteg. Tid kan justeres til starten eller slutten p&aring; inndataene, eller til en spesifisert referansetid.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Tidsstegintervall</h2></div>
+        <hr/>
+        <div>
+            <p>Tidsintervall som brukes til &aring; generere tidssteg. Tid kan justeres til starten eller slutten p&aring; inndataene, eller til en spesifisert referansetid.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStepAlignment">
+        <div><h2>Velg hvordan tidssteg skal justeres</h2></div>
+        <hr/>
+        <div>
+            <p>Hvordan tidsstegene justeres. Tidsstegene kan justeres p&aring; tre m&aring;ter:
+                <ul>
+                    <li> <b>Starttid</b> &ndash; Tidsstegene justeres mot det geoobjektet som kommer f&oslash;rst tidsmessig.
+                    </li>
+                    <li> <b>Sluttid</b> &ndash; Tidsstegene justeres mot det geoobjektet som kommer sist tidsmessig.
+                    </li>
+                    <li> <b>Referansetid</b> &ndash; Tidsstegene justeres mot en angitt tid.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Referansetid som tidsstegene skal justeres etter</h2></div>
+        <hr/>
+        <div>
+            <p>Datoen og tidspunktet som brukes til &aring; justere tidsstegene.
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Velg nabolagstørrelse for beregninger av hotspots</h2></div>
+        <hr/>
+        <div>
+            <p>Avstanden som brukes til &aring; fastsl&aring; nabolaget som brukes til hotspot-beregninger. Nabolaget b&oslash;r v&aelig;re st&oslash;rre enn beholderst&oslash;rrelsen for &aring; sikre at hver beholder har minst &eacute;n nabo. Hver beholder blir analysert og sammenlignet med nabobeholdere.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er en midlertidig parameter for forh&aring;ndslansering, for &aring; angi den romlige referansen for behandling. Mange big data-verkt&oslash;y krever at et projisert koordinatsystem blir anvendt som den romlige referansen for behandling. Som standard vil verkt&oslash;yet bruke inndatakoordinatsystemet, men vil mislykkes hvis det er et geografisk koordinatsystem. Hvis du vil angi et projisert koordinatsystem, skriver du inn WKID. For eksempel angis  <b>Web Mercator</b> som <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Velg ArcGIS Data Store som resultatene skal lagres i</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-resultater lagre s p&aring; et datalager og vises som et geoobjektlag i  Portal for ArcGIS. Resultatene b&oslash;r i de fleste tilfeller lagres i et geotemporalt datalager, og dette er standarden. I enkelte tilfeller, er det en god l&oslash;sning &aring; lagre resultatene i relasjonsdatalageret. Du kan velge &aring; lagre resultatene i relasjonsdatalageret av f&oslash;lgende grunner: 
+                <ul>
+                    <li>Du kan bruke resultater i portal-til-portal-samarbeid.
+                    </li>
+                    <li>Du kan aktivere synkroniseringsfunksjoner for resultatene dine.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du b&oslash;r ikke bruke relasjonsdatalageret hvis du forventer at GeoAnalytics-resultatene skal &oslash;ke, og du &oslash;nsker &aring; dra fordeler av det geotemporale stordatalagerets funksjoner til &aring; h&aring;ndtere store mengder data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; laget som opprettes. Hvis du skriver til en ArcGIS Data Store, blir resultatene dine lagret i  <b>Mitt innhold</b> og lagt til kartet. Hvis du skriver til et fildelingsomr&aring;de for stordata, blir resultatene lagret i fildelingsomr&aring;det for stordata og lagt til dets innholdsoversikt. De blir ikke lagt til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget allerede eksisterer, vil verkt&oslash;yet mislykkes.
+            </p>
+            <p>Resultatlaget viser hvor det finnes statistisk signifikante samlinger med h&oslash;ye og lave verdier, eller punktantall. Hvis resultatlaget allerede finnes, blir du bedt om &aring; gi det et nytt navn.
+            </p>
+            <p>N&aring;r du skriver til  ArcGIS Data Store (fildelingsomr&aring;de for relasjons- eller geotemporale stordata) via rullegardinlisten  <b>Lagre resultat i</b>, kan du angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatet skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

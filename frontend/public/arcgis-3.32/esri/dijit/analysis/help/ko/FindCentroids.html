@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>중심 찾기</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="중심 찾기"></h2>
+        <hr/>
+    <p>이 도구는 멀티포인트, 라인 또는 영역 피처의 레이어로 작동하여 각 피처의 대표 중심을 결정합니다.
+    </p>
+    <p> <b>현재 맵 범위 사용</b>이 선택된 경우 현재 맵 범위 내에 표시된 입력 멀티포인트, 라인 또는 영역 레이어와 영역 레이어의 피처만 분석되고,  선택하지 않으면 현재 맵 범위 외부에 있는 피처를 포함하여 입력 레이어에 있는 모든 피처가 분석됩니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>중심을 생성하는 데 사용할 피처의 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p> 중심을 찾는 데 사용할 멀티포인트, 라인 또는 영역 레이어입니다.
+            </p>
+            <p>맵에서 레이어를 선택하는 것 외에도 드롭다운 목록 하단에서  <b>분석 레이어를 선택</b>할 수 있습니다. 해당 옵션을 사용하면 다양한 원본에서 분석에 사용할 데이터셋을 검색하고 선택할 수 있는 갤러리가 열립니다. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>결과 위치 보기</h2></div>
+        <hr/>
+        <div>
+            <p>  <b>실제 중심 위치</b>가 기본적으로 선택된 경우, 결과는 각 입력 피처에 대한 중심의 실제 위치를 반환합니다. 중심 위치는 다음과 같습니다.
+                <ul>
+                    <li>멀티포인트 피처 - 결과 중심이 멀티포인트 피처에서 모든 포인트의 평균 x 및 y 좌표에 위치합니다.
+                    </li>
+                    <li>라인 피처 - 결과 중심이 라인 피처에서 모든 라인 세그먼트 중간점의 가중치 평균 x 및 y 좌표에 위치합니다. 가중치는 세그먼트 길이에 따라 달라집니다.
+                    </li>
+                    <li>영역 피처 - 결과 중심이 영역의 중심에 위치합니다.
+                    </li>
+                </ul>
+                
+            </p>
+            <p> <b>입력 피처에 포함</b>이 선택된 경우 결과 포인트 피처가 각 입력 피처에 포함되거나 입력 피처 내부에 위치합니다. 결과 포인트 피처는 다음과 같이 나타납니다.
+                <ul>
+                    <li>멀티포인트 피처 - 결과 중심이 멀티포인트 그룹의 포인트 중 하나와 일치합니다.
+                    </li>
+                    <li>라인 피처 - 결과 중심이 라인에 있습니다.  라인이 곡선인 경우 결과는 라인의 중간점에 있습니다. 
+                    </li>
+                    <li>영역 피처 - 결과 포인트가 영역 피처 내부에 있습니다.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에서 생성되어 맵에 추가되는 레이어의 이름입니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어 이름이 이미 있는 경우 다른 이름을 입력하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 메뉴를 사용하여 <b>내 콘텐츠</b>에서 결과를 저장할 폴더의 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

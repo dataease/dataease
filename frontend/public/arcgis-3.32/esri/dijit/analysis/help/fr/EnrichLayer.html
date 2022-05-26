@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Enrichir la couche</h2><p/>
+        <h2><img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" alt="Enrichir la couche"></h2>
+        <hr/>
+    <p>Cet outil enrichit vos donn&eacute;es en r&eacute;cup&eacute;rant des informations sur les personnes, lieux et commerces qui entourent l'emplacement des donn&eacute;es et vous permet de r&eacute;pondre &agrave; de nouvelles questions concernant les emplacements, auxquelles les cartes seules ne permettent pas de r&eacute;pondre. Par exemple&nbsp;: quelles personnes vivent ici&nbsp;? Qu'est-ce que les gens aiment faire dans cet endroit ? Quels sont leurs habitudes et leurs styles de vie ? Quels sont les commerces implant&eacute;s &agrave; cet endroit ?
+    </p>
+    <p>Le r&eacute;sultat sera une nouvelle couche contenant toutes les informations d&eacute;mographiques et g&eacute;ographiques issues d'ensembles de donn&eacute;es particuliers. Ces nouvelles informations sont ajout&eacute;es sous forme de champs dans la table.
+    </p>
+    <p>Si l'option  <b>Utiliser l'&eacute;tendue courante de la carte</b> est s&eacute;lectionn&eacute;e, seules les entit&eacute;s de la couche en entr&eacute;e qui sont visibles au sein de l'&eacute;tendue courante de la carte seront enrichies.  Si l'option n'est pas s&eacute;lectionn&eacute;e, toutes les entit&eacute;s qui se trouvent dans la couche en entr&eacute;e seront enrichies, m&ecirc;me si elles se trouvent en dehors de l'&eacute;tendue courante de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choisissez la couche à enrichir à l'aide de nouvelles données</h2></div>
+        <hr/>
+        <div>
+            <p>La couche ponctuelle, lin&eacute;aire ou surfacique qui sera enrichie &agrave; l'aide de nouvelles donn&eacute;es attributaires. 
+            </p>
+            <p>Outre le choix d&rsquo;une couche dans votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante. Cette option ouvre une biblioth&egrave;que qui vous permet de s&eacute;lectionner des jeux de donn&eacute;es de diff&eacute;rentes sources pour les utiliser dans votre analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="DataCollection">
+        <div><h2>Variables d'enrichissement</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Cliquez sur  <b>S&eacute;lectionner des variables</b> pour ouvrir le <b>navigateur de donn&eacute;es</b>.  Le <b>navigateur de donn&eacute;es</b> permet de trouver et de s&eacute;lectionner des variables d'enrichissement une par une ou par lots.
+            </p>
+            <p>Une r&eacute;gion est s&eacute;lectionn&eacute;e automatiquement en fonction de vos donn&eacute;es. Vous pouvez choisir une r&eacute;gion diff&eacute;rente si vos donn&eacute;es couvrent plusieurs pays. 
+            </p>
+            <p>Les variables d'enrichissement sont organis&eacute;es en collections de donn&eacute;es pour en faciliter l'acc&egrave;s. Lorsque vous s&eacute;lectionnez une collection de donn&eacute;es, le navigateur affiche quelques-unes des variables d'enrichissement les plus utilis&eacute;es dans cette collection. Sous  <b>Continuer la navigation</b>, il pr&eacute;sente &eacute;galement les cat&eacute;gories qui constituent la collection. Au sein de chaque cat&eacute;gorie, vous pouvez s&eacute;lectionner des sous-cat&eacute;gories enti&egrave;res ou explorer une sous-cat&eacute;gorie et s&eacute;lectionner des variables d'enrichissement individuelles. Vous pouvez &eacute;galement utiliser la zone de recherche pour trouver une variable pr&eacute;cise au sein d'une cat&eacute;gorie.
+            </p>
+            <p>Lorsque vous s&eacute;lectionnez des variables &agrave; inclure pour l'enrichissement, elles sont ajout&eacute;es au panier situ&eacute;e dans l'angle du  <b>navigateur de donn&eacute;es</b>. Utilisez ce panier pour assurer le suivi du nombre de variables que vous avez s&eacute;lectionn&eacute;es.
+            </p>
+            <p>Chaque variable s&eacute;lectionn&eacute;e est ajout&eacute;e sous forme de champ dans votre couche de r&eacute;sultat.
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Définir les surfaces à enrichir</h2></div>
+        <hr/>
+        <div>
+            <p>D&eacute;finissez la zone autour de vos points ou lignes en entr&eacute;e qui sera enrichie en utilisant soit une distance en ligne droite soit un mode de d&eacute;placement s&eacute;lectionn&eacute;. Pour une distance en ligne droite, entrez une valeur maximale de 1&nbsp;000&nbsp;miles (1&nbsp;609&nbsp;kilom&egrave;tres). Vous pouvez utiliser les modes de d&eacute;placement uniquement si votre couche en entr&eacute;e contient des points. Les modes de d&eacute;placement &agrave; votre disposition sont d&eacute;termin&eacute;s par l'administrateur de votre organisation. Lorsque vous utilisez l'un des modes de d&eacute;placement, les mesures sont prises le long des routes ou des voies, elles respectent les r&egrave;gles en vigueur, par exemple les rues en sens unique, l'interdiction de faire demi-tour, etc. Apr&egrave;s avoir choisi votre mode et votre mesure, entrez une dur&eacute;e ou une distance de 5&nbsp;heures (300&nbsp;minutes) ou 300&nbsp;miles (482,8&nbsp;kilom&egrave;tres).
+            </p>
+            <p>Si la case  <b>Retourner le r&eacute;sultat sous la forme de zones adjacentes</b> est coch&eacute;e, des entit&eacute;s surfaciques sont retourn&eacute;es, telles qu'elles sont d&eacute;finies par les valeurs temporelles ou de distance ci-dessus.  Si la case est d&eacute;coch&eacute;e, des entit&eacute;s ponctuelles sont retourn&eacute;es.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nom de la couche résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit du nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte.  Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si le nom de la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Le menu d&eacute;roulant  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b> permet de sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> dans lequel sera enregistr&eacute; le r&eacute;sultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

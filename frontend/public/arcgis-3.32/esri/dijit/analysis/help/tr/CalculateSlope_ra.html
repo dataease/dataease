@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Eğimi Hesapla</h2><p/>
+        <h2><img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" alt="Portal i&ccedil;in Eğim Hesaplama aracı"></h2>
+        <hr/>
+    <p>Bu ara&ccedil;, girdi y&uuml;kselti verilerinin eğimini g&ouml;steren bir y&uuml;zey oluşturur. Eğim her dijital y&uuml;kselti modeli (DEM) h&uuml;cresi i&ccedil;in y&uuml;kselti değişim hızını g&ouml;sterir.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Eğimi hesaplamak için girdi verilerini seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Eğimin hesaplanacağı y&uuml;kselti katmanıdır.
+            </p>
+        </div>
+    </div>
+    <div id="zFactor">
+        <div><h2>Yükselti için ölçeklendirme faktörünü belirtin</h2></div>
+        <hr/>
+        <div>
+            <p>Bir z fakt&ouml;r&uuml; girin.
+            </p>
+            <p>Z fakt&ouml;r&uuml; y&uuml;kselti değerlerini d&ouml;n&uuml;şt&uuml;rmek i&ccedil;in iki ama&ccedil;lı olarak kullanılan bir &ouml;l&ccedil;eklendirme fakt&ouml;r&uuml;d&uuml;r:
+ 
+                <ul>
+                    <li>Y&uuml;kselti birimlerini (metre ya da fit gibi); fit, metre veya derece gibi katman yatay koordinat birimlerine d&ouml;n&uuml;şt&uuml;rmek
+                        
+  
+                    </li>
+                    <li>G&ouml;rsel efekt amacıyla dikey b&uuml;y&uuml;tme eklemek
+                        
+ 
+                    </li>
+                </ul>
+                
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                </td>
+                <td>
+                    <p>Fit biriminden
+                    </p>
+                </td>
+                <td>
+                    <p>Metre biriminden
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Fit biriminden
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>0.3048
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Metre biriminden
+                    </p>
+                </td>
+                <td>
+                    <p>3.28084
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adı. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>İ&ccedil;eriğim</b>&rsquo;de, <b>Sonu&ccedil;ları Kaydet</b> a&ccedil;ılır kutusunu kullanarak sonucun kaydedileceği klas&ouml;r&uuml;n adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Καθορισμός Δικτύου Βέλτιστου Κόστους Μετακίνησης</h2><p/>
+        <h2><img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" alt="&Alpha;&pi;&epsilon;&iota;&kappa;ό&nu;&iota;&sigma;&eta; &epsilon;&rho;&gamma;&alpha;&lambda;&epsilon;ί&omicron;&upsilon; &laquo;&Kappa;&alpha;&theta;&omicron;&rho;&iota;&sigma;&mu;ό&sigmaf; &Delta;&iota;&kappa;&tau;ύ&omicron;&upsilon; &Beta;έ&lambda;&tau;&iota;&sigma;&tau;&omicron;&upsilon; &Kappa;ό&sigma;&tau;&omicron;&upsilon;&sigmaf; &Mu;&epsilon;&tau;&alpha;&kappa;ί&nu;&eta;&sigma;&eta;&sigmaf;&raquo;"></h2>
+        <hr/>
+    <p>&Tau;&omicron; &epsilon;&rho;&gamma;&alpha;&lambda;&epsilon;ί&omicron; &alpha;&upsilon;&tau;ό &upsilon;&pi;&omicron;&lambda;&omicron;&gamma;ί&zeta;&epsilon;&iota; &tau;&omicron; &delta;ί&kappa;&tau;&upsilon;&omicron; &beta;έ&lambda;&tau;&iota;&sigma;&tau;&omicron;&upsilon; &kappa;ό&sigma;&tau;&omicron;&upsilon;&sigmaf; &alpha;&pi;ό έ&nu;&alpha; &sigma;ύ&nu;&omicron;&lambda;&omicron; &kappa;&alpha;&tau;&alpha;&chi;&omega;&rho;&iota;&sigma;&mu;έ&nu;&omega;&nu; &pi;&epsilon;&rho;&iota;&omicron;&chi;ώ&nu;.
+    </p>
+    <p>Έ&nu;&alpha; &pi;&alpha;&rho;ά&delta;&epsilon;&iota;&gamma;&mu;&alpha; &epsilon;&phi;&alpha;&rho;&mu;&omicron;&gamma;ή&sigmaf; &tau;&omicron;&upsilon; &epsilon;&rho;&gamma;&alpha;&lambda;&epsilon;ί&omicron;&upsilon; &alpha;&upsilon;&tau;&omicron;ύ &epsilon;ί&nu;&alpha;&iota; &eta; &epsilon;ύ&rho;&epsilon;&sigma;&eta; &tau;&omicron;&upsilon; &kappa;&alpha;&lambda;ύ&tau;&epsilon;&rho;&omicron;&upsilon; &delta;&iota;&kappa;&tau;ύ&omicron;&upsilon; &gamma;&iota;&alpha; &omicron;&chi;ή&mu;&alpha;&tau;&alpha; έ&kappa;&tau;&alpha;&kappa;&tau;&eta;&sigmaf; &alpha;&nu;ά&gamma;&kappa;&eta;&sigmaf;.
+    </p>
+    <p>&Alpha;&nu; &epsilon;&pi;&iota;&lambda;έ&xi;&epsilon;&tau;&epsilon; &tau;&eta; &delta;&upsilon;&nu;&alpha;&tau;ό&tau;&eta;&tau;&alpha;  <b>&Chi;&rho;ή&sigma;&eta; &tau;&rho;έ&chi;&omicron;&upsilon;&sigma;&alpha;&sigmaf; έ&kappa;&tau;&alpha;&sigma;&eta;&sigmaf; &chi;ά&rho;&tau;&eta;</b>, &theta;&alpha; &alpha;&nu;&alpha;&lambda;&upsilon;&theta;&omicron;ύ&nu; &mu;ό&nu;&omicron; ό&sigma;&epsilon;&sigmaf; &tau;&omicron;&pi;&omicron;&theta;&epsilon;&sigma;ί&epsilon;&sigmaf; &sigma;&tau;&omicron; &theta;&epsilon;&mu;&alpha;&tau;&iota;&kappa;ό &epsilon;&pi;ί&pi;&epsilon;&delta;&omicron; &epsilon;&iota;&sigma;ό&delta;&omicron;&upsilon; &epsilon;ί&nu;&alpha;&iota; &omicron;&rho;&alpha;&tau;έ&sigmaf; &epsilon;&nu;&tau;ό&sigmaf; &tau;&eta;&sigmaf; &tau;&rho;έ&chi;&omicron;&upsilon;&sigma;&alpha;&sigmaf; έ&kappa;&tau;&alpha;&sigma;&eta;&sigmaf; &tau;&omicron;&upsilon; &chi;ά&rho;&tau;&eta;. &Alpha;&nu; &alpha;&pi;&omicron;&epsilon;&pi;&iota;&lambda;έ&xi;&epsilon;&tau;&epsilon; &tau;&eta; &delta;&upsilon;&nu;&alpha;&tau;ό&tau;&eta;&tau;&alpha; &alpha;&upsilon;&tau;ή, &theta;&alpha; &alpha;&nu;&alpha;&lambda;&upsilon;&theta;&omicron;ύ&nu; ό&lambda;&epsilon;&sigmaf; &omicron;&iota; &tau;&omicron;&pi;&omicron;&theta;&epsilon;&sigma;ί&epsilon;&sigmaf; &sigma;&tau;&omicron; &theta;&epsilon;&mu;&alpha;&tau;&iota;&kappa;ό &epsilon;&pi;ί&pi;&epsilon;&delta;&omicron; &epsilon;&iota;&sigma;ό&delta;&omicron;&upsilon;, &alpha;&kappa;ό&mu;&eta; &kappa;&alpha;&iota; &alpha;&nu; &epsilon;ί&nu;&alpha;&iota; έ&xi;&omega; &alpha;&pi;ό &tau;&eta;&nu; &tau;&rho;έ&chi;&omicron;&upsilon;&sigma;&alpha; έ&kappa;&tau;&alpha;&sigma;&eta; &tau;&omicron;&upsilon; &chi;ά&rho;&tau;&eta;.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRegionsRasterOrFeatures">
+        <div><h2>Επιλογή raster ή θεματικού επιπέδου θέσης στοιχείων για καθορισμό διαδρομών μετακίνησης μεταξύ</h2></div>
+        <hr/>
+        <div>
+            <p>&Omicron;&iota; &pi;&epsilon;&rho;&iota;&omicron;&chi;έ&sigmaf; &epsilon;&iota;&sigma;ό&delta;&omicron;&upsilon; &pi;&omicron;&upsilon; &pi;&rho;ό&kappa;&epsilon;&iota;&tau;&alpha;&iota; &nu;&alpha; &sigma;&upsilon;&nu;&delta;&epsilon;&theta;&omicron;ύ&nu; &mu;έ&sigma;&omega; &tau;&omicron;&upsilon; &delta;&iota;&kappa;&tau;ύ&omicron;&upsilon; &mu;&epsilon; &tau;&omicron; &epsilon;&lambda;ά&chi;&iota;&sigma;&tau;&omicron; &kappa;ό&sigma;&tau;&omicron;&sigmaf;.
+            </p>
+            <p>&Omicron;&iota; &pi;&epsilon;&rho;&iota;&omicron;&chi;έ&sigmaf; &mu;&pi;&omicron;&rho;&omicron;ύ&nu; &nu;&alpha; &kappa;&alpha;&theta;&omicron;&rho;&iota;&sigma;&tau;&omicron;ύ&nu; &epsilon;ί&tau;&epsilon; &mu;έ&sigma;&omega; image service &epsilon;ί&tau;&epsilon; &mu;έ&sigma;&omega; feature service.
+            </p>
+            <p>&Gamma;&iota;&alpha; image service, &omicron;&iota; &pi;&epsilon;&rho;&iota;&omicron;&chi;έ&sigmaf; &kappa;&alpha;&theta;&omicron;&rho;ί&zeta;&omicron;&nu;&tau;&alpha;&iota; &mu;έ&sigma;&omega; &omicron;&mu;ά&delta;&omega;&nu; &sigma;&upsilon;&nu;&omicron;&rho;&epsilon;&upsilon;ό&nu;&tau;&omega;&nu; (&gamma;&epsilon;&iota;&tau;&omicron;&nu;&iota;&kappa;ώ&nu;) &kappa;&epsilon;&lambda;&iota;ώ&nu; &mu;&epsilon; &tau;&eta;&nu; ί&delta;&iota;&alpha; &tau;&iota;&mu;ή. &Kappa;ά&theta;&epsilon; &pi;&epsilon;&rho;&iota;&omicron;&chi;ή &pi;&rho;έ&pi;&epsilon;&iota; &nu;&alpha; έ&chi;&epsilon;&iota; &tau;&eta; &delta;&iota;&kappa;ή &tau;&eta;&sigmaf; &alpha;&pi;&omicron;&kappa;&lambda;&epsilon;&iota;&sigma;&tau;&iota;&kappa;ή &alpha;&rho;ί&theta;&mu;&eta;&sigma;&eta;. &Tau;&alpha; &kappa;&epsilon;&lambda;&iota;ά &pi;&omicron;&upsilon; &delta;&epsilon;&nu; &alpha;&nu;ή&kappa;&omicron;&upsilon;&nu; &sigma;&epsilon; &kappa;&alpha;&mu;ί&alpha; &pi;&epsilon;&rho;&iota;&omicron;&chi;ή &pi;&rho;έ&pi;&epsilon;&iota; &nu;&alpha; &epsilon;ί&nu;&alpha;&iota; NoData. &Omicron; &tau;ύ&pi;&omicron;&sigmaf; raster &pi;&rho;έ&pi;&epsilon;&iota; &nu;&alpha; &epsilon;ί&nu;&alpha;&iota; &alpha;&kappa;έ&rho;&alpha;&iota;&omicron;&sigmaf; &alpha;&rho;&iota;&theta;&mu;ό&sigmaf; &kappa;&alpha;&iota; &omicron;&iota; &tau;&iota;&mu;έ&sigmaf; &mu;&pi;&omicron;&rho;&omicron;ύ&nu; &nu;&alpha; &epsilon;ί&nu;&alpha;&iota; &epsilon;ί&tau;&epsilon; &theta;&epsilon;&tau;&iota;&kappa;έ&sigmaf; &epsilon;ί&tau;&epsilon; &alpha;&rho;&nu;&eta;&tau;&iota;&kappa;έ&sigmaf;.
+            </p>
+            <p>&Gamma;&iota;&alpha; feature service, &eta; &epsilon;ί&sigma;&omicron;&delta;&omicron;&sigmaf; &mu;&pi;&omicron;&rho;&epsilon;ί &nu;&alpha; &epsilon;ί&nu;&alpha;&iota; &sigma;&eta;&mu;&epsilon;ί&omicron;, &gamma;&rho;&alpha;&mu;&mu;ή ή &pi;&omicron;&lambda;ύ&gamma;&omega;&nu;&omicron;.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Επιλογή θεματικού επιπέδου raster κόστους μετακίνησης</h2></div>
+        <hr/>
+        <div>
+            <p>Έ&nu;&alpha; raster &pi;&omicron;&upsilon; &kappa;&alpha;&theta;&omicron;&rho;ί&zeta;&epsilon;&iota; &tau;&eta;&nu; &epsilon;&mu;&pi;έ&delta;&eta;&sigma;&eta; ή &tau;&omicron; &kappa;ό&sigma;&tau;&omicron;&sigmaf; &gamma;&iota;&alpha; &tau;&eta; &mu;&epsilon;&tau;&alpha;&kappa;ί&nu;&eta;&sigma;&eta; &epsilon;&mu;&beta;&alpha;&delta;&omicron;&mu;&epsilon;&tau;&rho;&iota;&kappa;ά &mu;έ&sigma;&alpha; &alpha;&pi;ό &kappa;ά&theta;&epsilon; &kappa;&epsilon;&lambda;ί.
+            </p>
+            <p>&Eta; &tau;&iota;&mu;ή &sigma;&tau;&eta; &theta;έ&sigma;&eta; &kappa;ά&theta;&epsilon; &kappa;&epsilon;&lambda;&iota;&omicron;ύ &alpha;&nu;&tau;&iota;&pi;&rho;&omicron;&sigma;&omega;&pi;&epsilon;ύ&epsilon;&iota; &tau;&eta;&nu; &alpha;&pi;ό&sigma;&tau;&alpha;&sigma;&eta; &mu;&epsilon; &kappa;ό&sigma;&tau;&omicron;&sigmaf; &alpha;&nu;ά &mu;&omicron;&nu;ά&delta;&alpha; &gamma;&iota;&alpha; &tau;&eta; &mu;&epsilon;&tau;&alpha;&kappa;ί&nu;&eta;&sigma;&eta; &mu;έ&sigma;&alpha; &alpha;&pi;ό &tau;&omicron; &kappa;&epsilon;&lambda;ί. &Eta; &tau;&iota;&mu;ή &tau;&eta;&sigmaf; &theta;έ&sigma;&eta;&sigmaf; &kappa;ά&theta;&epsilon; &kappa;&epsilon;&lambda;&iota;&omicron;ύ &pi;&omicron;&lambda;&lambda;&alpha;&pi;&lambda;&alpha;&sigma;&iota;ά&zeta;&epsilon;&tau;&alpha;&iota; &mu;&epsilon; &tau;&eta;&nu; &alpha;&nu;ά&lambda;&upsilon;&sigma;&eta; &tau;&omicron;&upsilon; &kappa;&epsilon;&lambda;&iota;&omicron;ύ &epsilon;&nu;ώ &tau;&alpha;&upsilon;&tau;ό&chi;&rho;&omicron;&nu;&alpha; &iota;&sigma;&omicron;&sigma;&tau;&alpha;&theta;&mu;ί&zeta;&epsilon;&tau;&alpha;&iota; &gamma;&iota;&alpha; &delta;&iota;&alpha;&gamma;ώ&nu;&iota;&alpha; &mu;&epsilon;&tau;&alpha;&kappa;ί&nu;&eta;&sigma;&eta; ώ&sigma;&tau;&epsilon; &nu;&alpha; &lambda;&eta;&phi;&theta;&epsilon;ί &tau;&omicron; &sigma;&upsilon;&nu;&omicron;&lambda;&iota;&kappa;ό &kappa;ό&sigma;&tau;&omicron;&sigmaf; &delta;&iota;έ&lambda;&epsilon;&upsilon;&sigma;&eta;&sigmaf; &alpha;&pi;ό &tau;&omicron; &kappa;&epsilon;&lambda;ί.
+            </p>
+            <p>&Omicron;&iota; &tau;&iota;&mu;έ&sigmaf; &tau;&omicron;&upsilon; raster &kappa;ό&sigma;&tau;&omicron;&upsilon;&sigmaf; &mu;&pi;&omicron;&rho;&epsilon;ί &nu;&alpha; &epsilon;ί&nu;&alpha;&iota; &alpha;&kappa;έ&rho;&alpha;&iota;&omicron;&sigmaf; &alpha;&rho;&iota;&theta;&mu;ό&sigmaf; ή &alpha;&rho;&iota;&theta;&mu;ό&sigmaf; &mu;&epsilon; &kappa;&iota;&nu;&eta;&tau;ή &upsilon;&pi;&omicron;&delta;&iota;&alpha;&sigma;&tau;&omicron;&lambda;ή, &alpha;&lambda;&lambda;ά &delta;&epsilon;&nu; &mu;&pi;&omicron;&rho;&omicron;ύ&nu; &nu;&alpha; &epsilon;ί&nu;&alpha;&iota; &alpha;&rho;&nu;&eta;&tau;&iota;&kappa;έ&sigmaf; ή &mu;&eta;&delta;&epsilon;&nu;&iota;&kappa;έ&sigmaf; (&delta;&epsilon;&nu; &mu;&pi;&omicron;&rho;&epsilon;ί&tau;&epsilon; &nu;&alpha; έ&chi;&epsilon;&tau;&epsilon; &alpha;&rho;&nu;&eta;&tau;&iota;&kappa;ό ή &mu;&eta;&delta;&epsilon;&nu;&iota;&kappa;ό &kappa;ό&sigma;&tau;&omicron;&sigmaf;).
+            </p> 
+        </div>
+    </div>
+    <div id="outputOptimumNetworkName">
+        <div><h2>Όνομα εξαγόμενου θεματικού επιπέδου σύνθετης γραμμής βέλτιστων διαδρομών</h2></div>
+        <hr/>
+        <div>
+            <p>&Tau;&omicron; ό&nu;&omicron;&mu;&alpha; &tau;&omicron;&upsilon; &theta;&epsilon;&mu;&alpha;&tau;&iota;&kappa;&omicron;ύ &epsilon;&pi;&iota;&pi;έ&delta;&omicron;&upsilon; &pi;&omicron;&upsilon; &theta;&alpha; &delta;&eta;&mu;&iota;&omicron;&upsilon;&rho;&gamma;&eta;&theta;&epsilon;ί &sigma;&tau;&eta;&nu; &epsilon;&nu;ό&tau;&eta;&tau;&alpha;  <b>&Tau;&omicron; &pi;&epsilon;&rho;&iota;&epsilon;&chi;ό&mu;&epsilon;&nu;ό &mu;&omicron;&upsilon;</b> &kappa;&alpha;&iota; &theta;&alpha; &pi;&rho;&omicron;&sigma;&tau;&epsilon;&theta;&epsilon;ί &sigma;&tau;&omicron; &chi;ά&rho;&tau;&eta;. &Tau;&omicron; &pi;&rho;&omicron;&epsilon;&pi;&iota;&lambda;&epsilon;&gamma;&mu;έ&nu;&omicron; ό&nu;&omicron;&mu;&alpha; &beta;&alpha;&sigma;ί&zeta;&epsilon;&tau;&alpha;&iota; &sigma;&tau;&omicron; ό&nu;&omicron;&mu;&alpha; &tau;&omicron;&upsilon; &epsilon;&rho;&gamma;&alpha;&lambda;&epsilon;ί&omicron;&upsilon; &kappa;&alpha;&iota; &sigma;&tau;&omicron; ό&nu;&omicron;&mu;&alpha; &tau;&omicron;&upsilon; &theta;&epsilon;&mu;&alpha;&tau;&iota;&kappa;&omicron;ύ &epsilon;&pi;&iota;&pi;έ&delta;&omicron;&upsilon; &epsilon;&iota;&sigma;ό&delta;&omicron;&upsilon;. &Alpha;&nu; &tau;&omicron; &theta;&epsilon;&mu;&alpha;&tau;&iota;&kappa;ό &epsilon;&pi;ί&pi;&epsilon;&delta;&omicron; ή&delta;&eta; &upsilon;&pi;ά&rho;&chi;&epsilon;&iota;, &theta;&alpha; &epsilon;&mu;&phi;&alpha;&nu;&iota;&sigma;&tau;&epsilon;ί &pi;&rho;&omicron;&tau;&rho;&omicron;&pi;ή &gamma;&iota;&alpha; &nu;&alpha; &delta;ώ&sigma;&epsilon;&tau;&epsilon; ά&lambda;&lambda;&omicron; ό&nu;&omicron;&mu;&alpha;.
+            </p>
+            <p>&Mu;&pi;&omicron;&rho;&epsilon;ί&tau;&epsilon; &nu;&alpha; &kappa;&alpha;&theta;&omicron;&rho;ί&sigma;&epsilon;&tau;&epsilon; &mu;έ&sigma;&alpha; &sigma;&tau;&omicron;&nu; &phi;ά&kappa;&epsilon;&lambda;&omicron;  <b>&Tau;&omicron; &pi;&epsilon;&rho;&iota;&epsilon;&chi;ό&mu;&epsilon;&nu;ό &mu;&omicron;&upsilon;</b> &tau;&omicron; ό&nu;&omicron;&mu;&alpha; &epsilon;&nu;ό&sigmaf; ά&lambda;&lambda;&omicron;&upsilon; &phi;&alpha;&kappa;έ&lambda;&omicron;&upsilon; ό&pi;&omicron;&upsilon; &theta;&alpha; &alpha;&pi;&omicron;&theta;&eta;&kappa;&epsilon;&upsilon;&tau;&epsilon;ί &tau;&omicron; &alpha;&pi;&omicron;&tau;έ&lambda;&epsilon;&sigma;&mu;&alpha; &mu;&epsilon; &chi;&rho;ή&sigma;&eta; &tau;&omicron;&upsilon; &pi;&tau;&upsilon;&sigma;&sigma;ό&mu;&epsilon;&nu;&omicron;&upsilon; &pi;&lambda;&alpha;&iota;&sigma;ί&omicron;&upsilon; <b>&Alpha;&pi;&omicron;&theta;ή&kappa;&epsilon;&upsilon;&sigma;&eta; &alpha;&pi;&omicron;&tau;&epsilon;&lambda;έ&sigma;&mu;&alpha;&tau;&omicron;&sigmaf; &sigma;&epsilon;</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputNeighborNetworkName">
+        <div><h2>Όνομα εξαγόμενου θεματικού επιπέδου σύνθετης γραμμής γειτονικών διαδρομών</h2></div>
+        <hr/>
+        <div>
+            <p>&Tau;&omicron; ό&nu;&omicron;&mu;&alpha; &tau;&omicron;&upsilon; &theta;&epsilon;&mu;&alpha;&tau;&iota;&kappa;&omicron;ύ &epsilon;&pi;&iota;&pi;έ&delta;&omicron;&upsilon; &pi;&omicron;&upsilon; &theta;&alpha; &delta;&eta;&mu;&iota;&omicron;&upsilon;&rho;&gamma;&eta;&theta;&epsilon;ί &sigma;&tau;&eta;&nu; &epsilon;&nu;ό&tau;&eta;&tau;&alpha;  <b>&Tau;&omicron; &pi;&epsilon;&rho;&iota;&epsilon;&chi;ό&mu;&epsilon;&nu;ό &mu;&omicron;&upsilon;</b> &kappa;&alpha;&iota; &theta;&alpha; &pi;&rho;&omicron;&sigma;&tau;&epsilon;&theta;&epsilon;ί &sigma;&tau;&omicron; &chi;ά&rho;&tau;&eta;. &Tau;&omicron; &pi;&rho;&omicron;&epsilon;&pi;&iota;&lambda;&epsilon;&gamma;&mu;έ&nu;&omicron; ό&nu;&omicron;&mu;&alpha; &beta;&alpha;&sigma;ί&zeta;&epsilon;&tau;&alpha;&iota; &sigma;&tau;&omicron; ό&nu;&omicron;&mu;&alpha; &tau;&omicron;&upsilon; &epsilon;&rho;&gamma;&alpha;&lambda;&epsilon;ί&omicron;&upsilon; &kappa;&alpha;&iota; &sigma;&tau;&omicron; ό&nu;&omicron;&mu;&alpha; &tau;&omicron;&upsilon; &theta;&epsilon;&mu;&alpha;&tau;&iota;&kappa;&omicron;ύ &epsilon;&pi;&iota;&pi;έ&delta;&omicron;&upsilon; &epsilon;&iota;&sigma;ό&delta;&omicron;&upsilon;. &Alpha;&nu; &tau;&omicron; &theta;&epsilon;&mu;&alpha;&tau;&iota;&kappa;ό &epsilon;&pi;ί&pi;&epsilon;&delta;&omicron; ή&delta;&eta; &upsilon;&pi;ά&rho;&chi;&epsilon;&iota;, &theta;&alpha; &epsilon;&mu;&phi;&alpha;&nu;&iota;&sigma;&tau;&epsilon;ί &pi;&rho;&omicron;&tau;&rho;&omicron;&pi;ή &gamma;&iota;&alpha; &nu;&alpha; &delta;ώ&sigma;&epsilon;&tau;&epsilon; ά&lambda;&lambda;&omicron; ό&nu;&omicron;&mu;&alpha;.
+            </p>
+            <p>&Mu;&pi;&omicron;&rho;&epsilon;ί&tau;&epsilon; &nu;&alpha; &kappa;&alpha;&theta;&omicron;&rho;ί&sigma;&epsilon;&tau;&epsilon; &mu;έ&sigma;&alpha; &sigma;&tau;&omicron;&nu; &phi;ά&kappa;&epsilon;&lambda;&omicron;  <b>&Tau;&omicron; &pi;&epsilon;&rho;&iota;&epsilon;&chi;ό&mu;&epsilon;&nu;ό &mu;&omicron;&upsilon;</b> &tau;&omicron; ό&nu;&omicron;&mu;&alpha; &epsilon;&nu;ό&sigmaf; ά&lambda;&lambda;&omicron;&upsilon; &phi;&alpha;&kappa;έ&lambda;&omicron;&upsilon; ό&pi;&omicron;&upsilon; &theta;&alpha; &alpha;&pi;&omicron;&theta;&eta;&kappa;&epsilon;&upsilon;&tau;&epsilon;ί &tau;&omicron; &alpha;&pi;&omicron;&tau;έ&lambda;&epsilon;&sigma;&mu;&alpha; &mu;&epsilon; &chi;&rho;ή&sigma;&eta; &tau;&omicron;&upsilon; &pi;&tau;&upsilon;&sigma;&sigma;ό&mu;&epsilon;&nu;&omicron;&upsilon; &pi;&lambda;&alpha;&iota;&sigma;ί&omicron;&upsilon; <b>&Alpha;&pi;&omicron;&theta;ή&kappa;&epsilon;&upsilon;&sigma;&eta; &alpha;&pi;&omicron;&tau;&epsilon;&lambda;έ&sigma;&mu;&alpha;&tau;&omicron;&sigmaf; &sigma;&epsilon;</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

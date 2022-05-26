@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/et/FindPointClusters",{clustersLabel:"Otsige kihi ${inputLayerName} klastrid.",chooseLayerLabel:"Valige kiht klastrite otsimiseks",minClusterPtsLabel:"Minimaalne punktide arv, mida k\u00e4sitletakse klastrina",minClustersPtsGAXLbl:"Klastri loomiseks vajalik minimaalne punktide arv",limitSearchLabel:"Piira otsinguvahemikku (valikuline)",limitSearchReqLabel:"Piira otsinguvahemikku",outputLayerName:"Otsi ${inputLayerName} klastrid",itemDescription:"Objektikiht loodi kihi ${inputLayerName} punktklastrite otsingu\u00a0abil.",
+itemTags:"Anal\u00fc\u00fcsi tulemus, punktklastrite otsimine, ${inputLayerName}",itemSnippet:"Objektikiht loodi punktklastrite\u00a0otsingu abil",chooseClusteringMethod:"Valige kasutatav klasterdamismeetod",dbscanLabel:"M\u00e4\u00e4ratletud kaugus (DBSCAN)",hdbscanLabel:"Isereguleeruv (HDBSCAN)",useTimeToFindCLusters:"Varu klastrite leidmiseks aega",limitSearchDurLabel:"Piira otsingu kestvust"});

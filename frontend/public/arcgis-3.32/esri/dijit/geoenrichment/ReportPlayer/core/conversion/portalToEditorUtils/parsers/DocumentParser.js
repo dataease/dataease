@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/conversion/portalToEditorUtils/parsers/DocumentParser",["dojo/_base/lang","esri/dijit/geoenrichment/utils/JsonXmlConverter","../../ConversionUtil","../../../supportClasses/DocumentOptions"],function(h,f,d,k){return{parseDocument:function(a,e){var b=e.templateJson,c="HTMLextReport"===a.name?a:f.queryJson(a,"HTMLextReport",!0)[0];if(c){var g=c.attributes.orientation||"portrait";b.documentOptions.pagesize=k.tryGetStandardPageSize(c.attributes.pagesize,
+g);b.documentOptions.orientation=g;["left","right","top","bottom"].forEach(function(a){b.documentOptions[a]=d.ptToPx(c.attributes[a]||0)});h.mixin(b.documentOptions,d.ptToPxObj(d.parseStyleString(c.attributes.style)));if(a=f.queryJson(a,"def",!0)[0])a.attributes.align&&(b.documentOptions.align=a.attributes.align),a.attributes.lineSpacing&&(b.documentOptions.lineSpacing=d.ptToPx(a.attributes.lineSpacing));e.revisionVersion=c.attributes.revisionVersion?Number(c.attributes.revisionVersion):-1;b.documentOptions.revisionVersion=
+e.revisionVersion}}}});

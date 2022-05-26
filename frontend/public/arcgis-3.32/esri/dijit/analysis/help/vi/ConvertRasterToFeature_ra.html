@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Chuyển đổi Raster thành Đối tượng</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="C&ocirc;ng cụ Chuyển đổi Raster th&agrave;nh Đối tượng"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y gi&uacute;p chuyển đổi một raster th&agrave;nh một feature dataset, ở dạng điểm, đường hoặc v&ugrave;ng.
+    </p>
+    <p>Tham số  <b>trường Lựa chọn</b> cho ph&eacute;p bạn chọn trường thuộc t&iacute;nh của raster dataset đầu v&agrave;o để trở th&agrave;nh một thuộc t&iacute;nh trong lớp đối tượng đầu ra. Tham số n&agrave;y chỉ khả dụng đối với những raster số nguy&ecirc;n c&oacute; c&aacute;c thuộc t&iacute;nh bổ sung trong bảng li&ecirc;n quan.
+    </p>
+    <p>Raster đầu v&agrave;o c&oacute; k&iacute;ch cỡ &ocirc; bất kỳ.
+    </p>
+    <p>C&aacute;c raster integer c&oacute; thể được chuyển đổi th&agrave;nh đối tượng dạng điểm, đường hoặc v&ugrave;ng; tuy nhi&ecirc;n, c&aacute;c raster float chỉ c&oacute; thể chuyển đổi th&agrave;nh đối tượng dạng điểm.
+    </p>
+    <p>Nếu chọn t&ugrave;y chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b>, th&igrave; chỉ c&oacute; c&aacute;c &ocirc; raster được nh&igrave;n thấy trong phạm vi bản đồ hiện tại mới được chuyển đổi. Nếu bỏ chọn, tất cả c&aacute;c &ocirc; trong lớp raster sẽ được chuyển đổi, ngay cả khi ch&uacute;ng ở ngo&agrave;i phạm vi bản đồ hiện tại. Lưu &yacute; điều n&agrave;y nếu lớp raster lớn hoặc c&oacute; độ ph&acirc;n giải cực cao.
+    </p>
+    <p>C&aacute;c trường hợp sử dụng c&ocirc;ng cụ n&agrave;y bao gồm:
+ 
+        <ul>
+            <li>Tạo đối tượng dạng v&ugrave;ng từ lớp raster ph&acirc;n loại loại sử dụng đất.
+                
+ 
+            </li>
+            <li>C&aacute;c luồng được x&aacute;c định trong DEM c&oacute; thể được chuyển đổi th&agrave;nh đối tượng đường.
+                
+
+            </li>
+            <li>DEM c&oacute; thể được chuyển đổi th&agrave;nh đối tượng dạng điểm được sử dụng trong quy tr&igrave;nh c&ocirc;ng việc kh&ocirc;ng cần dựa tr&ecirc;n lớp raster.
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Chọn lớp raster để chuyển đổi</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp raster đầu v&agrave;o sẽ được chuyển đổi th&agrave;nh lớp đối tượng.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Chọn trường</h2></div>
+        <hr/>
+        <div>
+            <p>Cung cấp một trường để x&aacute;c định gi&aacute; trị sẽ sử dụng cho việc chuyển đổi.
+            </p>
+            <p>N&oacute; c&oacute; thể l&agrave; bất kỳ gi&aacute; trị integer hoặc gi&aacute; trị text n&agrave;o.
+            </p>
+            <p>Chỉ sử dụng trường c&oacute; chứa gi&aacute; trị float nếu đầu ra l&agrave; một tập dữ liệu dạng điểm.
+            </p>
+            <p>Lựa chọn mặc định l&agrave; sử dụng trường  <i>Value</i>, c&oacute; chứa gi&aacute; trị trong mỗi &ocirc; raster.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Chọn loại đầu ra</h2></div>
+        <hr/>
+        <div>
+            <p>Chọn loại đầu ra giữa điểm, đường hoặc v&ugrave;ng.
+            </p>
+            <ul>
+                <li>Điểm&mdash;Raster sẽ được chuyển đổi th&agrave;nh tập dữ liệu điểm.
+                    
+ 
+                </li>
+                <li>Đường&mdash;Raster sẽ được chuyển đổi th&agrave;nh tập dữ liệu đối tượng đường.
+                    
+ 
+                </li>
+                <li>V&ugrave;ng&mdash;Raster sẽ được chuyển đổi th&agrave;nh tập dữ liệu đối tượng v&ugrave;ng.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>Đơn giản hóa đường hoặc đa giác</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định xem c&oacute; cần đơn giản h&oacute;a đối tượng kh&ocirc;ng.
+            </p>
+            <p>Nếu được chọn (mặc định), c&aacute;c đối tượng đường hoặc v&ugrave;ng sẽ dễ d&agrave;ng tạo ra một kết quả tổng qu&aacute;t hơn. Nếu bỏ chọn t&ugrave;y chọn n&agrave;y, đối tượng tuyến t&iacute;nh sẽ theo ranh giới &ocirc; của raster dataset.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>T&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Bạn c&oacute; thể chỉ định t&ecirc;n của một thư mục trong  <b>Nội dung của t&ocirc;i</b> m&agrave; tại đ&oacute; kết quả sẽ được lưu bằng c&aacute;ch sử dụng hộp xổ xuống <b>Lưu kết quả v&agrave;o</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

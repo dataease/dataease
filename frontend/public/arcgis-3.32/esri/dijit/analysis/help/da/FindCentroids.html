@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Find centroider</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="Find centroider"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j arbejder med et lag af multipunkt-, linje- eller omr&aring;deobjekter for at fastl&aelig;gge det repr&aelig;sentative center for hvert objekt.
+    </p>
+    <p>Hvis feltet  <b>Brug aktuel kortudstr&aelig;kning</b> er markeret, er det kun objekterne i det inputlag (multipunkt-, linje- eller omr&aring;delag), der er synligt inden for den aktuelle kortudstr&aelig;kning, der analyseres. Hvis markeringen fjernes, analyseres alle objekter i inputlaget, ogs&aring; selvom de er placeret uden for den aktuelle kortudstr&aelig;kning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vælg et lag, hvis objekter vil blive brugt til at generere centroider</h2></div>
+        <hr/>
+        <div>
+            <p> Det multipunkt-, linje- eller omr&aring;delag, der bliver brugt til at finde centroider.
+            </p>
+            <p>Ud over at v&aelig;lge et lag fra dit kort kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten. Denne indstilling &aring;bner et galleri, hvor du kan gennemse og v&aelig;lge datas&aelig;t fra forskellige kilder, som du kan bruge i din analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>Vis mig output-positioner</h2></div>
+        <hr/>
+        <div>
+            <p> N&aring;r feltet <b>Ved den &aelig;gte centroide</b> er afkrydset (standard), returnerer outputtet den &aelig;gte placering af centroiden for hvert input-objekt. Centroiderne placeres s&aring;ledes:
+                <ul>
+                    <li>Multipunktobjekter &ndash; Output-centroiden placeres ved de gennemsnitlige x- og y-koordinater for alle punkterne i multipunkt-objektet.
+                    </li>
+                    <li>Linjeobjekter &ndash; Output-centroiden placeres ved de v&aelig;gtede gennemsnitlige x- og y-koordinater for midtpunkterne for alle linjesegmenter i linjeobjektet. V&aelig;gtningen er baseret p&aring; segmentets l&aelig;ngde.
+                    </li>
+                    <li>Omr&aring;deobjekter &ndash; Output-centroiden placeres i midten af omr&aring;det.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>N&aring;r feltet  <b>afgr&aelig;nset af input-objekter</b> er afkrydset, er output-punktobjekterne afgr&aelig;nset af eller inde i hver enkelt input-objekt. De resulterende punktobjekter vises s&aring;ledes:
+                <ul>
+                    <li>Multipunktobjekter &ndash; Output-centroiden vil v&aelig;re sammenfaldende med et af punkterne i multipunktgruppen.
+                    </li>
+                    <li>Linjeobjekter &ndash; Output-centroiden placeres p&aring; linjen. Hvis linjen er kurvet, er outputtet p&aring; linjens midtpunkt. 
+                    </li>
+                    <li>Omr&aring;deobjekter &ndash; Output-punktet er inde i omr&aring;deobjektet.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; det lag, som oprettes i  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis lagnavnet allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Ved hj&aelig;lp af rullemenuen  <b>Gem resultat</b> kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet skal gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Baseinas</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="Baseino užduotis"></h2>
+        <hr/>
+    <p>&Scaron;is įrankis nustato priklausantį plotą vir&scaron; gardelių rinkinio rastre.
+    </p>
+    <p>Baseinas yra nuolydį turinti teritorija, kuri nukreipia tėkmę (paprastai vandens) į bendrą i&scaron;vestį, pavyzdžiui, koncentruotą tėkmę. Tai gali būti didesnio baseino dalis, taip pat gali turėti mažesnius baseinus, vadinamus antriniais baseinais.
+    </p>
+    <p>Kiekvieno baseino reik&scaron;mė bus atimta i&scaron; &scaron;altinio reik&scaron;mės įvesties rastre arba elementų liejimo ta&scaron;ko sluoksnyje. Jei nutekėjimo ta&scaron;kas yra rastrinis duomenų rinkinys, pagal numatytuosius nustatymus naudojamos gardelių reik&scaron;mės. Jei nutekėjimo ta&scaron;kas yra ta&scaron;kinis duomenų rinkinys, reik&scaron;mės bus imamos i&scaron; nurodyto lauko.
+    </p>
+    <p>Baseino įrankis palaiko tik D8 įvesties tėkmės krypties rastro sluoksnį.
+    </p>
+    <p>Nurodant įvesties nutekėjimo ta&scaron;kų padėtis kaip elementų duomenis, numatytasis laukas bus pirmasis pasiekiamas tinkamas laukas. Jei nėra tinkamų laukų, kaip numatytasis bus naudojamas ObjectID laukas (pavyzdžiui, OID arba FID).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>Pasirinkite srovės krypties sluoksnį</h2></div>
+        <hr/>
+        <div>
+            <p>Įvesties rastras, rodantis tėkmės i&scaron; kiekvienos gardelės kryptį.
+            </p>
+            <p>Tėkmės krypties rastrą galima sukurti naudojant įrankį Tėkmės kryptis arba RasterAnalysisTools paslaugos užduotį FlowDirection, paleidžiama naudojant numatytąjį tėkmės krypties tipą  <b>D8</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>Nurodykite įvesties nutekėjimo taškų padėtis</h2></div>
+        <hr/>
+        <div>
+            <p>Įvesties nutekėjimo ta&scaron;kų padėtys.
+            </p>
+            <p>Rastre tai yra gardelės, vir&scaron; kurių esantis plotas, arba upių baseinas, bus nustatomas. Kaip &scaron;altinio gardelės bus naudojamos visos, i&scaron;skyrus gardeles be duomenų. Ta&scaron;ko įvesčiai tai yra padėtys, vir&scaron; kurių esantis plotas, arba upių baseinas, bus nustatomas.
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>Pasirinkite nutekėjimo taško lauką</h2></div>
+        <hr/>
+        <div>
+            <p>Laukas, naudojamas priskirti reik&scaron;mes nutekėjimo ta&scaron;ko padėtims.
+            </p>
+            <p>Jei įvesties nutekėjimo ta&scaron;ko sluoksnis yra rastras, naudojama reik&scaron;mė. Jei elementas &ndash; naudojamas skaitinis laukas. Jei lauke yra slankiojo kablelio reik&scaron;mių, jos supaprastinamos iki sveikųjų skaičių.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Sluoksnio, kuris bus sukurtas puslapyje  <b>Turinys</b> ir įtrauktas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau egzistuoja, būsite papra&scaron;yti pateikti kitą pavadinimą.
+            </p>
+            <p>Galite nurodyti aplanko  <b>Turinyje</b>, kuriame rezultatai bus įra&scaron;yti naudojant i&scaron;&scaron;okantįjį meniu <b>Rezultatą įra&scaron;yti į</b>, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

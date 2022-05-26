@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Klassificera pixlar med djupinlärning</h2><p/>
+        <h2><img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" alt="Klassificera pixlar med djupinl&auml;rning"></h2>
+        <hr/>
+    <p>Det h&auml;r verktyget k&ouml;r en tr&auml;nad djupinl&auml;rningsmodell p&aring; ett indataraster f&ouml;r att skapa ett klassificerat raster, och varje giltig pixel har en tilldelad klassetikett.
+    </p>
+    <p>Om  <b>Anv&auml;nd aktuell kartutbredning</b> &auml;r markerat analyseras endast det rasteromr&aring;de som &auml;r synligt i den aktuella kartutbredningen. Om det inte &auml;r markerat analyseras hela rastret, &auml;ven om det ligger utanf&ouml;r den aktuella kartutbredningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Välj bilder som används för att klassificera pixlar</h2></div>
+        <hr/>
+        <div>
+            <p>Indatabilden som ska klassificeras.
+            </p>
+            <p>Det kan vara en bildtj&auml;nst-URL, ett rasterlager eller ett bildtj&auml;nstlager.
+            </p>
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Välj den djupinlärningsmodell som används för att klassificera pixlar</h2></div>
+        <hr/>
+        <div>
+            <p>Indataobjektet f&ouml;r djupinl&auml;rningspaketet ( <code>.dlpk</code>).
+            </p>
+            <p>Djupinl&auml;rningspaketet best&aring;r av JSON-filen f&ouml;r Esri-modelldefinitionen ( <code>.emd</code>), filen med djupinl&auml;rningsbin&auml;rmodellen och, som tillval, Python-rasterfunktionen som ska anv&auml;ndas.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Ange modellargument för djupinlärning</h2></div>
+        <hr/>
+        <div>
+            <p>Funktionsargumenten definieras i Python-rasterfunktionsklassen som refereras av indatamodellen. H&auml;r listar du ytterligare djupinl&auml;rningsparametrar och argument f&ouml;r experiment och f&ouml;rfining, t.ex. en konfidenstr&ouml;skel f&ouml;r att justera k&auml;nsligheten.
+            </p>
+            <p>Namnen f&ouml;r argumenten fylls av verktyget genom att l&auml;sa Python-modulen p&aring; rasteranalysservern.
+            </p>  
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputClassifiedRaster">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Du kan ange namnet p&aring; en mapp i  <b>Mitt inneh&aring;ll</b> d&auml;r resultatet sparas med listrutan <b>Spara resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

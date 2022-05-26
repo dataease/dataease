@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 18.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 32 32" enable-background="new 0 0 32 32" xml:space="preserve">
+<g id="Dark_Theme_1_" display="none">
+	<rect x="-160" y="-160" display="inline" fill="#333333" width="544" height="736"/>
+	
+		<rect x="-192" y="-192" display="inline" fill="none" stroke="#808080" stroke-width="0.25" stroke-miterlimit="10" width="612" height="792"/>
+</g>
+<g id="LightTheme" display="none">
+	<rect x="-160" y="-160" display="inline" fill="#F8F8F8" width="544" height="736"/>
+	
+		<rect x="-192" y="-192" display="inline" fill="none" stroke="#808080" stroke-width="0.25" stroke-miterlimit="10" width="612" height="792"/>
+</g>
+<g id="Hover" display="none">
+	<rect x="-160" y="-160" display="inline" fill="#C5E5F9" width="544" height="736"/>
+</g>
+<g id="Selected" display="none">
+	<rect x="-160" y="-160" display="inline" fill="#AADBFA" width="544" height="736"/>
+</g>
+<g id="Icon_Name">
+</g>
+<g id="Icons">
+	<g>
+		<rect fill-rule="evenodd" clip-rule="evenodd" fill="none" width="32" height="32"/>
+		<path fill="#E5D255" d="M31,28c0,0-6-3-15,0S1,28,1,28L5,4c0,0,6,2,11,0s11,0,11,0L31,28z"/>
+	</g>
+</g>
+</svg>

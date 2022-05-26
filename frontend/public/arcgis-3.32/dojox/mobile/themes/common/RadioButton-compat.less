@@ -1,0 +1,34 @@
+/* dojox.mobile.RadioButton */
+.mblRadioButton {
+	background-image: url(compat/button-bg.png);
+}
+.mblRadioButtonChecked,
+.mblRadioButton:checked {
+	background-image: url(compat/button-chk-bg.png);
+	&.mblRadioButtonSelected {
+		background-image: url(compat/blue-button-sel-bg.png);
+	}
+}
+
+.dj_gecko {
+	.mblRadioButton {
+		background-image: @mbl-button-background-image-gecko;
+		-moz-appearance: none;
+	}
+	.mblRadioButtonChecked,
+	.mblRadioButton:checked {
+		background-image: @mbl-button-checked-background-image-gecko;
+		&::after {
+			-moz-transform: rotate(45deg);
+			-moz-transform-origin: 50% 50%;
+		}
+		&.mblRadioButtonSelected {
+			background-image: @mbl-blue-button-selected-background-image-gecko;
+		}	
+	}
+}
+.dj_ff3 {
+	.mblRadioButton {
+		-moz-border-radius: 0.5em;
+	}
+}

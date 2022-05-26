@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Tuvasta juhtumid</h2><p/>
+        <h2><img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" alt="Tuvasta juhtumid"></h2>
+        <hr/>
+    <p> See t&ouml;&ouml;riist kasutab ajateadlikku punktide, joonte, alade v&otilde;i tabelite kihti, mis kujutab endast &uuml;hte ajahetke.   T&ouml;&ouml;riist m&auml;&auml;ratleb j&auml;rjestatud objektide (radade) abil, millised objektid on huvipakkuvad juhtumid. Juhtumid m&auml;&auml;ratletakse teie m&auml;&auml;ratud tingimuste alusel.
+    </p>
+    <p>K&otilde;igepealt teeb t&ouml;&ouml;riist &uuml;he v&otilde;i mitme v&auml;lja abil kindlaks, millised objektid raja juurde kuuluvad. Rajad j&auml;rjestatakse iga objekti aja alusel ja rakendatakse juhtumi tingimus. Objektid, mis vastavad algava juhtumi tingimusele, m&auml;rgitakse juhtumiteks. Soovi korral saate rakendada ka l&otilde;ppeva juhtumi tingimuse; kui l&otilde;putingimus on t&otilde;ene, ei ole objekt enam juhtum. Tulemused tagastatakse koos algsete objektidega (koos uute veergudega, mis sisaldavad juhtumi nime) ja need n&auml;itavad, millised objektid vastavad juhtumi tingimusele. Saate tagastada kas k&otilde;ik algsed objektid v&otilde;i ainult need objektid, mis on juhtumid.
+    </p>
+    <p>Teil on n&auml;iteks 10-minutiste vahedega tehtud GPS-m&otilde;&otilde;tmised orkaanide jaoks. Iga GPS-m&otilde;&otilde;tmise juurde on j&auml;&auml;dvustatud orkaani nimi, asukoht, j&auml;&auml;dvustamise aeg ja tuule kiirus. Nende v&auml;ljade abil saate luua juhtumi, kus k&otilde;ik m&otilde;&otilde;tmised, mille tuule kiirus on suurem kui 208 km/h, on juhtumid pealkirjaga  <code>Katastroofiline</code>. Kui l&otilde;putingimust pole m&auml;&auml;ratud, l&otilde;peb juhtum siis, kui objekt ei vasta enam algustingimusele (tuule kiirus langeb alla 208 km/h).
+    </p>
+    <p>Teises n&auml;ites oletame, et j&auml;lgisite v&auml;lja  <code>contanimateLevel</code> abil kemikaali kontsentratsiooni kohalikus veev&otilde;rgus. Teate, et soovitatav tase on alla 0,01 mg/l ja ohtlik tase on &uuml;le 0,03 mg/l. Selleks, et tuvastada juhtumeid, kus v&auml;&auml;rtus &uuml;le 0,03 mg/l on juhtum ja j&auml;&auml;b juhtumiks seni, kuni reostustase on langenud lubatud tasemele, loote juhtumi algustingimusega <code>contanimateLevel &gt; 0,03</code> ja l&otilde;putingimusega <code>contanimateLevel &lt; 0,01</code>. See m&auml;rgib mis tahes j&auml;rjestused, mille v&auml;&auml;rtused &uuml;letavad 0,03mg/l, seni kuni need tagastavad v&auml;&auml;rtuse, mis on v&auml;iksem kui 0,01.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valige kiht, millelt juhtumid tuvastada</h2></div>
+        <hr/>
+        <div>
+            <p>Punktid, jooned, alad v&otilde;i tabelid, mida kasutatakse juhtumite otsimiseks. Sisendkiht peab olema ajateadlik koos objektidega, mis kujutavad endast ajahetke, ja sellel peab olema v&auml;hemalt &uuml;ks v&auml;li, mida saab kasutada radade tuvastamiseks.
+            </p>
+            <p>Lisaks kihi valimisele kaardil saate valida ripploendi alumises servas  <b>Vali anal&uuml;&uuml;sikihte</b>, et otsida oma sisust suurandmete failiketta andmestikku v&otilde;i objektikihti.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Valige radade tuvastamiseks vähemalt üks väli</h2></div>
+        <hr/>
+        <div>
+            <p>Raja identifikaatorit t&auml;histavad v&auml;ljad. Radade kordumatute v&auml;&auml;rtuste t&auml;histamiseks saate kasutada &uuml;hte v&otilde;i mitut v&auml;lja.
+            </p>
+            <p>N&auml;iteks v&otilde;ite kasutada orkaanide radade rekonstrueerimisel raja nimena orkaani nime.
+            </p>
+        </div>
+    </div>
+    <div id="startConditionExpression">
+        <div><h2>Koostage juhtumi algust märkiv avaldise tingimus</h2></div>
+        <hr/>
+        <div>
+            <p>Lisage avaldise koostaja kaudu tingimus, et m&auml;&auml;ratleda, mis on juhtum. Kui m&auml;&auml;ratud tingimus on t&otilde;ene, on objekt juhtum. Kui te l&otilde;putingimust ei m&auml;&auml;ra, l&otilde;peb juhtum siis, kui algustingimus ei ole enam t&otilde;ene.
+            </p>
+            <p>Oletame n&auml;iteks, et soovite saada teavitust, kui v&auml;ljade  <code>kontsentratsioon_1</code> ja <code>kontsentratsioon_2</code> summa on suurem kui <code>kontsentratsioon_3</code>. Selleks rakendage tingimus <code>($feature[&quot;kontsentratsioon_1&quot;] +  $feature[&quot;kontsentratsioon_2&quot;]) &gt; $feature[&quot;kontsentratsioon_3&quot;])</code>.
+            </p>
+            <p>Kui olete huvitatud kontsentratsiooni muutumisest aja jooksul ja soovite saada hoiatust, kui praegune  <code>kontsentratsioon_1</code> on suurem kui <code>kontsentratsiooni_2</code> kaks eelmist m&otilde;&otilde;tmistulemust, siis v&otilde;ite kasutada n&auml;iteks sellist avaldist <code>$feature[&quot;kontsentratsioon_1&quot;] &gt;   $track.field[&quot;kontsentratsioon_2&quot;].history(-3,-1)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="endConditionExpression">
+        <div><h2>Koostage juhtumi lõppu märkiv avaldise tingimus (valikuline)</h2></div>
+        <hr/>
+        <div>
+            <p>Saate avaldisekoosturi abil lisada tingimuse juhtumi l&otilde;pu m&auml;&auml;ratlemiseks. Kui m&auml;&auml;ratud tingimus on t&otilde;ene, ei ole objekt enam juhtum. Kui te l&otilde;putingimust ei m&auml;&auml;ra, l&otilde;peb juhtum siis, kui algustingimus ei ole enam t&otilde;ene.    
+            </p>
+            <p>Oletame n&auml;iteks, et soovite saada teavitust, kui v&auml;ljade  <code>kontsentratsioon_1</code> ja <code>kontsentratsioon_2</code> summa on suurem kui <code>kontsentratsioon_3</code>, ja soovite, et juhtum l&otilde;peks, kui <code>kontsentratsioon_4</code> on v&auml;iksem kui <code>concentration_1</code>. Selleks rakendage algustingimus <code>($feature[&quot;kontsentratsioon_1&quot;] +  $feature[&quot;kontsentratsioon_2&quot;]) &gt; ($join[&quot;income&quot;] * .20)</code> ja l&otilde;putingimus <code>($feature[&quot;kontsentratsioon_4&quot;] &lt; $feature[&quot;kontsentratsioon_1&quot;])</code>.
+            </p>
+            <p>Kui soovite juhtumi l&otilde;ppemist, kui praeguse  <code>kontsentratsiooni_1</code> keskmine v&auml;&auml;rtus ja nelja eelmise m&otilde;&otilde;tmise tulemus on suurem kui esimese m&otilde;&otilde;tmise tulemus, siis v&otilde;ite kasutada n&auml;iteks avaldist <code>$track.field[&quot;kontsentratsioon_1&quot;].history(-5) &gt; $track.field[&quot;kontsentratsioon_1&quot;].history(0)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="outputMode">
+        <div><h2>Näita</h2></div>
+        <hr/>
+        <div>
+            <p>K&otilde;ik v&auml;ljundmeetodid lisavad v&auml;ljad algsetele objektidele. Tagastatavate objektide m&auml;&auml;ratlemiseks on kaks v&otilde;imalust.
+                <ul>
+                    <li> <b>Tagasta k&otilde;ik objektid</b> &ndash; vaikimisi on valitud see. Tagastatakse k&otilde;ik sisendi objektid.
+                    </li>
+                    <li> <b>Tagasta ainult juhtumid</b> &ndash; see meetod tagastab ainult need objektid, mis on juhtumid. Objekte, mida juhtumitena ei tuvastata, ei tagastata.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analüüsi andmeid ajaintervallidega (valikuline)</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rake, kui soovite tuvastada juhtumid, mil kasutatakse ajaintervalle, mis segmenteerivad teie sisendobjektid anal&uuml;&uuml;si jaoks. Kui kasutate ajaintervalle, peate seadistama kasutatava ajaintervalli ja valikuliselt seadma viiteaja. Kui te ei seadista viiteaega, kasutatakse 1. jaanuari 1970. 
+            </p>
+            <p>Kui seate ajapiiriks n&auml;iteks 1. p&auml;eva, mis algab 1. jaanuaril 1990. aastal kell 9.00, siis k&auml;rbitakse iga p&auml;ev kell 9.00 k&otilde;iki radasid ja anal&uuml;&uuml;sitakse neid selle segmendi piires. 
+            </p>
+            <p>Ajaintervallide kasutamine on kiire viis arvutusaja l&uuml;hendamiseks, sest sel juhul luuakse anal&uuml;&uuml;si jaoks kiiresti v&auml;iksemad rajad. Kui korduva ajaintervalli jaotamine on teie anal&uuml;&uuml;si jaoks m&otilde;ttekas, siis on see soovitatav mahukate andmete t&ouml;&ouml;tlemise puhul.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Loodavakihi nimi.  Kui kirjutate andmelattu ArcGIS Data Store, salvestatakse teie tulemused  <b>Minu sisus</b> ja lisatakse kaardile. Kui kirjutate suurandmete failikettale, salvestatakse teie andmed suurandmete failikettale  ja lisatakse  selle manifestifailile. Seda  ei lisata kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui see kiht on juba olemas, siis t&ouml;&ouml;tlemine nurjub.
+            </p>
+            <p>Kui salvestate admelattu   ArcGIS Data Store (relatsioonilisse v&otilde;i ajalisruumilisse andmelattu), kasutades rippmen&uuml;&uuml;d  <b>Salvesta tulemused</b>, saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemused salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

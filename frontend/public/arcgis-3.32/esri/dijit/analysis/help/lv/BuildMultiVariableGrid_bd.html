@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Būvēt režģi ar vairākiem mainīgajiem</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="Rīka Pievienot datus darbplūsmas diagramma"></h2>
+        <hr/>
+    <p>Rīks Būvēt režģi ar vairākiem mainīgajiem darbojas ar vienu vai vairākiem punkta, līnijas vai laukuma elementiem. Rīks ģenerē režģi ar kvadrāta vai se&scaron;stūra nodalījumiem un aprēķina katra nodalījuma vērtību, ņemot vērā katra ievades slāņa tuvumu. &Scaron;ajās vērtībās var būt iekļauti tālāk uzskaitītie mainīgie. 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>Attālums līdz tuvākajam</b>&nbsp;&mdash; attālums no katra nodalījuma līdz tuvākajam elementam
+            </li>
+            <li> <b>Tuvākā atribūti</b>&nbsp;&mdash; katram nodalījumam tuvākā elementa lauka vērtība
+            </li>
+            <li> <b>Tuvākā kopsavilkums</b>&nbsp;&mdash; norādītā statistika visiem elementiem katra nodalījuma attālumā
+            </li>
+            <li> <b>&Scaron;ķērsojo&scaron;ā kopsavilkums</b>&nbsp;&mdash; norādītā statistika visiem elementiem, kas &scaron;ķērso katru nodalījumu
+            </li>
+        </ul>
+        
+    </p>
+    <p>Rezultātu slānī tiks iekļauti tikai jūsu norādītie mainīgie. &Scaron;ie mainīgie var palīdzēt saprast jūsu datu tuvumu un sadalījumu. Rezultāti var palīdzēt sākt atbildēt uz tālāk norādītajiem jautājumiem.
+        <ul>
+            <li>Balstoties uz vairākiem dotajiem sabiedriskā transporta infrastruktūras slāņiem, kura pilsētas daļa ir vismazāk pieejama ar sabiedrisko transportu?
+            </li>
+            <li>Balsoties uz doto ūdensceļu slāni, piemēriem ezeriem un upēm, kāds ir katrai ASV eso&scaron;ajai atra&scaron;anās vietai tuvākā ūdensobjekta nosaukums?
+            </li>
+            <li>Balstoties uz doto mājsaimniecību ienākumu slāni, kur ASV ienākumu variācija 50 jūdžu apkārtnē ir vislielākā?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Izvēlēties nodalījumu tipu, kas tiks izmantots, lai uzbūvētu režģi ar vairākiem mainīgajiem</h2></div>
+        <hr/>
+        <div>
+             
+            <p>Režģa ar vairākiem mainīgajiem izveido&scaron;anā lietojamo nodalījumu tips un izmērs. Opcijai  <b>Kvadrāts</b> norādītais skaitlis un mērvienības nosaka kvadrāta augstumu un garumu. Opcijai <b>Se&scaron;stūris</b> norādītais skaitlis un mērvienības nosaka attālumu starp paralēlajām skaldnēm.
+            </p>
+            <p>&Scaron;ajā analīzē tiek izmantoti nodalījumi, un tai ir nepiecie&scaron;ama projicētā koordinātu sistēma. Varat iestatīt  <b>Apstrādes koordinātu sistēmu</b> <b>Analīzes darba vidē</b>. Ja apstrādes koordinātu sistēma nav iestatīta kā projicētā koordinātu sistēma, jūs saņemsit pamudinājumu to iestatīt, veicot darbību <b>Darbināt analīzi</b> .
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>Izvēlēties slāņus un mainīgos, ko vēlaties iekļaut režģī</h2></div>
+        <hr/>
+        <div>
+            <p>Noklik&scaron;ķiniet uz pievieno&scaron;anas pogas ( <b>+</b>), lai atvērtu rīka <b>Pievienot mainīgos</b> logu un pievienotu slāni jūsu analīzei. Rīka <b>Pievienot mainīgos</b> logā izvēlieties ievades slāni un konfigurējiet mainīgos, kurus vēlaties aprēķināt ievades slānim.
+            </p>
+            <p>Kad esat izvēlējies un konfigurējis aprēķināmos maināmos, slānis tiks parādīts rīka logā kopā ar citiem izvēlētajiem slāņiem. Noklik&scaron;ķiniet uz jebkura slāņa labo&scaron;anas pogas, lai atvērtu rīka  <b>Pievienot mainīgos</b> logu un skatītu visus &scaron;im slānim konfigurētos mainīgos. Noklik&scaron;ķiniet uz jebkura slāņa dzē&scaron;anas pogas, lai noņemtu no analīzes &scaron;o slāni un visus saistītos mainīgos.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>Pievienot mainīgos</h2></div>
+        <hr/>
+        <div>
+            <p>&Scaron;ajā logā varat izvēlēties ievades slāni un konfigurēt mainīgos, kurus vēlaties aprēķināt &scaron;im ievades slānim. Lai sāktu darbu, izmantojiet nolaižamo izvēlni  <b>Izvēlēties ievades slāni</b>, lai izvēlētos analīzei pievienojamo punktu, laukumu vai līniju slāni.
+            </p>
+            <p>Papildus slāņa izvēlei kartē varat izvēlēties  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta apak&scaron;ā, lai saturā atrastu Big Data koplietojuma datu kopu vai elementu slāni.
+            </p>
+            <p>Kad esat izvēlējies ievades slāni, noklik&scaron;ķiniet uz pogas  <b>Pievienot mainīgo</b>, lai atvērtu rediģē&scaron;anai jaunu mainīgo. Jums ir jānorāda unikāls nosaukums katram mainīgajam. &Scaron;is būs tā lauka nosaukums, kas tiks izveidots rezultātu slāņa atribūtu tabulā.
+            </p>
+            <p>Izmantojiet nolaižamo izvēlni, lai izvēlētos pievienojamā mainīgā tipu. Katrs mainīgā tips ir jākonfigurē ar unikālu parametru kopu, un visi parametri ir obligāti.
+            </p>
+            <p>Kad izvēlētajam slānim esat pievienojis visus vēlamos mainīgos, noklik&scaron;ķiniet uz pogas  <b>Pievienot</b>, lai tos saglabātu.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p> Slāņa nosaukums, kas tiks izveidots. Ja rakstāt uz ArcGIS Data Store, rezultāti tiks saglabāti mapē  <b>Mans saturs</b> un pievienoti kartei. Ja rakstā uz lielu datu failu koplietojumu,, rezultāti tiks saglabāti lielajā datu failu koplietojumā un pievienot  tā sarakstam. Tas netiks pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja slānis jau pastāv, rīks nedarbosies.
+            </p>
+            <p>Rakstot uz   ArcGIS Data Store  (relāciju vai telpas un laika lielo datu krātuvi), izmantojot nolaižamo lodziņu  <b>Saglabāt rezultātu,</b> var norādīt mapes nosaukumu mapē <b>Mans saturs,</b> kurā tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

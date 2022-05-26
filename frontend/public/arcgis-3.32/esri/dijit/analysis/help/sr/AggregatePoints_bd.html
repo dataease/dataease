@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Grupiši tačke</h2><p/>
+        <h2><img src="../images/GUID-6C1620D9-D176-41FA-8283-833D8B1CCCFC-web.png" alt="Grupisanje tačaka"></h2>
+        <hr/>
+    <p>Ovaj alat radi sa slojem tačkastih geoobjekata i slojem geoobjekata oblasti. Ulazni geoobjekti oblasti mogu da budu iz sloja poligona ili mogu biti kvadratni ili &scaron;estougaoni blokovi koji se izračunavaju pokretanjem alata. Alatka prvo određuje koje tačke spadaju u svaku navedenu oblast. Nakon određivanja ove prostorne veze tačaka-u-oblasti, izračunavaju se statistika o svim tačkama u oblasti i vrednost se dodeljuje oblasti. Najosnovnija statistika jeste broj tačaka unutar oblasti, ali možete da dobijete i druge statističke podatke. 
+
+    </p>
+    <p>Na primer, pretpostavimo da imate tačkaste geoobjekte lokacija kafeterija i geoobjekte oblasti okruga, a želite da sumirate prodaju kafe po okrugu. Pretpostavljajući da kafeterije imaju atribut  <i>TOTAL_SALES</i>, možete da dobijete zbir svih <i>TOTAL_SALES</i> unutar svakog okruga, minimalnu i maksimalnu vrednost za <i>TOTAL_SALES</i>
+unutar svakog okruga ili druge statističke podatke kao &scaron;to su broj, opseg, standardna devijacija i odstupanje.
+    </p>
+    <p>Ovaj alat takođe može da radi sa vremenski omogućenim podacima. Ako je vreme omogućeno na ulaznim tačkama, onda je dostupna opcija sečenja vremena. Sečenje vremena vam omogućava da izračunate odnos tačke-u-oblasti posmatrajući određeni odsečak u vremenu. Na primer, možete posmatrati časovne intervale, &scaron;to bi rezultiralo izlaznim rezultatima za svaki sat. 
+    </p>
+    <p>Na primer sa vremenom, pretpostavite da imate tačkaste geoobjekte svake transakcije obavljene na različitim lokacijama kafeterija i bez sloja oblasti. Podaci su zabeleženi za vi&scaron;e od godinu dana i svaka transakcija ima lokaciju i vremensku oznaku. Pretpostavljajući da svaka transakcija ima atribut  <i>TOTAL_SALES</i>, možete da dobijete zbir svih <i>TOTAL_SALES</i> u okviru prostora i vremena interesovanja. Ako su ove transakcija za pojedinačni grad, mogli bismo generisati oblasti koje predstavljanju mreže od 1 kilometra i da posmatramo nedeljne odsečke vremena kako bismo sumirali transakcije u prostoru i u vremenu.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Odaberite sloj koji sadrži tačke za grupisanje u oblasti</h2></div>
+        <hr/>
+        <div>
+            <p>Tačkasti sloj koji će se grupisati u oblasti. Tačkasti slojevi koji se grupi&scaron;u u  <b>kvadratne </b> ili <b>&scaron;estougaone</b> blokove moraju da imaju prostornu referencu obrade postavljenu na projektovani koordinatni sistem kori&scaron;ćenjem <b>Okruženja analize</b>.
+            </p>
+            <p>Kao dodatak odabiru sloja iz mape, možete da odaberete  <b>Izaberi sloj za analizu</b> na dnu padajuće liste da biste potražili deljeni skup podataka za datoteke sa velikim podacima ili sloj geoobjekta u svojim sadržajima.
+            </p>
+        </div>
+    </div>
+    <div id="inputAggregation">
+        <div><h2>Odaberite sloj površine u kojem ćete da grupišete</h2></div>
+        <hr/>
+        <div>
+            <p>Oblasti u koje će tačkasti sloj biti grupisan. Možete da birate između sloja oblasti koji ćete vi obezbediti ili blokova koji se generi&scaron;u kada je pokrenut alat.   Pri pravljenju blokova, za  <b>Kvadrat</b>, navedeni broj i jedinice određuju visinu i dužinu kvadrata. Za <b>&Scaron;estougao</b>, navedeni broj i jedinice određuju rastojanje između paralelnih stranica.
+            </p>
+            <p>Analiziranje pomoću  <b>kvadratnih</b> ili <b>&scaron;estougaonih</b> blokova zahteva projektovani koordinatni sistem. <b>Koordinatni sistem obrade</b> možete da podesite u <b>Okruženja analize</b>. Ako koordinatni sistem obrade nije pode&scaron;en na projektovani koordinatni sistem, od vas će se tražiti da ga podesite prilikom kori&scaron;ćenja opcije <b>Pokreni analizu</b> .
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Odaberite sloj oblasti u koji ćete da grupišete</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj oblasti u koji će tačke biti grupisane. Sve tačke koje upadnu unutar granica oblasti u ovom sloju biće uračunate i opciono sumirane koristeći statistiku po va&scaron;em izboru. 
+            </p>
+            <p>Bilo  <b>Veličina bloka</b> za blokove ili <b>Sloj oblasti</b> treba da budu pode&scaron;eni.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Izaberite rastojanje da biste napravili blokove i grupisali u</h2></div>
+        <hr/>
+        <div>
+            <p>Rastojanje koje se koristi za generisanje blokova u koje ćete grupisati svoje ulazne tačke. Za kvadratni blok, veličina predstavlja visinu kvadrata. Za &scaron;estougao, veličina prestavlja visinu &scaron;estougla (od paralelnih stranica).  
+            </p>
+            <p>Bilo  <b>Veličina bloka</b> za blokove ili <b>Sloj oblasti</b> treba da budu pode&scaron;eni.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Grupiši pomoću vremenskih koraka (opciono)</h2></div>
+        <hr/>
+        <div>
+            <p>Ako je vreme omogućeno na ulaznom tačkastom sloju i u pitanju je trenutak, možete da analizirate koristeći praćenje vremena po koracima. Postoje tri parametra koje možete da podesite kada koristite vreme:
+                <ul>
+                    <li> <b>Interval vremenskih koraka</b>
+                    </li>
+                    <li> <b>Koliko često ponavljati vremenski korak</b>
+                    </li>
+                    <li> <b>Vreme za poravnavanje vremenskih koraka</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Na primer, ako imate podatke koji predstavljaju godinu u vremenu i želite da analizirate it kori&scaron;ćenjem sedmičnih koraka, postavite  <b>Interval vremenskih koraka</b> na <code>1 nedelja</code>. 
+            </p>
+            <p>Na primer, ako imate podatke koji predstavljaju godinu u vremenu i želite  da analizirate kori&scaron;ćenjem prve nedelje u mesecu, postavite  <b>Interval vremenskog koraka</b> na <code>1 nedelja</code>, <b>Koliko često da se vremenski korak ponovi</b> na <code>1 mesec</code> i <b>Vreme za poravnanje vremenskih koraka</b> na <code>1. januar, u 12:00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Interval vremenskih koraka</h2></div>
+        <hr/>
+        <div>
+            <p>Interval vremena koji se koristi za generisanje vremenskih koraka.  <b>Interval vremenskih koraka</b> može da se koristi samostalno iliuz parametre <b>Koliko često da se vremenski korak ponovi</b> ili <b>Vreme za poravnanje vremenskih koraka</b>.
+            </p>
+            <p>Na primer, ako želite da kreirate vremenske korake koji se de&scaron;avaju svakog ponedeljka između 9 i 10 sati ujutru, postavite  <b>Interval vremenskih koraka</b> na <code>1 sat</code>, <b>Koliko često da se vremenski korak ponovi</b> na <code>1 nedelja</code> i <b>Vreme za poravnanje vremenskih koraka</b> na <code>9:00:00 ponedeljkom</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Koliko često ponavljati vremenski korak</h2></div>
+        <hr/>
+        <div>
+            <p> Korak koji se koristi za izračunavanje vremenskog koraka. <b>Koliko često da se vremenski korak ponovi</b> može da se koristi samostalno,, uz <b>Interval vremenskih koraka</b>, uz <b>Referentno vreme</b>, ili uz oba parametra <b>Interval vremenskih koraka</b> i <b>Vreme za poravnanje vremenskih koraka</b>.
+            </p>
+            <p> Na primer, ako želite da kreirate vremenske korake koji se de&scaron;avaju svakog ponedeljka između 9:00 i 10:00 ujutru,postavite <b>Interval vremenskih koraka</b> na <code>1 sat</code>, <b>Koliko često da se vremenski korak ponovi</b> na <code>1 nedelju</code> i <b>Vreme za poravnanje vremenskih koraka</b> na <code>9:00:00 ponedeljkom</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Vreme za poravnavanje vremenskih koraka</h2></div>
+        <hr/>
+        <div>
+            <p>Datum i vreme koji se koriste za poravnavanje sečenja vremena. Praćenje vremena po koracima će se pokrenuti od i nastaviti unazad u odnosu na ovo vreme. Ako referentno vreme nije odabrano, praćenje vremenskih koraka će poravnati praćenje vremenskih koraka prema 1. januaru 1970. godine. 
+            </p>
+            <p> Na primer, ako želite da kreirate vremenske korake koji se de&scaron;avaju svakog ponedeljka između 9:00 i 10:00 ujutru,postavite <b>Interval vremenskih koraka</b> na <code>1 sat</code>, <b>Koliko često da se vremenski korak ponovi</b> na <code>1 nedelja</code> i <b>Vreme za poravnanje vremenskih koraka</b> na <code>9:00:00 ponedeljkom</code>.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Dodaj statistiku (opciono)</h2></div>
+        <hr/>
+        <div>
+            <p> Možete da izračunate statistiku na geoobjektima koji su sumirani. Možete da izračunate sledeće na numeričkim poljima:
+                <ul>
+                    <li>Brojač&mdash;izračunava broj vrednosti koje nisu null. Može da bude kori&scaron;ćen u numeričkim poljima ili niskama. Brojač od [null, 0, 2] je 2.
+                    </li>
+                    <li>Zbir&mdash;zbir numeričkih vrednosti u polju. Zbir od [null, null, 3] je 3.
+                    </li>
+                    <li>Značenje&mdash;značenje numeričkih vrednosti. Značenje od [0, 2, null] je 1.
+                    </li>
+                    <li>Min&mdash;minimalna vrednost numeričkog polja. Minimum od [0, 2, null] je 0. 
+                    </li>
+                    <li>Maks&mdash;maksimalna vrednost numeričkog polja. Maksimalna vrednost od [0, 2, null] je 2.
+                    </li>
+                    <li>Opseg&mdash;opseg numeričkog polja. Ovo se izračunava kada se minimalna vrednost oduzme od maksimalne vrednosti. Opseg od [0, null, 1] je 1. Opseg od [null, 4] je 0.
+                    </li>
+                    <li>Varijansa&mdash;varijansa numeričkog polja u stazi. Varijansa od [1] je null. Varijansa od [null, 1,0,1,1] je 0,25.
+                    </li>
+                    <li>Standardna devijacija&mdash;standardna devijacija numeričkog polja. Standardna devijacija od [1] je null. Standardna devijacija od [null, 1,0,1,1] je 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Možete da izračunate sledeće na poljima niski:
+                <ul>
+                    <li>Brojač&mdash;broj vrednosti koje nisu null.
+                    </li>
+                    <li>Bilo koji&mdash;ova statistika je nasumični uzorak vrednosti niske u navedenom polju.
+                    </li>
+                </ul>
+                Sva statistika se izračunava na vrednostima koje nisu null (bez vrednosti). Rezultujući sloj će sadržati novo polje za svaku izračunatu statistiku. Svaki broj statistike može da se doda odabirom atributa i statistike. 
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>Prostorna referenca (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je privremen parametar za preliminarnu verziju da bi se podesila prostorna referenca obrade. Mnoge alatke za velike podatke zahtevaju kori&scaron;ćenje projektovanog koordinatnog sistema kao prostorne reference za obradu. Podrazumevano, alatka će koristiti ulazni koordinatni sistem, ali će otkazati ako je u pitanju geografski koordinatni sistem. Da biste podesili projektovani koordinate sistem, unesite WKID. Na primer,  <b>Web Mercator</b> bi bilo uneto kao <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Odaberite ArcGIS skladište podataka u koje će se čuvati rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>Rezultati geoanalize se skladi&scaron;te u skladi&scaron;tu podataka i izloženi su kao sloj geoobjekata u  Portal for ArcGIS. U većini slučajeva, rezultati bi trebali da budu skladi&scaron;teni u u skladi&scaron;te prostorno-vremenskih podataka i ovo je podrazumevano. U nekim slučajevima, čuvanje rezultata u skladi&scaron;te relacionih podataka je dobar izbor. Slede razlozi zbog kojih ćete želeti da skladi&scaron;tite rezultate u skladi&scaron;tu relacionih podataka: 
+                <ul>
+                    <li>Možete da koristite rezultate u kolaboraciji portal-sa-portalom.
+                    </li>
+                    <li>Možete da omogućite mogućnosti sinhronizacije sa va&scaron;im rezultatima.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ne treba da koristite skladi&scaron;te relacionih podataka ako očekujete da se geoanalitički podaci povećaju i treba da iskoristite mogućnosti prostorno-vremenskog skladi&scaron;ta velikih podataka kako biste upravljali velikim količinama podataka.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p> Ime sloja koji će se kreirati. Ako vr&scaron;ite upis u ArcGIS Data Store, va&scaron;i rezultati će se čuvati u  <b>Mom sadržaju</b> i biće dodati na mapu. Ako vr&scaron;ite upis u deljeni resurs za datoteke sa velikim podacima, va&scaron;i rezultati će se čuvati u deljenom resursu za datoteke sa velikim podacima i biti dodati u njegov manifest. On neće biti dodat na mapu. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako sloj već postoji, alatka će otkazati.
+            </p>
+            <p>Prilikom upisa u  ArcGIS Data Store (skladi&scaron;te relacionih ili prostorno-vremenskih velikih podataka) koristeći padajuće polje  <b>Sačuvaj rezultat u</b>, možete da navedete ime fascikle u <b>Mom sadržaju</b> gde će rezultat biti sačuvan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

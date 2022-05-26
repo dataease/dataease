@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Luo puskurit</h2><p/>
+        <h2><img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" alt="Luo puskurit"></h2>
+        <hr/>
+    <p>Puskuri on alue, joka k&auml;sitt&auml;&auml; tietyn et&auml;isyyden pisteest&auml;, viivasta tai aluekohteesta. 
+    </p>
+    <p>Puskureita k&auml;ytet&auml;&auml;n yleens&auml; sellaisten alueiden luontiin, joita voidaan analysoida tarkemmin muilla ty&ouml;kaluilla. Jos kysymys kuuluu esimerkiksi &rdquo;Mitk&auml; rakennukset ovat kilometrin s&auml;teell&auml; koulusta?&rdquo;, vastaus voidaan hakea luomalla kilometrin pituinen puskuri koulun ymp&auml;rille ja asettamalla puskuri rakennusten pohjapiirrokset sis&auml;lt&auml;v&auml;n karttatason p&auml;&auml;lle. N&auml;in saadaan karttataso, jossa n&auml;kyv&auml;t kaikki kilometrin s&auml;teell&auml; koulusta sijaitsevat rakennukset.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse karttataso, johon puskuria käytetään</h2></div>
+        <hr/>
+        <div>
+            <p>Puskuroitavat piste-, viiva- tai aluekohteet. L&auml;ht&ouml;aineiston karttatasojen on oltava projisoidussa koordinaattij&auml;rjestelm&auml;ss&auml;, tai k&auml;sittelev&auml; koordinaatisto on m&auml;&auml;ritett&auml;v&auml; projisoituun koordinaattij&auml;rjestelm&auml;&auml;n k&auml;ytt&auml;m&auml;ll&auml;  <b>analyysiymp&auml;rist&ouml;j&auml;</b>.
+            </p>
+            <p>Sen lis&auml;ksi, ett&auml; voit valita karttatason kartasta, voit valita  <b>Valitse analyysikarttataso</b> -vaihtoehdon avattavan luettelon alareunasta ja selata Big Data -tiedostoresurssin aineistoryhm&auml;n tai karttatason sis&auml;lt&ouml;&ouml;n.
+            </p>
+        </div>
+    </div>
+    <div id="bufferType">
+        <div><h2>Valitse käytettävän puskurin tyyppi</h2></div>
+        <hr/>
+        <div>
+            <p>L&auml;ht&ouml;aineiston kohteiden puskurin koon voi m&auml;&auml;ritt&auml;&auml; kolmella tavalla: 
+                <ul>
+                    <li>M&auml;&auml;rit&auml; et&auml;isyys, jota k&auml;ytet&auml;&auml;n kaikkiin kohteisiin.
+                    </li>
+                    <li>M&auml;&auml;rit&auml; l&auml;ht&ouml;aineiston karttatasossa kentt&auml;, joka sis&auml;lt&auml;&auml; et&auml;isyysarvon. Voit k&auml;ytt&auml;&auml; merkkijonokentt&auml;&auml; tai numerokentt&auml;&auml;. Jos lineaarista yksikk&ouml;&auml; ei ole m&auml;&auml;ritetty, k&auml;ytet&auml;&auml;n koordinaatistotiedon yksikk&ouml;j&auml;. Jos k&auml;yt&auml;t maantieteellist&auml; koordinaattij&auml;rjestelm&auml;&auml;, yksik&ouml;tt&ouml;m&auml;n kent&auml;n oletetaan olevan metrej&auml;. 
+                    </li>
+                    <li>Muodosta lauseke useilla kentill&auml; ja matemaattisilla operaattoreilla. Jos haluat puskuroida esimerkiksi 10 kertaa sen kent&auml;n arvon, jonka nimi on  <i>wind_speed</i>, lis&auml;&auml; lauseke <i>$feature[&quot;wind_speed&quot;] x 10</i>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Valitse puskurimenetelmä</h2></div>
+        <hr/>
+        <div>
+            <p>Voit valita  <b>Planaarinen</b>- tai <b>Geodeettinen</b>-menetelm&auml;n. <b>Planaarinen</b>-menetelm&auml; saattaa olla nopeampi ja sopii projisoidun aineiston paikalliseen analysointiin. <b>Geodeettinen</b>-menetelm&auml; sopii suurille alueille ja kaikille maantieteellisille koordinaattij&auml;rjestelmille.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveOption">
+        <div><h2>Valitse sulautusmenetelmän tyyppi</h2></div>
+        <hr/>
+        <div>
+            <p>Asetukset sulautusmenetelm&auml;n m&auml;&auml;ritt&auml;miseen.   Jos sulautusmenetelm&auml; on valittuna, voit luoda moniosaisia tai yksiosaisia alueita ja laskea tilastotiedot annettujen kenttien perusteella.
+                <ul>
+                    <li> <b>Kaikki</b>: Kaikki kohteet sulautetaan. Jos moniosaiset kohteet ovat sallittuja, kaikki kohteet sulautetaan yhdeksi kohteeksi. Jos moniosaiset kohteet eiv&auml;t ole sallittuja, vierekk&auml;iset tai p&auml;&auml;llekk&auml;iset kohteet sulautetaan.
+                    </li>
+                    <li> <b>Kent&auml;t</b>: Kohteet, jotka jakavat saman m&auml;&auml;ritetyn kent&auml;n tai m&auml;&auml;ritetyn kentt&auml;yhdistelm&auml;n, sulautetaan. Jos moniosaiset kohteet ovat sallittuja, kaikki kohteet, joilla on sama kentt&auml;, sulautetaan yhdeksi kohteeksi. Jos moniosaiset kohteet eiv&auml;t ole sallittuja, vierekk&auml;iset tai p&auml;&auml;llekk&auml;iset kohteet, joilla on sama kentt&auml;, sulautetaan.
+                    </li>
+                    <li> <b>Ei mit&auml;&auml;n</b>: Mit&auml;&auml;n kohteita ei sulauteta. T&auml;m&auml; on oletusarvo.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Salli moniosaiset kohteet</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;m&auml;n asetuksen avulla voit m&auml;&auml;ritt&auml;&auml;, koostuuko tulos yksiosaisista vai moniosaisista kohteista. 
+
+            </p>
+            <p>
+                <ul>
+                    <li>Valittu: Analyysin tulos sis&auml;lt&auml;&auml; moniosaisia kohteita.   
+                    </li>
+                    <li>Ei valittu: Analyysin tulos sis&auml;lt&auml;&auml; yksiosaisia kohteita. T&auml;m&auml; on oletusarvo.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Lisää tilastotiedot (valinnainen)</h2></div>
+        <hr/>
+        <div>
+            <p> Voit laskea tilastotiedot kohteista, joista on laadittu yhteenveto.Voit laskea seuraavat numerokentist&auml;:
+                <ul>
+                    <li>M&auml;&auml;r&auml;: laskee muiden kuin nolla-arvojen m&auml;&auml;r&auml;n.Voidaan k&auml;ytt&auml;&auml; numerokentiss&auml; tai merkkijonoissa. Arvojen [nolla, 0, 2] nolla-arvojen m&auml;&auml;r&auml; on 2.
+                    </li>
+                    <li>Summa: kunkin kent&auml;n numeroarvojen summa. Numeroarvojen [nolla, nolla, 3] summa on 3.
+                    </li>
+                    <li>Keskiarvo: numeroarvojen keskiarvo. Arvojen [0, 2, nolla] keskiarvo on 1.
+                    </li>
+                    <li>Minimi: numerokent&auml;n minimiarvo. Arvojen [0, 2, nolla] minimiarvo on 0. 
+                    </li>
+                    <li>Maksimiarvo: numerokent&auml;n maksimiarvo. Arvojen [0, 2, nolla] maksimiarvo on 2.
+                    </li>
+                    <li>Alue: numerokent&auml;n alue. T&auml;m&auml; lasketaan minimiarvoina, jotka on v&auml;hennetty maksimiarvosta. Arvojen [0, nolla, 1] alue on 1. Arvojen [nolla, 4] alue on 0.
+                    </li>
+                    <li>Varianssi: numerokent&auml;n varianssi reitill&auml;. Arvon [1] varianssi on nolla. Arvojen [nolla, 1,0, 1,1] varianssi on 0,25.
+                    </li>
+                    <li>Vakio keskihajonta: numerokent&auml;n keskihajonta. Arvon [1] varianssi on nolla. Arvojen [nolla, 1,0, 1,1] vakio keskihajonta on 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Voit laskea seuraavat merkkijonokentist&auml;:
+                <ul>
+                    <li>M&auml;&auml;r&auml;: muiden kuin nolla-merkkijonojen m&auml;&auml;r&auml;.
+                    </li>
+                    <li>Mik&auml; tahansa: T&auml;m&auml; tilastotieto on satunnainen otos m&auml;&auml;ritetyn kent&auml;n merkkijonoarvosta.
+                    </li>
+                </ul>
+                Kaikki tilastotiedot lasketaan muina kuin nolla-arvoina. Tuloskarttataso sis&auml;lt&auml;&auml; uuden kent&auml;n jokaiselle lasketulle tilastotiedolle. Voit lis&auml;t&auml; niin paljon tilastotietoja kuin haluat valitsemalla ominaisuustiedon ja tilastotiedon. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Valitse ArcGIS Data Store -tietokanta, johon tulokset tallennetaan</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-tulokset tallennetaan aineistos&auml;il&ouml;&ouml;n ja julkaistaan karttatasona   Portal for ArcGIS -portaalissa. Useimmissa tapauksissa tulokset pit&auml;&auml; tallentaa spatiotemporaaliseen tietokantaan (t&auml;m&auml; on oletusarvo). Joissakin tapauksissa, tulosten tallentaminen relaatiotietokantaan on hyv&auml; vaihtoehto. Tiedot kannattaa tallentaa relaatiotietokantaan seuraavista syist&auml;: 
+                <ul>
+                    <li>Voitk&auml;ytt&auml;&auml; portaalissa olevia tuloksiaportaaliyhteisty&ouml;h&ouml;n.
+                    </li>
+                    <li>Voit ottaa k&auml;ytt&ouml;&ouml;n tulosten synkronointitoiminnot.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Relaatiotietokantaa ei tule k&auml;ytt&auml;&auml;, jos GeoAnalytics-tulosten m&auml;&auml;r&auml; kasvaa ja sinun t&auml;ytyy hy&ouml;dynt&auml;&auml; spatiotemporaalisen big data -tietokannan toimintoja suurten tietom&auml;&auml;rien k&auml;sittelyyn.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Luotavan karttatason nimi.  Jos kirjoitat kohteeseen ArcGIS Data Store, tulokset tallennetaan  <b>Oma sis&auml;lt&ouml;</b> -osioon ja lis&auml;t&auml;&auml;n karttaan. Jos kirjoitat Big Data -tiedostojakoon, tulokset tallennetaan Big Data -tiedostojakoon ja lis&auml;t&auml;&auml;n sen manifest-tiedostoon. Tuloksia  ei lis&auml;t&auml; karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttataso on jo olemassa, ty&ouml;kalua ei voi suorittaa.
+            </p>
+            <p>Kun kirjoitat kohteeseen  ArcGIS Data Store  (relaatiotietokantaan perustuvaan tai spatiotemporaaliseen Big Data -s&auml;il&ouml;&ouml;n) k&auml;ytt&auml;m&auml;ll&auml; avattavaa  <b>Tallenna tulos kohteeseen</b> -luetteloa, voit m&auml;&auml;ritt&auml;&auml; kansion nimen <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

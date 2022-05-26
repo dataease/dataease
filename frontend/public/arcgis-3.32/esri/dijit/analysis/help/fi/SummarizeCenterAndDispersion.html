@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Laadi yhteenveto keskikohdasta ja hajonnasta</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="Laadi yhteenveto keskikohdasta ja hajonnasta"></h2>
+        <hr/>
+    <p>T&auml;m&auml; ty&ouml;kalu l&ouml;yt&auml;&auml; keskeiset ominaisuudet ja suuntaisjakaumat. T&auml;m&auml;n avulla saa vastauksen mm. seuraaviin kysymyksiin:
+        <ul>
+            <li>Miss&auml; keskikohta on?
+            </li>
+            <li>Mihin kohteeseen on helpoin p&auml;&auml;sy kaikista muista kohteista?
+            </li>
+            <li>Miten hajallaan, tiiviit&auml; tai integroituja kohteet ovat?
+            </li>
+            <li>Onko suuntauksissa n&auml;ht&auml;viss&auml; mit&auml;&auml;n trendej&auml;?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jos vaihtoehto  <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b> on valittuna, vain nykyisess&auml; karttalaajuudessa n&auml;kyv&auml;ss&auml; l&auml;ht&ouml;karttatasossa olevat kohteet analysoidaan. Jos toimintoa ei ole valittu, kaikki sy&ouml;tekarttatason kohteet analysoidaan &ndash; my&ouml;s kohteet, jotka ovat nykyisen karttalaajuuden ulkopuolella.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Valitse kuvailtava karttataso</h2></div>
+        <hr/>
+        <div>
+            <p>Piste-, viiva- tai aluekarttataso, jonka avulla etsit&auml;&auml;n keskeiset kohteet ja suuntajakaumat.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>Yhteenvetotyypit</h2></div>
+        <hr/>
+        <div>
+            <p>Keskikohdan ja hajonnan yhteenvetomenetelm&auml; 
+            </p>
+            <ul>
+                <li>Keskeinen kohde - Tunnistaa aineistoryhm&auml;n keskeisimm&auml;n kohteen.
+                </li>
+                <li>Keskim&auml;&auml;r&auml;inen keskipiste - Tunnistaa kohdejoukon maantieteellisen keskuksen (tai keskittym&auml;n keskipisteen).
+                </li>
+                <li>Mediaanikeskipiste - Tunnistaa sijainnin, joka minimoi euklidisen et&auml;isyyden aineistoryhm&auml;n kohteisiin.
+                </li>
+                <li>Ellipsi - Luo keskihajontaellipsit, joilla tehd&auml;&auml;n yhteenveto maantieteellisten kohteiden sijaintiominaisuuksista: keskittyneisyys, hajonta ja suuntaustrendit. Ellipsien keskihajonnan suuruus voi olla 1, 2 tai 3.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>Painotusperuste (valinnainen)</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;ss&auml; kent&auml;ss&auml; painotetaan sijainteja niiden suhteellisen t&auml;rkeyden mukaan. 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>Ryhmittelyperuste (valinnainen)</h2></div>
+        <hr/>
+        <div>
+            <p>T&auml;ss&auml; kent&auml;ss&auml; ryhmitell&auml;&auml;n kohteet keskeisten kohteiden tai hajonnan erillislaskelmia varten. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen tason nimi, joka luodaan kohtaan  <b>Oma sis&auml;lt&ouml;</b> ja joka lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttatason nimi on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Avattavan  <b>Tallenna tulos kohteeseen</b> -valikon avulla voit m&auml;&auml;ritt&auml;&auml; sen <b>Oma sis&auml;lt&ouml;</b> -kansion nimen, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

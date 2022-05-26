@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Najít shluky bodů (Find Point Clusters)</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="Naj&iacute;t shluky bodů"></h2>
+        <hr/>
+    <p>Tento n&aacute;stroj vyhled&aacute; shluky bodov&yacute;ch prvků v r&aacute;mci okoln&iacute;ho &scaron;umu na z&aacute;kladě jejich prostorov&eacute;ho rozdělen&iacute;.
+    </p>
+    <p>Pokud je za&scaron;krtnuto pole  <b>Použ&iacute;t aktu&aacute;ln&iacute; rozsah mapy</b>, budou analyzov&aacute;ny pouze prvky ve vstupn&iacute; vrstvě prvků, kter&eacute; se nach&aacute;zej&iacute; v aktu&aacute;ln&iacute;m rozsahu mapy. Pokud pole za&scaron;krtnuto nen&iacute;, budou analyzov&aacute;ny v&scaron;echny prvky ve vstupn&iacute; vrstvě prvků, včetně těch, kter&eacute; se nach&aacute;zej&iacute; mimo aktu&aacute;ln&iacute; rozsah mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Vybrat vrstvu, u které budou nalezeny shluky</h2></div>
+        <hr/>
+        <div>
+            <p>Bodov&aacute; vrstva, ve kter&eacute; budou nalezeny shluky. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Minimální počet bodů, který se má považovat za shluk</h2></div>
+        <hr/>
+        <div>
+            <p>Minim&aacute;ln&iacute; počet prvků, kter&eacute; budou tvořit shluk. Jak&yacute;koli shluk s men&scaron;&iacute;m počtem prvků než uveden&yacute; bude považov&aacute;n za &scaron;um. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Omezit rozsah vyhledávání na (volitelné)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Maxim&aacute;ln&iacute; vzd&aacute;lenost, v r&aacute;mci kter&eacute; jsou prvky považov&aacute;ny za souč&aacute;st stejn&eacute;ho shluku.  Pokud zůstane pole pr&aacute;zdn&eacute;, n&aacute;stroj spust&iacute; HDBSCAN, kter&yacute; pomoc&iacute; proměnliv&yacute;ch vzd&aacute;lenost&iacute; odděl&iacute; shluky proměnliv&yacute;ch hustot od řid&scaron;&iacute;ho hluku. Pokud je zad&aacute;na hodnota, n&aacute;stroj spust&iacute; DBSCAN, kter&yacute; pomoc&iacute; zadan&eacute; vzd&aacute;lenosti odděl&iacute; hust&eacute; shluky od řid&scaron;&iacute;ho hluku.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>Toto je n&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; do mapy.  V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud n&aacute;zev vrstvy již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>V rozbalovac&iacute; nab&iacute;dce  <b>Uložit v&yacute;sledek do</b> můžete zadat n&aacute;zev složky ve složce <b>Můj obsah</b>, do kter&eacute; se m&aacute; v&yacute;sledek uložit.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

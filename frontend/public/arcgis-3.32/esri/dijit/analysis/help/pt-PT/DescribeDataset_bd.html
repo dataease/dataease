@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Descrever Conjunto de Dados</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="Diagrama do fluxo de trabalho Descrever Conjunto de Dados"></h2>
+        <hr/>
+    <p>A ferramenta Descrever Conjunto de Dados proporciona uma perspetiva mais detalhada do seu conjunto de dados. Antes de executar an&aacute;lises sobre grandes quantidades de dados, utilize esta ferramenta para determinar quais s&atilde;o e onde est&atilde;o os seus dados de entrada. Por defeito, o resultado ser&aacute; uma string JSON que indica os descritores principais da sua camada de entrada e uma tabela que especifica as estat&iacute;sticas de resumo para cada campo. 
+    </p>
+    <p>Opcionalmente, pode criar camadas de elementos de sa&iacute;da adicionais para descrever detalhadamente os seus dados. As op&ccedil;&otilde;es s&atilde;o uma camada de amostra ou uma camada de extens&atilde;o. Pode optar por produzir uma ou ambas.
+    </p>
+    <p>Por exemplo, suponhamos que recebe um grande volume de ficheiros de big data que cont&eacute;m 15 conjuntos de dados. Cada conjunto de dados tem 10 milh&otilde;es de elementos de &aacute;rea que representam edif&iacute;cios e casas em diferentes regi&otilde;es do seu pa&iacute;s. A sua tarefa consiste em analisar a regi&atilde;o C, mas n&atilde;o sabe qual o conjunto de dados que cont&eacute;m estes elementos. Para descobrir qual o conjunto de dados que dever&aacute; utilizar, execute Descrever Conjunto de Dados e escolha criar uma camada de extens&atilde;o para investigar qual o conjunto de dados que est&aacute; na sua regi&atilde;o de estudo.
+    </p>
+    <p>Um outro exemplo... imagine que tem como tarefa realizar um fluxo de trabalho de an&aacute;lise sobre um grande volume de dados. Quer testar o fluxo de trabalho, mas pode demorar horas ou dias com o seu conjunto de dados completo. Em vez de utilizar tempo e recursos a executar a an&aacute;lise completa, crie uma camada de amostra para testar eficientemente o seu fluxo de trabalho completo.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Escolher conjunto de dados a descrever</h2></div>
+        <hr/>
+        <div>
+            <p>A camada que cont&eacute;m elementos de pontos, linhas, &aacute;reas ou tabulares que ser&atilde;o descritos, resumidos ou inclu&iacute;dos na amostra.
+            </p>
+            <p>Para al&eacute;m de escolher uma camada do seu mapa, pode escolher  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista pendente para navegar at&eacute; aos seus conte&uacute;dos de um conjunto de dados de partilha de ficheiros de big data ou camada de elementos.
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>Compreender o seu conjunto de dados criando uma (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Produzir camadas descritivas adicionais para melhorar a sua compreens&atilde;o dos seus big data. Pode escolher produzir zero, uma ou ambas as camadas seguintes:
+            </p>
+            <ul>
+                <li> <b>Camada de extens&atilde;o</b>&mdash;cria um elemento de &aacute;rea que representa a extens&atilde;o dos seus elementos de entrada ou &aacute;rea de interesse.
+                </li>
+                <li> <b>Camada de amostra</b>&mdash;cria uma camada de subconjunto que cont&eacute;m uma quantidade espec&iacute;fica de elementos de entrada a partir do seu conjunto de dados ou &aacute;rea de interesse.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>Camada de amostra</h2></div>
+        <hr/>
+        <div>
+            <p>Produzir uma camada que cont&eacute;m um subconjunto de elementos da sua camada de entrada. Se  <b>Camada de amostra</b> estiver selecionada poder&aacute; especificar o n&uacute;mero de elementos que pretende devolver na camada de amostra.  Por defeito, ser&atilde;o devolvidos 100 elementos de amostra na camada de sa&iacute;da.
+            </p>
+            <p>O valor tem de ser maior que zero. Se especificar um n&uacute;mero superior ao n&uacute;mero total de elementos todos os elementos ser&atilde;o devolvidos.
+            </p>
+            <p>Se  <b>Utilizar extens&atilde;o de mapa atual</b> estiver selecionada, ent&atilde;o a camada de amostra ir&aacute; conter elementos do interior da extens&atilde;o atual do mapa.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Camada de extensão</h2></div>
+        <hr/>
+        <div>
+            <p>Produzir uma camada de elementos que cont&eacute;m um &uacute;nico elemento que representa a extens&atilde;o dos elementos de entrada selecionando o bot&atilde;o  <b>Camada de extens&atilde;o</b>. Est&aacute; selecionado por defeito.
+            </p>
+            <p>Se  <b>Utilizar extens&atilde;o de mapa atual</b> estiver selecionada, ent&atilde;o a camada de extens&atilde;o representar&aacute; a extens&atilde;o vis&iacute;vel do mapa.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p> O nome da camada que ser&aacute; criada.  Se estiver a escrever para ArcGIS Data Store, os seus resultados ser&atilde;o gravados em  <b>O Meu Conte&uacute;do</b> e adicionados ao mapa. Se estiver a escrever para uma partilha de ficheiros big data, os seus resultados ser&atilde;o guardados numa partilha de ficheiros big data e adicionados ao seu manifesto. N&atilde;o ser&atilde;o adicionados ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Caso a camada j&aacute; existe, a ferramenta ir&aacute; falhar.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

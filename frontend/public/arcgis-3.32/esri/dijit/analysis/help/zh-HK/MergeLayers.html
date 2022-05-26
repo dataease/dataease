@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>合併圖層</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="合併圖層"></h2>
+        <hr/>
+    <p>此工具用於將兩個圖層的圖徵複製到一個新圖層中。所有要合併的圖層必須包含相同的圖徵類型（點、線或區域）。您可以控制輸入圖層中各欄位的連線和複製方式。例如：
+        <ul>
+            <li>有三個圖層分別對應英格蘭、威爾士和蘇格蘭，而我希望使用一個圖層來代表大不列顛。
+            </li>
+            <li>我有 12 個圖層，每個圖層包含相鄰鎮區的宗地資訊。我希望將它們合併成單個圖層，只保留該 12 個輸入圖層上名稱和類型相同的欄位。
+            </li>
+        </ul>
+        
+    </p>
+    <p>如果勾選 <b>使用目前地圖範圍</b>，則僅合併目前地圖範圍內可見的圖徵。如果未勾選，則合併兩個圖層中所有的圖徵，包括超出目前地圖範圍的圖徵。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>選擇圖層</h2></div>
+        <hr/>
+        <div>
+            <p>用於合併以下指定圖層的點圖徵、線圖徵或区域圖徵。
+            </p>
+        </div>
+    </div>
+    <div id="MergeLayer">
+        <div><h2>選擇要合併的圖層</h2></div>
+        <hr/>
+        <div>
+            <p>選擇與第一個圖層合併的圖層。
+            </p>
+        </div>
+    </div>
+    <div id="MergingAttributes">
+        <div><h2>修改合併欄位</h2></div>
+        <hr/>
+        <div>
+            <p>預設情况下，兩個輸入的所有欄位都會傳遞到輸出。您可以更改欄位傳遞到輸出的方式，包括：
+                <ul>
+                    <li> <b>重新命名</b> - 欄位將在輸出中重新命名。
+                    </li>
+                    <li> <b>移除</b> - 欄位將從輸出中移除。
+                    </li>
+                    <li> <b>匹配</b> - 欄位名稱變成相等。待合併圖層的欄位值將複製到匹配的輸出欄位。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>如果兩個圖層都包含一個具有相同名稱和資料類型的欄位，則會將兩個欄位的內容合併至該名稱的一個欄位中。這不適用於在 <b>修改合併欄位</b>參數中使用 <b>符合</b>的欄位。
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果圖層名稱已存在，系統將提示您提供其他名稱。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式功能表，可以在 <b>我的內容</b>中指定儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Najdi gruče točk</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="Najdi gruče točk"></h2>
+        <hr/>
+    <p>To orodje poi&scaron;če gruče točkovnih geoobjektov znotraj okoli&scaron;kega &scaron;uma glede na njihovo prostorsko razporeditev.
+    </p>
+    <p>Če je obkljukano  <b>Uporabi trenutni obseg karte</b>, bodo analizirani samo točkovni geoobjekti v vhodnem sloju znotraj trenutnega obsega karte. Če je možnost odkljukana, bodo analizirani vsi geoobjekti v vhodnem točkovnem sloju, tudi če so zunaj trenutnega obsega karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Izberi sloj, za katerega bodo najdene gruče</h2></div>
+        <hr/>
+        <div>
+            <p>Točkovni sloj, v katerem bodo najdene gruče. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Minimalno število točk, ki jih je treba obravnavati kot gručo</h2></div>
+        <hr/>
+        <div>
+            <p>Minimalno &scaron;tevilo geoobjektov, ki bodo veljali za začetek gruče. Vsaka gruča z manj geoobjekti od navedenega, bo veljala za &scaron;um. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Omejite iskalni doseg na (izbirno)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Maksimalna razdalja, pri kateri so geoobjekti obravnavani kot del iste gruče. Če pustite prazno, bo orodje zagnalo HDBSCAN, ki uporablja različne razdalje za ločevanje gruč različnih gostot iz manj obsežnega &scaron;uma. Če je dana vrednost, bo orodje zagnalo DBSCAN, ki uporablja navedeno razdaljo za ločevanje gostih gruč od manj obsežnega &scaron;uma.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>To je ime sloja, ki bo ustvarjen v  <b>Moji vsebini</b> in dodan na karto. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če ime sloja že obstaja, boste morali vnesti drugo ime.
+            </p>
+            <p>S pomočjo spustnega menija  <b>Shrani rezultat v</b> lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

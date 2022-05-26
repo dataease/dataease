@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Su Toplama</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="Su Toplama g&ouml;revi"></h2>
+        <hr/>
+    <p>Bu ara&ccedil;, rasterdaki h&uuml;crelerin k&uuml;mesi &uuml;zerinde eklenen alanları belirler.
+    </p>
+    <p>Bir su havzası, akışı - genellikle su akışı - k&uuml;melenmiş olarak ortak bir &ccedil;ıkışa doğru destekleyen yukarı eğimli bir alandır. Daha b&uuml;y&uuml;k bir su havzasının par&ccedil;ası olabilir ve ayrıca alt havza olarak adlandırılan daha k&uuml;&ccedil;&uuml;k su havzaları i&ccedil;erebilir.
+    </p>
+    <p>Her bir su havzasının değeri, girdi rasterındaki veya detay d&ouml;kme noktası katmanındaki kaynağın değerinden alınacaktır. D&ouml;kme noktası bir raster veri k&uuml;mesi olduğunda, h&uuml;cre değerleri varsayılan olarak kullanılır. D&ouml;kme noktası bir nokta detay veri k&uuml;mesi olduğunda, değerler belirtilen alandan gelir.
+    </p>
+    <p>Su Havzası aracı sadece bir D8 girdi akış y&ouml;n&uuml; raster katmanını destekler.
+    </p>
+    <p>Girdi d&ouml;kme noktası konumlarını detay verileri olarak belirtirken, varsayılan alan ge&ccedil;erli ilk alan olacaktır. Ge&ccedil;erli bir alan yoksa, ObjectID alanı (&ouml;rneğin, OID veya FID) varsayılan olacaktır.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>Akış yönü katmanını seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Her h&uuml;crenin akış y&ouml;n&uuml;n&uuml; g&ouml;steren girdi rasterıdır.
+            </p>
+            <p>Akış y&ouml;n&uuml; rasterı, RasterAnalysisTools servisindeki Akış Y&ouml;n&uuml; aracı veya FlowDirection (Akış Y&ouml;n&uuml;) g&ouml;revi kullanılarak oluşturulabilir, varsayılan akış y&ouml;n&uuml; t&uuml;r&uuml;  <b>D8</b> kullanılarak &ccedil;alıştırılabilir.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>Girdi dökme noktası konumlarını belirt</h2></div>
+        <hr/>
+        <div>
+            <p>Girdi d&ouml;kme noktası konumları.
+            </p>
+            <p>Bir raster i&ccedil;in bu, katkıda bulunan alanın veya havzanın belirleneceği yukarıdaki h&uuml;creleri temsil eder. NoData (Verisiz) olmayan t&uuml;m h&uuml;creler, kaynak h&uuml;creler olarak kullanılacaktır. Bir nokta girişi i&ccedil;in bu, katkıda bulunan alanın veya havzanın belirleneceği yukarıdaki konumları temsil eder.
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>Dökme noktası alanını seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Alan, d&ouml;kme noktası konumlarına değer atamak i&ccedil;in kullanılır.
+            </p>
+            <p>Girdi d&ouml;kme noktası katmanı bir raster ise, Değer kullanılır. Eğer detay ise sayısal bir alan kullanılır. Alan kayan noktalı değerler i&ccedil;eriyorsa, bu değerler tamsayı olacak şekilde kesilecektir.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adı. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>İ&ccedil;eriğim</b>&rsquo;de, <b>Sonu&ccedil;ları Kaydet</b> a&ccedil;ılır kutusunu kullanarak sonucun kaydedileceği klas&ouml;r&uuml;n adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="bdToolbox">
+        <p> GeoAnalytics distribuira analitički posao na ArcGIS GeoAnalytics Server. To vam omogućuje da brže analizirate vi&scaron;e podataka pomoću vi&scaron;e uređaja. Dostupni su sljedeći alati: <ul>
+                <li> Agregiraj točke
+                </li>
+                <li> Izradi vi&scaron;evarijabilnu mrežu
+                </li>
+                <li> Opi&scaron;i skup podataka
+                </li>
+                <li> Pridruži geoobjekte
+                </li>
+                <li> Rekonstruiraj tragove
+                </li>
+                <li> Sažmi atribute
+                </li>
+                <li> Sažmi unutar
+                </li>
+                <li> Geokodiranje lokacije iz tablice
+                </li>
+                <li> Obogati iz vi&scaron;evarijabilne mreže
+                </li>
+                <li> Otkrivanje incidenata
+                </li>
+                <li> Pronađi slične lokacije
+                </li>
+                <li> Izračunaj gustoću
+                </li>
+                <li> Pronađi klastere točaka
+                </li>
+                <li> Pronađi žari&scaron;ne točke
+                </li>
+                <li> Klasifikacija i regresija na temelju &scaron;ume
+                </li>
+                <li> Generalizirana linearna regresija
+                </li>
+                <li> Izradi kanale
+                </li>
+                <li> Priloži podatke
+                </li>
+                <li> Izračun polja
+                </li>
+                <li> Kopiraj u spremnik podataka
+                </li>
+                <li> Preklapanje slojeva
+                </li>
+                <li> Ukloni granice
+                </li>
+                <li> Spoji slojeve
+                </li>
+                <li> Izreži sloj 
+                </li>
+            </ul>
+            
+        </p>
+        <p>GeoAnalytics se usredotočuje na analiziranje velikih količina podataka s naglaskom na prostornim i vremenskim uzorcima. 
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="largesize">
+        <h2>Summarize Data</h2>
+        <hr/>
+        <p> The Summarize Data toolset contains tools that calculate total counts, lengths, areas, and basic descriptive statistics of features and their attributes within areas or near other features.
+            <ul>
+                <li> <b>Aggregate Points</b> calculates statistics about points that fall within specified areas or bins.
+                </li>
+                <li> <b>Build Multi-Variable Grid</b> generates a grid of square or hexagonal bins and calculates values for each bin based on the proximity of each input layer.
+                </li>
+                <li> <b>Describe Dataset</b> calculates a summary of your input, and can optionally generate a sample of your input layer.
+                </li>
+                <li> <b>Join Features</b> calculates statistics about features that share a spatial, temporal, or attribute relationship with other features.
+                </li>
+                <li> <b>Reconstruct Tracks</b> calculates statistics about points or polygons that belong to the same track and reconstructs inputs into tracks.
+                </li>
+                <li> <b>Summarize Attributes</b> calculates statistics about feature or tabular data that share attributes.
+                </li>
+                <li> <b>Summarize Within</b> calculates statistics for area features and attributes that overlap each other.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="AggregatePointsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Agregiraj točke</h2></td>
+                    <td>
+                    <img src="../images/GUID-6C1620D9-D176-41FA-8283-833D8B1CCCFC-web.png" class="titleImage" alt="Agregiraj točke">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Upotrebom sloja točkastih geoobjekata i sloja poligonalnih geoobjekata ili ćelija definiranih određenom udaljeno&scaron;ću, ovaj alat određuje koje točke spadaju u koje područje ili ćeliju i izračunava statistiku za sve točke unutar područja ili ćelije. Dodatno možete primijeniti i vremenske isječke s ovim alatom. 
+            </p>
+            <p>U nastavku su primjeri:
+                <ul>
+                    <li>Ako imate lokacije točaka incidenata zločina, zbrojite broj zločina po okrugu ili drugoj upravnoj jedinici.
+                    </li>
+                    <li>Pronađite najvi&scaron;e i najniže mjesečne prihode za lokacije fran&scaron;iza pomoću ćelija od 100-kilometara.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="BuildMultiVariableGridTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Izradi viševarijabilnu mrežu</h2></td>
+                    <td>
+                    <img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" class="titleImage" alt="Dijagram radnog tijeka za prilaganje podataka">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Alat Izradi vi&scaron;evarijabilnu mrežu generira mrežu četverokutnih ili &scaron;esterokutnih ćelija i izračunava varijable za svaku na temelju blizine jednog ili vi&scaron;e ulaznih slojeva.
+            </p>
+            <p>U nastavku su primjeri:
+                <ul>
+                    <li>S vi&scaron;estrukim slojevima infrastrukture javnog prijevoza, koji je dio grada najmanje dostupan javnim prijevozom?
+                    </li>
+                    <li>S obzirom na slojeve slivova, kao &scaron;to su rijeke i jezera, koji je naziv vodene povr&scaron;ine koja je najbliža određenoj lokaciji u SAD-u?
+                    </li>
+                    <li>Ako imate sloj prihoda po kućanstvima, gdje su u SAD-u razlike u prihodima u krugu od 50 milja najveće?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="DescribeDatasetTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Opiši skup podataka</h2></td>
+                    <td>
+                    <img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" class="titleImage" alt="Dijagram radnog tijeka alata Opi&scaron;i skup podataka">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Sažmite ulazne geoobjekte statistikama, oglednim slojevima i vizualizacijom. Možete odabrati izlazni ogledni sloj ili sloj obuhvata.
+            </p>
+            <p>U nastavku su primjeri:
+                <ul>
+                    <li>Referencirajte izračunatu zbirnu statistiku da biste razumjeli koje vrijednosti sadrži va&scaron; skup podataka.
+                    </li>
+                    <li>Umjesto crtanja cjelokupnog skupa podataka, stvorite podskupni sloj za vizualizaciju geoobjekata i njihovih atributa kada se dodaju na kartu.
+                    </li>
+                    <li>U&scaron;tedite vrijeme i resurse i pokrenite analizu na oglednom sloju prije izvođenja analize na cijelom skupu podataka.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="JoinFeaturesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Pridruži geoobjekte</h2></td>
+                    <td>
+                    <img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" class="titleImage" alt="Pridruži geoobjekte">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Upotrebom slojeva geoobjekata ili tabličnih podataka možete pridružiti geoobjekte i zapise na temelju određenih relacija između ulaznih slojeva ili tablica. Pridruživanja će se odrediti na temelju prostornih, vremenskih i atributnih relacija, a statistike sažetaka mogu se dodatno izračunati.  
+            </p>
+            <p>U nastavku su primjeri:
+                <ul>
+                    <li>S obzirom na točke lokacije incidenata kriminala kroz vrijeme, možete pridružiti podatke o kriminalu da određuju prostornu relaciju zločina međusobno unutar 1 kilometra i koji su se dogodili u roku od 1 sata kako biste utvrdili postoji li redoslijed zločina u međusobnoj blizini u prostoru i vremenu.
+                    </li>
+                    <li>S obzirom na tablicu po&scaron;tanskih brojeva s demografskim informacijama i poligonalnim geoobjektima koji predstavljaju stambene zgrade, pridružite demografske informacije stambenim povr&scaron;ina tako da dobijete podatke za svaku.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="ReconstructTracksTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Rekonstruiraj tragove</h2></td>
+                    <td>
+                    <img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" class="titleImage" alt="Rekonstruiraj tragove">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Upotrebom ovremenjenog sloja točkastih ili poligonalnih geoobjekata koji predstavljaju  <code>instancu</code> u vremenu, ovaj alat određuje koji ulazni geoobjekti pripadaju tragu te će posložiti unose po vremenskom redoslijedu. Statistika se dodatno izračunava za ulazne geoobjekte u svakom pojedinom tragu.
+            </p>
+            <p>U nastavku su primjeri:
+                <ul>
+                    <li>S obzirom na točke mjesta i vremena mjerenja uragana, izračunajte srednju brzinu vjetra i maksimalni tlak vjetra uragana.
+                    </li>
+                    <li>Upotrijebite mjerenja GPS-a brodova da biste rekonstruirali puteve brodova kao linije. 
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeAttributesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Sažmi atribute</h2></td>
+                    <td>
+                    <img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" class="titleImage" alt="Dijagram  sažimanja atributa">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Upotrebom geoobjekata ili tabličnih podataka ovaj alat sažima statistike za određena polja. 
+            </p>
+            <p>U nastavku su primjeri:
+                <ul>
+                    <li>S obzirom na lokacije trgovina s poljem  <i>COMPANY_NAME</i>, sažmite trgovine prema nazivima tvrtki za određivanje statistika za pojedine tvrtke.
+                    </li>
+                    <li>S obzirom na tablicu trgovina s poljima  <i>COMPANY_NAME</i> i <i>COUNTY</i>, sažmite trgovine prema nazivima tvrtki i okrugu za određivanje statistika za pojedine tvrtke u svakom okrugu.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeWithinTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Sažmi unutar</h2></td>
+                    <td>
+                    <img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" class="titleImage" alt="Sažmi unutar">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Pronađite poligone (i dijelove poligona) koji se preklapaju između dva sloja i izračunajte statistike o preklapanju. 
+            </p>
+            <p>U nastavku su primjeri:
+                <ul>
+                    <li>Ako imate poligonalni sloj sliva i poligonalni sloj uporabe zemlji&scaron;ta prema vrsti uporabe zemlji&scaron;ta, izračunajte ukupnu poljoprivrednu povr&scaron;inu za svaki sliv. 
+                    </li>
+                    <li>Ako imate sloj parcela u okrugu i sloj granica grada, sažmite prosječnu vrijednost praznih parcela unutar svakog grada.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="FindLocationsCategory" class="regularsize">
+        <h2>Pronalaženje lokacija</h2>
+        <hr/>
+        <p>Ovi se alati upotrebljavaju za određivanje područja koja zadovoljavaju niz različitih kriterija koje odredite. 
+            <ul>
+                <li> <b>Otkrivanje incidenata</b> radi s ovremenjenim slojevima kako bi se utvrdilo koji geoobjekti ispunjavaju određeni uvjet.
+                </li>
+                <li> <b>Geokodiranje lokacije iz tablice</b> pretvara adrese u koordinate.
+                </li>
+                <li> <b>Pronađi slične lokacije</b> pronalazi lokacije najsličnije jednoj ili vi&scaron;e referentnih lokacija na temelju kriterija koje odredite.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="DetectIncidentsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Otkrivanje incidenata</h2></td>
+                    <td>
+                    <img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" class="titleImage" alt="Otkrivanje incidenata">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Ovaj alat radi s ovremenjenim slojem točaka, linija, područja ili tablica koji predstavljaju instancu u vremenu. Pomoću geoobjekata poredanih po redu, a koji se zovu tragovi, ovaj alat utvrđuje koji su geoobjekti incidenti interesa. Incidenti se utvrđuju uvjetima koje odredite. 
+            </p>
+            <p>U nastavku su primjeri:
+                <ul>
+                    <li>Otkrijte mjerenja uragana koja odgovaraju uraganima 4. kategorije na temelju atributa brzine vjetra.
+                    </li>
+                    <li>Pomoću mjerenja GPS-a kretanja brodova s poljem koji predstavlja brzinu broda pronađite mjerenja koja su veća od1,5 puta srednje vrijednosti prethodnih pet mjerenja.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="GeocodeLocationsfromTableTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Geokodiranje lokacije iz tablice</h2></td>
+                    <td>
+                    <img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" class="titleImage" alt="Geokodiranje lokacije iz tablice">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Pretvara adrese u koordinate. Upotrijebite ovaj alat na tablicama za dijeljenje datoteka velikih podataka.
+            </p>
+            <br/>
+        </div>
+        <div id="FindSimilarLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Pronađi slične lokacije</h2></td>
+                    <td>
+                    <img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" class="titleImage" alt="Pronađi slične lokacije">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Na temelju kriterija koje odredite pronađite slične lokacije uspoređivanjem sličnosti lokacija u va&scaron;em sloju pretrage kandidata na jednoj ili vi&scaron;e referentnih lokacija. 
+            </p>
+            <p>U nastavku su primjeri: 
+                <ul>
+                    <li>Pronađite deset najsličnijih trgovina ispitivanjem niza zaposlenika i godi&scaron;nje prodaje.
+                    </li>
+                    <li>Pronađite 100 najsličnijih gradova ispitujući odnos između stanovni&scaron;tva, godi&scaron;njeg rasta i poreza.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="largesize">
+        <h2>Analiza uzoraka</h2>
+        <hr/>
+        <p>  Ovi vam alati pomažu identificirati, kvantificirati i vizualizirati prostorne uzorke u va&scaron;im podacima.
+            <ul>
+                <li> <b>Izračunaj gustoću</b> uzima poznate količine nekog fenomena i ra&scaron;iri te količine po karti.
+                </li>
+                <li> <b>Pronađi žari&scaron;ne točke</b> identificira statistički značajne klastere u prostornom obrascu va&scaron;ih podataka.
+                </li>
+                <li> <b>Pronađi klastere točaka</b> pronalazi klastere točkastih geoobjekata unutar okolnih podataka na temelju njihove prostorne distribucije.
+                </li>
+                <li> <b>Klasifikacija i regresija na temelju &scaron;ume</b> stvara modele i generira predviđanja pomoću adaptacije slučajnog algoritma za &scaron;ume Lea Breimana, &scaron;to je metoda strojnog učenja pod nadzorom.
+                </li>
+                <li> <b>Generalizirana linearna regresija</b> generira predviđanja ili modelira zavisne varijable s obzirom na njezin odnos sa skupom varijabli za obja&scaron;njenje.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Izračunaj gustoću</h2></td>
+                    <td>
+                    <img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" class="titleImage" alt="Izračunaj gustoću">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Alat Izračunaj gustoću stvara kartu gustoće iz točkastih geoobjekata &scaron;irenjem poznatih količina određenog fenomena (predstavljenih kao atributi točaka) &scaron;irom karte. Rezultat je sloj područja koji predstavlja gustoću.
+            </p>
+            <p>U nastavku su primjeri:
+                <ul>
+                    <li>Izračunavanje gustoće bolnica unutar okruga.  Sloj rezultata prikazat će područja s visokom i niskom pristupačno&scaron;ću bolnicama, a ti se podaci mogu iskoristiti za odlučivanje gdje treba sagraditi nove bolnice.
+                    </li>
+                    <li>Određivanje visoko rizičnih područja za &scaron;umske požare na temelju povijesnih lokacija &scaron;umskih požara.
+                    </li>
+                    <li>Lociranje zajednica koje se nalaze daleko od velikih prometnica kako bi se planirala izgradnja novih cesta.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindPointClustersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Pronađi klastere točaka</h2></td>
+                    <td>
+                    <img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" class="titleImage" alt="Pronađi klastere točaka">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Alat Pronađi klastere točaka pronalazi klastere točkastih geoobjekata unutar okolnih podataka na temelju njihove prostorne distribucije.
+            </p>
+            <p>U nastavku su primjeri:
+                <ul>
+                    <li>Pronađite klastere kućanstava s nametnicima kako bi se pomoglo u njihovu istrebljivanju.  
+                    </li>
+                    <li>Obavijestite druge i djelujte sami u slučaju potrebe za spa&scaron;avanjem i evakuacijom na temelju veličine i lokacije klastera pomoću geolociranih tweetova nakon prirodnih nepogoda ili terorističkih napada.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindHotSpotsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Pronađi žarišne točke</h2></td>
+                    <td>
+                    <img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" class="titleImage" alt="Pronađi žari&scaron;ne točke">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Alat Pronađi žari&scaron;ne točke odredit će ima li statistički značajnih klastera u prostornom uzorku va&scaron;ih podataka. 
+                <ul>
+                    <li>Jesu li va&scaron;e točke (zločini, stabla, prometne nesreće) stvarno u klasteru?  Kako možete biti sigurni?
+                    </li>
+                    <li>Jeste li uistinu otkrili statistički značajnu žari&scaron;nu točku (za tro&scaron;enje, smrtnost novorođenčadi, dosljedno visoke rezultate testova) ili bi va&scaron;a karta ispričala drugačiju priču da promijenite način na koji je simbolizirana?
+                    </li>
+                </ul>
+                Alat Pronađi žari&scaron;ne točke pomoći će vam odgovoriti na ova pitanja sa sigurno&scaron;ću.
+            </p>
+            <br/>
+        </div>
+        <div id="ForestBasedClassificationAndRegressionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Klasifikacija i regresija na temelju šume</h2></td>
+                    <td>
+                    <img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" class="titleImage" alt="Dijagram radnog tijeka klasifikacije i regresije na temelju &scaron;ume">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Alat Klasifikacija i regresija na temelju &scaron;ume stvara modele i generira predviđanja pomoću adaptacije slučajnog algoritma za &scaron;ume Lea Breimana, &scaron;to je metoda strojnog učenja pod nadzorom
+            </p>
+            <p>U nastavku su primjeri:
+                <ul>
+                    <li>S obzirom na podatke o pojavi morske trave, kao i brojne varijable za obja&scaron;njenje okruženja predstavljene kao oba atributa koje su obogaćene pomoću vi&scaron;evarijabilne mreže za izračunavanje udaljenosti do tvornica uzvodno i glavnih luka, buduća pojava morske trave može se predvidjeti na temelju budućih projekcija za iste varijable za obja&scaron;njenje okruženja.
+                          
+                    </li>
+                    <li>Pretpostavimo da imate podatke o prinosu usjeva na stotinama farmi diljem zemlje zajedno s drugim atributima na svakoj od tih farmi (broj zaposlenika, povr&scaron;ina u ralima i tako dalje). Pomoću tih podataka možete dati skup geoobjekata koji predstavljaju farme u kojima nemate prinos usjeva (ali imate sve druge varijable) i napraviti predviđanje o prinosu usjeva.
+                    </li>
+                    <li>Vrijednosti nekretnina mogu se predvidjeti na temelju cijena kuća koje su prodane u tekućoj godini. Prodajna cijena prodanih kuća uz informacije o broju spavaćih soba, udaljenosti od &scaron;kola, blizina glavnih autocesta, prosječan dohodak i broj kaznenih djela mogu se koristiti za predviđanje prodajnih cijena sličnih kuća.
+                         
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="GeneralizedLinearRegressionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Generalizirana linearna regresija</h2></td>
+                    <td>
+                    <img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" class="titleImage" alt="Dijagram radnog tijeka za generaliziranu linearnu regresiju">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Alat Generalizirana linearna regresija generira predviđanja ili modelira zavisne varijable s obzirom na njezin odnos sa skupom varijabli za obja&scaron;njenje. Ovaj se alat može upotrijebiti za prilagođavanje kontinuiranih (OLS), binarnih (logističkih) i modela (Poisson) zbroja.
+            </p>
+            <p>U nastavku su primjeri:
+                <ul>
+                    <li>Koje demografske karakteristike doprinose visokoj stopi upotrebe javnog prijevoza?
+                    </li>
+                    <li>Postoji li pozitivan odnos između vandalizma i provale?
+                    </li>
+                    <li>Koje varijable učinkovito predviđaju količinu poziva hitnih službi? S obzirom na buduće projekcije, kakva je očekivana potražnja za resursima za hitne intervencije?
+                    </li>
+                    <li>Koje varijable utječu na nisku stopu nataliteta?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="smallsize">
+        <h2>Upotreba udaljenosti</h2>
+        <hr/>
+        <p>Ovi alati pomažu odgovoriti na najče&scaron;će pitanje u prostornoj analizi: &scaron;to je kraj čega?
+            <ul>
+                <li> <b>Izradi pojaseve</b> stvara područja određene udaljenosti od geoobjekata.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CreateBuffersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Izradi pojaseve</h2></td>
+                    <td>
+                    <img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" class="titleImage" alt="Izradi pojaseve">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Pojas je područje koje pokriva zadanu udaljenost od točkastog, linijskog ili poligonalnog geoobjekta.
+            </p>
+            <p>U nastavku su primjeri:
+                <ul>
+                    <li>Upotrebom linearnih geoobjekata rijeka, odredite pojas za svaku rijeku od 50 puta &scaron;irine rijeke kako biste odredili predloženu obalnu granicu.
+                    </li>
+                    <li>S obzirom na dana područja koja predstavljaju zemlje, odredite pojas od 200 nautičkih milja za svaku zemlju kako biste utvrdili morsku granicu.  
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="largesize">
+        <h2>Manage Data</h2>
+        <hr/>
+        <p>These tools are used for the day-to-day management of geographic and tabular data. 
+            <ul>
+                <li> <b>Append Data</b> appends features to an existing hosted feature layer.
+                </li>
+                <li> <b>Calculate Field</b> creates a new field or modifies an existing field and creates a new layer in your contents.
+                </li>
+                <li> <b>Clip Layer</b> copies features that intersect a defined area of interest. 
+                </li>
+                <li> <b>Copy to Data Store</b> copies data to your ArcGIS Data Store and creates a layer in your contents. 
+                </li>
+                <li> <b>Dissolve Boundaries</b> merges areas that share a common boundary or attribute value.
+                </li>
+                <li> <b>Merge Layers</b> copies all features from two layers into a single result layer.
+                </li>
+                <li> <b>Overlay Layers</b> combines two or more layers into a single layer.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CopyToDataStoreTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Kopiraj u spremnik podataka</h2></td>
+                    <td>
+                    <img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" class="titleImage" alt="Kopiraj u spremnik podataka">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Kopira ulazni sloj geoobjekta ili tablicu u  ArcGIS Data Store i stvara sloj u sadržajima u  ArcGIS Enterprise. </p>
+            <p>U nastavku su primjeri:
+                <ul>
+                    <li>Kopirajte kolekciju datoteka  <code>.csv</code> iz dijeljenja datoteka velikih podataka u spremnik prostorno-vremenskih podataka radi vizualizacije.
+                    </li>
+                    <li>Kopirajte geoobjekte iz trenutačnog obuhvata karte koji su pohranjeni u spremniku prostorno-vremenskih podataka u spremnik relacijskih podataka.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="CalculateFieldTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Izračun polja</h2></td>
+                    <td>
+                    <img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" class="titleImage" alt="Izračun polja">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Izračunava vrijednosti za novo ili postojeće polje i stvara sloj u va&scaron;em sadržaju u  ArcGIS Enterprise. </p>
+            <p>U nastavku su primjeri:
+                <ul>
+                    <li>Izmijenite postojeće polje naziva  <i>total</i> tako da bude zbroj prihoda iz polja <i>total_2016</i>, <i>total_2017</i> i <i>total_2018</i>.
+                    </li>
+                    <li>Stvorite novo polje da biste kategorizirali razine opasnosti na temelju vrijednosti polja kao &scaron;to su  <i>windspeed</i> i <i>pollutant</i>.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="ClipLayerTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Izreži sloj</h2></td>
+                    <td>
+                    <img src="../images/GUID-3F6A1ED7-A7F5-4F5C-BB2A-5D94403F2230-web.png" class="titleImage" alt="Izreži sloj">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Isječci unose geoobjekte iz definiranih područja interesa. Izlazni rezultat bit će podskup ulaznih geoobjekata. 
+            </p>
+            <p>U nastavku su primjeri: 
+                <ul>
+                    <li>Stvorite podskup rizičnih zgrada koje spadaju u područja poplavnih područja.
+                    </li>
+                    <li>Odredite koje glavne ceste prolaze kroz potencijalna područja razvoja.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="DissolveBoundariesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Ukloni granice</h2></td>
+                    <td>
+                    <img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" class="titleImage" alt="Ukloni granice">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Spaja poligonalne geoobjekte koji presijecaju ili dijele zajedničku vrijednost polja kako bi stvorio susjedne ili vi&scaron;estrukeznačajke.
+            </p>
+            <p>U nastavku su primjeri:
+                <ul>
+                    <li>Stvorite jedan geoobjekt koji predstavlja stanje na Havajima uklanjanjem granice havajskih otoka.
+                    </li>
+                    <li>Kombinirajte slična radna područja na temelju vrste tla kako biste dobili skup podataka o susjednoj vrsti tla.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="OverlayLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Preklopi slojeve</h2></td>
+                    <td>
+                    <img src="../images/GUID-00A64703-4E97-4398-AE5C-F1885375BC30-web.png" class="titleImage" alt="Preklapanje slojeva">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Kombinira dva ili vi&scaron;e sloja u jedan sloj. Preklapanje se upotrebljava kako bi se odgovorilo na jedno od najosnovnijih pitanja u geografiji: &Scaron;to se nalazi na čemu? 
+            </p>
+            <p>U nastavku su primjeri:
+                <ul>
+                    <li>Koje se parcele nalaze unutar stogodi&scaron;nje poplavneravnice? (Unutar je samo drugačiji način da se kaže na nečemu.)
+                          
+                    </li>
+                    <li>Kakva se upotreba zemlje odvija na kakvoj vrsti tla?
+                         
+                    </li>
+                    <li>Koji se bunari nalaze unutar napu&scaron;tene vojne baze?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="AppendDataTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Priloži podatke</h2></td>
+                    <td>
+                    <img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" class="titleImage" alt="Dijagram radnog tijeka za prilaganje podataka">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Prilaže geoobjekte postojećem hostiranom sloju u va&scaron;em sadržaju u  ArcGIS Enterprise. </p>
+            <p>U nastavku su primjeri:
+                <ul>
+                    <li>Ažurirajte svoj sloj geoobjekata za prodaju_2018 svaki mjesec kada se objave va&scaron;a izvje&scaron;ća.
+                    </li>
+                    <li>Priložite skupove podataka za praćenje uragana iz 2016. i 2017. godine u glavni skup podataka o uraganima.
+                    </li>
+                    <li>Prikupite i priložite skupove podataka iz raznih izvora s različitim shemama upotrebom prilagođenog kartiranja polja.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="MergeLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Spoji slojeve</h2></td>
+                    <td>
+                    <img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" class="titleImage" alt="Spoji slojeve">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Kombinira dva sloja geoobjekata za stvaranje jednog sloja rezultata. Sva polja iz sloja spajanja bit će uključena prema zadanim postavkama ili možete odrediti prilagođena pravila spajanja za definiranje dobivene sheme.  
+            </p>
+            <p>U nastavku su primjeri:
+                <ul>
+                    <li>Spojite tri sloja s demografskim podacima iz Engleske, Walesa i &Scaron;kotske kako biste napravili jedan sloj Velike Britanije.
+                    </li>
+                    <li>Spojite dva sloja koji sadrže informacije o parcelama za susjedna gradska područja i zadržite samo polja koja imaju isti naziv i vrstu na 2 ulazna sloja.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="EnrichLocationsCategory" class="smallsize">
+        <h2>Obogaćivanje podataka</h2>
+        <hr/>
+        <p>Ovi vam alati pomažu istraživati karakteristike područja.
+            <ul>
+                <li> <b>Obogati iz vi&scaron;evarijabilne mreže</b> pridružuje atribute iz vi&scaron;evarijabilne mreže u točkasti sloj.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="EnrichFromMultiVariableGridTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Obogati iz viševarijabilne mreže</h2></td>
+                    <td>
+                    <img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" class="titleImage" alt="Obogati iz vi&scaron;evarijabilne mreže">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Učinkovito pridružuje atribute iz vi&scaron;evarijabilne mreže točkastom sloju i omogućuje vam brzo dodavanje velikih i raznolikih zbirki informacija u točkaste podatke za upotrebu u daljnjoj prostornoj analizi. 
+            </p>
+            <p>U nastavku su primjeri:
+                <ul>
+                    <li>S obzirom na sloj koji sadrži milijune slučajeva nestanka struje, obogatite geoobjekte s incidentima informacijama o tipičnom kori&scaron;tenju, rizicima za okoli&scaron; i infrastrukturnim uvjetima kako biste proučili odnos između tih faktora i učestalosti nestanka struje. 
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

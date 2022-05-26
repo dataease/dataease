@@ -1,0 +1,460 @@
+<div class="esriAnalysis esriChooseBestTool">
+    <div data-dojo-type="dijit/layout/ContentPane" style="margin-top:0.5em; margin-bottom: 0.5em;">
+      <div data-dojo-attach-point="_hotspotsToolContentTitle" class="analysisTitle">
+         <table class="esriFormTable" style="height:3em;" >
+            <tr>
+              <td class="esriToolIconTd" data-dojo-attach-point="_toolTd"><div data-dojo-attach-point="_toolIcon" class="chooseBestFacilitiesIcon"></div></td>
+              <td class="esriAlignLeading esriAnalysisTitle" data-dojo-attach-point="_toolTitle">${i18n.chooseBestFacilities}</td>
+              <td>
+                  <a href="#" class='esriFloatTrailing helpIcon' data-dojo-attach-point="_toolDescNode" esriHelpTopic="toolDescription"></a>
+              </td>
+              <td>          
+                <a href="#" data-dojo-attach-point="_closeBtn" title="${i18n.close}" class="esriAnalysisCloseIcon esriFloatTrailing" style="margin:0;padding:0"></a>
+        </td>
+            </tr>
+         </table>
+      </div>
+      <div style="clear:both; border-bottom: #CCC thin solid; height:1px;width:100%;"></div>
+    </div>
+    <div data-dojo-attach-point="_stackDiv" style="height:100%;width:100%;"></div>
+    <div data-dojo-type="dijit/layout/ContentPane"  style="height:100%;width:100%;" data-dojo-attach-point="_firstPane" class="">
+      <label class="analysisTitle">${i18n.selectGoal}</label>
+      <div data-dojo-attach-point="_goalNode1" data-dojo-type="esri/dijit/analysis/AnalysisToolItem" data-dojo-props="helpTopic:'allocateToExistingFacilities',name:'${i18n.allocate}',toolIcon:'allocateIcon'"></div>
+      <div data-dojo-attach-point="_goalNode2" data-dojo-type="esri/dijit/analysis/AnalysisToolItem" data-dojo-props="helpTopic:'minimizeTravel',name:'${i18n.minimizeImpedance}',toolIcon:'minimizeIcon'"></div>
+      <div data-dojo-attach-point="_goalNode3" data-dojo-type="esri/dijit/analysis/AnalysisToolItem" data-dojo-props="helpTopic:'maximizeCoverage',name:'${i18n.maximizeCoverage}',toolIcon:'maximizeIcon'"></div>
+      <div data-dojo-attach-point="_goalNode4" data-dojo-type="esri/dijit/analysis/AnalysisToolItem" data-dojo-props="helpTopic:'maximizeCoverageWithCapacity',name:'${i18n.maximizeCapacitatedCoverage}',toolIcon:'maximizelimIcon'"></div>
+      <div data-dojo-attach-point="_goalNode5" data-dojo-type="esri/dijit/analysis/AnalysisToolItem" data-dojo-props="helpTopic:'coverAPercentageOfDemand',name:'${i18n.percentCoverage}',toolIcon:'percentageIcon'"></div>
+      
+      <button data-dojo-type="dijit/form/Button" data-dojo-attach-point="_nextBtn" class="esriAnalysisSubmitButton" style="display:none;margin:0 40%;" data-dojo-attach-event="onClick:_handleNextBtnClick">
+            ${i18n.next}
+      </button>
+    </div> 
+    <div data-dojo-type="dijit/layout/ContentPane" style="height:100%;width:100%;" data-dojo-attach-point="_mainPane">
+      <div data-dojo-type="dijit/form/Form" data-dojo-attach-point="_form" readOnly="true">
+        <table class="esriFormTable"  data-dojo-attach-point="_driveTimesTable">
+             <tbody>
+              <tr data-dojo-attach-point="_titleRow">
+                <td colspan="3" class="sectionHeader" data-dojo-attach-point="_toolDescription"></td>
+              </tr>
+              <!--<tr style="display:none;">
+                <td colspan="2" style="padding-bottom:0;">
+                  <label class="esriFloatLeading  esriTrailingMargin025 esriAnalysisNumberLabel">${i18n.oneLabel}</label>
+                  <label class="esriAnalysisStepsLabel">${i18n.goalLabel}</label>
+                </td>
+                <td class="shortTextInput" style="padding-bottom:0;">
+                  <a href="#" class='esriFloatTrailing helpIcon' esriHelpTopic="goal"></a>
+                </td>
+              </tr>
+              <tr style="display:none;">
+                <td  colspan="3" style="padding-top:0;">
+                  <select class="esriLeadingMargin1 longInput esriLongLabel"  style="margin-top:1.0em;" data-dojo-type="dijit/form/Select" data-dojo-attach-point="_goalSelect" data-dojo-attach-event="onChange:_handleGoalChange"></select>
+                </td>
+              </tr> -->         
+              <tr>
+                <td colspan="2">
+                  <label class="esriFloatLeading esriTrailingMargin025 esriAnalysisNumberLabel">${i18n.oneLabel}</label>
+                  <label data-dojo-attach-point="_measurelabel" class="esriAnalysisStepsLabel">${i18n.measureLabel}</label>
+                </td>
+                <td class="shortTextInput">
+                  <a href="#" class='esriFloatTrailing helpIcon' esriHelpTopic="measure"></a>
+                </td>
+              </tr>         
+              <tr>
+                <td style="padding:0.25em;" colspan="3">
+                  <div data-dojo-type="dijit/form/Select" data-dojo-attach-point="_travelModeSelect" data-dojo-attach-event="onChange:_handleModeChange"class="esriLeadingMargin1 longInput esriLongLabel esriAnalysisDriveMode">
+                </td>          
+              </tr>
+              <tr data-dojo-attach-point="_useTrafficLabelRow">
+                <td style="padding:0" colspan="3">
+                  <div style="width:100%" data-dojo-type="esri/dijit/analysis/TrafficTime" data-dojo-attach-point="_trafficTimeWidget" data-dojo-props="showLiveTraffic:false"></div>
+                </td>
+              </tr>
+              <tr data-dojo-type="esri/dijit/analysis/components/AddBarrierLayers/AddBarrierLayers" data-dojo-attach-point="_addBarrierLayersComponent" data-dojo-props="showGeoAnalyticsParams: ${showGeoAnalyticsParams}">
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <label data-dojo-attach-point="_measurelabel" class="esriLeadingMargin2">${i18n.travelDirection}</label>
+                </td>
+                <td class="shortTextInput">
+                </td>
+              </tr>         
+              <tr>
+                <td colspan="2" style="width:95%;">
+                  <table style="width:100%;">
+                    <tbody>
+                      <tr>
+                        <td>
+                          <div class="esriLeadingMargin2 bufferSelector selected" data-dojo-attach-point="_facilitytodemand">
+                            <div class="bufferIcon facilityDemandIcon"></div>
+                            <div><label class="esriSelectLabel">${i18n.facTodemLabel}</label></div>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="bufferSelector" data-dojo-attach-point="_demandtofacility">
+                            <div class="bufferIcon demandFacilityIcon"></div>
+                            <div><label class="esriSelectLabel">${i18n.demTofacLabel}</label></div>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <label class="esriFloatLeading esriTrailingMargin025 esriAnalysisNumberLabel">${i18n.twoLabel}</label>
+                  <label data-dojo-attach-point="_measurelabel" class="esriAnalysisStepsLabel">${i18n.demandLayer}</label>
+                </td>
+                <td class="shortTextInput">
+                  <a href="#" class='esriFloatTrailing helpIcon' esriHelpTopic="demandLocationsLayer"></a>
+                </td>
+              </tr>
+              <tr>
+               <td colspan="3">
+                  <select class="esriLeadingMargin1 longInput esriLongLabel" data-dojo-type="dijit/form/Select" data-dojo-attach-point="_analysisSelect" data-dojo-attach-event="onChange:_handleAnalysisLayerChange"></select>
+               </td>
+              </tr>
+              <tr>
+                <td style="padding:0" colspan="3">
+                  <div class="esriLeadingMargin15">
+                    <label class="esriSmallLabel" data-dojo-attach-point="_numDemandLabel"></label>
+                  </div>
+                </td>
+              </tr>
+              <tr data-dojo-attach-point="_stopsByExtentRow">
+                <td style="padding:0" colspan="3">
+                  <div class="esriLeadingMargin15">
+                    <label class="esriSmallLabel" data-dojo-attach-point="_numDemandExtentLabel"></label>
+                  </div>
+                </td>
+              </tr>         
+              <tr>
+                <td colspan="2">
+                  <label data-dojo-attach-point="_measurelabel" class="esriLeadingMargin2">${i18n.demandAmountLabel}</label>
+                </td>
+                <td class="shortTextInput">
+                </td>
+              </tr>         
+              <tr>
+                <td colspan="2" style="width:95%;">
+                  <table style="width:100%;">
+                    <tbody>
+                      <tr>
+                        <td>
+                          <div class="bufferSelector selected" data-dojo-attach-point="_constant1">
+                            <div class="bufferIcon constantIcon"></div>
+                            <div><label class="esriSelectLabel">${i18n.constLabel}</label></div>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="bufferSelector" data-dojo-attach-point="_attribute1">
+                            <div class="bufferIcon attributeIcon"></div>
+                            <div><label class="esriSelectLabel">${i18n.attribute}</label></div>
+                          </div>
+                        </td>
+                        <td style="width: 30%;"></td>                        
+                      </tr>
+                      <tr data-dojo-attach-point="_constant1row">
+                        <td colspan="2"  style="padding-bottom:0.25em;padding-top:0.75em;">
+                          <input type="text" data-dojo-type="dijit/form/NumberTextBox" class="esriLeadingMargin3 mediumInput" data-dojo-attach-point="_constant1Value">
+                        </td>
+                      </tr>
+                      <tr data-dojo-attach-point="_attribute1row" style="display:none;">
+                        <td colspan="2"  style="padding-bottom:0.25em;padding-top:0.75em;">
+                          <select class="mediumInput esriLeadingMargin3" data-dojo-type="dijit/form/Select" data-dojo-attach-point="_attributeSelect1">
+                          </select>
+                        </td>                  
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <label data-dojo-attach-point="_measurelabel" class="esriLeadingMargin2">${i18n.maxTravelLabel}</label>
+                </td>
+                <td class="shortTextInput">
+                </td>
+              </tr>          
+              <tr>
+                <td colspan="2" style="width:95%;">
+                  <table style="width:100%;">
+                    <tbody>
+                      <tr>
+                        <td>
+                          <div class="bufferSelector selected" data-dojo-attach-point="_unlimited2">
+                            <div class="bufferIcon unlimitedIcon"></div>
+                            <div><label class="esriSelectLabel">${i18n.unlimitedLabel}</label></div>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="bufferSelector" data-dojo-attach-point="_constant2">
+                            <div class="bufferIcon constantIcon"></div>
+                            <div><label class="esriSelectLabel">${i18n.constLabel}</label></div>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="bufferSelector" data-dojo-attach-point="_attribute2">
+                            <div class="bufferIcon attributeIcon"></div>
+                            <div><label class="esriSelectLabel">${i18n.attribute}</label></div>
+                          </div>
+                        </td>                  
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+                <td></td>
+              </tr>
+              <tr data-dojo-attach-point="_atrconstrow" style="display:none;">
+                <td style="padding-right:0;width:50%;">
+                  <input type="text" data-dojo-type="dijit/form/NumberTextBox" data-dojo-attach-point="_maxTravelRangeField" class="esriLeadingMargin1"  style="width:75%;">
+                  <select class="mediumInput esriAnalysisSelect esriLeadingMargin1" data-dojo-type="dijit/form/Select" data-dojo-attach-event="onChange:_handleTravelAttrChange" data-dojo-attach-point="_maxTravelRangeFieldSelect" style="width:80%;table-layout:fixed;height:auto;">
+                  </select>                    
+                </td>
+                <td style="padding-left:0.25em;width:50%;">
+                  <select class="mediumInput esriAnalysisSelect" data-dojo-type="dijit/form/Select" data-dojo-attach-event="onChange:_handleDistUnitsChange" data-dojo-attach-point="_maxTravelRangeUnitsSelect" style="width:90%;table-layout:fixed;height:auto;">
+                  </select>
+                </td>
+             </tr>
+              <tr data-dojo-attach-point="_candidatePercentLabelRow">
+                <td colspan="3" style="padding-bottom:0.25em;padding-top:0.25em;">
+                    <label class="esriLeadingMargin1">${i18n.demandPercentCover}
+                    </label>                           
+                </td>
+              </tr>     
+              <tr data-dojo-attach-point="_candidatePercentRow">
+                <td colspan="3" style="padding-bottom:0.25em;padding-top:0.25em;">
+                  <input type="text" data-dojo-type="dijit/form/NumberTextBox" class="esriLeadingMargin2 mediumInput" data-dojo-attach-point="_percentDemandCoverageValue" data-dojo-props="value:100,constraints:{min:1,max:100},rangeMessage:'${i18n.AO_100156}'"> 
+                  <label class="esriLeadingMargin1">%</label>
+                </td>
+              </tr>               
+              <tr>
+                <td colspan="2">
+                  <label class="esriFloatLeading esriTrailingMargin025 esriAnalysisNumberLabel">${i18n.threeLabel}</label>
+                  <label data-dojo-attach-point="_reqdFacilityLabel" class="esriAnalysisStepsLabel">
+                    ${i18n.reqdFacilities}
+                  </label>
+                </td>
+                <td class="shortTextInput">
+                  <a href="#" class='esriFloatTrailing helpIcon' esriHelpTopic="requiredFacilitiesLayer"></a>
+                </td>
+              </tr>
+              <!--<tr data-dojo-attach-point="_reqdFacilityLyrLabelRow">
+                <td colspan="3">
+                  <div class="esriLeadingMargin15">
+                    <label>${i18n.reqFacLayerLabel}</label>
+                  </div>
+                </td>
+              </tr> -->        
+              <tr data-dojo-attach-point="_reqdFacilityLyrSelectRow">
+               <td colspan="3">
+                  <select class="esriLeadingMargin1 longInput esriLongLabel" data-dojo-type="dijit/form/Select" data-dojo-attach-point="_requiredFacilitiesLayerSelect" data-dojo-attach-event="onChange:_handleFacilityLayerChange"></select>
+               </td>
+              </tr>
+              <tr data-dojo-attach-point="_reqdFacilityNumRow">
+                <td style="padding:0" colspan="3">
+                  <div class="esriLeadingMargin15">
+                    <label class="esriSmallLabel" data-dojo-attach-point="_numFacilitiesLabel"></label>
+                  </div>
+                </td>
+              </tr>
+              <tr data-dojo-attach-point="_reqdFacilityNumExtentRow">
+                <td style="padding:0" colspan="3">
+                  <div class="esriLeadingMargin15">
+                    <label class="esriSmallLabel" data-dojo-attach-point="_numFacilitiesExtentLabel"></label>
+                  </div>
+                </td>
+              </tr>          
+              <tr data-dojo-attach-point="_reqdCapLabelRow">
+                <td colspan="2">
+                  <label data-dojo-attach-point="_measurelabel" class="esriLeadingMargin1">${i18n.capacityLabel}</label>
+                </td>
+                <td class="shortTextInput">
+                </td>
+              </tr>          
+              <tr data-dojo-attach-point="_reqdCapAttrRow">
+                <td colspan="2" style="width:95%;">
+                  <table style="width:100%;">
+                    <tbody>
+                      <tr>
+                        <td>
+                          <div class="bufferSelector selected" data-dojo-attach-point="_unlimited3">
+                            <div class="bufferIcon unlimitedIcon"></div>
+                            <div><label class="esriSelectLabel">${i18n.unlimitedLabel}</label></div>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="bufferSelector" data-dojo-attach-point="_constant3">
+                            <div class="bufferIcon constantIcon"></div>
+                            <div><label class="esriSelectLabel">${i18n.constLabel}</label></div>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="bufferSelector" data-dojo-attach-point="_attribute3">
+                            <div class="bufferIcon attributeIcon"></div>
+                            <div><label class="esriSelectLabel">${i18n.attribute}</label></div>
+                          </div>
+                        </td>                  
+                      </tr>
+                      <tr data-dojo-attach-point="_constant3row" style="display:none;">
+                        <td colspan="3" style="padding-bottom:0.25em;padding-top:0.75em;">
+                          <input type="text" data-dojo-type="dijit/form/NumberTextBox" class="esriLeadingMargin2 mediumInput" data-dojo-attach-point="_constant3Value">
+                        </td>
+                      </tr>
+                      <tr data-dojo-attach-point="_attribute3row" style="display:none;">
+                        <td colspan="3"  style="padding-bottom:0.25em;padding-top:0.75em;">
+      <select class="esriLeadingMargin2 mediumInput" data-dojo-type="dijit/form/Select" data-dojo-attach-point="_attributeSelect3">
+                          </select>
+                        </td>                  
+                      </tr>                
+                    </tbody>
+                  </table>
+                </td>
+                <td></td>
+              </tr>
+              <tr data-dojo-attach-point="_candidateLabelRow">
+                <td colspan="2">
+                  <label class="esriFloatLeading esriTrailingMargin025 esriAnalysisNumberLabel">${i18n.fourLabel}</label>
+                   <label class="esriAnalysisStepsLabel">${i18n.candFacilities}</label>
+                </td>
+                <td class="shortTextInput">
+                  <a href="#" class='esriFloatTrailing helpIcon' esriHelpTopic="candidateFacilitiesLayer"></a>
+                </td>
+              </tr>
+              <tr data-dojo-attach-point="_candidateLyrLabelRow">
+                <td colspan="3" style="padding-bottom:0.25em;padding-top:0.25em;">
+                    <label style="display:none;" class="esriLeadingMargin1">${i18n.candidateLayerLabel}
+                    </label>                           
+                </td>
+              </tr>              
+              <tr data-dojo-attach-point="_candidateLyrSelectRow">
+               <td colspan="3">
+                 <select class="esriLeadingMargin1 longInput esriLongLabel" data-dojo-type="dijit/form/Select" data-dojo-attach-point="_candidateFacilityLyrSelect" data-dojo-attach-event="onChange:_handleCandFacilityLayerChange"></select>
+               </td>
+              </tr>
+              <tr data-dojo-attach-point="_candFacilityNumRow">
+                <td style="padding:0" colspan="3">
+                  <div class="esriLeadingMargin15">
+                    <label class="esriSmallLabel" data-dojo-attach-point="_candFacilitiesLabel"></label>
+                  </div>
+                </td>
+              </tr>
+              <tr data-dojo-attach-point="_candFacilityNumExtentRow">
+                <td style="padding:0" colspan="3">
+                  <div class="esriLeadingMargin15">
+                    <label class="esriSmallLabel" data-dojo-attach-point="_candFacilitiesExtentLabel"></label>
+                  </div>
+                </td>
+              </tr>          
+              <tr data-dojo-attach-point="_candidateCapacityLabelRow">
+                <td colspan="2">
+                  <label data-dojo-attach-point="_measurelabel" class="esriLeadingMargin1">${i18n.capacityLabel}</label>
+                </td>
+                <td class="shortTextInput">
+                </td>
+              </tr>
+              <tr data-dojo-attach-point="_candidateCapacityRow">
+                <td colspan="2" style="width:95%;">
+                  <table style="width:100%;">
+                    <tbody>
+                      <tr>
+                        <td>
+                          <div class="bufferSelector selected" data-dojo-attach-point="_unlimited4">
+                            <div class="bufferIcon unlimitedIcon"></div>
+                            <div><label class="esriSelectLabel">${i18n.unlimitedLabel}</label></div>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="bufferSelector" data-dojo-attach-point="_constant4">
+                            <div class="bufferIcon constantIcon"></div>
+                            <div><label class="esriSelectLabel">${i18n.constLabel}</label></div>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="bufferSelector" data-dojo-attach-point="_attribute4">
+                            <div class="bufferIcon attributeIcon"></div>
+                            <div><label class="esriSelectLabel">${i18n.attribute}</label></div>
+                          </div>
+                        </td>                  
+                      </tr>
+                      <tr data-dojo-attach-point="_constant4row" style="display:none;">
+                        <td colspan="3" style="padding-bottom:0.25em;padding-top:0.75em;">
+                          <input type="text" data-dojo-type="dijit/form/NumberTextBox" class="esriLeadingMargin2 mediumInput" data-dojo-attach-point="_constant4Value" value="1">
+                        </td>
+                      </tr>
+                      <tr data-dojo-attach-point="_attribute4row" style="display:none;">
+                        <td colspan="3"  style="padding-bottom:0.25em;padding-top:0.75em;">
+      <select class="esriLeadingMargin2 mediumInput" data-dojo-type="dijit/form/Select" data-dojo-attach-point="_attributeSelect4">
+                          </select>
+                        </td>                  
+                      </tr>                 
+                    </tbody>
+                  </table>
+                </td>
+                <td></td>
+              </tr>
+              <tr data-dojo-attach-point="_candidateCountLabelRow">
+                <td colspan="3" style="padding-bottom:0.25em;padding-top:0.25em;">
+                    <label class="esriLeadingMargin1">${i18n.numberCandidates}
+                    </label>            
+                </td>
+              </tr>
+              <tr data-dojo-attach-point="_candidateCountRow">
+                <td colspan="2" style="padding-bottom:0.25em;padding-top:0.25em;">
+                    <label class="esriLeadingMargin1">
+                    <input type="text" class="" style="width:30%" data-dojo-type="dijit/form/NumberSpinner" data-dojo-props="value:1,intermediateChanges:true,smallDelta:1,constraints:{min:1,max:1000,places:0},invalidMessage:'${i18n.distanceMsg}'" data-dojo-attach-point="_candidatesInput"></input>
+                    </label>            
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <label data-dojo-attach-point="_labelFive" class="esriFloatLeading esriTrailingMargin025 esriAnalysisNumberLabel">${i18n.fiveLabel}</label>
+                  <label data-dojo-attach-point="_resultlabel" class="esriAnalysisStepsLabel">${i18n.resultLabel}</label>
+                </td>
+                <td class="longTextInput">
+                  <a href="#" class='esriFloatTrailing helpIcon' data-dojo-attach-point="_analysisFieldHelpLink" esriHelpTopic="outputName"></a>
+                </td>
+              </tr>
+              <tr>
+                <td class="shortTextInput" colspan="3">
+                  <input type="text" data-dojo-type="dijit/form/ValidationTextBox" class="esriLeadingMargin1 esriOutputText" data-dojo-props="trim:true,required:true" data-dojo-attach-event="_handleResultLyrInputChange" data-dojo-attach-point="_outputLayerInput"  value="">
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3">
+                   <div class="esriLeadingMargin1" data-dojo-attach-point="_chooseFolderRow">
+                     <label style="width:9px;font-size:smaller;">${i18n.saveResultIn}</label>
+                     <input class="longInput" data-dojo-attach-point="_webMapFolderSelect" data-dojo-type="dijit/form/FilteringSelect" trim="true" style="width:60%;"></input>
+                   </div>              
+                </td>
+              </tr>      
+             </tbody>
+            </table>
+      </div>
+      <div data-dojo-attach-point="_aggregateToolContentButtons" style="padding:5px;margin-top:5px;border-top:solid 1px #BBB;">
+        <div class="esriExtentCreditsCtr">
+          <a class="esriFloatTrailing esriSmallFont"  href="#" data-dojo-attach-point="_showCreditsLink">${i18n.showCredits}</a>
+         <label data-dojo-attach-point="_chooseExtentDiv" class="esriSelectLabel esriExtentLabel">
+           <input type="radio" data-dojo-attach-point="_useExtentCheck" data-dojo-type="dijit/form/CheckBox" data-dojo-attach-event="onChange:_handleExtentCheckChange" data-dojo-props="checked:true" name="extent" value="true"/>
+             ${i18n.useMapExtent}
+         </label>
+        </div>
+        <div class="esriFormWarning esriRoundedBox" data-dojo-attach-point="_errorMessagePane" style="display:none;">
+          <a href="#" title='${i18n.close}' data-dojo-attach-event="onclick:_handleCloseMsg" class="esriFloatTrailing esriAnalysisInfoPaneCloseIcon"></a>
+          </a>
+          <div data-dojo-attach-point="_bodyNode"></div>
+        </div>
+        <button data-dojo-type="dijit/form/Button" data-dojo-attach-point="_prevBtn" class="calcite transparent" data-dojo-attach-event="onClick:_handlePrevBtnClick" style="display:none;">
+              ${i18n.back}
+        </button>
+        <button data-dojo-type="dijit/form/Button" type="submit" data-dojo-attach-point="_saveBtn" class=" esriAnalysisSubmitButton" data-dojo-attach-event="onClick:_handleSaveBtnClick">
+            ${i18n.runAnalysis}
+        </button>
+      </div>
+      <div data-dojo-type="dijit/Dialog" title="${i18n.creditTitle}" data-dojo-attach-point="_usageDialog" style="width:40em;">
+        <div data-dojo-type="esri/dijit/analysis/CreditEstimator"  data-dojo-attach-point="_usageForm"></div>
+      </div>
+   </div>
+</div>

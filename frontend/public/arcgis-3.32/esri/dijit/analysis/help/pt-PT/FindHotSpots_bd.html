@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Localizar Hot Spots</h2><p/>
+        <h2><img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" alt="Localizar Pontos de Incid&ecirc;ncia"></h2>
+        <hr/>
+    <p>A ferramenta Localizar Hot Spots permite determinar se existe algum tipo de clustering com relev&acirc;ncia estat&iacute;stica no padr&atilde;o espacial dos seus dados. 
+        <ul>
+            <li>Os seus pontos (ocorr&ecirc;ncias de crime, &aacute;rvores ou acidentes de via&ccedil;&atilde;o) est&atilde;o efetivamente agrupados em cluster?  Como pode ter a certeza?
+            </li>
+            <li>Ter&aacute; efetivamente descoberto um hot spot com relev&acirc;ncia estat&iacute;stica, ou ser&aacute; que o mapa contaria uma hist&oacute;ria diferente se alterasse a forma como est&aacute; simbolizado?
+            </li>
+        </ul>
+        A ferramenta Localizar Hot Spots ajuda-o a responder a essas perguntas com confian&ccedil;a.
+    </p>
+    <p>Mesmo padr&otilde;es espaciais aleat&oacute;rios demonstram algum n&iacute;vel de clustering. Al&eacute;m disso, os olhos e o c&eacute;rebro tentam naturalmente encontrar padr&otilde;es mesmo que estes n&atilde;o existam. Consequentemente, pode ser dif&iacute;cil saber se os padr&otilde;es encontrados nos seus dados s&atilde;o o resultado de processos espaciais verdadeiros ou se resultam apenas de algo aleat&oacute;rio. &Eacute; por esta raz&atilde;o que os investigadores e analistas utilizam m&eacute;todos estat&iacute;sticos como o Encontrar Hot Spots (Getis-Ord Gi*) para quantificar padr&otilde;es espaciais. Quando encontra efetivamente um clustering com relev&acirc;ncia estat&iacute;stica nos seus dados, tem acesso a informa&ccedil;&otilde;es importantes. Saber onde e quando ocorre um clustering pode fornecer pistas importantes sobre os processos que est&atilde;o na base dos padr&otilde;es detetados. Por exemplo, saber que o n&uacute;mero de assaltos a resid&ecirc;ncias &eacute; consistentemente elevado em determinados bairros &eacute; uma informa&ccedil;&atilde;o essencial para o caso de ser necess&aacute;rio elaborar estrat&eacute;gias de preven&ccedil;&atilde;o eficazes, distribuir recursos policiais escassos, iniciar programas de vigil&acirc;ncia nos bairros, autorizar investiga&ccedil;&otilde;es criminais profundadas ou identificar poss&iacute;veis suspeitos.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Escolher camada para a qual os Hot Spots serão calculados</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de pontos a partir da qual v&atilde;o ser encontrados hot e cold spots.
+            </p>
+            <p>Esta an&aacute;lise utiliza caixas e requer um sistema de coordenadas projetado. Pode definir o  <b>Sistema de coordenadas de processamento</b> nos <b>Ambientes de An&aacute;lise</b>. Se o seu sistema de coordenadas de processamento n&atilde;o se encontra definido para um sistema de coordenadas projetado, ser&aacute; instado a defini-lo quando <b>Correr An&aacute;lise</b> .
+            </p>
+            <p>Para al&eacute;m de escolher uma camada do seu mapa, pode escolher  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista pendente para navegar at&eacute; aos seus conte&uacute;dos de um conjunto de dados de partilha de ficheiros de big data ou camada de elementos.
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Encontre clusters de alta e baixa intensidade</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Esta an&aacute;lise responde &agrave; pergunta: Onde se agrupam espacialmente clusters de valores altos e baixos?
+            </p>
+            <p>Se os seus dados s&atilde;o pontos e voc&ecirc; escolher  <b>Contagens de Pontos</b>, esta ferramenta ir&aacute; avaliar a distribui&ccedil;&atilde;o espacial dos elementos pontos para responder &agrave; quest&atilde;o: Onde est&atilde;o os pontos agrupados em clusters de forma inesperada ou onde &eacute; que est&atilde;o dispersos?
+            </p>
+            <p>Se escolher um campo, esta ferramenta ir&aacute; avaliar a distribui&ccedil;&atilde;o espacial dos valores associados com cada elemento para responder &agrave; quest&atilde;o: Onde est&atilde;o os valores altos e baixos a agruparem-se em clusters?
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Selecionar o tamanho da caixa para agregação</h2></div>
+        <hr/>
+        <div>
+            <p>A dist&acirc;ncia utilizada para gerar as caixas quadradas que ser&atilde;o utilizadas para analisar os seus pontos de entrada.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Encontrar hot spots utilizando etapas temporais (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Caso a componente temporal se encontre ativa na camada de pontos, e seja de tipo instante, pode efetuar an&aacute;lise com recurso a etapas temporais.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Intervalo entre etapas temporais</h2></div>
+        <hr/>
+        <div>
+            <p>Intervalo temporal utilizado para gerar etapas temporais. A componente temporal pode ser alinhada &agrave; hora inicial e na hora final dos dados de entrada, ou a uma refer&ecirc;ncia temporal definida.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Intervalo entre etapas temporais</h2></div>
+        <hr/>
+        <div>
+            <p>Intervalo temporal utilizado para gerar etapas temporais. A componente temporal pode ser alinhada &agrave; hora inicial e na hora final dos dados de entrada, ou a uma refer&ecirc;ncia temporal definida.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStepAlignment">
+        <div><h2>Selecionar como alinhar etapas temporais</h2></div>
+        <hr/>
+        <div>
+            <p>Como s&atilde;o alinhadas as etapas temporais. Existem tr&ecirc;s formas de alinhar etapas temporais:
+                <ul>
+                    <li> <b>Hora de In&iacute;cio</b>&mdash;As etapas temporais s&atilde;o alinhadas ao primeiro elemento em termos cronol&oacute;gicos.
+                    </li>
+                    <li> <b>Hora de Fim</b>&mdash;As etapas temporais s&atilde;o alinhadas ao &uacute;ltimo elemento em termos cronol&oacute;gicos.
+                    </li>
+                    <li> <b>Hora de Refer&ecirc;ncia</b>&mdash;As etapas temporais s&atilde;o alinhadas a uma hora definida.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Hora de referência à qual alinhar as etapa temporais</h2></div>
+        <hr/>
+        <div>
+            <p>A data e hora utilizadas para alinhar as etapas temporais.
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Selecionar a dimensão da área para cálculos de hot spots</h2></div>
+        <hr/>
+        <div>
+            <p>A dist&acirc;ncia utilizada para determinar a zona utilizada para c&aacute;lculos de hot spots. A zona tem de ser maior do que o tamanho da caixa, por forma a assegurar que cada caixa tem pelo menos um elemento vizinho. Cada caixa &eacute; analisada e comparada com as caixas vizinhas.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; um par&acirc;metro tempor&aacute;rio de pr&eacute;-lan&ccedil;amento para definir a refer&ecirc;ncia espacial. Muitas ferramentas de big data requerem que o sistema de coordenadas projetado seja utilizado como refer&ecirc;ncia espacial para processamento. Por predefini&ccedil;&atilde;o, a ferramenta utilizar&aacute; o sistema de coordenadas de entrada, mas ir&aacute; falhar no caso de o mesmo se tratar de um sistema de coordenadas geogr&aacute;ficas. Para definir um sistema de coordenadas projetado, introduza o WKID. Por exemplo,  <b>Web Mercator</b> seria introduzido como <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Selecionar um ArcGIS Data Store no qual guardar os resultados</h2></div>
+        <hr/>
+        <div>
+            <p>Os resultados de GeoAnalytics s&atilde;o guardados num armazenamento de dados e expostos como uma camada de elementos em   Portal for ArcGIS. Na maioria dos casos, os resultados dever&atilde;o ser armazenados num armazenamento de dados espaciotemporal, sendo este o comportamento predefinido. Em alguns casos, ser&aacute; uma boa op&ccedil;&atilde;o guardar os resultados no armazenamento de dados relacional. As seguintes s&atilde;o raz&otilde;es que justificam o armazenamento de resultados no armazenamento de dados relacional. 
+                <ul>
+                    <li>Pode utilizar resultados em colabora&ccedil;&atilde;o portal-to-portal.
+                    </li>
+                    <li>Pode ativar funcionalidades de sincroniza&ccedil;&atilde;o com os seus resultados
+                    </li>
+                </ul>
+                
+            </p>
+            <p>N&atilde;o dever&aacute; utilizar o armazenamento de dados relacional caso antecipe um aumento dos seus resultados de GeoAnalytics e necessite de tirar partido das funcionalidades de armazenamento de big data espaciotemporais para gerir grandes quantidades de dados.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p> O nome da camada que ser&aacute; criada.  Se estiver a escrever para ArcGIS Data Store, os seus resultados ser&atilde;o gravados em  <b>O Meu Conte&uacute;do</b> e adicionados ao mapa. Se estiver a escrever para uma partilha de ficheiros big data, os seus resultados ser&atilde;o guardados numa partilha de ficheiros big data e adicionados ao seu manifesto. N&atilde;o ser&atilde;o adicionados ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Caso a camada j&aacute; existe, a ferramenta ir&aacute; falhar.
+            </p>
+            <p>A camada de resultados deve exibir agrupamentos estatisticamente significativos de valores altos e baixos ou contagem de pontos. Se o nome da camada de resultados j&aacute; existir, ser-lhe-&aacute; solicitado que altere o nome da mesma.
+            </p>
+            <p>Ao escrever para   ArcGIS Data Store  (armazenamento relacional ou espaciotemporal de dados big data) utilizando a caixa suspensa  <b>Guardar resultado em</b> pode especificar o nome de uma pasta em <b>O Meu Conte&uacute;do</b>, onde ser&aacute; armazenado o resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

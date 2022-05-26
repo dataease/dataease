@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>המר רסטר לישות</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="הכלי 'המר רסטר לישות'"></h2>
+        <hr/>
+    <p>כלי זה ממיר רסטר לסט נתוני ישויות, כנקודות, קווים או פוליגונים.
+    </p>
+    <p>הפרמטר  <b>בחר שדה</b> מאפשר לך לבחור אילו שדות מאפיינים של סט נתוני הרסטר של הקלט יהפכו למאפיין בקבוצת הישויות של הפלט. פרמטר זה זמין רק עבור רסטרים של מספרים שלמים שיש להם מאפיינים נוספים בטבלה המשויכת.
+    </p>
+    <p>לרסטר הקלט יכולה להיות גודל תא בכל מידה.
+    </p>
+    <p>ניתן להמיר רסטרים של מספרים שלמים לישויות נקודה, קו או פוליגון; עם זאת, רסטרים של נקודה צפה ניתנים להמרה לישויות נקודה בלבד.
+    </p>
+    <p>אם האפשרות  <b>השתמש בתיחום המפה הנוכחי</b> מסומנת, רק תאי הרסטר שנראים בתוך גבולות תיחום המפה הנוכחי יומרו. אם האפשרות לא מסומנת, כל התאים בשכבת הרסטר יומרו, גם אם הם מחוץ לתיחום המפה הנוכחי. שים לב לכך אם שכבת הרסטר גדולה או שיש לה רזולוציה גבוהה מאוד.
+    </p>
+    <p>דוגמאות לשימוש בכלי זה כוללות את המקרים הבאים:
+ 
+        <ul>
+            <li>צור ישויות פוליגון מרסטר סיווג שימוש בקרקע.
+                
+ 
+            </li>
+            <li>ניתן להמיר זרמים שזוהו ב-DEM לישויות קו.
+                
+
+            </li>
+            <li>ניתן להמיר DEM לישויות נקודה שיכולות לשמש בתהליך עבודה שאינו מבוסס על רסטר.
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>בחר שכבת רסטר להמרה</h2></div>
+        <hr/>
+        <div>
+            <p>שכבת רסטר הקלט שתומר לשכבות ישויות.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>בחר שדה</h2></div>
+        <hr/>
+        <div>
+            <p>ספק שדה שמציין איזה ערך ישמש עבור ההמרה.
+            </p>
+            <p>זה יכול להיות כל מספר שלם או ערך טקסט.
+            </p>
+            <p>שדה שמכיל ערכי נקודה צפה יכול לשמש רק אם הפלט הוא לסט נתוני נקודה.
+            </p>
+            <p>ברירת המחדל היא להשתמש בשדה  <i>Value</i>, שמכיל את הערך בכל תא רסטר.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>בחר סוג פלט</h2></div>
+        <hr/>
+        <div>
+            <p>בחר את סוג הפלט בין נקודה, קו או פוליגון.
+            </p>
+            <ul>
+                <li>נקודה - הרסטר יומר לסט נתוני נקודה.
+                    
+ 
+                </li>
+                <li>קו - הרסטר יומר לסט נתוני ישויות קו.
+                    
+ 
+                </li>
+                <li>פוליגון - הרסטר יומר לסט נתוני ישויות פוליגון.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>פשט קווים או פוליגונים</h2></div>
+        <hr/>
+        <div>
+            <p>ציין את הישויות לפישוט.
+            </p>
+            <p>אם מסומן (ברירת מחדל), ישויות הקו או הפוליגון יעברו החלקה ליצירת תוצאה מוכללת יותר. אם אפשרות זו לא מסומנת, הישויות הלינאריות יעקבו אחר גבולות התא של סט נתוני הרסטר.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>שם שכבת התוצאה</h2></div>
+        <hr/>
+        <div>
+            <p>השם של השכבה שתיווצר ב <b>התוכן שלי</b> ותתווסף למפה. שם ברירת המחדל מבוסס על שם הכלי ושם שכבת הקלט. אם שם השכבה כבר קיים, תתבקש לספק שם אחר.
+            </p>
+            <p>באפשרותך לציין את השם של תיקייה ב- <b>התוכן שלי</b> שבה התוצאה תישמר באמצעות התיבה הנפתחת <b>שמור תוצאה ב</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

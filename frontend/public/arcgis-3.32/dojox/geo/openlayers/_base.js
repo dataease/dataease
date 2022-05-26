@@ -1,0 +1,3 @@
+//>>built
+define("dojox/geo/openlayers/_base",["dojo/_base/lang"],function(a){a=a.getObject("dojox.geo.openlayers",!0);a.BaseLayerType={OSM:"OSM",Transport:"OSM.Transport",WMS:"WMS",GOOGLE:"Google",VIRTUAL_EARTH:"VirtualEarth",BING:"VirtualEarth",YAHOO:"Yahoo",ARCGIS:"ArcGIS"};a.EPSG4326=new OpenLayers.Projection("EPSG:4326");var f=/^\s*(\d{1,3})[D\u00b0]\s*(\d{1,2})[M']\s*(\d{1,2}\.?\d*)\s*(S|"|'')\s*([NSEWnsew]{0,1})\s*$/i;a.parseDMS=function(c,a){var b=f.exec(c);if(null==b||5>b.length)return parseFloat(c);
+c=parseFloat(b[1]);var d=parseFloat(b[2]),e=parseFloat(b[3]),b=b[5];if(a){a=b.toLowerCase();c+=(d+e/60)/60;if("w"==a||"s"==a)c=-c;return c}return[c,d,e,b]};return a});

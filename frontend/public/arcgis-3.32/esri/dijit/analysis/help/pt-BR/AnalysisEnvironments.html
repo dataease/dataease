@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Configurações do Ambiente de Análise do Portal</h2><p/>
+        <h2></h2>
+        <hr/>
+    <p>  Configura&ccedil;&otilde;es de ambiente para an&aacute;lise no Portal for ArcGIS e  ArcGIS Online. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="overwriteResult">
+        <div><h2>Substituir camada resultante</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Especifica se substituir camadas existentes. Quando marcada, se uma camada com o mesmo nome j&aacute; existir dentro do seu conte&uacute;do, ela ser&aacute; substitu&iacute;da.
+            </p>
+            <p>
+                <ul>
+                    <li>Marcado&mdash;Se uma camada com o mesmo nome j&aacute; existir dentro do seu conte&uacute;do, ela ser&aacute; substitu&iacute;da. A sa&iacute;da ter&aacute; o mesmo sistema de coordenadas que a entrada.
+                    </li>
+                    <li>Desmarcado&mdash;Se o nome da camada resultante fornecida j&aacute; existir, ocorrer&aacute; um erro e a camada resultante dever&aacute; ser renomeada antes da ferramenta poder ser executada. Este &eacute; o padr&atilde;o.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="closeAnalysisWidget">
+        <div><h2>Fechar widget de análise após executar análise</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica se deve manter a caixa de di&aacute;logo da an&aacute;lise aberta e ativada enquanto a ferramenta estiver sendo processada. Esta configura&ccedil;&atilde;o permite a voc&ecirc; realizar modifica&ccedil;&otilde;es em seus par&acirc;metros de an&aacute;lise enquanto o trabalho de an&aacute;lise anterior continua a executar. A an&aacute;lise &eacute; um processo iterativo e que mant&eacute;m a caixa de di&aacute;logo da ferramenta aberta, permite a voc&ecirc; realizar as altera&ccedil;&otilde;es de par&acirc;metros e reexecutar sua an&aacute;lise.
+            </p>
+            <p>
+                <ul>
+                    <li>Marcado&mdash;A caixa de di&aacute;logo da ferramenta de an&aacute;lise fechar&aacute; e o foco ser&aacute; retornado na &Aacute;rea de Controle. Este &eacute; o padr&atilde;o
+                    </li>
+                    <li>Desmarcado&mdash;A caixa de di&aacute;logo da ferramenta de an&aacute;lise permanecer&aacute; aberta e habilitada.   
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="storeAnalysisResults">
+        <div><h2>Armazenar resultados de análise como camadas de feição hospedadas</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Especifica se a camada resultante criada a partir da sua an&aacute;lise ser&aacute; uma cole&ccedil;&atilde;o de fei&ccedil;&otilde;es ou uma camada de fei&ccedil;&atilde;o hospedada. 
+            </p>
+            <p>
+                <ul>
+                    <li>Marcado&mdash;Os resultados da sua an&aacute;lise criar&atilde;o uma camada de fei&ccedil;&atilde;o hospedada e um item ser&aacute; criado em seu conte&uacute;do. Este &eacute; o padr&atilde;o.
+                    </li>
+                    <li>Desmarcado&mdash;Os resultados da sua an&aacute;lise criar&atilde;o uma cole&ccedil;&atilde;o de fei&ccedil;&atilde;o.     
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputCoordinateSystem">
+        <div><h2>Sistema de Coordenadas de Saída</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica o sistema de coordenadas da camada resultante para an&aacute;lise de raster.    
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Mesmo da Entrada</b>&mdash;O resultado da sua an&aacute;lise ser&aacute; do mesmo sistema de coordenadas que a entrada. Este &eacute; o padr&atilde;o.
+                    </li>
+                    <li> <b>Conforme especificado</b>&mdash;O resultado da sua an&aacute;lise estar&aacute; no sistema de coordenadas que voc&ecirc; escolher. Quando esta op&ccedil;&atilde;o for selecionada, clique no bot&atilde;o de globo para escolher a partir de uma lista dos sistemas de coordenadas conhecidos ou adicionar a refer&ecirc;ncia espacial WKID na caixa fornecida.
+                    </li>
+                    <li> <b>Camada
+&lt;nome&gt;</b>&mdash;O resultado da sua an&aacute;lise estar&aacute; no mesmo sistema de coordenadas que uma camada existente que voc&ecirc; escolher no seu mapa da web.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingCoordinateSystem">
+        <div><h2>Sistema de coordenadas do processamento</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica o sistema de coordenadas que sua an&aacute;lise utilizar&aacute; durante a execu&ccedil;&atilde;o da an&aacute;lise GeoAnalytics.   
+            </p>
+            <p>Para GeoAnalytics, algumas an&aacute;lises exigem que o processamento seja executado em um sistema de coordenadas planas.   Qualquer ferramenta que implementou o agrupamento de dados ou unidades lineares exige um sistema de coordenadas planas. 
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Mesmo da Entrada</b>&mdash;Sua an&aacute;lise ser&aacute; processada no mesmo sistema de coordenadas que a entrada. Este &eacute; o padr&atilde;o.
+                    </li>
+                    <li> <b>Conforme especificado</b>&mdash;Sua an&aacute;lise estar&aacute; no sistema de coordenadas que voc&ecirc; escolher. Quando esta op&ccedil;&atilde;o for selecionada, clique no bot&atilde;o de globo para escolher a partir de uma lista dos sistemas de coordenadas planas ou adicionar a refer&ecirc;ncia espacial WKID na caixa fornecida.
+                    </li>
+                    <li> <b>Camada
+&lt;nome&gt;</b>&mdash;Sua an&aacute;lise estar&aacute; no mesmo sistema de coordenadas que uma camada existente que voc&ecirc; escolher no seu mapa da web.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingExtent">
+        <div><h2>Extensão</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica a extens&atilde;o ou limite que ser&aacute; utilizado durante a execu&ccedil;&atilde;o da an&aacute;lise. Todas as fei&ccedil;&otilde;es de entrada que est&atilde;o completamente dentro ou que interseccionam a extens&atilde;o especificada que ser&aacute; utilizada na an&aacute;lise.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Padr&atilde;o</b>&mdash;Utiliza a extens&atilde;o fornecida pela ferramenta.
+                    </li>
+                    <li> <b>Conforme especificado</b>&mdash;A extens&atilde;o &eacute; definida pelas coordenadas que voc&ecirc; fornecer.
+                    </li>
+                    <li> <b>Camada
+&lt;nome&gt;</b>&mdash;A extens&atilde;o utilizada para processar sua an&aacute;lise ser&aacute; a mesma que a extens&atilde;o espacial de uma camada existente escolhida em seu mapa da web. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="snapRaster">
+        <div><h2>Ajustar Raster</h2></div>
+        <hr/>
+        <div>
+            <p>Ajusta a extens&atilde;o da camada de raster de sa&iacute;da para que corresponda ao alinhamento da c&eacute;lula da camada  <b>Ajustar Raster</b> na an&aacute;lise de raster.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Tamanho da Célula</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica o tamanho da c&eacute;lula ou a resolu&ccedil;&atilde;o que ser&aacute; utilizada para criar a camada de raster de sa&iacute;da na an&aacute;lise de raster. A resolu&ccedil;&atilde;o de sa&iacute;da padr&atilde;o &eacute; determinada pelo maior tamanho de c&eacute;lula da camada de raster de entrada.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>M&iacute;nimo de Entradas</b>&mdash;Utilize o menor tamanho da c&eacute;lula de todas as camadas de entrada.
+                    </li>
+                    <li> <b>M&aacute;ximo de Entradas</b>&mdash;Utilize o maior tamanho da c&eacute;lula de todas as camadas de entrada. Este &eacute; o padr&atilde;o.
+                    </li>
+                    <li> <b>Como especificado</b>&mdash;Especifica um valor num&eacute;rico para configurar o tamanho de c&eacute;lula. Se isto for selecionado, o valor padr&atilde;o &eacute; 1.
+                    </li>
+                    <li> <b>Camada &lt;name&gt;</b>&mdash;Configura o tamanho da c&eacute;lula para a camada raster escolhida.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="mask">
+        <div><h2>Máscara</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica uma camada que ser&aacute; utilizada para definir sua &aacute;rea de interesse na an&aacute;lise de raster. Somente estas c&eacute;lulas que caem dentro da m&aacute;scara de an&aacute;lise ser&atilde;o consideradas na opera&ccedil;&atilde;o de an&aacute;lise.
+            </p>
+            <ul>
+                <li>A m&aacute;scara pode ser uma camada de fei&ccedil;&atilde;o ou raster.
+                </li>
+                <li>Se a m&aacute;scara de an&aacute;lise for um raster, todas as c&eacute;lulas que t&ecirc;m um valor ser&atilde;o consideradas para definir a m&aacute;scara. As c&eacute;lulas em um raster de m&aacute;scara que s&atilde;o NoData ser&atilde;o consideradas como fora da m&aacute;scara e ser&atilde;o NoData na camada resultante da an&aacute;lise. 
+                </li>
+                <li>Se a m&aacute;scara de an&aacute;lise for uma camada de fei&ccedil;&atilde;o, ela ser&aacute; interiormente convertida para um raster na execu&ccedil;&atilde;o. Por esta raz&atilde;o, tenha certeza que
+ <b>Tamanho da C&eacute;lula</b> e <b>Ajustar Raster</b> estejam apropriadamente configurados para sua an&aacute;lise.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Armazenamento de dados</h2></div>
+        <hr/>
+        <div>
+            <p>Os resultados de GeoAnalytics pode ser armazenados em um  ArcGIS Data Store e expostos como uma camada de fei&ccedil;&atilde;o no  Portal for ArcGIS ou em um compartilhamento do arquivo de grandes dados configurado. 
+            </p>
+            <p>Quando voc&ecirc; armazena um resultado no  ArcGIS Data Store, na maioria dos casos, os resultados devem ser armazenados  no armazenamento de grandes dados de espa&ccedil;o-tempo. Este &eacute; o padr&atilde;o. Os seguintes s&atilde;o raz&otilde;es pelo qual voc&ecirc; pode desejar armazenar os resultados em um armazenamento de dados relacional: 
+                <ul>
+                    <li>Para utilizar seus resultados no portal-para-colabora&ccedil;&atilde;o do portal
+                    </li>
+                    <li>Para habilitar os recursos de sincroniza&ccedil;&atilde;o com seus resultados.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Voc&ecirc; n&atilde;o deve utilizar um armazenamento de dados relacional se voc&ecirc; espera que os resultados do GeoAnalytics aumentem e deseja aproveitar os recursos do armazenamento de grandes dados de espa&ccedil;o-tempo para lidar com grandes quantidades de dados. 
+            </p>
+        </div>
+    </div>
+    <div id="parallelProcessingFactor">
+        <div><h2>Fator de processamento paralelo</h2></div>
+        <hr/>
+        <div>
+            <p>Distribui a an&aacute;lise em v&aacute;rias inst&acirc;ncias do servi&ccedil;o de Processamento do Raster. 
+            </p>
+            <p>As ferramentas que honram o ambiente  <b>Fator de processamento paralelo</b> permitem controlar o n&uacute;mero de inst&acirc;ncias do servi&ccedil;o de processamento do raster que podem ser utilizadas para processar seus dados.
+            </p>
+            <p>Se a ferramenta n&atilde;o honrar o  <b>Tipo de processador</b>, ou se o ambiente <b>Tipo de processador</b> estiver configurado para <b>CPU</b>, o ambiente <b>Fator de processamento paralelo</b> controlar&aacute; as inst&acirc;ncias do servi&ccedil;o (CPU) de processamento do raster. Se o <b>Tipo de processador</b> estiver configurado para <b>GPU</b>, o ambiente <b>Fator de processamento paralelo</b> controlar&aacute; o n&uacute;mero de inst&acirc;ncias da GPU de processamento do raster.
+            </p> 
+            <p>Configurando o  <b>Fator de processamento paralelo</b>, voc&ecirc; poder&aacute; solicitar o n&uacute;mero de trabalhadores paralelos que o servidor de imagens anal&iacute;ticas do raster utiliza para processar uma tarefa da an&aacute;lise de raster. No entanto, se o n&uacute;mero total de processos paralelos exceder o n&uacute;mero m&aacute;ximo de inst&acirc;ncias do servi&ccedil;o de processamento do raster (CPU ou GPU), os processos paralelos adicionais ser&atilde;o enfileirados.
+            </p>
+            <p>Se o  <b>Fator de processamento paralelo</b> n&atilde;o for especificado, que &eacute; o padr&atilde;o, a ferramenta utilizar&aacute; 80% do n&uacute;mero m&aacute;ximo de inst&acirc;ncias do servi&ccedil;o de processamento do raster. Um n&uacute;mero inteiro ou uma porcentagem pode ser especificada como o fator de processamento paralelo.
+            </p>
+        </div>
+    </div>
+    <div id="processorType">
+        <div><h2>Tipo de processador</h2></div>
+        <hr/>
+        <div>
+            <p>As ferramentas que honram o ambiente  <b>Tipo de processador</b> permitem que voc&ecirc; escolha onde e como deseja processar seus dados. Voc&ecirc; pode processar seus dados utilizando a CPU ou GPU de computador do servidor. Se o ambiente <b>Tipo de processador</b> estiver vazio, a ferramenta utilizar&aacute; a CPU para processar os dados. Este &eacute; o padr&atilde;o.
+            </p> 
+            <p>O processamento da CPU pode ser paralelizado em v&aacute;rios n&uacute;cleos e inst&acirc;ncias, conforme tratado pelo  <b>Fator de processamento paralelo</b>.
+            </p>
+            <p>As GPUs s&atilde;o eficientes no processamento de imagens e gr&aacute;ficos, onde sua estrutura altamente paralela as torna eficientes no processamento de grandes blocos de dados de maneira repetitiva. As ferramentas de an&aacute;lise do raster que honram este ambiente podem distribuir seu trabalho pelas inst&acirc;ncias da GPU em v&aacute;rias m&aacute;quinas do servidor de an&aacute;lise do raster, conforme tratado pelo  <b>Fator de processamento paralelo</b>.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>GPU</b>&mdash;Os dados ser&atilde;o processados utilizando a unidade de processamento gr&aacute;fico.
+                    </li>
+                    <li> <b>CPU</b>&mdash;Os dados ser&atilde;o processados utilizando a unidade central de processamento do computador.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

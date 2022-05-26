@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Summér center og spredning</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="Summ&eacute;r center og spredning"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j finder centrale objekter og retningsfordelinger. Det kan bruges til at besvare sp&oslash;rgsm&aring;l som:
+        <ul>
+            <li>Hvor er centrum?
+            </li>
+            <li>Hvilket objekt er det mest tilg&aelig;ngelige fra alle andre objekter?
+            </li>
+            <li>Hvor spredte, kompakte eller integrerede er objekterne?
+            </li>
+            <li>Er der retningstendenser?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Hvis feltet  <b>Brug aktuel kortudstr&aelig;kning</b> er markeret, er det kun objekterne i det inputlag, der er synligt inden for den aktuelle kortudstr&aelig;kning, der analyseres. Hvis markeringen fjernes, analyseres alle objekter i inputlaget, ogs&aring; selvom de er placeret uden for den aktuelle kortudstr&aelig;kning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Vælg et lag, der skal beskrives</h2></div>
+        <hr/>
+        <div>
+            <p>Det punkt-, linje- eller omr&aring;delag, der bruges til at finde centrale objekter og retningsfordelinger.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>Oversigtstyper</h2></div>
+        <hr/>
+        <div>
+            <p>Metoden til opsummering af centrum og spredning. 
+            </p>
+            <ul>
+                <li>Centralt objekt - Identificerer det mest centralt beliggende objekt i et datas&aelig;t.
+                </li>
+                <li>Middel center - Identificerer det geografiske center (eller koncentrationscentret) for et s&aelig;t objekter.
+                </li>
+                <li>Mediancenter - Identificerer den placering, der minimerer den samlede euklidiske afstand til objekterne i et datas&aelig;t.
+                </li>
+                <li>Ellipse - Opretter ellipser med standardafvigelse for at opsummere de spatiale egenskaber ved geografiske objekter: central tendens, spredning og retningstendenser. Ellipserne kan dimensioneres som 1, 2 eller 3 standardafvigelser.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>Vægt efter (valgfrit)</h2></div>
+        <hr/>
+        <div>
+            <p>Felt, der bruges til at v&aelig;gte placeringer efter deres relative betydning. 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>Gruppér efter (valgfrit)</h2></div>
+        <hr/>
+        <div>
+            <p>Felt, der bruges til at gruppere objeker til separate beregninger af centrale objekter eller spredning. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; det lag, som oprettes i  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis lagnavnet allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Ved hj&aelig;lp af rullemenuen  <b>Gem resultat</b> kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet skal gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

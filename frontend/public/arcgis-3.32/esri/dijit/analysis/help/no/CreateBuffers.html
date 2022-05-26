@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Opprett buffere</h2><p/>
+        <h2><img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" alt="Opprette buffere"></h2>
+        <hr/>
+    <p>En buffer er et omr&aring;de som dekker en gitt avstand fra et punkt-, linje- eller omr&aring;degeoobjekt. 
+    </p>
+    <p>Buffere brukes vanligvis til &aring; opprette omr&aring;der som kan analyseres ytterligere ved hjelp av verkt&oslash;y, for eksempel Legg lag opp&aring;. Hvis for eksempel sp&oslash;rsm&aring;let er &quot;Hvilke bygninger ligger innenfor 1,6 kilometer fra skolen?&quot;, finner du svaret ved &aring; opprette en buffer p&aring; 1,6 kilometer rundt skolen og ved hjelp av Legg over lag-verkt&oslash;yet legge laget som inneholder avmerkede bygninger, over bufferen. Sluttresultatet er et lag som inneholder de bygningene som ligger innenfor 1,6 kilometer fra skolen.  
+    </p>
+    <p>Hvis det er merket av for  <b>Use current map extent</b>, er det kun geoobjektene som vises i gjeldende kartvisning, som bufres. Hvis det ikke er merket av for dette alternativet, blir alle geoobjektene i inndatalaget bufret, selv om de befinner seg utenfor gjeldende kartutstrekning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Velg laget som inneholder geoobjektene som skal bufres</h2></div>
+        <hr/>
+        <div>
+            <p>Punkt-, linje- eller omr&aring;degeoobjektene som skal bufres. 
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> som du finner nederst i rullegardinlisten. Dette alternativet &aring;pner et galleri der du kan bla til og velge datasett fra ulike kilder som du vil bruke i analysen. 
+            </p>
+        </div>
+    </div>
+    <div id="BufferSize">
+        <div><h2>Angi bufferstørrelse</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan angi en eller flere avstandsverdier. Sett inn et mellomrom mellom hver verdi. Du kan ogs&aring; angi et attributt p&aring; inndatalaget som inneholder avstandsverdien, ved &aring; klikke p&aring;  <b>Felt</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OptionPoint">
+        <div><h2>Alternativer</h2></div>
+        <hr/>
+        <div>
+            <p>Angi hvordan du vil at overlappende buffere skal h&aring;ndteres. Hvis en buffer er opp&aring; en annen buffer, kan omr&aring;dene som er felles for begge, beholdes (overlappe) eller sl&aring;s sammen (l&oslash;ses opp). N&aring;r du bruker  <b>L&oslash;s opp</b>, sl&aring;s alle bufferne sammen til et enkelt flerdelt geoobjekt og eventuelle overlappinger fjernes.
+            </p>  
+            <p> N&aring;r du bruker flere avstander, kan du velge hvordan du vil vise avstanden fra den siste bufferavstanden. Hvis for eksempel avstandene er 10 og 14:
+                <ul>
+                    <li>Velger du  <b>Ringer</b>, gir det buffere som g&aring;r fra 0 til 10 og 10 til 14.
+                    </li>
+                    <li>Velger du  <b>Disker</b>, gir det buffere som g&aring;r fra 0 til 10 og 0 til 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionPoly">
+        <div><h2>Alternativer</h2></div>
+        <hr/>
+        <div>
+            <p>Angi hvordan du vil at overlappende buffere skal h&aring;ndteres. Hvis en buffer er opp&aring; en annen buffer, kan omr&aring;dene som er felles for begge, beholdes (overlappe) eller sl&aring;s sammen (l&oslash;ses opp). N&aring;r du bruker  <b>L&oslash;s opp</b>, sl&aring;s alle bufferne sammen til et enkelt flerdelt geoobjekt og eventuelle overlappinger fjernes.
+            </p>
+            <p>N&aring;r du oppretter en enkelt buffer rundt geoobjektsomr&aring;der (det angis &eacute;n avstand), kan du velge om geoobjektet som bufres, skal inkluderes eller ekskluderes i resultatbufferen.
+            </p>
+            <p>N&aring;r du bruker flere avstander, kan du velge hvordan du vil vise avstanden fra den siste bufferavstanden. Hvis for eksempel avstandene er 10 og 14:
+                <ul>
+                    <li>Velger du  <b>Ringer</b>, gir det buffere som g&aring;r fra 0 til 10 og 10 til 14.
+                    </li>
+                    <li>Velger du  <b>Disker</b>, gir det buffere som g&aring;r fra 0 til 10 og 0 til 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionLine">
+        <div><h2>Alternativer</h2></div>
+        <hr/>
+        <div>
+            <p>Angi hvordan du vil at overlappende buffere skal h&aring;ndteres. Hvis en buffer er opp&aring; en annen buffer, kan omr&aring;dene som er felles for begge, beholdes (overlappe) eller sl&aring;s sammen (l&oslash;ses opp). N&aring;r du bruker  <b>L&oslash;s opp</b>, sl&aring;s alle bufferne sammen til et enkelt flerdelt geoobjekt og eventuelle overlappinger fjernes.
+            </p>
+            <p>N&aring;r du oppretter en enkelt buffer rundt linjer (det angis &eacute;n avstand), kan du velge hvilken side av linjen som skal bufres. Du velger vanligvis begge sidene. Venstre og h&oslash;yre fastsettes som om du g&aring;r fra den f&oslash;rste x/y-koordinaten for linjen (startkoordinaten) til den siste x/y-koordinaten for linjen (sluttkoordinaten). N&aring;r du velger venstre eller h&oslash;yre, betyr det vanligvis at du vet at linjegeoobjektene ble opprettet og lagret i en bestemt retning (for eksempel oppstr&oslash;ms eller nedstr&oslash;ms i et elvenettverk). P&aring; slutten av linjene kan bufferen v&aelig;re avrundet (rund) eller tvers over (flat).
+            </p>
+            <p>N&aring;r du oppretter flere buffere (flere avstander), kan du velge hvordan du vil vise avstanden fra den siste bufferavstanden. Hvis for eksempel avstandene er 10 og 14:
+                <ul>
+                    <li>Velger du  <b>Ringer</b>, gir det buffere som g&aring;r fra 0 til 10 og 10 til 14.
+                    </li>
+                    <li>Velger du  <b>Disker</b>, gir det buffere som g&aring;r fra 0 til 10 og 0 til 14.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="OptionNolayer">
+        <div><h2>Alternativer</h2></div>
+        <hr/>
+        <div>
+            <p>N&aring;r du har valgt et lag som skal bufres, kan du velge hvordan du vil at overlappende buffere skal h&aring;ndteres. Hvis en buffer er opp&aring; en annen buffer, kan omr&aring;dene som er felles for begge, beholdes (overlappe) eller sl&aring;s sammen (l&oslash;ses opp). N&aring;r du bruker  <b>L&oslash;s opp</b>, sl&aring;s alle bufferne sammen til et enkelt flerdelt geoobjekt og eventuelle overlappinger fjernes. Du kan i tillegg angi hvordan flere avstander skal vises. For lag som inneholder linjegeoobjekter kan du velge hvilken side av linjen som skal bufres. For lag som inneholder omr&aring;degeoobjekter kan du velge om geoobjektet som bufres, skal inkluderes eller ekskluderes i resultatbufferen.
+            </p>
+        </div>
+    </div>
+    <div id="BufferLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis lagnavnet finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Bruk rullegardinmenyen  <b>Lagre resultat i</b> til &aring; angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatene skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/infographics/simpleInfographic/dataDrilling/panels/US/Crime",["../../ChartBuilder"],function(b){var a={};a.crimeIndex={states:"n",defaultState:"n",fieldInfo:{isChart:!0,chartJson:b.createChart({title:"Crime Index",points:[{label:"Personal",fullName:"crime.CRMCYPERC"},{label:"Murder",fullName:"crime.CRMCYMURD"},{label:"Rape",fullName:"crime.CRMCYRAPE"},{label:"Robbery",fullName:"crime.CRMCYROBB"},{label:"Assault",fullName:"crime.CRMCYASST"},{label:"Property",
+fullName:"crime.CRMCYPROC"},{label:"Burglary",fullName:"crime.CRMCYBURG"},{label:"Larceny",fullName:"crime.CRMCYLARC"},{label:"Motor Vehicle Theft",fullName:"crime.CRMCYMVEH"}],visualProps:{sorting:"Descending"}})}};return a});

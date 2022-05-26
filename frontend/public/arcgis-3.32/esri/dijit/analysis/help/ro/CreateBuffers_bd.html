@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Creare buffere</h2><p/>
+        <h2><img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" alt="Creare buffere"></h2>
+        <hr/>
+    <p>Un buffer este o suprafaţă care acoperă o anumită distanţă faţă de un obiect spaţial punct, linie sau suprafaţă. 
+    </p>
+    <p>De regulă, bufferele sunt utilizate pentru a crea zone care pot fi analizate mai amănunţit cu ajutorul altor instrumente. De exemplu, dacă se pune &icirc;ntrebarea Ce clădiri se găsesc pe o rază de 1 kilometru &icirc;n jurul şcolii?, răspunsul poate fi găsit prin crearea unui buffer de 1 kilometru &icirc;n jurul şcolii şi suprapunerea bufferului pe stratul tematic ce conţine amprente de clădiri. Rezultatul final este un strat tematic cu acele clădiri aflate pe o rază de 1 kilometru &icirc;n jurul şcolii.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Selectare strat tematic căruia să îi fie aplicat bufferul</h2></div>
+        <hr/>
+        <div>
+            <p>Obiectele spaţiale punctuale, liniare sau de suprafaţă care vor fi incluse &icirc;n buffer. Stratul tematic de intrare trebuie să fie &icirc;ntr-un sistem de coordonate proiectate sau referinţa spaţială de procesare trebuie setată pe un sistem de coordonate proiectate utiliz&acirc;nd  <b>Mediul de analiză</b>.
+            </p>
+            <p>&Icirc;n afară de a alege un strat tematic din harta dvs., puteţi selecta opţiunile  <b>Alegere strat tematic de analiză</b> &icirc;n partea inferioară a listei verticale pentru a răsfoi conţinutul pentru stratul tematic sau setul de date pentru partajarea de fişiere big data.
+            </p>
+        </div>
+    </div>
+    <div id="bufferType">
+        <div><h2>Selectare tip de buffer pentru aplicare</h2></div>
+        <hr/>
+        <div>
+            <p>Există trei moduri &icirc;n care puteţi specifica dimensiunea bufferului pentru obiectele spaţiale de intrare: 
+                <ul>
+                    <li>Specificaţi o distanţă care este aplicată tuturor obiectelor spaţiale.
+                    </li>
+                    <li>Specificaţi &icirc;n stratul tematic de intrare un c&acirc;mp care să conţină valoarea pentru distanţă. Puteţi utiliza un c&acirc;mp de tip şir sau un c&acirc;mp numeric. Dacă o unitate liniară nu este definită, vor fi utilizate unităţile referinţei spaţiale. Dacă utilizaţi un sistem de coordonate geografice, se va presupune că c&acirc;mpul fără unităţi este &icirc;n metri. 
+                    </li>
+                    <li>Creaţi o expresie cu c&acirc;mpuri multiple şi operatori matematici. De exemplu, pentru a aplica funcţia buffer cu un factor de 10 la valoarea c&acirc;mpului numit  <i>viteză v&acirc;nt (wind_speed),</i> adăugaţi expresia <i>$feature[&quot;viteză v&acirc;nt&quot;(&quot;wind_speed&quot;)] x 10</i>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Selectaţi metoda buffer</h2></div>
+        <hr/>
+        <div>
+            <p>Puteţi alege să utilizaţi o metodă  <b>Planară</b> sau <b>Geodezică</b>. Metoda <b>Planară</b> poate fi mai rapidă şi este adecvată pentru analiza locală a datelor proiectate. Metoda <b>Geodezică</b> este adecvată pentru suprafeţe mari şi orice sistem de coordonate geografice.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveOption">
+        <div><h2>Selectaţi tipul metodei de dizolvare</h2></div>
+        <hr/>
+        <div>
+            <p>Opţiuni pentru specificarea metodei de dizolvare.   Dacă este selectată o metodă de dizolvare, vi se va oferi opţiunea de a crea suprafeţe cu părţi multiple sau cu o singură parte şi veţi putea calcula statistici &icirc;n baza c&acirc;mpurilor furnizate.
+                <ul>
+                    <li> <b>Toate</b> - Toate obiectele spaţiale vor fi dizolvate. Dacă sunt permise obiecte spaţiale cu părţi multiple, toate obiectele spaţiale vor fi dizolvate &icirc;ntr-un singur obiect spaţial. Dacă nu sunt permise părţile multiple, obiectele spaţiale care sunt adiacente sau suprapuse vor fi dizolvate.
+                    </li>
+                    <li> <b>C&acirc;mpuri</b> - Obiectele spaţiale care au acelaşi c&acirc;mp specificat sau aceeaşi combinaţie de c&acirc;mpuri specificate vor fi dizolvate. Dacă sunt permise obiecte spaţiale cu părţi multiple, toate obiectele spaţiale cu acelaşi c&acirc;mp vor fi dizolvate &icirc;ntr-un singur obiect spaţial. Dacă nu sunt permise părţile multiple, obiectele spaţiale care sunt adiacente sau suprapuse şi au aceeaşi valoare de c&acirc;mp vor fi dizolvate.
+                    </li>
+                    <li> <b>Niciunul</b> - Niciun obiect spaţial nu va fi dizolvat.  Aceasta este setarea implicită.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Permiteţi obiecte spaţiale cu mai multe părţi</h2></div>
+        <hr/>
+        <div>
+            <p>Opţiune pentru a specifica dacă rezultatul va fi format din obiecte spaţiale cu o singură parte sau cu părţi multiple. 
+
+            </p>
+            <p>
+                <ul>
+                    <li>Bifat - Rezultatele analizei vor conţine obiecte spaţiale cu părţi multiple.   
+                    </li>
+                    <li>Nebifat - Rezultatele analizei vor conţine obiecte spaţiale cu o singură parte. Acesta este modul implicit.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Adăugare statistici (opţional)</h2></div>
+        <hr/>
+        <div>
+            <p> Puteţi calcula statistici despre obiectele spaţiale rezumate. Puteți calcula următoarele pe c&acirc;mpuri numerice:
+                <ul>
+                    <li>Numărare&mdash;Calculează numărul de valori care nu sunt nule. Poate fi utilizat &icirc;n c&acirc;mpuri numerice sau șiruri. Calculul [nul, 0, 2] este egal cu 2.
+                    </li>
+                    <li>Sumă - Suma valorilor numerice dintr-un c&acirc;mp. Suma [nul, 0, 3] este egală cu 3.
+                    </li>
+                    <li>Media&mdash;Media valorilor numerice. Media dintre [0, 2, nul] este 1.
+                    </li>
+                    <li>Min&mdash;Valoarea minimă a unui c&acirc;mp numeric. Minimul dintre [0, 2, nul] este 0. 
+                    </li>
+                    <li>Max&mdash;Valoarea maximă a unui c&acirc;mp numeric. Valoarea maximă a [0, 2, nul] este 2.
+                    </li>
+                    <li>Interval&mdash;Intervalul unui c&acirc;mp numeric. Acesta este calculat ca valoare minimă scăzută din valoare maximă. Intervalul [nul, 0, 1] este 1. Intervalul [nul, 0, 4] este 0.
+                    </li>
+                    <li>Variaţia&mdash;Variaţia unui c&acirc;mp numeric pe o pistă. Variaţia [1] este nulă. Variația [nul, 1,0,1,1] este de 0,25.
+                    </li>
+                    <li>Deviaţia standard&mdash;Deviaţia standard a unui c&acirc;mp numeric. Deviaţia standard [1] este nulă. Deviaţia standard [nul, 1,0,1,1] este 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Puteți calcula următoarele pe c&acirc;mpuri de șiruri:
+                <ul>
+                    <li>Calcul&mdash;Numărul şirurilor care nu sunt nule.
+                    </li>
+                    <li>Oricare - Această statistică este un exemplu aleatoriu al unei valori de tip şir &icirc;n c&acirc;mpul specificat.
+                    </li>
+                </ul>
+                Toate statisticile sunt calculate pentru valori care nu sunt nule. Stratul tematic rezultat va conţine un c&acirc;mp nou pentru fiecare statistică calculată. Se pot adăuga oric&acirc;te statistici aleg&acirc;nd un atribut şi o statistică. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Alegeţi un depozit de date ArcGIS pe care să salvaţi rezultatele</h2></div>
+        <hr/>
+        <div>
+            <p>Rezultatele GeoAnalytics sunt stocate &icirc;ntr-un depozit de date și sunt expuse ca strat tematic de obiecte spaţiale &icirc;n  Portal for ArcGIS. &Icirc;n cele mai multe situaţii, rezultatele trebuie stocate &icirc;n depozitul de date spaţio-temporar, &icirc;n mod implicit. &Icirc;n unele cazuri, salvarea rezultatelor &icirc;n depozitul depozit de date relaţionale este o opțiune bună. Mai jos sunt motivele pentru care ați dori să stocați rezultatele &icirc;n depozitul depozit de date relaţionale: 
+                <ul>
+                    <li>Puteți folosi rezultatele &icirc;n colaborarea-dintre-portaluri.
+                    </li>
+                    <li>Puteți activa capacitățile de sincronizare cu rezultatele dvs.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Nu trebuie să utilizaţi depozitul de date relaţionale dacă vă aşteptaţi ca rezultatele GeoAnalytics să crească &icirc;n cantitate şi aveţi nevoie de capacităţile depozitului mare de stocare spaţio-temporal de a gestiona cantităţi mari de date.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p> Numele stratului tematic care va fi creat. Dacă scrieți &icirc;ntr-un ArcGIS Data Store, rezultatele dvs. vor fi salvate &icirc;n  <b>Resursele mele</b> și adăugate pe hartă. Dacă scrieți &icirc;ntr-o partajare de fişiere big data, rezultatele dvs. vor fi stocate &icirc;n partajarea de fişiere big data și adăugate la manifestul acesteia. Nu vor fi adăugate pe hartă. Numele implicit se bazează pe numele instrumentului şi numele stratului tematic de intrare. Dacă stratul tematic există deja, instrumentul va eşua.
+            </p>
+            <p>C&acirc;nd scrieți &icirc;n  ArcGIS Data Store (depozit de date relaționale sau spațio-temporale de volum mare) utiliz&acirc;nd caseta derulantă  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

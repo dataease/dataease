@@ -1,0 +1,37 @@
+$popup-bg:                              $Calcite_Gray_050;
+$popup-default-width:                   340px;
+$popup-header-height:                   40px; // use this to calculate line-height and button height
+$popup-header-bg:                       $Calcite_Gray_050;
+$popup-header-color:                    $Calcite_Gray_700;
+$popup-header-padding-vertical:         10px;
+$popup-header-padding-horizontal:       15px;
+$popup-header-font-size:                $font-size-large;
+$popup-header-line-height:              ($popup-header-height - $popup-header-padding-vertical * 2) / $popup-header-font-size;
+$popup-content-max-height:              300px;
+$popup-content-padding-vertical:        10px;
+$popup-content-padding-horizontal:      15px;
+$popup-content-font-size:               $font-size-base;
+$popup-btn-padding-vertical:            $popup-header-padding-vertical;
+$popup-btn-padding-horizontal:          8px;
+$popup-btn-font-size:                   13px;
+$popup-btn-color:                       $Calcite_Gray_550;
+// Use this variable to place buttons using absolute positioning
+$popup-btn-width-calculated:            $popup-btn-font-size + $popup-btn-padding-horizontal * 2;
+$popup-btn-hover-color:                 $Calcite_Gray_700;
+// Margin between icon and text in a button
+$popup-btn-icon-spacing:                5px;
+$popup-btn-height-computed:             40px;
+$popup-btn-width-computed:              $popup-btn-font-size + $popup-btn-padding-horizontal * 2;
+$popup-btn-line-height:                 ($popup-btn-height-computed - $popup-btn-padding-vertical * 2) / $popup-btn-font-size;
+$popup-pointer-height:                  20px;
+$popup-pointer-width:                   14px;
+$popup-attr-padding-vertical:           $padding-small-vertical;
+$popup-attr-padding-horizontal:         $padding-small-horizontal;
+$popup-gallery-default-width:           100%;
+$popup-gallery-default-height:          150px;
+$popup-gallery-summary-color:           $Calcite_Gray_550;
+$popup-gallery-summary-font-size:       13px;
+$popup-gallery-summary-height-computed: 20px;
+$popup-gallery-summary-edit-color:      $Calcite_Gray_550;
+// Caption (of charts, images, etc.)
+$popup-caption-color:                   $Calcite_Gray_400;

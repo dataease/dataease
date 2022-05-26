@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Hae lähin</h2><p/>
+        <h2><img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" alt="Hae l&auml;hin"></h2>
+        <hr/>
+    <p>T&auml;m&auml;n ty&ouml;kalun avulla voit etsi&auml; l&auml;himm&auml;t kohteet ja raportoida sek&auml; luokitella et&auml;isyydet l&auml;heisimpiin kohteisiin. Ty&ouml;kalu voi selvitt&auml;&auml; l&auml;himm&auml;n kohteen mittaamalla et&auml;isyyden suoraan tai valitun matkustustavan avulla. L&auml;himpien kohteiden lukum&auml;&auml;r&auml;&auml; tai hakualuetta voidaan rajoittaa eri valinnoilla. Ty&ouml;kalun avulla saadut tulokset voivat tuoda vastauksen esimerkiksi seuraavanlaisiin kysymyksiin:
+        <ul>
+            <li>Mik&auml; on l&auml;hin puisto?
+            </li>
+            <li>Mihin sairaalaan on lyhin ajoaika? Kuinka pitk&auml;&auml;n matka kest&auml;&auml; tiistaina, klo 13:00 eli ruuhka-aikaan?
+            </li>
+            <li>Kuinka pitk&auml; et&auml;isyys n&auml;iden kahden kaupungin v&auml;lill&auml; on tiet&auml; pitkin mitattuna?
+            </li>
+            <li>Ketk&auml; potilaista asuvat kahden kilometrin s&auml;teell&auml; tietyist&auml; kemikaalitehtaista?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Hae l&auml;hin -ty&ouml;kalu tuo n&auml;ytt&ouml;&ouml;n l&auml;himm&auml;t kohteet sis&auml;lt&auml;v&auml;n karttatason ja viivakarttatason, joka yhdist&auml;&auml; l&auml;ht&ouml;sijainnit l&auml;himpiin sijainteihin. Viivakarttatasossa on tietoja l&auml;ht&ouml;sijainneista ja l&auml;himmist&auml; sijainneista sek&auml; niiden v&auml;lisist&auml; et&auml;isyyksist&auml;.
+    </p>
+    <p>Jos  <b>K&auml;yt&auml; nykyist&auml; kartan laajuutta</b> -toiminto on valittuna, vain nykyisess&auml; karttalaajuudessa n&auml;kyv&auml;t kohteet otetaan huomioon etsitt&auml;ess&auml; l&auml;ht&ouml;pistett&auml; l&auml;himp&auml;n&auml; olevia kohteita. Jos toimintoa ei ole valittu, huomioon otetaan kaikki sy&ouml;tekarttatason kohteet &ndash; my&ouml;s kohteet, jotka ovat nykyisen karttalaajuuden ulkopuolella.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Määritä aloitussijainnit</h2></div>
+        <hr/>
+        <div>
+            <p>Hae l&auml;hin -toiminto mittaa et&auml;isyyden t&auml;ss&auml; m&auml;&auml;ritt&auml;m&auml;si kohteen pisteist&auml; (l&auml;ht&ouml;sijainneista) sijainteihin, jotka m&auml;&auml;rit&auml;t seuraavassa parametrissa. Ty&ouml;kalu voi n&auml;ytt&auml;&auml; enint&auml;&auml;n  5 000 kohdetta kussakin karttatasossa. 
+            </p>
+        </div>
+    </div>
+    <div id="NearbyLocationsLayer">
+        <div><h2>Etsi lähimmät sijainnit kohteessa</h2></div>
+        <hr/>
+        <div>
+            <p>Hae l&auml;hin -toiminto mittaa et&auml;isyyden kustakin ensimm&auml;isen karttatason kohteesta nykyisen karttatason sijainteihin. Ty&ouml;kalu voi n&auml;ytt&auml;&auml; enint&auml;&auml;n  5 000 sijaintia kussakin karttatasossa. </p>
+            <p>Kartasta valittavan karttatason lis&auml;ksi voit valita alareunan avattavasta luettelosta  <b>Valitse analyysikarttataso</b> -vaihtoehdon. T&auml;m&auml; vaihtoehto avaa gallerian, jossa voit selata ja valita aineistoryhmi&auml; erilaisista l&auml;hteist&auml; ja k&auml;ytt&auml;&auml; niit&auml; analyysissa. 
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Mitta</h2></div>
+        <hr/>
+        <div>
+            <p>Valitse, etsit&auml;&auml;nk&ouml; l&auml;hin sijainti suoran et&auml;isyyden vai valitun matkustustavan perusteella. Matkustustavat ovat k&auml;yt&ouml;ss&auml; vain silloin, kun l&auml;ht&ouml;karttataso sis&auml;lt&auml;&auml; pisteit&auml;. Organisaatiosi p&auml;&auml;k&auml;ytt&auml;j&auml; m&auml;&auml;ritt&auml;&auml; k&auml;ytett&auml;viss&auml; olevat matkustustavat. Kun k&auml;yt&auml;t jotain matkustustapaa, mittaukset tehd&auml;&auml;n teit&auml; tai kevyen liikenteen v&auml;yli&auml; pitkin ja niiss&auml; noudatetaan asianmukaisia s&auml;&auml;nt&ouml;j&auml;, kuten yksisuuntaisia katuja, k&auml;&auml;ntymissuuntakieltoja jne.
+            </p>
+            <p>Kun mitataan viivojen tai alueiden v&auml;lisi&auml; et&auml;isyyksi&auml;, toiminto hakee et&auml;isyyden l&auml;himm&auml;st&auml; pisteest&auml; tai l&auml;himp&auml;&auml;n pisteeseen viivaa tai alueen rajaa pitkin. 
+            </p> 
+            <p>Kun valitset  <b>ajoajan</b>, <b>ajoajan maaseudulla</b> tai <b>rekkaliikenteen ajan</b>, voit valita eri vaihtoehdoista, miten ajoaika mitataan.
+                <ul>
+                    <li>
+                        <p>Jos haluat hakea l&auml;himpi&auml; kohteita perustuen staattisiin ajonopeuksiin, kuten nopeusrajoituksiin, etk&auml; halua hakea l&auml;himpi&auml; kohteita muuttuvien liikenneolojen aiheuttamien vaihtelevien ajonopeuksien perusteella, poista  <b>K&auml;yt&auml; liikennett&auml;</b> -kohdan valinta.
+                        </p>
+                        <p>Valitse t&auml;m&auml; vaihtoehto, jos haluat tiet&auml;&auml;, mik&auml; sijainti on yleens&auml; l&auml;himp&auml;n&auml; ajallisesti mitattuna, muttei v&auml;ltt&auml;m&auml;tt&auml; l&auml;himp&auml;n&auml; tietyn kellonajan ja p&auml;iv&auml;n liikenneolot huomioon ottaen.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Valitse  <b>K&auml;yt&auml; liikennett&auml;</b>, jos haluat hakea l&auml;himm&auml;t kohteet tietyn l&auml;ht&ouml;ajan ja vaihtelevien liikenneolojen perusteella. Jos valitset my&ouml;s <b>Reaaliaikainen liikenne</b> -valinnan, l&auml;ht&ouml;pisteest&auml; l&auml;htemisen kellonaika merkit&auml;&auml;n nykyiseksi ajaksi ja antureista ja sy&ouml;tteist&auml; saatua nykyist&auml; ja ennakoitua ajonopeutta vertaillaan, jotta voidaan selvitt&auml;&auml;, mitk&auml; kohteet ovat l&auml;himp&auml;n&auml;. Ennustetut liikennenopeudet lasketaan todellisten liikennenopeuksien, toteutuneiden nopeuksien sek&auml; esimerkiksi s&auml;&auml;n perusteella. Liikennenopeusennusteet ulottuvat 12 tunnin p&auml;&auml;h&auml;n, joten l&auml;ht&ouml;aikaa voi siirt&auml;&auml; korkeintaan 12 tuntia eteenp&auml;in.
+                        </p>
+                        <p>N&auml;it&auml; reaaliaikaisia liikenneoloja k&auml;ytt&auml;m&auml;ll&auml; voit selvitt&auml;&auml;, mihin kohteisiin p&auml;&auml;set nopeimmin, kun l&auml;hdet nyt, yhden tunnin p&auml;&auml;st&auml; jne.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Kun  <b>K&auml;yt&auml; liikennett&auml;</b> -toiminto on valittuna ja sen lis&auml;ksi on valittu <b>Liikenne tavanomaisissa oloissa kohteelle</b> -toiminnon p&auml;iv&auml; ja kellonaika, ty&ouml;kalu hakee l&auml;himm&auml;t kohteet normaalia viikkoa koskevien viiden minuutin jaksojen historiallisten ajonopeuksien perusteella. Tulokset sis&auml;lt&auml;v&auml;t liikenteen, mutta niist&auml; on poistettu nykyisten liikenneolojen vaikutus.
+                        </p>
+                        <p>Historiallisten liikenneolojen avulla voit esimerkiksi selvitt&auml;&auml;, mihin kohteisiin p&auml;&auml;set nopeimmin, kun l&auml;ht&ouml;aika l&auml;ht&ouml;kohteesta on klo 11.30 keskiviikkona. 
+                        </p>
+                        <p>Asettamasi aika on sen alueen aikavy&ouml;hykkeen aika, jolla l&auml;ht&ouml;kohteet sijaitsevat. Jos l&auml;ht&ouml;aika on esimerkiksi klo 8 ja l&auml;ht&ouml;pisteit&auml; on kaksi, toinen New Yorkissa ja toinen Los Angelesissa, l&auml;himpien sijaintien m&auml;&auml;ritt&auml;miseen k&auml;ytet&auml;&auml;n USA:n it&auml;rannikon aikavy&ouml;hykkeen (Eastern Time) l&auml;ht&ouml;aikaa klo 8 ja Tyynenmeren aikavy&ouml;hykkeen (Pacific Time) klo 8.
+                        </p>
+                    </li>
+                </ul>
+                Huomaa, ett&auml; kun auto liikkuu pisteest&auml; poisp&auml;in, aika kuluu ja liikenneolot muuttuvat. Jos <b>K&auml;yt&auml; liikennett&auml;</b> -toiminto on valittuna, ty&ouml;kalu huomioi n&auml;m&auml; vaihtelut. Toimintoa ei kuitenkaan tueta kaikilla alueilla. Napsauta ty&ouml;kalun <b>Katso saatavuus</b> -linkki&auml;, jotta n&auml;et, onko se saatavilla tarkastelualueellasi. 
+            </p>
+            <p> <b>Rekkaliikenteen aika</b> voi k&auml;ytt&auml;&auml; dynaamisia matkanopeuksia liikenteen perusteella, mutta vain lakim&auml;&auml;r&auml;iseen rekkaliikenteen nopeusrajoitukseen asti. Jos kadun dynaaminen nopeus on 65 kilometri&auml; tunnissa reaaliaikaisen liikenteen perusteella mutta kadun rekkaliikenteen nopeusrajoitus on 55 kilometri&auml; tunnissa, laskelma k&auml;ytt&auml;&auml; kyseisell&auml; kadulla 55 kilometrin tuntinopeutta.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Valitse esteiden karttatasot</h2></div>
+        <hr/>
+        <div>
+            <p> V&auml;hint&auml;&auml;n yksi kohde, joka toimii tilap&auml;isen&auml; rajoitteena (esteen&auml;) liikuttaessa taustalla olevilla kaduilla. Voit m&auml;&auml;ritt&auml;&auml; esteet k&auml;ytt&auml;m&auml;ll&auml; piste-, viiva- tai aluekohteita.
+            </p>
+            <p>Piste-este voi mallintaa kaatunutta puuta, onnettomuutta, katkennutta s&auml;hk&ouml;linjaa tai mit&auml; tahansa, joka katkaisee liikenteen tietyss&auml; kohdassa kadulla. Liikkuminen on sallittu kadulla, mutta ei esteen kohdalla. Voit m&auml;&auml;ritt&auml;&auml; enint&auml;&auml;n 250 piste-esteen&auml; toimivaa kohdetta.
+            </p>
+            <p>Viivaeste est&auml;&auml; liikkumisen miss&auml; tahansa kohdassa, jossa este riste&auml;&auml; katujen kanssa. Esimerkiksi paraatia tai mielenosoitusta, joka est&auml;&auml; liikenteen usealla katuosuudella, voidaan mallintaa viivaesteell&auml;. Jos kaikkien viivaesteiden leikkaamien katukohteiden m&auml;&auml;r&auml; on yli 500, ty&ouml;kalu palauttaa virheen.
+            </p>
+            <p>Alue-este est&auml;&auml; liikkumisen miss&auml; tahansa kohdassa, jossa alue riste&auml;&auml; katujen kanssa. T&auml;m&auml;ntyyppist&auml; estett&auml; voi k&auml;ytt&auml;&auml; esimerkiksi sellaisten katuverkoston kattavien tulvien mallintamiseen, jotka tekev&auml;t liikkumisen kaduilla mahdottomaksi. Jos kaikkien alue-esteiden leikkaamien katukohteiden m&auml;&auml;r&auml; on yli 2 000, ty&ouml;kalu palauttaa virheen.
+            </p>
+        </div>
+    </div>
+    <div id="Cutoffs">
+        <div><h2>Kutakin lähtökarttatason sijaintia kohti:</h2></div>
+        <hr/>
+        <div>
+            <p>Voit rajoittaa l&auml;himpien sijaintien hakua kahdella tavalla. Voit rajoittaa l&auml;ht&ouml;sijainnin l&auml;himpien sijaintien enimm&auml;ism&auml;&auml;r&auml;&auml;. N&auml;in voit rajoittaa haun l&auml;himp&auml;&auml;n puistoon, kahteen l&auml;himp&auml;&auml;n puistoon jne. Vaihtoehtoisesti voit rajoittaa hakua asettamalla haun enimm&auml;iset&auml;isyyden tai -ajoajan.
+            </p>
+            <p>Jos poistat n&auml;m&auml; valinnat, haettavien l&auml;himpien sijaintien enimm&auml;islukum&auml;&auml;r&auml; on 100 (ty&ouml;kalun enimm&auml;ism&auml;&auml;r&auml;) ja enimm&auml;ishakualuetta ei ole rajoitettu.
+            </p>
+            <p>Haun k&auml;sittelyaikaan vaikuttavat l&auml;ht&ouml;sijaintien lukum&auml;&auml;r&auml;, l&auml;heisten sijaintien lukum&auml;&auml;r&auml; sek&auml; enimm&auml;ishakualue. Haku kest&auml;&auml; pidemp&auml;&auml;n, jos sijainteja on paljon tai hakualueet ovat suuria.
+            </p>
+            <p>Huomaa, ett&auml; jos rajoitat hakualuetta, haku ei v&auml;ltt&auml;m&auml;tt&auml; l&ouml;yd&auml; yht&auml;&auml;n l&auml;hint&auml; sijaintia valitulta alueelta. On my&ouml;s mahdollista, ett&auml; haku l&ouml;yt&auml;&auml; l&auml;himpi&auml; sijainteja m&auml;&auml;ritt&auml;m&auml;&auml;si enimm&auml;ism&auml;&auml;r&auml;&auml; pienemm&auml;n m&auml;&auml;r&auml;n.
+            </p>
+        </div>
+    </div>
+    <div id="OutputNearestLocationsLayer">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen kohdekarttatason nimi, joka luodaan kohtaan  <b>Oma sis&auml;lt&ouml;</b> ja joka lis&auml;t&auml;&auml;n karttaan. Jos kohdekarttataso on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi. Kohdekarttataso sis&auml;lt&auml;&auml; kaksi karttatasoa: yhdell&auml; tasolla ovat l&auml;himm&auml;t sijainnit ja toisella ovat viivat, jotka yhdist&auml;v&auml;t annetut sijainnit l&auml;himpiin sijainteihin.
+            </p>
+            <p>Jos valitset  <b>Sis&auml;llyt&auml; reittikarttatasot</b> -vaihtoehdon, kukin tulosten reitti tallennetaan my&ouml;s reittikarttatasona. Reittikarttataso sis&auml;lt&auml;&auml; kaikki tietyn reitin tiedot, kuten reittiin m&auml;&auml;ritetyt pys&auml;hdykset sek&auml; matkustussuunnat. Reittikarttatasojen luonnista on hy&ouml;ty&auml;, jos haluat jakaa yksitt&auml;iset reitit organisaatiosi muiden j&auml;senten kanssa tai muokata reittej&auml; k&auml;ytt&auml;m&auml;ll&auml; kartankatseluohjelman <b>Reittiohjeet</b>-painiketta. Reittikarttatasot k&auml;ytt&auml;v&auml;t kohdekarttatasolle m&auml;&auml;ritetty&auml; nime&auml; etuliitteen&auml; ja reitin nime&auml;, joka on luotu analyysin aikana. N&auml;in saadaan aikaan yksil&ouml;llinen nimi kullekin reittikarttatasolle.
+            </p>
+            <p>Reittikarttatasoja voi luoda enint&auml;&auml;n  1 000. Jos tulos sis&auml;lt&auml;&auml; yli  1 000 reitti&auml; ja  <b>Sis&auml;llyt&auml; reittikarttatasot</b> on valittu, ty&ouml;kalu luo vain tulosaineiston kohdepalvelun.
+            </p>
+            <p>Avattavan  <b>Tallenna tulos kohteeseen</b> -valikon avulla voit m&auml;&auml;ritt&auml;&auml; sen <b>Oma sis&auml;lt&ouml;</b> -kansion nimen, johon kohdekarttataso ja reittikarttatasot (jos sellaiset luodaan) tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

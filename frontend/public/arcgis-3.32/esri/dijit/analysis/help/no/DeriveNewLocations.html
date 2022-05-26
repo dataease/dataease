@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Utled nye plasseringer</h2><p/>
+        <h2><img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" alt="Utled nye plasseringer"></h2>
+        <hr/>
+    <p>Med dette verkt&oslash;yet hentes nye geoobjekter i studieomr&aring;det som oppfyller en serie med kriterier som du har angitt. Kriteriene kan baseres p&aring; attributtsp&oslash;rringer (for eksempel ledige tomter) og geografiske sp&oslash;rringer (for eksempel tomter innenfor flomsoner).
+
+    </p>
+    <p>Hvis det er merket av for  <b>Bruk gjeldende kartutstrekning</b>, er det kun geoobjektene som vises i gjeldende kartvisning, som analyseres. Hvis det ikke er merket av for dette alternativet, blir alle geoobjektene analysert, selv om de ligger utenfor den gjeldende kartutstrekningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="Expression">
+        <div><h2>Utled nye plasseringer som samsvarer med følgende uttrykk</h2></div>
+        <hr/>
+        <div>
+            <p>Klikk p&aring; knappen  <b>Legg til uttrykk</b> for &aring; definere et uttrykk. Du kan legge til flere uttrykk. N&aring;r du har angitt uttrykkene og klikket p&aring; <b>Kj&oslash;r analyse</b>, filtreres geoobjektene i analyselaget basert p&aring; hvert enkelt uttrykk. De delene av geoobjektene som oppfyller alle uttrykkene, skrives til resultatlaget.
+            </p>
+            <p>Du kan opprette to grunnleggende typer uttrykk: attributt og romlig. Attributtuttrykk er sp&oslash;rringer i feltverdier, for eksempel  <code>der navnet er San Francisco</code>. Det finnes fire typer romlige uttrykk:
+                <ul>
+                    <li> <b>innenfor en avstand p&aring;</b>: deler av et geoobjekt som er innenfor en gitt avstand fra et geoobjekt i et annet lag. Du kan for eksempel finne delen av tomter som befinner seg innenfor 500 meter fra Los Angeles-eleven.
+                    </li>
+                    <li> <b>omfatter hele</b>: geoobjektet m&aring; inneholde alt av et geoobjekt i et annet lag. Du kan for eksempel finne nedb&oslash;rsfelt som inneholder tomter regulert for industribruk. Ingen del av tomten kan v&aelig;re utenfor nedb&oslash;rsfeltet.
+                    </li>
+                    <li> <b>helt innenfor</b>: geoobjektet m&aring; v&aelig;re fullstendig omsluttet av et geoobjekt i et annet lag. Du kan for eksempel finne skolekretser som ligger innenfor bygrensen. Ingen del av skolekretsen kan v&aelig;re utenfor bygrensen.
+                    </li>
+                    <li> <b>kryss</b>: geoobjektet eller deler av geoobjektet m&aring; overlappe eller krysse et geoobjekt i et annet lag. Du kan for eksempel finne omr&aring;der med brent vegetasjon etter flere branner i en nasjonalpark. Brente omr&aring;der som befinner seg utenfor nasjonalparkens grenser, inkluderes ikke.
+                    </li>
+                    <li> <b>n&aelig;rmest</b>: geoobjektet m&aring; v&aelig;re n&aelig;rmest et geoobjekt i et annet lag. For eksempel: Finn gr&oslash;ntomr&aring;det som ligger n&aelig;rmest hver skole.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Hvert romlige uttrykk har en tilsvarende negasjon, med unntak av  <b>n&aelig;rmest</b>; <b>ikke innenfor en avstand p&aring;</b>, <b>inneholder ikke hele</b>, <b>ikke helt innenfor</b>, og <b>krysser ikke</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis lagnavnet finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Bruk rullegardinmenyen  <b>Lagre resultat i</b> til &aring; angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatene skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

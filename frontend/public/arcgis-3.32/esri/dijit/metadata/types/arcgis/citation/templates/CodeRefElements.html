@@ -1,0 +1,27 @@
+<div data-dojo-attach-point="containerNode">
+
+  <!-- code -->
+  <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+    data-dojo-props="target:'identCode',minOccurs:1,label:'${i18nArcGIS.codeRef.identCode}'">
+    <div data-dojo-type="esri/dijit/metadata/form/Attribute" 
+      data-dojo-props="target:'code',minOccurs:1,showHeader:false">
+    </div>
+  </div>
+  
+  <!-- code space -->
+  <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+    data-dojo-props="target:'idCodeSpace',minOccurs:0,label:'${i18nArcGIS.codeRef.idCodeSpace}'">
+  </div>
+  
+  <!-- version -->
+  <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+    data-dojo-props="target:'idVersion',minOccurs:0,label:'${i18nArcGIS.codeRef.idVersion}'">
+  </div>
+  
+  <!-- authority citation -->
+  <div data-dojo-type="esri/dijit/metadata/form/Element"
+    data-dojo-props="target:'identAuth',minOccurs:0,label:'${i18nArcGIS.codeRef.identAuth}'">
+    <div data-dojo-type="esri/dijit/metadata/types/arcgis/citation/CitationElements"></div>    
+  </div>
+
+</div>

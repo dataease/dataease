@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>מצא אשכולות של נקודות</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="מצא אשכולות של נקודות"></h2>
+        <hr/>
+    <p>כלי זה מוצא אשכולות של ישויות נקודה בתוך רעש סובב בהתבסס על פיזור מרחבי.
+    </p>
+    <p>אם האפשרות  <b>השתמש בתיחום המפה הנוכחי</b> מסומנת, רק הישויות בשכבת נקודות הקלט שנמצאות בתוך תיחום המפה הנוכחי ינותחו.  אם האפשרות לא מסומנת, כל הישויות בשכבת נקודות הקלט ינותחו, גם אם הן מחוץ לתיחום המפה הנוכחי.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>בחר את השכבה שעבורה יש למצוא אשכולות</h2></div>
+        <hr/>
+        <div>
+            <p>שכבת הנקודות שעבורה יש למצוא אשכולות. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>מספר הנקודות המינימלי כדי להיחשב לאשכול</h2></div>
+        <hr/>
+        <div>
+            <p>מספר הישויות המינימלי כדי להיחשב לאשכול.  כל אשכול עם פחות ישויות מכפי שצוין ייחשב לרעש. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>הגבל את טווח החיפוש ל- (אופציונלי)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>המרחק המקסימלי שבו ישויות ייחשבו לחלק מאותו אשכול.   אם אפשרות זו נותרת ריקה, הכלי יריץ HDBSCAN, אשר משתמש במרחקים משתנים כדי להפריד אשכולות בצפיפויות שונות מרעש דליל יותר. אם ניתן ערך, הכלי יריץ HDBSCAN, אשר משתמש במרחק שצוין כדי להפריד אשכולות צפופות מרעש דליל יותר.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>שם שכבת התוצאה</h2></div>
+        <hr/>
+        <div>
+            <p>זהו השם של השכבה שתיווצר ב <b>התוכן שלי</b> ותתווסף למפה. שם ברירת המחדל מבוסס על שם הכלי ושם שכבת הקלט. אם שם השכבה כבר קיים, תתבקש לספק שם אחר.
+            </p>
+            <p>בעזרת התפריט הנפתח  <b>שמור תוצאה ב</b>, באפשרותך לציין את שם התיקייה ב <b>תוכן שלי</b> שבה התוצאה תישמר.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

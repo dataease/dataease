@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Sichtfelder erstellen</h2><p/>
+        <h2><img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" alt="Das Werkzeug &quot;Sichtfelder erstellen&quot;"></h2>
+        <hr/>
+    <p>Mit diesem Werkzeug werden die f&uuml;r Beobachter sichtbaren Bereiche unter Ber&uuml;cksichtigung der Oberfl&auml;chentopografie identifiziert. Die Eingabepunktpositionen k&ouml;nnen entweder Beobachter (z.&nbsp;B. Personen am Boden oder Beobachter in einem Feuerwachturm) oder beobachtete Objekte (z.&nbsp;B. Windkraftanlagen, Wassert&uuml;rme, Fahrzeuge oder Personen) sein. Die Ergebnisse definieren die Bereiche, die von Beobachterpositionen aus sichtbar sind.
+    </p>
+    <p>Sowohl Beobachter als auch beobachtete Objekte k&ouml;nnen sich in einer bestimmten H&ouml;he &uuml;ber dem Boden befinden. Diese H&ouml;hen werden zur Ermittlung der Sichtbarkeit verwendet. So wird beispielsweise ein Sichtfeld, das f&uuml;r 90&nbsp;Meter hohe Windkraftanlagen und eine 1,80&nbsp;Meter gro&szlig;e, am Boden stehende Person berechnet wird, &uuml;blicherweise gr&ouml;&szlig;er sein als ein Sichtfeld f&uuml;r 60 Meter hohe Windkraftanlagen und eine 1,50&nbsp;Meter gro&szlig;e Person.
+    </p>
+    <p>Der Ergebnis-Layer zeichnet auf, wie oft jede Zellenposition im Eingabe-Oberfl&auml;chen-Raster von den Eingabe-Beobachterpunkten aus gesehen werden kann. Die nicht sichtbaren Zellen erhalten den Wert &quot;NoData&quot;.
+    </p>
+    <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur der Raster-Bereich und die Beobachterpunkte analysiert, die in der aktuellen Kartenausdehnung sichtbar sind. Wenn diese Option deaktiviert ist, werden alle Beobachterpunkte im Eingabe-Layer analysiert, auch diejenigen, die sich au&szlig;erhalb der aktuellen Kartenausdehnung befinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="elevationSurface">
+        <div><h2>Höhenoberfläche</h2></div>
+        <hr/>
+        <div>
+            <p>Die H&ouml;henoberfl&auml;che f&uuml;r die Berechnung des Sichtfeldes.
+            </p>
+            <p>Wenn sich die vertikale Einheit der Eingabe-Oberfl&auml;che von der horizontalen Einheit unterscheidet, beispielsweise, wenn die H&ouml;henwerte in Fu&szlig; angegeben werden, das Koordinatensystem aber in Metern ist, muss f&uuml;r die Oberfl&auml;che ein vertikales Koordinatensystem definiert werden. Das Werkzeug verwendet n&auml;mlich die vertikalen (Z) und horizontalen (XY) Einheiten, um einen Z-Faktor f&uuml;r die Sichtfeldanalyse zu berechnen. Ohne ein vertikales Koordinatensystem ist keine Z-Einheit verf&uuml;gbar. Das Werkzeug geht dann davon aus, dass die Z-Einheit mit der der XY-Einheit identisch ist. Das hat zur Folge, dass f&uuml;r die Analyse ein interner Z-Faktor von 1,0 verwendet wird. Dies kann die Ergebnisse verf&auml;lschen.
+            </p>
+            <p>Die Oberfl&auml;chenh&ouml;he kann ein Integer oder eine Gleitkommazahl sein.
+            </p>
+        </div>
+    </div>
+    <div id="observerFeatures">
+        <div><h2>Punkt-Features, die Beobachterpunkte darstellen</h2></div>
+        <hr/>
+        <div>
+            <p>Die Punkt-Features, die die Beobachterpositionen beim Berechnen der Sichtfelder identifizieren.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimieren für</h2></div>
+        <hr/>
+        <div>
+            <p>Die Optimierungsmethode f&uuml;r die Berechnung des Sichtfeldes.
+            </p>
+            <ul>
+                <li>Speed &mdash; 
+Bei dieser Methode werden die Verarbeitungsgeschwindigkeit und Performance zu Lasten der Genauigkeit optimiert. Dies ist die Standardeinstellung.
+
+                </li>
+                <li>Accuracy &mdash; 
+Bei dieser Methode wird die Genauigkeit optimiert, was eine l&auml;ngere Verarbeitungsdauer zur Folge hat.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Maximale Betrachtungsentfernung</h2></div>
+        <hr/>
+        <div>
+            <p>Geben Sie einen Entfernungsgrenzwert ein, bis zu dem sichtbarer Fl&auml;chen berechnet werden. Ob sich die Beobachterpunkte und die anderen Objekte jenseits dieser Entfernung gegenseitig sehen k&ouml;nnen, wird nicht ermittelt.
+            </p>
+            <p>Sie k&ouml;nnen einen numerischen Wert angeben, der eine lineare Entfernung darstellt, oder ein numerisches Feld aus den Eingabe-Beobachter-Features ausw&auml;hlen. Bei Angabe eines Feldes m&uuml;ssen die darin enthaltenen Werte dieselbe Einheit wie die XY-Einheit der Eingabe-H&ouml;henoberfl&auml;che aufweisen.
+            </p>
+            <p>Gro&szlig;e Werte verl&auml;ngern die Berechnungsdauer. Sofern keine maximale Entfernung angegeben wurde, wird eine maximale Standardentfernung auf Grundlage der Aufl&ouml;sung und der Ausdehnung der Eingabe-H&ouml;henoberfl&auml;che berechnet.
+            </p>
+            <p>Dieser Parameter ist n&uuml;tzlich beim Modellieren bestimmter Ph&auml;nomene. Beispielsweise k&ouml;nnen Sie durch Eingrenzen der sichtbaren Ausdehnung Wetterbedingungen wie leichten Nebel modellieren. Ebenso l&auml;sst sich durch Einschr&auml;nken der sichtbaren Ausdehnung die Tageszeit durch Approximation des D&auml;mmerungseffekts in gewissem Umfang steuern.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistanceField">
+        <div><h2>Maximale Betrachtungsentfernung</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="minimumDistance">
+        <div><h2>Minimale Betrachtungsentfernung</h2></div>
+        <hr/>
+        <div>
+            <p>Geben Sie eine Entfernung ein, ab der die sichtbaren Fl&auml;chen berechnet werden. Zellen auf der Oberfl&auml;che, die innerhalb dieser Entfernung liegen, sind in der Ausgabe nicht sichtbar, k&ouml;nnen aber dennoch die Sichtbarkeit der Zellen zwischen der minimalen und maximalen Betrachtungsentfernung behindern.
+            </p>
+            <p>Sie k&ouml;nnen einen numerischen Wert angeben, der eine lineare Entfernung darstellt, oder ein numerisches Feld aus den Eingabe-Beobachter-Features ausw&auml;hlen. Bei Angabe eines Feldes m&uuml;ssen die darin enthaltenen Werte dieselbe Einheit wie die XY-Einheit der Eingabe-H&ouml;henoberfl&auml;che aufweisen.
+            </p>
+            <p>Dieser Parameter ist hilfreich, um die Fl&auml;che der Sichtfeldanalyse in einer bestimmten Entfernung vom Beobachter zu steuern. Wenn Sie beispielsweise die Sicht vom Dach eines Geb&auml;udes auf einen entfernten Park untersuchen, legen Sie eine minimale Betrachtungsentfernung fest, um die irrelevanten Bereiche in der N&auml;he auszuschlie&szlig;en und eine bessere Verarbeitungsgeschwindigkeit zu erreichen.
+            </p>
+        </div>
+    </div>
+    <div id="minimumDistanceField">
+        <div><h2>Minimale Betrachtungsentfernung</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="viewingDistance3D">
+        <div><h2>Entfernung ist dreidimensional</h2></div>
+        <hr/>
+        <div>
+            <p>Geben Sie an, ob die Parameter f&uuml;r minimale und maximale Betrachtungsentfernung dreidimensional oder zweidimensional (einfacher) gemessen werden. Wenn diese Option aktiviert wird, werden die Betrachtungsentfernungen als 3D-Entfernungen behandelt. Anderenfalls werden sie als 2D-Entfernungen behandelt.
+            </p> 
+            <p>Eine 2D-Entfernung ist eine einfache lineare Distanz zwischen einem Beobachter und dem Ziel, die anhand der projizierten Position auf H&ouml;he des Meeresspiegels ermittelt wird. Der Wert einer 3D-Distanz ist realistischer, da auch die relativen H&ouml;hen ber&uuml;cksichtigt werden.
+            </p>  
+        </div>
+    </div>
+    <div id="observersElevation">
+        <div><h2>Höhe von Beobachterpositionen</h2></div>
+        <hr/>
+        <div>
+            <p>Geben Sie die H&ouml;he der Beobachterpositionen ein.
+            </p>
+            <p>Sie k&ouml;nnen entweder einen numerischen Wert f&uuml;r die H&ouml;he aller Beobachter angeben oder ein Feld, das die H&ouml;he jedes einzelnen Beobachters darstellt. Bei Angabe eines Feldes muss der darin enthaltene Wert dieselbe Einheit wie die Z-Einheit der Eingabeh&ouml;henoberfl&auml;che aufweisen.
+            </p>
+        </div>
+    </div>
+    <div id="observersElevationField">
+        <div><h2>Höhe von Beobachterpositionen</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="observersHeight">
+        <div><h2>Beobachterhöhe</h2></div>
+        <hr/>
+        <div>
+            <p>Geben Sie die H&ouml;he der Beobachterpositionen &uuml;ber dem Boden ein.
+            </p> 
+            <p>Sie k&ouml;nnen einen numerischen Wert f&uuml;r die H&ouml;he oder ein Feld aus den Eingabe-Beobachter-Features festlegen. Bei Angabe eines Feldes muss der darin enthaltene Wert dieselbe Einheit wie die Z-Einheit der Eingabe-H&ouml;henoberfl&auml;che aufweisen.
+            </p>
+            <p>Der Standardwert ist 1,75&nbsp;Meter (6&nbsp;Fu&szlig;). Verwenden Sie bei einem erh&ouml;hten Standort, beispielsweise einem Beobachtungsturm oder einem hohen Geb&auml;ude, stattdessen die tats&auml;chliche H&ouml;he. W&auml;hrend der Sichtfeldberechnung wird dieser Wert zur Beobachterh&ouml;he addiert, sofern diese angegeben wurde. Andernfalls wird der Wert zum Z-Wert der interpolierten Oberfl&auml;che addiert.
+            </p>
+        </div>
+    </div>
+    <div id="observersHeightField">
+        <div><h2>Beobachterhöhe</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="targetHeight">
+        <div><h2>Zielhöhe</h2></div>
+        <hr/>
+        <div>
+            <p>Geben Sie die H&ouml;he von Strukturen oder Personen am Boden ein, die verwendet werden, um die Sichtbarkeit festzustellen.
+            </p>
+            <p>Sie k&ouml;nnen einen numerischen Wert f&uuml;r die H&ouml;he oder ein Feld aus den Eingabe-Beobachter-Features festlegen. Bei Angabe eines Feldes muss der darin enthaltene Wert dieselbe Einheit wie die Z-Einheit der Eingabe-H&ouml;henoberfl&auml;che aufweisen.
+            </p>
+            <p>Das sich hieraus ergebende Sichtfeld kennzeichnet diejenigen Fl&auml;chen, von denen aus ein Beobachterpunkt diese Objekte am Boden sehen kann. Umgekehrt k&ouml;nnen die Objekte am Boden auch einen Beobachterpunkt sehen. 
+            </p>
+            <p>Nachfolgend sind einige Beispiele f&uuml;r H&ouml;heneinstellungen aufgef&uuml;hrt:
+            </p>
+            <ul>
+                <li>Wenn Ihre Eingabepunkte Windkraftanlagen darstellen und Sie ermitteln m&ouml;chten, von wo aus am Boden stehende Personen diese Anlagen sehen k&ouml;nnen, dann geben Sie die Durchschnittsgr&ouml;&szlig;e einer Person (etwa 1,80 Meter) ein.
+                    
+
+                </li>
+                <li>Wenn Ihre Eingabepunkte Feuerwacht&uuml;rme darstellen und Sie ermitteln m&ouml;chten, von welchen Wacht&uuml;rmen aus man eine mindestens sechs Meter hohe Rauchs&auml;ule sehen kann, dann geben Sie als H&ouml;he des Ziels sechs Meter ein.
+                    
+
+                </li>
+                <li>Wenn Ihre Eingabepunkte Aussichtspunkte entlang von Stra&szlig;en oder Wanderwegen darstellen und Sie ermitteln m&ouml;chten, von wo aus Windkraftanlagen mit einer Mindesth&ouml;he von 120 Metern sichtbar sind, dann geben Sie als H&ouml;he 120 Meter ein.
+                    
+
+                </li>
+                <li>Wenn Ihre Eingabepunkte Aussichtspunkte darstellen und Sie ermitteln m&ouml;chten, wie viel Bodenfl&auml;che Personen von dort aus sehen k&ouml;nnen, dann geben Sie null als H&ouml;he des Ziels ein. 
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="targetHeightField">
+        <div><h2>Beobachterhöhe</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="resultAglLayer">
+        <div><h2>Ausgabehöhe für Sichtbarkeit</h2></div>
+        <hr/>
+        <div>
+            <p>Der Name der AGL-Ergebnisausgabe (Above Ground Level, Ebene &uuml;ber Bodenoberfl&auml;che). Das AGL-Ergebnis ist ein Raster, bei dem jeder Zellenwert der Mindesth&ouml;he entspricht, die einer ansonsten nicht sichtbaren Zelle hinzugef&uuml;gt werden muss, um sie zumindest durch einen Beobachter sichtbar zu machen. Zellen, die bereits sichtbar waren, werden in diesem Ausgabe-Raster der Wert 0 zugewiesen.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, werden Sie aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>Sie k&ouml;nnen den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis &uuml;ber das Dropdown-Feld <b>Ergebnis speichern in</b> gespeichert wird.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

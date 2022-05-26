@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Hitung Kepadatan</h2><p/>
+        <h2><img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" alt="Alat Hitung Kepadatan"></h2>
+        <hr/>
+    <p>Alat ini membuat peta kepadatan dari fitur titik atau garis dengan menyebarkan jumlah beberapa fenomena yang diketahui (disajikan sebagai atribut titik atau garis) pada peta. Hasilnya adalah layer area yang diklasifikasikan dari yang paling tidak padat hingga paling padat.
+    </p>
+    <p>Untuk input titik, setiap titik harus mewakili lokasi dari beberapa peristiwa atau insiden, dan layer hasil mewakili jumlah insiden per unit area. Nilai kepadatan yang lebih besar di lokasi baru berarti ada lebih banyak titik di dekat lokasi tersebut. Pada banyak kasus, layer hasil dapat diinterpretasikan sebagai risiko yang muncul untuk peristiwa di masa mendatang. Misalnya, jika titik input mewakili lokasi sambaran petir, layer hasil dapat diinterpretasikan sebagai risiko yang muncul untuk sambaran petir di masa mendatang.
+    </p>
+    <p>Untuk input garis, permukaan kepadatan garis mewakili jumlah total garis yang berada di dekat setiap lokasi. Satuan nilai kepadatan yang dihitung adalah panjang area garis-per-satuan luas. Misalnya, jika garis menggambarkan sungai, layer hasil tersebut akan menggambarkan total panjang sungai yang berada di dalam radius pencarian. Hasil ini dapat digunakan untuk mengenali area yang ramah terhadap hewan pemakan rumput.
+    </p>
+    <p>Contoh lain penggunaan alat ini mencakup hal berikut:
+
+        <ul>
+            <li>Membuat peta kepadatan kejahatan untuk membantu kepolisian mengalokasikan sumber daya secara tepat ke area dengan tingkat kejahatan tinggi.
+                
+ 
+            </li>
+            <li>Menghitung kepadatan rumah sakit dalam sebuah daerah. Layer hasil akan menampilkan area dengan aksesibilitas tinggi dan rendah terhadap rumah sakit, dan informasi ini dapat digunakan untuk memutuskan tempat rumah sakit baru seharusnya dibangun.
+                
+ 
+            </li>
+            <li>Mengenali area yang berisiko tinggi terjadi kebakaran hutan berdasarkan lokasi historis kebakaran hutan.
+                
+ 
+            </li>
+            <li>Menemukan masyarakat yang jauh dari jalan raya utama untuk merencanakan lokasi pembangunan jalan baru.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointOrLineFeatures">
+        <div><h2>Pilih titik input atau layer garis untuk menghitung kepadatan</h2></div>
+        <hr/>
+        <div>
+            <p>Titik input atau layer garis yang akan digunakan untuk menghitung layer kepadatan.
+            </p>
+        </div>
+    </div>
+    <div id="countField">
+        <div><h2>Gunakan kolom hitung</h2></div>
+        <hr/>
+        <div>
+            <p>Sediakan kolom yang menentukan jumlah insiden di setiap lokasi. Misalnya, jika Anda memiliki titik yang menggambarkan kota, Anda dapat menggunakan kolom yang berisi populasi kota sebagai kolom hitung, dan layer kepadatan populasi yang dihasilkan akan menunjukkan kepadatan populasi lebih besar dekat kota-kota dengan populasi yang lebih besar.
+            </p>
+            <p>Jika pilihan default  <b>Tidak Ada</b> digunakan, setiap lokasi akan diasumsikan mewakili hitungan tunggal.
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Jarak pencarian</h2></div>
+        <hr/>
+        <div>
+            <p>Masukkan sebuah jarak yang menentukan seberapa jauh untuk mencari guna menemukan fitur titik atau garis ketika menghitung nilai kepadatan. Misalnya, jika Anda memberikan jarak pencarian sebesar 10.000 meter, kepadatan di lokasi mana saja di dalam layer output dihitung berdasarkan fitur yang berada di dalam 10.000 meter dari lokasi. Lokasi mana saja yang tidak memiliki insiden apa pun dalam 10.000 meter akan menerima nilai kepadatan nol.
+            </p>
+            <p>Jika tidak disediakan jarak, default akan dihitung berdasarkan lokasi fitur input dan nilai di kolom hitung (jika kolom hitung disediakan).
+            </p>
+        </div>
+    </div>
+    <div id="outputAreaUnits">
+        <div><h2>Satuan luas output</h2></div>
+        <hr/>
+        <div>
+            <p>Tentukan satuan luas output Kepadatan adalah jumlah dibagi luas, dan parameter ini menentukan satuan luas dalam perhitungan kepadatan.
+            </p>
+            <p>Satuan luas yang tersedia adalah Mil Persegi, Kaki Persegi, Meter Persegi, dan Kilometer Persegi.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Ukuran sel output</h2></div>
+        <hr/>
+        <div>
+            <p>Ukuran dan unit sel untuk raster output.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Anda dapat menentukan nama folder di  <b>Konten Saya</b> tempat hasil akan disimpan menggunakan kotak drop-down <b>Simpan hasil di</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

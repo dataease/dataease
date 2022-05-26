@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Aprēķināt attālumu</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="Aprēķināt attālumu"></h2>
+        <hr/>
+    <p>&Scaron;is rīks aprēķina Eiklīda attālumu, virzienu un sadalījumu no viena avota vai avotu kopas.
+    </p>
+    <p>Lietojuma piemēri ietver atbildes uz tālāk norādītajiem jautājumiem.
+
+        <ul>
+            <li>Kāds ir attālums līdz tuvākajai pilsētai?
+                
+
+            </li>
+            <li>Kāds ir attālums līdz tuvākajam ceļam?
+                
+
+            </li>
+            <li>Kāds ir attālums līdz tuvākajai ūdensgūtvei?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Ja ir atzīmēta opcija  <b>Lietot pa&scaron;reizējo kartes pārklājumu</b>, tiks analizēti tikai pa&scaron;reizējā kartes pārklājumā redzamie ievades slāņa elementi. Ja &scaron;ī opcija nav atzīmēta, tiks analizēti visi ievades slāņa elementi, arī tad, ja tie atrodas ārpus pa&scaron;reizējā kartes pārklājuma.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Izvēlēties elementu novietojuma slāņa rastru, lai aprēķinātu attālumu līdz</h2></div>
+        <hr/>
+        <div>
+            <p>Slānis, kas definē avotus, līdz kuriem tiks aprēķināts attālums. Slānis var būt attēlu vai elementu serviss.
+            </p>
+            <p>Attēlu servisa ievades tips var būt vesels skaitlis vai peldo&scaron;ais punkts.
+            </p>
+            <p>Elementu servisa ievade var būt punkts, līnija vai laukums.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Maksimālais aprēķināmais attālums</h2></div>
+        <hr/>
+        <div>
+            <p>Maksimālais aprēķināmais attālums. Piemēram, ja norādīta 10&nbsp;000 metru vērtība, Eiklīda attālums tiks aprēķināts no avotu novietojuma līdz norādītajai vērtībai (attālumam).
+            </p>
+            <p>Ja vērtība nebūs norādīta, attālums tiks aprēķināts līdz definētajam pārklājumam.
+            </p>
+            <p>Pieejamās mērvienības ir kilometri, metri, jūdzes un pēdas.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Izvades šūnas lielums</h2></div>
+        <hr/>
+        <div>
+            <p>&Scaron;ūnas lielums un izvades mērvienība.
+            </p>
+            <p>Vienības var būt kilometri, metri, jūdzes vai pēdas.
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>Attāluma rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slānis jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Mapes nosaukumu var norādīt mapē  <b>Mans saturs,</b> kur rezultāts tiks saglabāts, izmantojot nolaižamo lodziņu <b>Saglabāt rezultātu</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>Attāluma rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Tā slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b>. Jums jānorāda nosaukums, kāda vēl nav sadaļā <b>Mans saturs</b>.
+            </p>
+            <p>Mapes nosaukumu var norādīt mapē  <b>Mans saturs,</b> kur rezultāts tiks saglabāts, izmantojot nolaižamo lodziņu <b>Saglabāt rezultātu</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>Sadalījuma rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Tā slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b>. Jums jānorāda nosaukums, kāda vēl nav sadaļā <b>Mans saturs</b>.
+            </p>
+            <p>Mapes nosaukumu var norādīt mapē  <b>Mans saturs,</b> kur rezultāts tiks saglabāts, izmantojot nolaižamo lodziņu <b>Saglabāt rezultātu</b>.
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>Izvēlēties sadalījuma lauku</h2></div>
+        <hr/>
+        <div>
+            <p>Ievades avota slāņa lauks ar vērtībām, kas definē katru avotu. Tas var būt avota datu kopas vesela skaitļa vai virknes lauks.
+            </p>
+            <p>Noklusējuma vērtība ir  <i>Value</i>. Ja, lietojot elementu servisu, lauks <i>Value</i> nebūs pieejams, tiks izmantots pirmais pieejamais vesela skaitļa vai virknes lauks. Ja nebūs derīgu lauku, tiks izmantots lauks ObjectID (piemēram, OID vai FID, atkarībā no elementa ievades tipa).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

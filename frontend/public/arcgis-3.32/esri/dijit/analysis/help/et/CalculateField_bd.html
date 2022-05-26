@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Arvuta väli</h2><p/>
+        <h2><img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" alt="Arvuta v&auml;li"></h2>
+        <hr/>
+    <p> See t&ouml;&ouml;riist t&ouml;&ouml;tab koos sisendkihiga uue v&otilde;i olemasoleva v&auml;lja v&auml;&auml;rtuste arvutamiseks. Objektide asustamiseks v&auml;&auml;rtuste arvutamise jaoks koostage Arcade&rsquo;i avaldis. Kui teie andmed on ajateadlikud ja nende ajat&uuml;&uuml;p on ajahetk, saate koostada ka rada &auml;ra tundvaid avaldisi.
+    </p>
+    <p>Oletame n&auml;iteks, et soovite muuta olemasolevat v&auml;lja nimega  <i>TotalSales</i>. Soovite, et v&auml;li kujutaks 2016. ja 2017. aasta koguk&auml;ibe summat. Kui kasutate avaldises neid v&auml;lju, arvutate v&auml;lja v&auml;&auml;rtuse j&auml;rgmiselt: <pre>$feature[&quot;Sales2016&quot;] + $feature[&quot;Sales2017&quot;]</pre>.
+    </p>
+    <p>J&auml;rgmises n&auml;ites oletame, et teil on GPS-m&otilde;&otilde;tmised, mis salvestavad asukoha, aja, bussi ID ja busside kiiruse linnas. Soovime luua uue v&auml;lja nimega  <i>SpeedFrom3</i>, mis arvutab iga objekti kohta kolme viimati salvestatud GPS-m&otilde;&otilde;tmise keskmise kiiruse. Selle arvutuse jaoks kasutame rada &auml;ra tundvat arvutust, kus rada on buss, mida m&auml;rgib bussi ID. Arvutus kolme viimatise ajavahemiku ja praeguse ajavahemiku keskmise kiiruse m&auml;&auml;ramiseks on <pre>average($track.field[&quot;speed&quot;].history(-4))</pre>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valige kiht, et arvutada välja väärtused:</h2></div>
+        <hr/>
+        <div>
+            <p>Punktid, jooned, alad v&otilde;i arvutatud v&auml;ljav&auml;&auml;rtustega tabel.  
+            </p>
+            <p>Lisaks kihi valimisele kaardil saate valida ripploendi alumises servas  <b>Vali anal&uuml;&uuml;sikihte</b>, et otsida oma sisust suurandmete failiketta andmestikku v&otilde;i objektikihti.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Arvutage väärtused väljale</h2></div>
+        <hr/>
+        <div>
+            <p>Uus v&otilde;i olemasolev v&auml;li, mille v&auml;&auml;rtused on arvutatud ning selle v&auml;lja andmete sisestamise t&uuml;&uuml;p. Kui arvutate v&auml;&auml;rtusi olemasolevale v&auml;ljale, pole andmet&uuml;&uuml;pi vastendada vaja. 
+            </p>
+        </div>
+    </div>
+    <div id="expression">
+        <div><h2>Kirjeldage väärtuste arvutamise avaldis</h2></div>
+        <hr/>
+        <div>
+            <p>Lisage v&auml;ljade v&auml;&auml;rtuste arvutamiseks tingimuslause ning kasutage asjakohast koostajat. 
+            </p>
+            <p>Oletame n&auml;iteks, et soovime lisada v&auml;&auml;rtused v&auml;ljadele nimega  <i>income</i>  ja <i>bonus</i>. Selleks lisage avaldis <code>$feature[&quot;tulu&quot;] + $feature[&quot;boonus&quot;] </code>.
+            </p>
+        </div>
+    </div>
+    <div id="trackInfo">
+        <div><h2>Avaldis tunneb raja ära</h2></div>
+        <hr/>
+        <div>
+            <p>Tehke kindlaks, kas teie avaldis tunneb raja &auml;ra. Avaldis, mis tunneb raja &auml;ra, sisaldab j&auml;rgmist vormingut:       <pre>$track.field[&quot;fieldname&quot;].history(...)</pre>. Rada &auml;ra tundvad avaldised vajavad eraldi radade tuvastamiseks v&auml;lju. Radu saab koostada punktidest, joontest, aladest v&otilde;i tabelitest ning vajalik on, et sisendil oleks raja identifikaator ning andmed oleksid ajateadlikud ja nende ajat&uuml;&uuml;p oleks ajahetk.
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analüüsi andmeid ajaintervallidega</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rake, kas soovite arvutada oma radadele v&auml;&auml;rtusi, kasutades intervalle, mis segmenteerivad teie sisendid anal&uuml;&uuml;si jaoks. Kui kasutate ajaintervalle, peate seadistama kasutatava ajaintervalli ja valikuliselt seadma viiteaja. Kui te ei seadista viiteaega, kasutatakse 1. jaanuari 1970. 
+            </p>
+            <p>Kui seate ajapiiriks n&auml;iteks 1. p&auml;eva, mis algab 1. jaanuaril 1990. aastal kell 9.00, siis k&auml;rbitakse iga p&auml;ev kell 9.00 k&otilde;iki radasid ja anal&uuml;&uuml;sitakse neid selle segmendi piires. 
+            </p>
+            <p>Ajaintervallide kasutamine on kiire viis arvutusaja l&uuml;hendamiseks, sest sel juhul luuakse anal&uuml;&uuml;si jaoks kiiresti v&auml;iksemad rajad. Kui8 korduva ajaintervalli jaotamine on teie anal&uuml;&uuml;si jaoks m&otilde;ttekas, siis on see soovitatav mahukate andmete t&ouml;&ouml;tlemise puhul.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Loodavakihi nimi.  Kui kirjutate andmelattu ArcGIS Data Store, salvestatakse teie tulemused  <b>Minu sisus</b> ja lisatakse kaardile. Kui kirjutate suurandmete failikettale, salvestatakse teie andmed suurandmete failikettale  ja lisatakse  selle manifestifailile. Seda  ei lisata kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui see kiht on juba olemas, siis t&ouml;&ouml;tlemine nurjub.
+            </p>
+            <p>Kui salvestate admelattu   ArcGIS Data Store (relatsioonilisse v&otilde;i ajalisruumilisse andmelattu), kasutades rippmen&uuml;&uuml;d  <b>Salvesta tulemused</b>, saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemused salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

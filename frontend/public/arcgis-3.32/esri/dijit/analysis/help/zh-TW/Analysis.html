@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="aoToolbox">
+        <p>圖徵分析工具箱包含您可以存取和使用的許多工具。這些任務在類別下方排列；類別只是邏輯分組，不會對任務的存取或使用方式造成任何影響。
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="smallsize">
+        <h2>摘要資料</h2>
+        <hr/>
+        <p>這些工具計算區域內或其他圖徵附近的圖徵及其屬性的總數、長度、面積以及基本描述性統計資料。
+            <ul>
+                <li> <b>匯聚點</b>用於計算指定區域內點的統計資料。
+                </li>
+                <li> <b>加入圖徵</b>可根據空間和屬性關係，將屬性從一個圖層或表格轉換至另一個。
+                </li>
+                <li> <b>鄰近摘要</b>計算指定距離內圖徵及其屬性的統計資料。
+                </li>
+                <li> <b>範圍內摘要</b>計算相互重疊的區域圖徵和屬性的統計資料。
+                </li>
+                <li> <b>摘要中心和離差</b>可計算中央圖徵和方向分佈。
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="AggregatePointsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>匯聚點</h2></td>
+                    <td>
+                    <img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" class="titleImage" alt="匯聚點">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>該工具使用點圖徵圖層和區域圖徵圖層來確定落在各區域內的點，並計算各區域內所有點的統計資料。例如：
+                <ul>
+                    <li>給定犯罪事件的點位置，計算每個縣或其他行政區的犯罪數。
+                    </li>
+                    <li>按州尋找特許經營位置的最高營收和最低營收。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="JoinFeaturesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>加入圖徵</h2></td>
+                    <td>
+                    <img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" class="titleImage" alt="加入圖徵">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>「加入圖徵」將根據空間和屬性關係，將屬性從一個圖層或表格轉換至另一個。例如：
+                <ul>
+                    <li>將共同邊界或人口統計資訊附加至您的事件資料。
+                    </li>
+                    <li>識別已知位置的最近設施。
+                    </li>
+                    <li>判斷洪泛區內的住宅數量。
+                    </li>
+                    <li>識別不同野生動物物種的共同習性。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeNearbyTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>鄰近摘要</h2></td>
+                    <td>
+                    <img src="../images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" class="titleImage" alt="鄰近摘要">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>尋找距輸入圖層圖徵指定距離內的圖徵。可以沿直綫或行進模式中的可行路徑來測量距離。然後，計算鄰近圖徵的統計資料。例如：
+                <ul>
+                    <li>計算在提議的新商店位置五分鐘車程內的總人口數。
+                    </li>
+                    <li>計算在提議的新商店位置五分鐘車程內的高速公路匝道數量，以便測量商店的出入方便性。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeWithinTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>範圍內摘要</h2></td>
+                    <td>
+                    <img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" class="titleImage" alt="範圍內摘要">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>尋找兩個圖層間疊加的區域（和區域的部分）並計算疊加區域的統計資料。例如：
+                <ul>
+                    <li>給定流域邊界圖層和依土地使用類型劃分的土地使用邊界圖層，計算每個流域之土地使用類型的總面積。
+                    </li>
+                    <li>給定縣內宗地的圖層和城市邊界圖層，摘要各城市內閒置宗地的平均值。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeCenterAndDispersionTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>摘要中心和離差</h2></td>
+                    <td>
+                    <img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" class="titleImage" alt="摘要中心和離差">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>此工具使用點圖徵來計算中央圖徵、平均值中心、中位數中心或橢圓（分佈）。例如：
+                <ul>
+                    <li>假設有一個街區群組質心圖層，則可使用按人口加權的中央圖徵來找出表演藝術中心最容易到達的城鎮位置。
+                    </li>
+                    <li>假設有一個圖層，其包含公園中多年的麋鹿觀測點，則平均值中心可用來查看麋鹿在夏季和冬季聚集的位置。
+                    </li>
+                    <li>假設有一個火災事故圖層，則中位數中心可用來測量火災的集中趨勢，而不受外圍極端值的影響。
+                    </li>
+                    <li>假設有一個地下水井範例圖層，則可使用橢圓來判定污染物的擴散方式。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="EnrichLocationsCategory" class="smallsize">
+        <h2>資料豐富</h2>
+        <hr/>
+        <p>這些工具可幫助您瞭解區域的特徵。 結果將傳回已選區域的詳細人口資料以及統計資料。 
+            <ul>
+                <li> <b>豐富圖層</b>檢索指定區域內，或距某地指定行駛時間或距離內的人口、場所以及商業的資訊。
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="EnrichLayerTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>豐富圖層</h2></td>
+                    <td>
+                    <img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" class="titleImage" alt="豐富圖層">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>檢索在指定區域內，或距某地指定行駛時間或距離內的人口、場所以及商業的資訊。
+
+            </p>
+            <br/>
+        </div>
+    <div id="FindLocationsCategory" class="regularsize">
+        <h2>尋找位置</h2>
+        <hr/>
+        <p>這些工具用於識別或建立符合您指定條件的圖徵。條件的類型將依據您使用的工具；例如，您的條件可能根據空間或屬性查詢、來自指定高度的可見區域、特定排水點的下游區域，或特定交通狀況的行駛時間。
+            <ul>
+                <li> <b>選擇最佳機構</b>會根據指定的目標，為機構配置有需求的位置來選擇這些機構的最佳位置。
+                </li>
+                <li> <b>建立視域</b>根據指定的位置建立可見的區域。
+                </li>
+                <li> <b>建立流域</b>根據指定的位置建立集水區。
+                </li>
+                <li> <b>衍生新位置</b>可在研究區域中建立滿足一系列條件的新區域。
+                </li>
+                <li> <b>尋找質心</b>可尋找輸入圖徵的代表中心（質心）。
+                </li>
+                <li> <b>尋找現有位置</b>用於在圖層中尋找滿足一系列條件的現有區域。
+                </li>
+                <li> <b>尋找相似位置</b>可根據指定的條件，尋找與一個或多個參考位置最相似的位置。
+                </li>
+                <li class="PortalOnly"> <b>來自表格的地理編碼位置</b>會將位址從表格轉換至座標。 
+                </li>
+                <li> <b>追踪下游</b>以指定位置為起點，確定其下游方向的水流路徑。
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="ChooseBestFacilitiesTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>選擇最佳機構</h2></td>
+                    <td>
+                    <img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" class="titleImage" alt="選擇最佳機構">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>根據指定的目標，為機構配置有需求的位置，從而選擇這些機構的最佳位置。
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>建立視域</h2></td>
+                    <td>
+                    <img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" class="titleImage" alt="建立視域">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>根據指定的位置建立可見的區域。
+            </p>
+            <br/>
+        </div>
+        <div id="CreateWatershedsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>建立流域</h2></td>
+                    <td>
+                    <img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" class="titleImage" alt="建立流域">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>根據指定的位置建立集水區。
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveNewLocationsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>衍生新位置</h2></td>
+                    <td>
+                    <img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" class="titleImage" alt="衍生新位置">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>在研究區域中建立滿足一系列指定條件的新圖徵。這些條件基於屬性查詢（如閒置宗地）和空間查詢（如距離河流 1 英里以內）。
+            </p>
+            <br/>
+        </div>
+        <div id="FindCentroidsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>尋找質心</h2></td>
+                    <td>
+                    <img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" class="titleImage" alt="尋找質心">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>為每一個輸入多點、線或區域圖徵尋找代表中心（質心）。
+            </p>
+            <br/>
+        </div>
+        <div id="FindExistingLocationsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>尋找現有位置</h2></td>
+                    <td>
+                    <img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" class="titleImage" alt="尋找現有位置">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>在研究區域中選擇滿足一系列指定條件的現有圖徵。這些條件基於屬性查詢（如閒置宗地）和空間查詢（如距離河流 1 英里以內）。
+            </p>
+            <br/>
+        </div>
+        <div id="GeocodeLocationsfromTableTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>來自表格的地理編碼位置</h2></td>
+                    <td>
+                    <img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" class="titleImage" alt="來自表格的地理編碼位置">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>將地址轉換成座標。在 Excel 試算表或 CSV 檔案的位址上使用此工具。
+            </p>
+            <br/>
+        </div>
+        <div id="FindSimilarLocationsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>尋找相似位置</h2></td>
+                    <td>
+                    <img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" class="titleImage" alt="尋找相似位置">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>根據指定條件尋找與一個或多個參考位置最相似的位置。
+            </p>
+            <br/>
+        </div>
+        <div id="TraceDownstreamTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>追蹤下游</h2></td>
+                    <td>
+                    <img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" class="titleImage" alt="追蹤下游">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>以指定的位置為起點，確定其下游方向中的水流路徑。
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="smallsize">
+        <h2>分析模式</h2>
+        <hr/>
+        <p>這些工具可幫助您辨識、量化並可視化數據的空間模式。
+            <ul>
+                <li> <b>計算密度</b>取某一現象的已知數量，並將這些量散佈到整個地圖上。
+                </li>
+                <li> <b>尋找熱點</b>工具可以辨識在數據空間模式中具有統計顯著性的叢集。
+                </li>
+                <li> <b>尋找異常值</b>將判定資料的空間模式中，是否有任何具有統計顯著性的異常值。
+                </li>
+                <li> <b>尋找點叢集</b>可在基於其空間分佈的周圍噪訊內，尋找點圖徵的叢集。
+                </li>
+                <li> <b>插值點</b>工具可根據一組點的測量結果預測新位置上的值。
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>計算密度</h2></td>
+                    <td>
+                    <img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" class="titleImage" alt="計算密度">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>密度分析取某一現象的已知數量，並將這些量散佈到整個地圖上。例如，您可以使用此工具顯示發生雷擊或龍捲風的機率、醫療設施的利用率以及人口密度。
+            </p>
+            <br/>
+        </div>
+        <div id="FindHotSpotsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>尋找熱點</h2></td>
+                    <td>
+                    <img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" class="titleImage" alt="尋找熱點">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>該工具可建立一幅地圖，顯示數據中具有統計顯著性的所有空間叢集。使用此工具可尋找諸如家庭值、犯罪密度、交通事故死亡率、失業率以及生物多樣性等叢集中較高和較低的異常熱點（紅）和冷點（藍）。
+            </p>
+            <br/>
+        </div>
+        <div id="FindOutliersTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>尋找極端值</h2></td>
+                    <td>
+                    <img src="../images/GUID-2FD18406-6333-45B9-8220-E930C1E154B2-web.png" class="titleImage" alt="尋找異常值">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>該工具可建立一幅地圖，顯示數據中具有統計顯著性的所有叢集和空間異常值。使用此工具來識別具有與其鄰里顯著不同值的圖徵。例如，您可以使用此工具來尋找模糊不清的支出模式、判斷研究區域中富裕與貧窮間差異最大的邊界，或者判斷美國境各郡中，是否有某些郡的居民壽命低於其他郡。
+            </p>
+            <br/>
+        </div>
+        <div id="FindPointClustersTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>尋找點叢集</h2></td>
+                    <td>
+                    <img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" class="titleImage" alt="尋找點叢集">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>此工具可偵測點集中的區域，以及被空白或稀疏的區域所隔開的點所在的位置。會將不屬於叢集的點標示為噪訊。
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>插值點</h2></td>
+                    <td>
+                    <img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" class="titleImage" alt="插值點">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>該工具用於根據一組點的測量結果預測新位置上的值。該工具對具有數值的點資料進行處理，並傳回按預測值分類的區域。例如，借助該工具，您可以根據各個雨量計的測量結果預測某一分水嶺內的降雨量級別。
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="smallsize">
+        <h2>鄰近分析</h2>
+        <hr/>
+        <p>  這些工具可幫助您回答在空間分析中提出的一個最普遍問題：&ldquo;什麼在什麼附近？&rdquo;
+            <ul>
+                <li> <b>連接起始點到目的地</b>用於測量點對之間的行駛時間或距離。
+                </li>
+                <li> <b>建立緩衝區</b>用於建立和圖徵距離相等的區域。
+                </li>
+                <li> <b>建立行駛時間區域</b>用於尋找在某一時間段內可到達的區域。
+                </li>
+                <li> <b>尋找最近</b>用於確定距已知位置最近的地點。
+                </li>
+                <li> <b>規劃路線</b>用於確定車隊造訪多個停靠點的最佳路線。
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ConnectOriginsToDestinationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>連線起始點到目的地</h2></td>
+                    <td>
+                    <img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" class="titleImage" alt="連線起始點到目的地">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>&ldquo;連接起始點到目的地&rdquo;用於測量點對之間的行駛時間或距離。 此工具可以報告直線距離、道路距離或行駛時間。 使用此工具，您可以
+            </p>
+            <p>
+                <ul>
+                    <li>計算通勤者在從家到公司的行程中所用的總距離或時間。
+                    </li>
+                    <li>測量客戶到您的商店購物所行駛的距離。 利用此資訊確定市場涵蓋範圍，特別是當您鎖定廣告活動或選擇新的商店位置時。
+                    </li>
+                    <li>為您的車隊計算預期的行駛里程。 此後，執行&ldquo;範圍內匯總&rdquo;工具來按州或其他區域報告里程。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>您提供起點和終點後，此工具便會在成對的起始點和目的地之間傳回含有各路線和測量值的圖層。
+            </p>
+            <br/>
+        </div>
+        <div id="CreateBuffersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>建立緩衝區</h2></td>
+                    <td>
+                    <img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" class="titleImage" alt="建立緩衝區">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>緩衝區是一個以點、線或區域圖徵為起點覆蓋給定距離的區域。 
+            </p>
+            <p>緩衝區通常用於建立一些區域，以便使用如&ldquo;疊加圖層&rdquo;等其他工具進行深入分析。 例如，假設問題是&ldquo;在學校一英里範圍內存在哪些建築物？&rdquo;，則透過在學校周圍建立一個一英里的緩衝區，並將緩衝區與包含建築物覆蓋區的圖層相疊加即可找到答案。 最終結果是一個包含學校一英里範圍內建築物的圖層。 
+            </p>
+            <br/>
+        </div>
+        <div id="CreateDriveTimeAreasTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>建立行駛時間區域</h2></td>
+                    <td>
+                    <img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" class="titleImage" alt="建立行駛時間區域">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>行駛時間區域是在指定行駛時間或車程內可到達的區域。 行駛時間區域可幫您回答以下的問題，例如：
+                <ul>
+                    <li>在 30 分鐘內，我從這裡行駛可以到哪裡？
+                    </li>
+                    <li>在下午 6:00 的尖峰時段，我可以在30分鐘內駕車到達哪些區域？
+                    </li>
+                    <li>消防部門可以在五分鐘內到達城鎮的哪個區域？ 在此處建立新消防站後，火災回應範圍會有多大的改善？
+                    </li>
+                    <li>我的業務覆蓋哪些市場區域？ 哪些區域在商店的 10 英里範圍內？
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindNearestTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>尋找最近點</h2></td>
+                    <td>
+                    <img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" class="titleImage" alt="尋找最近點">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>測量事件點和設施點之間的行駛成本，並確定哪個設施點距哪個事件點較近。 結果為一個圖層，顯示事件點和設施點之間的最佳路線，以及每條路線的行駛成本（時間和距離）。 例如，可以使用此工具尋找距離事件點最近的醫院，或尋找距離當前位置最近的自動提款機。
+            </p>
+            <br/>
+        </div>
+        <div id="PlanRoutesTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>計劃路線</h2></td>
+                    <td>
+                    <img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" class="titleImage" alt="計劃路徑">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>提供一組停靠點和可造訪這些停靠點的車輛數，&ldquo;規劃路線&rdquo;可確定如何有效地將停靠點分配給車輛以及安排車輛到這些停靠點的路線。
+            </p>
+            <p>使用此工具為檢查員、鑑價師、家庭服務提供者以及其他人員的流動隊伍規劃工作；從遠程位置配送或接收物品，或為人們提供運輸服務。
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="smallsize">
+        <h2>管理資料</h2>
+        <hr/>
+        <p>這些工具用於地理資料的日常管理，以及在分析之前合併資料。
+            <ul>
+                <li> <b>融合邊界</b>將共享公共邊界和公共屬性值的區域進行合併。
+                </li>
+                <li> <b>擷取資料</b>透過從現有資料中擷取圖徵建立新資料集。
+                </li>
+                <li> <b>產生鑲嵌</b>可根據您的資料範圍建立鑲嵌。
+                </li>
+                <li> <b>合併圖層</b>將兩個或多個現有圖層中的所有圖徵複製到新圖層中。
+                </li>
+                <li> <b>疊加圖層</b>將兩個或多個圖層合併成一個圖層。您可以認為疊加是透過地圖堆疊，查看並建立包含在堆疊中發現之所有資訊的單一地圖。
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="DissolveBoundariesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>融合邊界</h2></td>
+                    <td>
+                    <img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" class="titleImage" alt="融合邊界">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>將重疊區域或分享邊界的區域進行合併，以形成單個區域。
+            </p>
+            <p>您可以透過指定欄位來控制合併哪些邊界。例如，如果有一個縣圖層，且每個縣具有  <i>State_Name</i> 屬性，則可以使用 <i>State_Name</i> 屬性來融合邊界。如果相鄰的縣具有相同的 <i>State_Name</i> 值，則可對它們進行合併。最終結果是一個州邊界圖層。
+            </p>
+            <br/>
+        </div>
+        <div id="ExtractDataTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>擷取資料</h2></td>
+                    <td>
+                    <img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" class="titleImage" alt="擷取資料">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>根據圖層和指定的感興趣區中的數據，建立 zip、CSV 或 KMZ 文件。
+            </p>
+            <p> 
+            </p>
+            <br/>
+        </div>
+        <div id="GenerateTessellationsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>產生鑲嵌</h2></td>
+                    <td>
+                    <img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" class="titleImage" alt="產生鑲嵌">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>根據指定的形狀和大小，在研究區域上方產生鑲嵌。
+            </p>
+            <br/>
+        </div>
+        <div id="MergeLayersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>合併圖層</h2></td>
+                    <td>
+                    <img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" class="titleImage" alt="合併圖層">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>將圖徵從兩個或多個現有圖層複製到新圖層，例如：
+                <ul>
+                    <li>有三個圖層分別對應英格蘭、威爾士和蘇格蘭，而我希望使用一個圖層來代表大不列顛。
+                    </li>
+                    <li>我有 12 個圖層，每個圖層包含相鄰鎮區的宗地資訊。我希望將它們合併成單個圖層，同時只保留這 12 個輸入圖層的名稱和類型相同的屬性。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="OverlayLayersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>圖層疊加</h2></td>
+                    <td>
+                    <img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" class="titleImage" alt="圖層叠加">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>叠加操作可將兩個或多個圖層合併成一個圖層。您可以認為疊加是透過地圖堆疊，查看並建立包含在堆疊中發現之所有資訊的單一地圖，例如：
+                <ul>
+                    <li>哪些宗地位於百年一遇的洪泛區中？ （「在...中」只是「在...上」的另一種表達方式。）
+                          
+                    </li>
+                    <li>什麼道路在什麼國家中？
+                    </li>
+                    <li>什麼土地利用在什麼土壤類型上？
+                         
+                    </li>
+                    <li>什麼井在廢棄的軍事基地中？
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Các Lớp Phủ</h2><p/>
+        <h2><img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" alt="C&aacute;c Lớp Phủ"></h2>
+        <hr/>
+    <p>Lớp phủ kết hợp hai hoặc nhiều lớp v&agrave;o một lớp duy nhất. Bạn c&oacute; thể nghĩ về việc chồng xếp lớp như nh&igrave;n qua một xấp bản đồ v&agrave; tạo ra một bản đồ duy nhất c&oacute; chứa tất cả c&aacute;c th&ocirc;ng tin t&igrave;m thấy trong xấp bản đồ đ&oacute;. Lớp phủ kh&ocirc;ng chỉ l&agrave; sự kết hợp giữa c&aacute;c luồng c&ocirc;ng việc; tất cả c&aacute;c thuộc t&iacute;nh của đối tượng tham gia v&agrave;o lớp phủ đều được đưa v&agrave;o sản phẩm cuối c&ugrave;ng. Lớp phủ được sử dụng để trả lời một trong những c&acirc;u hỏi cơ bản nhất về địa l&yacute;, &quot;C&aacute;i g&igrave; nằm tr&ecirc;n c&aacute;i g&igrave;?&quot;V&iacute; dụ:
+        <ul>
+            <li>L&ocirc; đất n&agrave;o nằm trong v&ugrave;ng ngập lụt 100 năm? (Kh&aacute;i niệm Trong v&ugrave;ng chỉ l&agrave; một c&aacute;ch n&oacute;i của việc Nằm tr&ecirc;n.)
+                  
+            </li>
+            <li>Con đường n&agrave;o ở trong quận n&agrave;o?
+            </li>
+            <li>Đất sử dụng n&agrave;o nằm tr&ecirc;n loại đất n&agrave;o?
+                 
+            </li>
+            <li>Giếng nước n&agrave;o nằm trong căn cứ qu&acirc;n sự bị bỏ rơi?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Nếu chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b>, th&igrave; chỉ c&aacute;c đối tượng được nh&igrave;n thấy trong lớp đầu v&agrave;o v&agrave; lớp phủ b&ecirc;n trong phạm vi bản đồ hiện tại mới được chồng lớp l&ecirc;n. 
+Nếu bỏ chọn, tất cả c&aacute;c đối tượng trong lớp đầu v&agrave;o v&agrave; lớp phủ sẽ được chồng lớp l&ecirc;n, ngay cả khi ch&uacute;ng ở ngo&agrave;i phạm vi bản đồ hiện tại.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Chọn lớp đầu vào</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp điểm, đường, hoặc v&ugrave;ng sẽ bị chồng lớp l&ecirc;n.
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp từ bản đồ của bạn, bạn c&oacute; thể chọn  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới c&ugrave;ng trong danh s&aacute;ch xổ xuống. T&ugrave;y chọn n&agrave;y mở ra một thư viện, tại đ&oacute; bạn c&oacute; thể duyệt v&agrave; chọn c&aacute;c bộ dữ liệu từ nhiều nguồn kh&aacute;c nhau để sử dụng trong ph&acirc;n t&iacute;ch của m&igrave;nh. 
+            </p>
+        </div>
+    </div>
+    <div id="OverlayLayer">
+        <div><h2>Chọn lớp phủ</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp d&ugrave;ng để chồng l&ecirc;n lớp đầu v&agrave;o  
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp từ bản đồ của bạn, bạn c&oacute; thể chọn  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới c&ugrave;ng trong danh s&aacute;ch xổ xuống. T&ugrave;y chọn n&agrave;y mở ra một thư viện, tại đ&oacute; bạn c&oacute; thể duyệt v&agrave; chọn c&aacute;c bộ dữ liệu từ nhiều nguồn kh&aacute;c nhau để sử dụng trong ph&acirc;n t&iacute;ch của m&igrave;nh. 
+            </p> 
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>Chọn phương pháp phủ</h2></div>
+        <hr/>
+        <div>
+            <p>Phương ph&aacute;p chồng lớp x&aacute;c định c&aacute;ch kết hợp giữa lớp đầu v&agrave;o v&agrave; lớp phủ.
+
+                <ul>
+                    <li> <b>Giao cắt</b>&mdash;Kết quả sẽ chỉ chứa c&aacute;c đối tượng hoặc một phần đối tượng n&agrave;y trong lớp phủ m&agrave; được chồng lớp bằng c&aacute;c đối tượng trong lớp đầu v&agrave;o. Khi giao cắt đối tượng đường hoặc v&ugrave;ng, bạn c&oacute; t&ugrave;y chọn để chỉ định loại đối tượng bạn muốn l&agrave;m đầu ra.
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>Điểm với Điểm
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="Đầu v&agrave;o điểm v&agrave; điểm">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="Điểm v&agrave; điểm với đầu ra điểm">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Điểm với Đường
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-F1E6C6C8-4F51-4063-984D-0FC8D08EB2D2-web.png" alt="Đầu v&agrave;o điểm v&agrave; đường">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-02CFAFDC-1B3C-4C4B-A58C-7B0B78BA0B56-web.png" alt="Điểm v&agrave; đường với đầu ra điểm">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Điểm với V&ugrave;ng
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-5EE90BD6-CC3D-4E2F-A5D0-DC57298E8416-web.png" alt="đầu v&agrave;o điểm v&agrave; v&ugrave;ng">
+                                </p>
+                            </td>
+                            <td> <img src="../images/GUID-5CCA360F-D4C9-43AB-8FB2-E6E62DE93BD4-web.png" alt="điểm v&agrave; khu vực với đầu ra điểm">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Đường với Đường 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="Đầu v&agrave;o đường v&agrave; đường">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-DDCCB226-6490-4914-B87C-299125466256-web.png" alt="Đường v&agrave; đường với đầu ra điểm">
+                                </p>
+                                <p> <img src="../images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="Đường v&agrave; đường với đầu ra đường ">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Đường với V&ugrave;ng
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-E38EB7D6-9D35-4E0D-937A-9FEC4144AF2E-web.png" alt="Đầu v&agrave;o đường v&agrave; v&ugrave;ng">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-639F492C-BEE7-4A5F-AEBC-325B74FEC766-web.png" alt="Đường v&agrave; v&ugrave;ng với đầu ra điểm">
+                                </p>
+                                <p> <img src="../images/GUID-58DF5CF6-0A56-4717-AD9C-C3BEC8EA6906-web.png" alt="Điểm v&agrave; v&ugrave;ng với đầu ra đường">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>V&ugrave;ng với V&ugrave;ng
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="Đầu v&agrave;o v&ugrave;ng v&agrave; v&ugrave;ng">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-3F71AD46-A6A2-436D-8BBA-13E014BB94D0-web.png" alt="V&ugrave;ng v&agrave; v&ugrave;ng với đầu ra điểm">
+                                </p>
+                                <p> <img src="../images/GUID-6AF62F09-6D32-4212-97C6-844580E34A22-web.png" alt="V&ugrave;ng v&agrave; v&ugrave;ng với đầu ra đường">
+                                </p>
+                                <p> <img src="../images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="V&ugrave;ng v&agrave; v&ugrave;ng với đầu ra v&ugrave;ng">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>Hợp nhất</b>&mdash;Kết quả sẽ chứa c&aacute;c đối tượng từ cả lớp đầu v&agrave;o v&agrave; lớp phủ. T&ugrave;y chọn Hợp nhất chỉ khả dụng nếu cả lớp đầu v&agrave;o v&agrave; lớp phủ đều chứa đối tượng v&ugrave;ng.
+                    </li>
+                    <li> <b>X&oacute;a</b>&mdash;Kết quả sẽ chứa c&aacute;c đối tượng hoặc một phần đối tượng trong lớp phủ m&agrave; kh&ocirc;ng chồng lớp bằng c&aacute;c v&ugrave;ng trong lớp ph&acirc;n t&iacute;ch. Lớp phủ c&oacute; thể chứa c&aacute;c đối tượng v&ugrave;ng, đường, hoặc điểm.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Nếu chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b>, th&igrave; chỉ c&aacute;c đối tượng nh&igrave;n thấy trong lớp đầu v&agrave;o v&agrave; lớp phủ b&ecirc;n trong phạm vi bản đồ hiện tại mới được chồng lớp l&ecirc;n. Nếu bỏ chọn, tất cả c&aacute;c đối tượng trong lớp đầu v&agrave;o v&agrave; lớp phủ sẽ được chồng lớp l&ecirc;n, ngay cả khi ch&uacute;ng ở ngo&agrave;i phạm vi bản đồ hiện tại.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p> Đ&acirc;y l&agrave; t&ecirc;n lớp sẽ được tạo trong mục <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. N&oacute; sẽ c&oacute; kiểu đối tượng tương tự (v&ugrave;ng, đường, hoặc điểm) như lớp phủ. T&ecirc;n mặc định dựa v&agrave;o phương ph&aacute;p chồng lớp v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu bạn cần cung cấp t&ecirc;n mới.
+            </p>
+            <p>Sử dụng hộp xổ xuống  <b>Lưu kết quả trong</b>, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong mục <b>Nội dung của T&ocirc;i</b> nơi sẽ lưu trữ kết quả của bạn.
+            </p> 
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,16 @@
+<div class="esriAttributeInspector">
+    <div class="atiLayerName" dojoAttachPoint="layerName"></div>
+    <div class="atiAttributes" dojoAttachPoint="attributeTable"></div>
+    <div dojoAttachPoint="attachmentEditor"></div>
+    <div class="atiEditorTrackingInfo" dojoAttachPoint="editorTrackingInfoDiv"></div>
+    <div class="atiButtons" dojoAttachPoint="editButtons">
+        <button  dojoType="dijit.form.Button" class="atiButton atiDeleteButton"  dojoAttachPoint="deleteBtn" dojoAttachEvent="onClick: onDeleteBtn" showLabel="true" type="button">${NLS_deleteFeature}</button>
+        <div class="atiNavButtons" dojoAttachPoint="navButtons">
+            <div class="atiNavMessage" dojoAttachPoint="navMessage"></div>
+            <button  dojoType="dijit.form.Button" iconClass="atiButton atiFirstIcon" dojoAttachPoint="firstFeatureButton" dojoAttachEvent="onClick: onFirstFeature" showLabel="false" type="button">${NLS_first}</button>
+            <button  dojoType="dijit.form.Button" iconClass="atiButton atiPrevIcon" dojoAttachPoint="prevFeatureButton" dojoAttachEvent="onClick: onPreviousFeature" showLabel="false" type="button">${NLS_previous}</button>
+            <button  dojoType="dijit.form.Button" iconClass="atiButton atiNextIcon" dojoAttachPoint="nextFeatureButton" dojoAttachEvent="onClick: onNextFeature" showLabel="false" type="button">${NLS_next}</button>
+            <button  dojoType="dijit.form.Button" iconClass="atiButton atiLastIcon" dojoAttachPoint="lastFeatureButton" dojoAttachEvent="onClick: onLastFeature" showLabel="false" type="button">${NLS_last}</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,68 @@
+<div class="${css.container}" aria-label="${labels.widgetLabel}">
+  <div class="${css.header}" data-dojo-attach-point="dap_header" tabindex="0">
+    <span class="${css.swatchPreview} ${css.container}">
+      <span class="${css.swatch} ${css.swatchTransparencyBackground}"></span>
+      <span data-dojo-attach-point="dap_previewSwatch"
+            class="${css.swatch}"></span>
+    </span>
+    <span aria-hidden="true" role="presentation"
+          class="${css.collapseIcon} ${css.downArrowIcon}"></span>
+  </div>
+  <div class="${css.colorControls}" data-dojo-attach-point="dap_colorControls"
+       id="${id}-color-controls" tabindex="-1">
+    <div class="${css.middle}">
+      <div data-dojo-attach-point="dap_paletteContainer"
+           class="${css.palette} ${css.container}" tabindex="0">
+        <div data-dojo-attach-point="dap_primaryPalette"
+             class="${css.palette}" role="grid"></div><!--
+      -->
+        <div data-dojo-attach-point="dap_secondaryPalette"
+             class="${css.palette}" role="grid"></div>
+      </div>
+      <div class="${css.paletteOptions}">
+        <input type="text" aria-label="${labels.selectedColor}" data-dojo-type="dijit/form/TextBox"
+               data-dojo-attach-point="dap_hexInput" class="${css.hexInput}" />
+        <input class="${css.paletteToggle}" type="button"
+               data-dojo-type="dijit/form/ToggleButton"
+               data-dojo-attach-point="dap_paletteToggle"
+               label="${labels.more}" />
+      </div>
+    </div>
+    <div class="${css.footer}" data-dojo-attach-point="dap_footer">
+      <div class="${css.section} ${css.displayNone}"
+           data-dojo-attach-point="dap_suggestedColorSection">
+        <div class="${css.label}" id="${id}-suggested-colors-label">${labels.suggested}</div>
+        <div class="${css.suggested} ${css.palette}"
+             aria-labelledby="${id}-suggested-colors-label"
+             data-dojo-attach-point="dap_suggestedColorPaletteContainer"
+             tabindex="0" role="grid">
+          <div class="${css.suggested} ${css.swatchRow}"
+               data-dojo-attach-point="dap_suggestedColorPalette"
+               role="row"></div>
+      </div>
+      </div>
+      <div class="${css.section}"
+           data-dojo-attach-point="dap_recentColorSection">
+        <div class="${css.label}" id="${id}-recent-colors-label">${labels.recent}</div>
+        <div class="${css.recent} ${css.palette}" aria-labelledby="${id}-recent-colors-label"
+             data-dojo-attach-point="dap_recentColorPaletteContainer"
+             tabindex="0" role="grid">
+          <div class="${css.recent} ${css.swatchRow}"
+               data-dojo-attach-point="dap_recentColorPalette"
+               role="row"></div>
+        </div>
+      </div>
+      <div class="${css.section}"
+           data-dojo-attach-point="dap_transparencySection">
+        <div data-dojo-attach-point="dap_transparencyLabel"
+             class="${css.label}">${labels.transparency}
+      </div>
+        <div class="${css.transparencySlider}"
+             data-dojo-attach-point="dap_transparencySlider"
+             data-dojo-type="esri/dijit/HorizontalSlider"
+             data-dojo-props="minimum: 0, maximum: 100, discreteValues: 100, labels: ${_transparencyLabels}">
+        </div>
+      </div>
+  </div>
+  </div>
+</div>

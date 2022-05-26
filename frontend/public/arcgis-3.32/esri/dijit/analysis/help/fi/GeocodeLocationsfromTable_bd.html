@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Geokoodaa sijainnit taulukosta</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="Geokoodaa sijainnit taulukosta"></h2>
+        <hr/>
+    <p>Geokoodaus muuntaa osoitteet koordinaateiksi. T&auml;m&auml; ty&ouml;kalu muuntaa Big Data -tiedostojaon taulukon osoitteet kohdekarttatasoksi, jossa koordinaatit ovat lis&auml;sarakkeissa.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>Valitse syöteaineistotaulukko</h2></div>
+        <hr/>
+        <div>
+            <p>Geokoodattavat osoitteet sis&auml;lt&auml;v&auml; sy&ouml;teaineistotaulukko. 
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Valitse paikannin</h2></div>
+        <hr/>
+        <div>
+            <p>Valitse geokoodauksessa k&auml;ytett&auml;v&auml; paikannuspalvelu. Jos paikannuspalvelua, jota haluat k&auml;ytt&auml;&auml;, ei n&auml;y avattavassa valikossa, ota yhteys p&auml;&auml;k&auml;ytt&auml;j&auml;&auml;n ja pyyd&auml; h&auml;nt&auml; m&auml;&auml;ritt&auml;m&auml;&auml;n paikannuspalvelu er&auml;geokoodausta varten.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>Maa</h2></div>
+        <hr/>
+        <div>
+            <p>Jos kaikki osoitteesi ovat yhdest&auml; maasta, voit varmistaa mahdollisimman tarkat tulokset valitsemalla kyseisen maan. J&auml;t&auml; muussa tapauksessa t&auml;m&auml; parametri tyhj&auml;ksi.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Valitse aineistokentät</h2></div>
+        <hr/>
+        <div>
+            <p>Paikannuspalvelu edellytt&auml;&auml;, ett&auml; aineisto sis&auml;lt&auml;&auml; tietyt kent&auml;t, kuten osoitteen, kaupungin, osavaltion ja postinumeron. T&auml;sm&auml;yt&auml; sy&ouml;teaineistotiedoston tai -taulukon tietokent&auml;t paikantimen edellytt&auml;miin kenttiin avattavan valikon ruutujen avulla. Mit&auml; useamman kent&auml;n t&auml;sm&auml;yt&auml;t, sit&auml; tarkemmat tulokset saat. Jos sy&ouml;teaineistotaulukon aineisto on yhdess&auml; sarakkeessa, valitse  <b>Yksi kentt&auml;</b> ja valitse tietokentt&auml; avattavasta valikosta. Muussa tapauksessa valitse <b>Useita kentti&auml;</b> ja t&auml;sm&auml;yt&auml; asianmukaiset paikantimen kent&auml;t taulukon useita kentti&auml; sis&auml;lt&auml;viin sarakkeisiin.
+            </p>
+        </div>
+    </div>
+    <div id="includeAttributes">
+        <div><h2>Jokaiselle sijainnille</h2></div>
+        <hr/>
+        <div>
+            <p>Sis&auml;llyt&auml; paikannuspalvelun palauttamat lis&auml;kent&auml;t. Jos t&auml;m&auml; vaihtoehto on valittu, kaikki paikantimen luomat kent&auml;t palautetaan. Jos t&auml;t&auml; vaihtoehtoa ei ole valittu, l&auml;ht&ouml;aineistosi palautetaan geokoodattujen koordinaattien kanssa. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tuloksen nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Luotavan karttatason nimi.  Jos kirjoitat kohteeseen ArcGIS Data Store, tulokset tallennetaan  <b>Oma sis&auml;lt&ouml;</b> -osioon ja lis&auml;t&auml;&auml;n karttaan. Jos kirjoitat Big Data -tiedostojakoon, tulokset tallennetaan Big Data -tiedostojakoon ja lis&auml;t&auml;&auml;n sen manifest-tiedostoon. Tuloksia  ei lis&auml;t&auml; karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttataso on jo olemassa, ty&ouml;kalua ei voi suorittaa.
+            </p>
+            <p>Kun kirjoitat kohteeseen  ArcGIS Data Store  (relaatiotietokantaan perustuvaan tai spatiotemporaaliseen Big Data -s&auml;il&ouml;&ouml;n) k&auml;ytt&auml;m&auml;ll&auml; avattavaa  <b>Tallenna tulos kohteeseen</b> -luetteloa, voit m&auml;&auml;ritt&auml;&auml; kansion nimen <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

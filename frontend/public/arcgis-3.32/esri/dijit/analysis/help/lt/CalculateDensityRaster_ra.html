@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Skaičiuoti tankį</h2><p/>
+        <h2><img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" alt="Tankio apskaičiavimo įrankis"></h2>
+        <hr/>
+    <p>&Scaron;iuo įrankiu i&scaron; ta&scaron;kų ir linijų kuriamas tankio žemėlapis, paskleidžiant jame tam tikrų rei&scaron;kinių (pateikiamų kaip ta&scaron;kų arba linijų atributai) žinomus kiekius. Rezultatas yra sluoksnis, kuriame plotai klasifikuojami nuo rečiausių iki tankiausių.
+    </p>
+    <p>Ta&scaron;kų įvestyje kiekvienas ta&scaron;kas turėtų atvaizduoti tam tikro įvykio arba incidento vietą, o rezultatų sluoksnis atspindi įvykių skaičių ploto vienete. Didesnė tankio reik&scaron;mė naujoje vietoje rei&scaron;kia, kad &scaron;alia &scaron;ios vietos yra daugiau ta&scaron;kų. Daugeliu atvejų rezultato sluoksnį galima interpretuoti kaip įvykių tikimybę. Pavyzdžiui, jei įvesties ta&scaron;kai rodo žaibavimo vietas, rezultato sluoksnį galima interpretuoti kaip būsimų žaibo smūgių tikimybes.
+    </p>
+    <p>Linijų įvestyje jų tankio pavir&scaron;ius atspindi bendrą linijų, esančių netoli kiekvienos vietos, sumą. Apskaičiuotų tankio reik&scaron;mių vienetai yra ilgių suma matuojamo vieneto plote. Pavyzdžiui, jei linijos vaizduoja upes, rezultatų sluoksnyje bus parodytas bendras upių, patenkančių į paie&scaron;kos spindulį, ilgis. &Scaron;į rezultatą galima naudoti norint identifikuoti palankius gyvuliams ganyti plotus.
+    </p>
+    <p>Kiti &scaron;io įrankio naudojimo atvejai:
+
+        <ul>
+            <li>Nusikaltimų tankio žemėlapių kūrimas, siekiant policijos padaliniams padėti tinkamai paskirstyti resursus didelio nusikalstamumo vietose.
+                
+ 
+            </li>
+            <li>Ligoninių tankio apygardoje skaičiavimas. Rezultatų sluoksnyje bus rodomi plotai su gero ir prasto pasiekiamumo ligoninėmis, o &scaron;ią informaciją galima naudoti nusprendžiant, kur statyti naujas ligonines.
+                
+ 
+            </li>
+            <li>Didelio mi&scaron;kų gaisringumo plotų nustatymas, atsižvelgiant į istorinius duomenis apie vietas, kuriose degė mi&scaron;kai.
+                
+ 
+            </li>
+            <li>Bendruomenių, esančių toli nuo didžiųjų greitkelių, vietų nustatymas, planuojant, kur turėtų būti tiesiami nauji keliai.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointOrLineFeatures">
+        <div><h2>Pasirinkite įvesties taškų arba linijų sluoksnį, pagal kurį bus skaičiuojamas tankis</h2></div>
+        <hr/>
+        <div>
+            <p>Įvesties ta&scaron;kinis ar linijinis sluoksnis, kuris bus naudojamas apskaičiuojant tankio sluoksnį.
+            </p>
+        </div>
+    </div>
+    <div id="countField">
+        <div><h2>Naudoti skaičiavimo lauką</h2></div>
+        <hr/>
+        <div>
+            <p>Pateikite lauką, nurodantį kiekvienoje vietoje įvykusių įvykių skaičių. Pavyzdžiui, jei turite ta&scaron;kus, vaizduojančius miestus, kaip skaičiaus lauką galite naudoti lauką, rodantį miesto gyventojų skaičių, o gyventojų tankio rezultato sluoksnyje bus apskaičiuojamas didesnis gyventojų tankis netoli miestų, kurių gyventojų skaičius yra didesnis.
+            </p>
+            <p>Jei naudojamas numatytasis pasirinkimas  <b>Nėra</b>, kiekviena vieta bus vertinama kaip vienetas.
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Paieškos atstumas</h2></div>
+        <hr/>
+        <div>
+            <p>Įveskite atstumą, nurodydami, kaip toli ie&scaron;koti ta&scaron;kinių ir linijinių elementų skaičiuojant tankio reik&scaron;mes. Pavyzdžiui, jei pateikiate 10 000 metrų paie&scaron;kos atstumą, bet kokios vietos tankis i&scaron;vesties sluoksnyje apskaičiuojamas atsižvelgiant į elementus, esančius 10 000 metrų atstumu nuo vietos. Bet kokios vietos, kurioje 10 000 metrų atstumu neįvyko jokių įvykių, tankio reik&scaron;mė bus nulis.
+            </p>
+            <p>Jei atstumas nepateiktas, skaičiuojant bus naudojama numatytoji reik&scaron;mė, nustatoma pagal įvesties elementų vietas ir skaičiaus lauko reik&scaron;mes (jei pateiktas skaičiavimo laukas).
+            </p>
+        </div>
+    </div>
+    <div id="outputAreaUnits">
+        <div><h2>Išvesties ploto vienetai</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodykite i&scaron;vesties ploto vienetą. Tankis yra kiekis, padalintas i&scaron; ploto, o &scaron;is parametras nurodo tankio skaičiavimo matavimo vienetus.
+            </p>
+            <p>Galima rinktis &scaron;iuos matavimo vienetus: kvadratines mylias, kvadratines pėdas, kvadratinius metrus ir kvadratinius kilometrus.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Išvesties gardelės dydis</h2></div>
+        <hr/>
+        <div>
+            <p>I&scaron;vesties rastrų gardelės dydis ir matavimo vienetai.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Sluoksnio, kuris bus sukurtas puslapyje  <b>Turinys</b> ir įtrauktas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau egzistuoja, būsite papra&scaron;yti pateikti kitą pavadinimą.
+            </p>
+            <p>Galite nurodyti aplanko  <b>Turinyje</b>, kuriame rezultatai bus įra&scaron;yti naudojant i&scaron;&scaron;okantįjį meniu <b>Rezultatą įra&scaron;yti į</b>, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

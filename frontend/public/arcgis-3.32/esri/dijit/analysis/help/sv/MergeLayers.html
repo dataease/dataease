@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Sammanfoga lager</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Sammanfoga lager"></h2>
+        <hr/>
+    <p>Med det h&auml;r verktyget kan du kopiera geoobjekt fr&aring;n tv&aring; lager till ett nytt lager. Alla lager som sammanfogas m&aring;ste inneh&aring;lla samma geoobjektstyper (punkter, linjer eller omr&aring;den). Du kan styra hur f&auml;lten fr&aring;n indatalagren sammanfogas och kopieras. Exempel:
+        <ul>
+            <li>Jag har tre lager f&ouml;r England, Wales och Skottland, och vill ha ett enda lager f&ouml;r Storbritannien. 
+            </li>
+            <li>Jag har 12 lager som vart och ett inneh&aring;ller paketinformation f&ouml;r sammanh&auml;ngande distrikt Jag vill sammanfoga dem till ett enda lager och bara beh&aring;lla de f&auml;lt som har samma namn och typ i de 12 indatalagren.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Om  <b>Anv&auml;nd aktuell kartutbredning</b> &auml;r markerat sammanfogas endast de geoobjekt som &auml;r synliga i den aktuella kartutbredningen. Om alternativet inte markeras sammanfogas alla geoobjekt i de b&aring;da lagren, &auml;ven om de ligger utanf&ouml;r den aktuella kartutbredningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Välj lager</h2></div>
+        <hr/>
+        <div>
+            <p>Punkt-, linje- eller omr&aring;desgeoobjekt som ska sammanfogas med lagret som anges nedan. 
+            </p>
+        </div>
+    </div>
+    <div id="MergeLayer">
+        <div><h2>Välj lager som ska sammanfogas</h2></div>
+        <hr/>
+        <div>
+            <p>V&auml;lj det lager som ska sammanfogas med det f&ouml;rsta lagret.
+            </p>
+        </div>
+    </div>
+    <div id="MergingAttributes">
+        <div><h2>Ändra sammanfogningsfält</h2></div>
+        <hr/>
+        <div>
+            <p>Som standard f&ouml;ljer alla f&auml;lt fr&aring;n b&aring;da indatak&auml;llorna med till utdatalagret. Du kan &auml;ndra hur f&auml;lten f&ouml;rs &ouml;ver till utdatalagret enligt f&ouml;ljande:
+                <ul>
+                    <li> <b>Byt namn</b> &ndash; F&auml;ltet f&aring;r ett nytt namn i utdatalagret.
+                    </li>
+                    <li> <b>Ta bort</b> &ndash; F&auml;ltet tas bort fr&aring;n utdatalaget.
+                    </li>
+                    <li> <b>Matcha</b> &ndash; F&auml;ltnamnen g&ouml;rs likv&auml;rdiga. V&auml;rdena av f&auml;lten fr&aring;n lagret som ska sammanfogas kopieras till det matchande utdataf&auml;ltet.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Om b&aring;da lagren inneh&aring;ller ett f&auml;lt med ett identiskt namn och datatyp, sl&aring;s inneh&aring;llet i b&aring;da f&auml;lten ihop till ett f&auml;lt med det namnet. Det g&auml;ller inte f&ouml;r f&auml;lt d&auml;r  <b>Matcha</b> anv&auml;nds i parametern <b>&Auml;ndra sammanfogade f&auml;lt</b>.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagernamnet redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Om du anv&auml;nder listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

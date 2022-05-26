@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Extreu el ràster</h2><p/>
+        <h2><img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" alt="Eina Extreu el r&agrave;ster del portal"></h2>
+        <hr/>
+    <p>Aquesta eina pot retallar un r&agrave;ster per un l&iacute;mit, ja sigui una &agrave;rea rectangular o una forma que definiu de manera interactiva a la pantalla. Podeu retallar per l'extensi&oacute; de l'&agrave;rea que es mostra al mapa actualment o b&eacute; per l'&agrave;rea d'estudi definida per un pol&iacute;gon.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Trieu les dades d'entrada que s'extrauran</h2></div>
+        <hr/>
+        <div>
+            <p>Capa d'entrada que es retallar&agrave;.
+            </p>
+        </div>
+    </div>
+    <div id="clippingGeometry">
+        <div><h2>Especifiqueu la geometria de retallada</h2></div>
+        <hr/>
+        <div>
+            <p>Trieu el tipus d'extensi&oacute; que s'utilitzar&agrave; en retallar la geometria de la capa:
+
+                <ul>
+                    <li>Utilitza l'extensi&oacute; actual: l'extensi&oacute; de mapa actual s'utilitzar&agrave; per retallar la capa resultant. Aquesta &eacute;s l'opci&oacute; per defecte.
+                        
+
+                    </li>
+                    <li>Trieu l'&agrave;rea d'estudi: permet triar si el resultat mostrar&agrave; l'&agrave;rea de dins o de fora de l'extensi&oacute; de la geometria. Si trieu l'opci&oacute;  <b>Dades dins de la geometria</b>, les imatges de fora de l'extensi&oacute; s'eliminaran. Si trieu l'opci&oacute; <b>Dades fora de la geometria</b>, les imatges de dins de l'extensi&oacute; s'eliminaran. Tamb&eacute; podeu definir una geometria de retallada mitjan&ccedil;ant l'eina de dibuix.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Podeu especificar el nom d'una carpeta de  <b>El meu contingut</b> on es desar&agrave; el resultat mitjan&ccedil;ant el quadre desplegable <b>Desa el resultat a</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

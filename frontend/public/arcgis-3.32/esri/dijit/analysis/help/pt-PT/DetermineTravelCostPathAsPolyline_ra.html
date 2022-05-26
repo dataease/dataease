@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Determinar Percurso de Custo de Viagem Como Polilinha</h2><p/>
+        <h2><img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" alt="Ilustra&ccedil;&atilde;o de ferramenta Determinar Percurso de Custo de Viagem Como Polilinha"></h2>
+        <hr/>
+    <p>Esta ferramenta calcula o percurso de polilinha de menor custo entre origens e destinos conhecidos.
+    </p>
+    <p>Como exemplos de aplica&ccedil;&otilde;es, incluem-se as seguintes:
+        <ul>
+            <li>Encontre o melhor percurso para uma nova estrada em termos de custos de constru&ccedil;&atilde;o.
+                
+
+            </li>
+            <li>Identifique o percurso a tomar a partir de v&aacute;rios locais suburbanos (origens) at&eacute; ao centro comercial mais pr&oacute;ximo (destino).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Se a op&ccedil;&atilde;o  <b>Utilizar a extens&atilde;o atual do mapa</b> se encontrar selecionada, apenas os locais nas camadas de entrada que s&atilde;o vis&iacute;veis na extens&atilde;o atual do mapa ser&atilde;o analisados. Se n&atilde;o selecionar a op&ccedil;&atilde;o, ser&atilde;o analisados todos os locais em ambas as camadas de entrada, mesmo que se encontrem fora da extens&atilde;o atual do mapa.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Selecionar camada raster ou de camada de origem a partir da qual determinar percursos</h2></div>
+        <hr/>
+        <div>
+            <p>Um servi&ccedil;o de imagens ou servi&ccedil;o de elementos que identifica as c&eacute;lulas a partir das quais o percurso de menor custo &eacute; determinado para o destino de menor custo.
+            </p>
+            <p>Caso a entrada seja um servi&ccedil;o de imagem, a entrada consiste de c&eacute;lulas que t&ecirc;m valores v&aacute;lidos (zero &eacute; um valor v&aacute;lido), e &agrave;s c&eacute;lulas restantes tem de ser atribu&iacute;do o valor NoData.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Selecionar a camada raster de custo de viagem</h2></div>
+        <hr/>
+        <div>
+            <p>Um raster que define a imped&acirc;ncia ou custo para que se mova de modo planim&eacute;trico atrav&eacute;s de cada c&eacute;lula.
+            </p>
+            <p>O valor na localiza&ccedil;&atilde;o de cada c&eacute;lula representa a dist&acirc;ncia de custo-por-unidade para movimentar atrav&eacute;s da c&eacute;lula. Cada localiza&ccedil;&atilde;o de c&eacute;lula &eacute; multiplicada pela resolu&ccedil;&atilde;o de c&eacute;lula enquanto tamb&eacute;m compensa o movimento diagonal para obter os custos totais da passagem pela c&eacute;lula.
+            </p>
+            <p>Os valores do raster de custo podem ser n&uacute;meros inteiros ou de ponto flutuante, mas n&atilde;o podem ser negativos ou zero (n&atilde;o pode ter um custo negativo ou zero).
+            </p>
+        </div>
+    </div>
+    <div id="inputDestinationRasterOrFeatures">
+        <div><h2>Raster ou Elementos de Destino de Entrada</h2></div>
+        <hr/>
+        <div>
+            <p>Uma entrada que define os destinos utilizados para calcular a dist&acirc;ncia. A camada pode ser de dados ou de elementos.
+            </p>
+            <p>Caso a entrada seja um servi&ccedil;o de imagem, a entrada consiste de c&eacute;lulas que t&ecirc;m valores v&aacute;lidos (zero &eacute; um valor v&aacute;lido), e &agrave;s c&eacute;lulas restantes tem de ser atribu&iacute;do o valor NoData.
+            </p>
+        </div>
+    </div>
+    <div id="outputPolylineName">
+        <div><h2>Nome da camada de polilinhas resultante</h2></div>
+        <hr/>
+        <div>
+            <p>O nome da camada que ser&aacute; criada em  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Se a camada j&aacute; existir, ser-lhe-&aacute; pedido que introduza outro nome.
+            </p>
+            <p>&Eacute; poss&iacute;vel especificar o nome de uma pasta em  <b>O Meu Conte&uacute;do</b>, onde o resultado ser&aacute; guardado utilizando a op&ccedil;&atilde;o <b>Guardar Resultado em</b> da caixa suspensa.
+            </p>
+        </div>
+    </div>
+    <div id="pathType">
+        <div><h2>Selecionar tipo de percursos a determinar</h2></div>
+        <hr/>
+        <div>
+            <p>Define o modo como os valores e zonas no destino de entrada ser&atilde;o interpretados nos c&aacute;lculos de custo de percurso
+            </p>
+            <ul>
+                <li>Melhor &Uacute;nico&mdash;Para todas as c&eacute;lulas ou locais nos dados de destino de entrada, o percurso de menor custo &eacute; derivado do local com o m&iacute;nimo de percursos de menor custo at&eacute; ao local de origem. Esta &eacute; a predefini&ccedil;&atilde;o.
+                    
+
+                </li>
+                <li>Para Cada C&eacute;lula&mdash;Por cada c&eacute;lula ou local com valores v&aacute;lidos nos dados de destino de entrada, &eacute; determinado e guardado um percurso de menor custo no servi&ccedil;o de elementos de sa&iacute;da. Com esta op&ccedil;&atilde;o, cada c&eacute;lula dos dados de destino de entrada &eacute; tratada separadamente, e &eacute; determinado um percurso de menor custo para cada c&eacute;lula.
+                    
+
+                </li>
+                <li>Para Cada Zona&mdash;Por cada zona nos dados de destino de entrada, &eacute; determinado e guardado um percurso de menor custo no servi&ccedil;o de elementos de sa&iacute;da. Com esta op&ccedil;&atilde;o, o caminho de menor custo para cada zona come&ccedil;a na c&eacute;lula ou local com a menor pondera&ccedil;&atilde;o de custo e dist&acirc;ncia na zona.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
+</html>

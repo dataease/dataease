@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="raToolbox">
+        <p>Med rasteranalyse kan du udf&oslash;re analyse af store rasterdatas&aelig;t ved hj&aelig;lp af  ArcGIS Image Server. Dette g&oslash;r dig i stand til at analysere flere data hurtigere ved at udnytte serverens styrke. De v&aelig;rkt&oslash;jss&aelig;t, der p&aring; nuv&aelig;rende tidspunkt er tilg&aelig;ngelige via  Portal for ArcGIS, er  <b>Summ&eacute;r data</b>, <b>Analys&eacute;r m&oslash;nstre</b>, <b>Anvend n&aelig;rhed</b>, <b>Analys&eacute;r billede</b>, <b>Analys&eacute;r terr&aelig;n</b>, <b>Administr&eacute;r data</b> og <b>Deep Learning</b>.
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="smallsize">
+        <h2>Summér data</h2>
+        <hr/>
+        <p>Dette v&aelig;rkt&oslash;jss&aelig;t indeholder et v&aelig;rkt&oslash;j til beregning af nogle statistikker for et rasterlag inden for de omr&aring;degr&aelig;nser, som du definerer. 
+            <ul>
+                <li> <b>Summ&eacute;r raster inden for</b> beregner statistik for rasterceller, der ligger inden for definerede omr&aring;degr&aelig;nser.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="SummarizeRasterWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Summér raster inden for</h2></td>
+                    <td>
+                    <img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" class="titleImage" alt="Summ&eacute;r raster inden for-v&aelig;rkt&oslash;j">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Beregner nogle oversigtsstatistikker for rasterceller inden for definerede omr&aring;der.
+            </p>
+            <p>Her er nogle eksempelanvendelser: 
+
+                <ul>
+                    <li>Ved angivelse af et lag med afvandingsomr&aring;der og et h&oslash;jderasterlag beregnes h&oslash;jdeintervallerne inden for hvert afvandingsomr&aring;de med henblik p&aring; at fastl&aelig;gge, hvilke afvandingsomr&aring;der der vil have den kraftigste vandgennemstr&oslash;mning.
+                        
+
+                    </li>
+                    <li>Ved angivelse af et lag med administrative styringsenheder og et rasterlag med arealanvendelseskategorier beregnes variationen af arealanvendelsesv&aelig;rdier inden for hvert styringsomr&aring;de med henblik p&aring; at identificere, hvilke omr&aring;der der kr&aelig;ver mest arbejde for at f&aring; fastlagt en administrationsplan.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="regularsize">
+        <h2>Analysér mønstre</h2>
+        <hr/>
+        <p>Disse v&aelig;rkt&oslash;jer hj&aelig;lper dig med at identificere, kvantificere og visualisere geografiske m&oslash;nstre i dine data. 
+
+            <ul>
+                <li> <b>Beregn t&aelig;thed</b> tager kendte m&aelig;ngder af visse f&aelig;nomener og opretter et t&aelig;thedskort ved at sprede disse m&aelig;ngder p&aring; tv&aelig;rs af kortet.
+                    
+
+                </li>
+                <li> <b>Interpol&eacute;r punkter</b> forudsiger v&aelig;rdier p&aring; nye placeringer baseret p&aring; m&aring;linger fundet i en samling af punkter.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityRasterTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Beregn tæthed</h2></td>
+                    <td>
+                    <img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" class="titleImage" alt="Beregn t&aelig;thed-v&aelig;rkt&oslash;j">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>T&aelig;thedsanalyse tager kendte m&aelig;ngder af visse f&aelig;nomener og opretter et t&aelig;thedskort ved at sprede disse m&aelig;ngder p&aring; tv&aelig;rs af kortet. Du kan f.eks. bruge dette v&aelig;rkt&oslash;j til at vise koncentrationer af lynnedslag eller tornadoer, adgang til sundhedscentre og befolkningst&aelig;theder.
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsEBKTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Interpolér punkter</h2></td>
+                    <td>
+                    <img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" class="titleImage" alt="Interpol&eacute;r punkter-v&aelig;rkt&oslash;j">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Dette v&aelig;rkt&oslash;j giver dig mulighed for at forudsige v&aelig;rdier p&aring; nye placeringer baseret p&aring; m&aring;linger fundet i en samling af punkter. V&aelig;rkt&oslash;jet tager punktdata med v&aelig;rdier for hvert punkt og returnerer omr&aring;der klassificeret vha. forudsagte v&aelig;rdier. Du kan f.eks. bruge dette v&aelig;rkt&oslash;j til at forudsige nedb&oslash;rsm&aelig;ngder over et afvandingsomr&aring;de baseret p&aring; m&aring;linger foretaget ved individuelle regnm&aring;lere.
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="regularsize">
+        <h2>Anvend nærhed</h2>
+        <hr/>
+        <p>Disse v&aelig;rkt&oslash;jer hj&aelig;lper dig med at besvare et af de mest almindelige sp&oslash;rgsm&aring;l i geografisk analyse: &quot;Hvad ligger i n&aelig;rheden af hvad?&quot;
+
+            <ul>
+                <li> <b>Beregn afstand</b> beregner euklidisk afstand, retning og allokering ud fra en enkelt kilde eller et s&aelig;t af kilder.
+                    
+
+                </li>
+                <li> <b>Beregn optimale rejseomkostninger-netv&aelig;rk</b> beregner det optimale omkostningsnetv&aelig;rk ud fra et s&aelig;t af input-regioner.
+                    
+
+                </li>
+                <li> <b>Beregn rejseomkostninger som polylinje</b> beregner polylinjeruten med de laveste omkostninger mellem kilder og kendte destinationer.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDistanceTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Beregn afstand</h2></td>
+                    <td>
+                    <img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" class="titleImage" alt="Beregn afstand">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Beregner den euklidiske afstand, retning og allokering ud fra en enkelt kilde eller et s&aelig;t af kilder. Du kan bruge dette v&aelig;rkt&oslash;j til at afg&oslash;re, hvor langt en placering er fra en vej, en bygning eller en park. Du kan ogs&aring; afg&oslash;re, hvilken retning du skal rejse fra et sted for at vende tilbage til en kilde p&aring; den mest direkte m&aring;de. Du kan se for hver enkelt placering i dit unders&oslash;gelsesomr&aring;de, hvilken kilde der er den n&aelig;rmeste.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineOptimumTravelCostNetworkTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Beregn optimale rejseomkostninger-netværk</h2></td>
+                    <td>
+                    <img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" class="titleImage" alt="Illustration af v&aelig;rkt&oslash;jet Beregn optimale rejseomkostninger-netv&aelig;rk">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Beregner det optimale omkostningsnetv&aelig;rk ud fra et s&aelig;t af input-regioner.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineTravelCostPathAsPolylineTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Beregn rejseomkostninger som polylinje</h2></td>
+                    <td>
+                    <img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" class="titleImage" alt="Illustration af v&aelig;rkt&oslash;jet Beregn rejseomkostninger som polylinje">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Beregner polylinjeruten med de laveste omkostninger mellem kilder og kendte destinationer.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeImageCategory" class="smallsize">
+        <h2>Analysér billede</h2>
+        <hr/>
+        <p>F&oslash;lgende v&aelig;rkt&oslash;j hj&aelig;lper dig med at analysere billeder. 
+            <ul>
+                <li> <b>Anvend rasterfunktionsskabelon</b> behandler dine billeder vha. den k&aelig;de af funktioner, der er angivet i rasterfunktionsskabelonen.
+                </li>
+                <li> <b>Overv&aring;g vegetation</b> registrerer vegetation inde i det billede p&aring; grundlag af aritmetiske handlinger p&aring; b&aring;ndene.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ApplyRFxTemplateTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Anvend rasterfunktionsskabelon</h2></td>
+                    <td>
+                    <img src="../images/GUID-6464A140-88C7-4CCB-BB2A-07548ADC9981-web.png" class="titleImage" alt="Anvend rasterfunktionsskabelon">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Behandler dine billeder vha. den k&aelig;de af funktioner, der er angivet i rasterfunktionsskabelonen.
+            </p>
+            <br/>
+        </div>
+        <div id="MonitorVegetationTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Overvåg vegetation</h2></td>
+                    <td>
+                    <img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" class="titleImage" alt="Overv&aring;g vegetation-v&aelig;rkt&oslash;jet til Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Udf&oslash;rer en aritmetisk handling p&aring; b&aring;ndene i et multiband-rasterlag med henblik p&aring; at afsl&oslash;re oplysninger om vegetationsd&aelig;kket i unders&oslash;gelsesomr&aring;det.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeTerrainCategory" class="regularsize">
+        <h2>Analysér terræn</h2>
+        <hr/>
+        <p>Disse v&aelig;rkt&oslash;jer hj&aelig;lper dig med at analysere rasteroverflader. 
+            <ul>
+                <li> <b>Beregn stigning</b> beregner terr&aelig;nets stejlhed.
+                    
+
+                </li>
+                <li> <b>Afledt aspekt</b> beregner retningen for den stejleste stigning p&aring; hver position.
+                    
+
+                </li>
+                <li> <b>Opret udsigtsomr&aring;de</b> identificerer, hvad der kan ses fra et hvilket som helst punkt i landskabet.
+                    
+
+                </li>
+                <li> <b>Vandskel</b> beregner afvandingsomr&aring;det over identificerede placeringer p&aring; en overflade.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateSlopeTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Beregn stigning</h2></td>
+                    <td>
+                    <img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" class="titleImage" alt="Beregn stigning-v&aelig;rkt&oslash;j til Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Identificerer en overflade, der viser stigningen for de indtastede h&oslash;jdedata. Stigningen repr&aelig;senterer &aelig;ndringen af h&oslash;jden for hver celle i den digitale elevationsmodel (DEM).
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveAspectTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Afledt aspekt</h2></td>
+                    <td>
+                    <img src="../images/GUID-D03FF025-0530-4D0D-87A3-B25D6716F8F0-web.png" class="titleImage" alt="Afledt aspektv&aelig;rkt&oslash;j til Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Identificerer den nedadg&aring;ende h&aelig;ldning ud fra den maksimale &aelig;ndring af v&aelig;rdien af hver celle i forhold til dens naboceller. Man kan t&aelig;nke p&aring; aspekt som en h&aelig;ldningsretning.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Opret udsigtsområde</h2></td>
+                    <td>
+                    <img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" class="titleImage" alt="Opret udsigtsomr&aring;de-v&aelig;rkt&oslash;j">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Bestemmer positioner p&aring; en rasteroverflade, der er synlige for et s&aelig;t observat&oslash;rer.
+            </p>
+            <br/>
+        </div>
+        <div id="WatershedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Vandskel</h2></td>
+                    <td>
+                    <img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" class="titleImage" alt="Vandskelsopgave">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Fastl&aelig;gger afvandingsomr&aring;det over et s&aelig;t celler i en raster.
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="regularsize">
+        <h2>Håndtér data</h2>
+        <hr/>
+        <p>Disse v&aelig;rkt&oslash;jer bruges b&aring;de til den daglige h&aring;ndtering af geografiske data og til at kombinere data inden analyse. 
+            <ul>
+                <li> <b>Udtr&aelig;k raster</b> klipper dele ud fra et rasterdatas&aelig;t med henblik p&aring; yderligere analyse.
+                    
+
+                </li>
+                <li> <b>Genberegn v&aelig;rdier</b> tildeler forskellige v&aelig;rdier til rasterceller.
+                    
+
+                </li>
+                <li> <b>Konvert&eacute;r objekt til raster</b> konverterer vektordata til raster.
+                    
+
+                </li>
+                <li> <b>Konvert&eacute;r raster til objekt</b> konverterer rasterdata til vektordata.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ExtractRasterTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Udtræk raster</h2></td>
+                    <td>
+                    <img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" class="titleImage" alt="Udtr&aelig;k raster-v&aelig;rkt&oslash;j til Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Udtr&aelig;k celler fra rasterdata baseret p&aring; v&aelig;rdi, form eller udstr&aelig;kning af et andet datas&aelig;t.
+            </p>
+            <br/>
+        </div>
+        <div id="RemapValuesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Genberegn værdier</h2></td>
+                    <td>
+                    <img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" class="titleImage" alt="Genberegn v&aelig;rdier-v&aelig;rkt&oslash;j til Portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Redig&eacute;r individuelle cellev&aelig;rdier eller intervaller med cellev&aelig;rdier til nye v&aelig;rdier.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertFeatureToRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Konvertér objekt til raster</h2></td>
+                    <td>
+                    <img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" class="titleImage" alt="Konvert&eacute;r objekt til raster-v&aelig;rkt&oslash;j">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Opret et nyt rasterdatas&aelig;t ud fra et eksisterende vektordatas&aelig;t.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertRasterToFeatureTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Konvertér raster til objekt</h2></td>
+                    <td>
+                    <img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" class="titleImage" alt="Konvert&eacute;r raster til objekt-v&aelig;rkt&oslash;jet">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Opret et nyt vektordatas&aelig;t ud fra et eksisterende rasterdatas&aelig;t.
+            </p>
+            <br/>
+        </div>
+    <div id="DeepLearningCategory" class="largesize">
+        <h2>Værktøjer til Deep Learning</h2>
+        <hr/>
+        <p>Disse v&aelig;rkt&oslash;jer 	bruges til at registrere specifikke objekter i et billede eller til at klassificere pixels i et rasterdatas&aelig;t. Deep Learning er en maskinl&aelig;ringsmetode, der benytter sig af kunstig intelligens. Den registrerer objekter i billeder ved hj&aelig;lp af flere lag i neurale netv&aelig;rk, hvor hvert lag er i stand til at udtr&aelig;kke et eller flere unikke objekter i billedet. Disse v&aelig;rkt&oslash;jer bruger de modeller, der er blevet tr&aelig;net til at registrere specifikke objekter i tredjeparts Deep Learning-frameworks - f.eks. TensorFlow, CNTK og Keras - og output er objekter eller klassekort.
+            <ul>
+                <li> <b>Klassificer pixels ved hj&aelig;lp af Deep Learning</b> producerer en klassificeret raster ved hj&aelig;lp af en tr&aelig;net Deep Learning-model.
+                </li>
+                <li> <b>Registrer objekter ved hj&aelig;lp af Deep Learning</b> producerer en objektklasse, der indeholder objekter, som den finder i en inputraster ved hj&aelig;lp af en tr&aelig;net Deep Learning-model.
+                </li>
+            </ul>
+             
+        </p>
+    </div>
+        <div id="ClassifyPixelsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Klassificer pixels ved hjælp af Deep Learning</h2></td>
+                    <td>
+                    <img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" class="titleImage" alt="Klassificer pixels ved hj&aelig;lp af Deep Learning">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>K&oslash;rer en tr&aelig;net Deep Learning-model p&aring; en inputraster for at frembringe en klassificeret raster, hvor hver gyldig pixel har f&aring;et tildelt en klasseetiket.
+            </p>
+            <br/>
+        </div>
+        <div id="DetectObjectsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Registrer objekter ved hjælp af Deep Learning</h2></td>
+                    <td>
+                    <img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" class="titleImage" alt="Registrer objekter ved hj&aelig;lp af Deep Learning">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>K&oslash;rer en tr&aelig;net Deep Learning-model p&aring; en inputraster for at frembringe en objektklasse, der indeholder de objekter, den finder. Objekterne kan v&aelig;re afgr&aelig;nsende kasser eller polygoner rundt om de objekter, der findes, eller de kan pege p&aring; objekternes centrum.
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

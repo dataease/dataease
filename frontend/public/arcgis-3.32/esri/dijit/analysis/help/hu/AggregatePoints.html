@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Pontok összevonása</h2><p/>
+        <h2><img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" alt="Pontok &ouml;sszevon&aacute;sa"></h2>
+        <hr/>
+    <p>Ez az eszk&ouml;z egy pont &eacute;s polygon r&eacute;teggel műk&ouml;dik. Elsők&eacute;nt meghat&aacute;rozza, hogy mely pontok esnek az egyes ter&uuml;leteken bel&uuml;l. A pont-ter&uuml;let t&eacute;rbeli kapcsolat meghat&aacute;roz&aacute;sa ut&aacute;n kisz&aacute;m&iacute;tja a ter&uuml;leten tal&aacute;lhat&oacute; &ouml;sszes ponttal kapcsolatos statisztikai adatokat, &eacute;s hozz&aacute;rendeli őket a ter&uuml;lethez. A legalapvetőbb statisztikai adat a ter&uuml;leten bel&uuml;li pontok sz&aacute;ma, de m&aacute;s statisztikai adatok kinyer&eacute;s&eacute;re is lehetős&eacute;g van. 
+    </p>
+    <p>Tegy&uuml;k fel p&eacute;ld&aacute;ul, hogy rendelkez&eacute;sre &aacute;llnak k&aacute;v&eacute;z&oacute;k hely&eacute;nek pontszerű vektoros elemei &eacute;s megy&eacute;k ter&uuml;let vektoros elemei, &eacute;s szeretn&eacute; megy&eacute;nk&eacute;nt &ouml;sszes&iacute;teni a k&aacute;v&eacute;&eacute;rt&eacute;kes&iacute;t&eacute;st.  Felt&eacute;telezve azt, hogy a k&aacute;v&eacute;z&oacute;k rendelkeznek  <i>TOTAL_SALES</i> attrib&uacute;tummal, kinyerheti a megy&eacute;nk&eacute;nti <i>TOTAL_SALES</i> &ouml;sszeg&eacute;t vagy a megy&eacute;nk&eacute;nti minim&aacute;lis vagy maxim&aacute;lis <i>TOTAL_SALES</i>
+ &eacute;rt&eacute;k&eacute;t, vagy az &eacute;rt&eacute;kes&iacute;t&eacute;s megy&eacute;nk&eacute;nti sz&oacute;r&aacute;s&aacute;t.
+    </p>
+    <p>Az  <b>Aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;s</b> bejel&ouml;l&eacute;s&eacute;vel az elemz&eacute;s csak az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen l&aacute;that&oacute; bemenet pont r&eacute;teget &eacute;s ter&uuml;let r&eacute;teget foglalja mag&aacute;ban.  Ha nincs bejel&ouml;lve, az elemz&eacute;s mag&aacute;ban foglal minden vektoros elemet a bemeneti pont r&eacute;tegen &eacute;s a ter&uuml;let r&eacute;tegen egyar&aacute;nt, akkor is, ha k&iacute;v&uuml;l esnek az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>A területekké összesíteni kívánt pontokat tartalmazó réteg kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>A pont r&eacute;teg, amelyet a program ter&uuml;letekk&eacute; &ouml;sszes&iacute;t.
+            </p>
+            <p>A t&eacute;rk&eacute;p egy r&eacute;teg&eacute;nek kiv&aacute;laszt&aacute;sa mellett v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n tal&aacute;lhat&oacute;  <b>Elemz&eacute;si r&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is. Ennek a lehetős&eacute;gnek a v&aacute;laszt&aacute;sakor egy gal&eacute;ria ny&iacute;lik meg, amelyben k&uuml;l&ouml;nb&ouml;ző forr&aacute;sokb&oacute;l sz&aacute;rmaz&oacute; adathalmazok k&ouml;z&uuml;l v&aacute;logathat, &eacute;s ezeket felhaszn&aacute;lhatja az elemz&eacute;s&eacute;ben. 
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Az összesíteni kívánt területeket tartalmazó réteg kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>A ter&uuml;let r&eacute;teg, amelyekk&eacute; a program &ouml;sszes&iacute;ti a pontokat. A program az ezen a r&eacute;tegen tal&aacute;lhat&oacute; ter&uuml;letek hat&aacute;rvonalain bel&uuml;l eső b&aacute;rmely pontot sz&aacute;mba veszi, &eacute;s opcion&aacute;lisan &ouml;sszes&iacute;ti a felhaszn&aacute;l&oacute; &aacute;ltal kiv&aacute;lasztott statisztika haszn&aacute;lat&aacute;val.  
+            </p>
+            <p>V&aacute;laszthat a megadott ter&uuml;let r&eacute;teg vagy az eszk&ouml;z fut&aacute;sakor l&eacute;trehozott t&aacute;rol&oacute;k k&ouml;z&ouml;tt.  <b>N&eacute;gysz&ouml;g</b> t&aacute;rol&oacute;k l&eacute;trehoz&aacute;sakor a megadott sz&aacute;m &eacute;s egys&eacute;gek a n&eacute;gysz&ouml;g magass&aacute;g&aacute;t &eacute;s hossz&uacute;s&aacute;g&aacute;t hat&aacute;rozz&aacute;k meg. <b>Hatsz&ouml;g</b> eset&eacute;n a megadott sz&aacute;m &eacute;s a m&eacute;rt&eacute;kegys&eacute;gek a p&aacute;rhuzamos oldalak k&ouml;z&ouml;tti t&aacute;vols&aacute;got hat&aacute;rozz&aacute;k meg.
+            </p>
+            <p>A t&eacute;rk&eacute;p egy r&eacute;teg&eacute;nek kiv&aacute;laszt&aacute;sa mellett v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n tal&aacute;lhat&oacute;  <b>Elemz&eacute;si r&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is. Ennek a lehetős&eacute;gnek a v&aacute;laszt&aacute;sakor egy gal&eacute;ria ny&iacute;lik meg, amelyben k&uuml;l&ouml;nb&ouml;ző forr&aacute;sokb&oacute;l sz&aacute;rmaz&oacute; adathalmazok k&ouml;z&uuml;l v&aacute;logathat, &eacute;s ezeket felhaszn&aacute;lhatja az elemz&eacute;s&eacute;ben. 
+            </p>
+        </div>
+    </div>
+    <div id="KeepBoundaryNoPoints">
+        <div><h2>Pontok nélküli területek megtartása</h2></div>
+        <hr/>
+        <div>
+            <p>Meghat&aacute;rozza, hogy a pont n&eacute;lk&uuml;li ter&uuml;letek megjelenjenek-e az eredm&eacute;ny r&eacute;tegen.  Ha nincs bejel&ouml;lve, akkor a pont n&eacute;lk&uuml;li ter&uuml;letek nem jelennek meg az eredm&eacute;nyben.  Ha be van jel&ouml;lve, akkor a pont n&eacute;lk&uuml;li ter&uuml;letek megjelennek az eredm&eacute;nyben.  
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Statisztika hozzáadása</h2></div>
+        <hr/>
+        <div>
+            <p>A bemeneti pont r&eacute;teg attrib&uacute;tumaival statisztikai sz&aacute;m&iacute;t&aacute;sokat v&eacute;gezhet, kisz&aacute;m&iacute;thatja p&eacute;ld&aacute;ul az &ouml;sszeget, az &aacute;tlagot, a minimum &eacute;s maximum &eacute;rt&eacute;ket, valamint a sz&oacute;r&aacute;st. Az eredm&eacute;ny r&eacute;teg kisz&aacute;m&iacute;tott statisztikai adatonk&eacute;nt egy-egy &uacute;j attrib&uacute;tumot fog tartalmazni. Attrib&uacute;tum &eacute;s statisztikai sz&aacute;m&iacute;t&aacute;s kiv&aacute;laszt&aacute;s&aacute;val tetszőleges sz&aacute;m&uacute; statisztikai sz&aacute;m&iacute;t&aacute;st hozz&aacute;adhat (megjelenik egy &uacute;j leg&ouml;rd&uuml;lő mező).
+ 
+            </p>
+            <p>Ha az &ouml;sszegezni k&iacute;v&aacute;nt r&eacute;teg nem tartalmaz sz&aacute;m mezőt, akkor tov&aacute;bbi statisztik&aacute;k nem fognak rendelkez&eacute;sre &aacute;llni.
+            </p>
+        </div>
+    </div>
+    <div id="GroupByField">
+        <div><h2>Csoportosítás alapjául szolgáló mező kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p> L&eacute;trehozhat statisztikai csoportokat a bemeneti pont r&eacute;teg egyik attrib&uacute;tum&aacute;nak haszn&aacute;lat&aacute;val.    Ha p&eacute;ld&aacute;ul v&aacute;rosr&eacute;szhat&aacute;rok szerint k&iacute;v&aacute;n bűnt&eacute;nyeket &ouml;sszes&iacute;teni, akkor megadhat egy attrib&uacute;tumot <i>Crime_type</i> &ouml;t k&uuml;l&ouml;nb&ouml;ző bűnt&eacute;nyt&iacute;pussal.  Az egyedi bűnt&eacute;nyt&iacute;pusok egy-egy csoportot alkotnak, &eacute;s a rendszer a kiv&aacute;lasztott statisztikai sz&aacute;m&iacute;t&aacute;st a <i>Crime_type</i> egyedi &eacute;rt&eacute;keire v&eacute;gzi el.  Az egyes csoportok statisztik&aacute;ja, valamint a pontok sz&aacute;ma megjelenik az eredm&eacute;ny r&eacute;teg felugr&oacute; ablak&aacute;ban.  Csoportos&iacute;t&aacute;si attrib&uacute;tum kiv&aacute;laszt&aacute;sakor k&eacute;t eredm&eacute;ny j&ouml;n l&eacute;tre: az eredm&eacute;ny r&eacute;teg &eacute;s az eredm&eacute;ny t&aacute;bl&aacute;zat, amely az egyes egyedi csoportok statisztikai sz&aacute;m&iacute;t&aacute;s&aacute;t tartalmazza.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Kisebbség, többség hozzáadása</h2></div>
+        <hr/>
+        <div>
+            <p>Ez a jel&ouml;lőn&eacute;gyzet be van jel&ouml;lve, ha kiv&aacute;laszt egy mezőt a csoportos&iacute;t&aacute;s alapj&aacute;ul.    Ha szeretn&eacute; kider&iacute;teni, hogy az egyes csoportokon bel&uuml;l melyik attrib&uacute;tum&eacute;rt&eacute;kek vannak kisebbs&eacute;gben (a legkev&eacute;sb&eacute; meghat&aacute;roz&oacute;k) vagy t&ouml;bbs&eacute;gben (a legink&aacute;bb meghat&aacute;roz&oacute;k) az egyes hat&aacute;rvonalakon bel&uuml;l, akkor jel&ouml;lje be a  <b>Kisebbs&eacute;g, t&ouml;bbs&eacute;g hozz&aacute;ad&aacute;sa</b> jel&ouml;lőn&eacute;gyzetet.   A <b>Kisebbs&eacute;g, t&ouml;bbs&eacute;g hozz&aacute;ad&aacute;sa</b> jel&ouml;lőn&eacute;gyzet bejel&ouml;l&eacute;sekor k&eacute;t &uacute;j mező ad&oacute;dik hozz&aacute; az eredm&eacute;ny r&eacute;teghez.   Ha a <b>Sz&aacute;zal&eacute;k&eacute;rt&eacute;kek hozz&aacute;ad&aacute;sa</b> jel&ouml;lőn&eacute;gyzetet is bejel&ouml;li, akkor az eredm&eacute;ny r&eacute;teg k&eacute;t tov&aacute;bbi mezővel eg&eacute;sz&uuml;l ki, amelyek az egyes csoportok kisebbs&eacute;gi &eacute;s t&ouml;bbs&eacute;gi attrib&uacute;tum&eacute;rt&eacute;keinek sz&aacute;zal&eacute;k&eacute;rt&eacute;k&eacute;t tartalmazz&aacute;k.
+            </p>
+            <p>Ha p&eacute;ld&aacute;ul &ouml;n v&aacute;rostervező, &eacute;s szeretn&eacute; kider&iacute;teni, hogy a v&aacute;ros &ouml;sszes parkj&aacute;t tekintve melyik fafajok ritk&aacute;bbak, &eacute;s melyek gyakoribbak, akkor &ouml;sszes&iacute;tse a f&aacute;kra vonatkoz&oacute; adatokat parkter&uuml;letenk&eacute;nt, &eacute;s jel&ouml;lje be ezt a lehetős&eacute;get.
+            </p>
+        </div>
+    </div>
+    <div id="PercentPoints">
+        <div><h2>Százalékértékek hozzáadása</h2></div>
+        <hr/>
+        <div>
+            <p>Ez a jel&ouml;lőn&eacute;gyzet be van jel&ouml;lve, ha kiv&aacute;laszt egy mezőt a csoportos&iacute;t&aacute;s alapj&aacute;ul.    V&aacute;lassza ki a  <b>Sz&aacute;zal&eacute;k&eacute;rt&eacute;kek hozz&aacute;ad&aacute;sa</b> lehetős&eacute;get, ha szeretn&eacute; meghat&aacute;rozni az egyes attrib&uacute;tum&eacute;rt&eacute;kek sz&aacute;zal&eacute;k&eacute;rt&eacute;k&eacute;t az egyes csoportokon bel&uuml;l.  Az eredm&eacute;nyt&aacute;bl&aacute;zathoz hozz&aacute;ad&oacute;dik egy &uacute;j mező, amely tartalmazza az egyes attrib&uacute;tum&eacute;rt&eacute;kek sz&aacute;zal&eacute;k&eacute;rt&eacute;k&eacute;t az egyes csoportokon bel&uuml;l.   Ha a <b>Kisebbs&eacute;g, t&ouml;bbs&eacute;g hozz&aacute;ad&aacute;sa</b> jel&ouml;lőn&eacute;gyzetet is bejel&ouml;li, akkor az eredm&eacute;ny r&eacute;teg k&eacute;t tov&aacute;bbi mezővel eg&eacute;sz&uuml;l ki, amelyek az egyes csoportok kisebbs&eacute;gi &eacute;s t&ouml;bbs&eacute;gi attrib&uacute;tum&eacute;rt&eacute;keinek sz&aacute;zal&eacute;k&eacute;rt&eacute;k&eacute;t tartalmazz&aacute;k.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve.  Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő men&uuml;ben megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

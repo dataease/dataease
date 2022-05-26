@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Fusiona les capes</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Fusiona les capes"></h2>
+        <hr/>
+    <p>Aquesta eina combina dues capes d'entitats per crear una capa de sortida &uacute;nica.    Les capes que es fusionaran han de tenir el mateix tipus de geometria i el mateix tipus de temps.  Podeu controlar com s'uneixen i es copien els camps de les capes d'entrada.  Per exemple:
+        <ul>
+            <li>Tinc tres capes que corresponen a Anglaterra, Gal&middot;les i Esc&ograve;cia i vull obtenir una sola capa de Gran Bretanya. 
+            </li>
+            <li>Tinc 2 capes i cadascuna cont&eacute; informaci&oacute; de parcel&middot;les de municipis contigus.  Vull unir-les totes en una sola capa i conservar &uacute;nicament els camps que tinguin el mateix nom i tipus a les 2 capes d'entrada.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Tria una capa</h2></div>
+        <hr/>
+        <div>
+            <p>Capa amb entitats de taules, punts, l&iacute;nies o &agrave;rees amb la qual es fusionar&agrave; la segona capa d'entitats. Tots els camps d'aquesta capa s'inclouran a la capa de resultats.
+            </p>
+        </div>
+    </div>
+    <div id="mergeLayer">
+        <div><h2>Trieu la capa que es fusionarà</h2></div>
+        <hr/>
+        <div>
+            <p>Capa d'entitats que es fusionar&agrave; amb la capa d'entrada. La capa que es fusionar&agrave; ha de tenir el mateix tipus de geometria i el mateix tipus de temps que la capa d'entrada.
+            </p>
+        </div>
+    </div>
+    <div id="mergingAttributes">
+        <div><h2>Modifica els camps de fusió</h2></div>
+        <hr/>
+        <div>
+            <p>Per defecte, tots els camps d'ambdues capes d'entrada s'inclouran a la sortida.  Podeu canviar com s'inclouran a la sortida els camps de la capa que es fusionar&agrave; mitjan&ccedil;ant les opcions seg&uuml;ents:
+                <ul>
+                    <li> <b>Canvia el nom</b>: es canviar&agrave; el nom del camp a la sortida.
+                    </li>
+                    <li> <b>Elimina</b>: el camp s'eliminar&agrave; de la sortida.
+                    </li>
+                    <li> <b>Fes coincidir</b>: els noms dels camps es faran coincidir.  Els valors del camp de la capa que es fusionar&agrave; es copiaran al camp de sortida que s'hagi fet coincidir.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Si totes dues capes contenen un camp amb nom i tipus de dades id&egrave;ntics, el contingut dels dos camps es fusionar&agrave; en un camp nou amb aquest nom. Aix&ograve; no &eacute;s aplicable als camps en els que es fa servir  <b>Fes coincidir</b> en el par&agrave;metre <b>Modifica els camps de fusi&oacute;</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la capa que es crear&agrave;.  Si esteu escrivint en un ArcGIS Data Store, els resultats es desaran a  <b>El meu contingut</b> i s'afegiran al mapa. Si esteu escrivint en un recurs compartit de fitxers de dades massives, els resultats s'emmagatzemaran en aquest recurs i s'afegiran al seu manifest. No s'afegiran al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, l'eina no funcionar&agrave;.
+            </p>
+            <p>Si escriviu a l' ArcGIS Data Store (magatzem de dades massives relacional o espaciotemporal) mitjan&ccedil;ant el quadre desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta a <b>El meu contingut</b>, on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

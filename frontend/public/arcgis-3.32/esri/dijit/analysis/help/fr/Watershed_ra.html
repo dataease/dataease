@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Bassins versants</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="T&acirc;che Bassins versants"></h2>
+        <hr/>
+    <p>Cet outil d&eacute;termine la surface de captation au-dessus d&rsquo;un ensemble de cellules d&rsquo;un raster.
+    </p>
+    <p>Un bassin versant est une surface ascendante d&rsquo;o&ugrave; s&rsquo;&eacute;coule un flux (en g&eacute;n&eacute;ral, de l&rsquo;eau) vers un orifice de drainage commun. Il peut appartenir &agrave; un bassin versant de plus grande taille et peut &eacute;galement englober des bassins plus petits, appel&eacute;s sous-bassins.
+    </p>
+    <p>La valeur de chaque bassin versant est extraite de la valeur de la source dans le raster ou couche de points d&rsquo;&eacute;coulement en entr&eacute;e. Lorsque le point d&rsquo;&eacute;coulement est un jeu de donn&eacute;es raster, les valeurs de cellule sont utilis&eacute;es par d&eacute;faut. Lorsque le point d'&eacute;coulement est un jeu de donn&eacute;es d'entit&eacute; ponctuelles, les valeurs proviennent du champ sp&eacute;cifi&eacute;.
+    </p>
+    <p>L&rsquo;outil Bassins versants prend uniquement en charge une couche raster de direction de flux en entr&eacute;e D8.
+    </p>
+    <p>Lorsque vous sp&eacute;cifiez les emplacements des points d&rsquo;&eacute;coulement en entr&eacute;e comme donn&eacute;es d&rsquo;entit&eacute;, le champ par d&eacute;faut est le premier champ valide disponible. S'il n'existe aucun champ valide, le champ ObjectID (par exemple, OID ou FID) est utilis&eacute; par d&eacute;faut.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>Choisir la couche de direction de flux</h2></div>
+        <hr/>
+        <div>
+            <p>Raster en entr&eacute;e qui montre la direction du flux sortant de chaque cellule.
+            </p>
+            <p>Le raster de direction de flux peut &ecirc;tre cr&eacute;&eacute; &agrave; l&rsquo;aide de l&rsquo;outil Direction de flux ou de la t&acirc;che FlowDirection figurant dans le service RasterAnalysisTools, ex&eacute;cut&eacute; avec le type de direction de flux par d&eacute;faut  <b>D8</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>Spécifier les emplacements des points d’écoulement en entrée</h2></div>
+        <hr/>
+        <div>
+            <p>Emplacements des points d'&eacute;coulement en entr&eacute;e.
+            </p>
+            <p>Pour un raster, il s'agit des cellules au-dessus desquelles la surface de captation est d&eacute;termin&eacute;e. Toutes les cellules n&rsquo;ayant pas la valeur NoData sont utilis&eacute;es en tant que cellules sources. Pour une entr&eacute;e ponctuelle, il s&rsquo;agit des emplacements au-dessus desquels la surface de captation est d&eacute;termin&eacute;e.
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>Choisir un champ de point d’écoulement</h2></div>
+        <hr/>
+        <div>
+            <p>Le champ utilis&eacute; pour attribuer des valeurs aux emplacements de points d&rsquo;&eacute;coulement.
+            </p>
+            <p>Si la couche de points d&rsquo;&eacute;coulement en entr&eacute;e est un raster, Value est utilis&eacute;e. S&rsquo;il s&rsquo;agit d&rsquo;une entit&eacute;, un champ num&eacute;rique est utilis&eacute;. Si le champ contient des valeurs &agrave; virgule flottante, celles-ci sont remplac&eacute;es par des entiers.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Le nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans  <b>My Content (Mon contenu)</b>, dans lequel le r&eacute;sultat sera enregistr&eacute; via la zone de liste d&eacute;roulante <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Atrast līdzīgus novietojumus</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="Līdzīgu izvietojumu atra&scaron;ana"></h2>
+        <hr/>
+    <p>Pamatojoties uz norādītajiem kritērijiem, rīks Līdzīgu izvietojumu atra&scaron;ana norādītajā meklē&scaron;anas slānī mēra vietu līdzību vienam vai vairākiem atskaites izvietojumiem. &Scaron;is rīks var atbildēt uz jautājumiem, piemēram,
+        <ul>
+            <li>Kur&scaron; no jūsu veikaliem ir visvairāk līdzīgs jūsu top izpildītājiem attiecībā uz klientu profiliem?
+            </li>
+            <li>Pamatojoties uz ciemu īpa&scaron;ībām, kuras vissmagāk skārusi slimība, kuriem citiem ciemiem ir augsts risks?
+            </li>
+        </ul>
+        Atbildot uz &scaron;ādiem jautājumiem, jūs sniedzat atskaites vietas, kandidātu meklētas vietas un laukus, kas pārstāv kritērijus, kurus jūs vēlaties saskaņot. Pirmajam ievades slānim būtu jābūt atsaucei vai etalona vietai.  Piemēram, tas varētu būt slānis sastāv no jūsu labākajiem veikaliem vai ciemiem, kurus vissmagāk skārusi slimība. Pēc tam norādiet slāni, kur&scaron; iever jūsu kandidātu meklē&scaron;anas vietas. Tas varētu būt, piemēram, visi jūsu veikali vai visi citi ciemi. Visbeidzot, jūs identificējat vienu vai vairākus laukus, lai izmantotu līdzības mērī&scaron;anu. Atrast līdzīgas vietas rīks ierindos visus meklē&scaron;anas vietu kandidātus, cik tuvu viņi atbilst jūsu references vietai visos laukos, kurus jūs esat izvēlēju&scaron;ies.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izvēlieties slāni, kas atskaites izvietojumus</h2></div>
+        <hr/>
+        <div>
+            <p>Punkts, līnija vai laukumu, kas satur atra&scaron;anās vietu. 
+            </p>
+            <p>Papildus slāņa izvēlei no kartes varat atlasīt opciju  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta lejasdaļā. &Scaron;ī opcija atver galeriju, kurā varēsiet pārlūkot un atlasīt datu kopas no dažādiem avotiem un izmantot savā analīzē. 
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>Jūs varat izmantot visus novietojumus vai veikt atlasi</h2></div>
+        <hr/>
+        <div>
+            <p>Izmantojiet izvēlnes pogas, lai identificētu references vietas, ja tas ir nepiecie&scaron;ams. Piemēram, ja ievades slānis satur visas vietas-atskaites vietas, kā arī kandidātu meklē&scaron;anas vietas-jums būs nepiecie&scaron;ams izmantot vienu no atlases instrumentiem, lai identificētu references vietas. Ja jūs izveidojat divus atsevi&scaron;ķus slāņus, vienu ar atskaites vietu un otru ar visām kandidātu meklē&scaron;anas vietām, jums nav nepiecie&scaron;ams veikt izvēli. 
+            </p>
+            <p>Ja ir vairāk nekā viena references vieta, viena vieta ir izveidota aprēķinot vidējo vērtību katram laukam, ko izmanto, lai analizētu līdzību.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>Meklēt līdzīgus novietojumus</h2></div>
+        <hr/>
+        <div>
+            <p>Kandidāti, kas tiek meklēti vietās &scaron;ajā slānī, tiks sarindoti no visvairāk uz vismazāk līdzīgiem. Līdzība ir balstīta uz to, cik cie&scaron;i viena vieta atbilst references vietai, atbilsto&scaron;i laukiem, kādus jūs norādījāt. 
+            </p>
+            <p>Papildus slāņa izvēlei no kartes varat atlasīt opciju  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta lejasdaļā. &Scaron;ī opcija atver galeriju, kurā varēsiet pārlūkot un atlasīt datu kopas no dažādiem avotiem un izmantot savā analīzē. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>Pamatlīdzība ar</h2></div>
+        <hr/>
+        <div>
+            <p>Lauki, ko jūs izvēlējāties būs kritēriji, kas tiks izmantoti, lai novērtētu līdzību. Ja jūs izvēlaties iedzīvotāju skaitu un ienākumu lauku, piemēram, kandidātu meklē&scaron;anas vietas ar viszemākajiem (labākajā gadījumā) rādītājiem, būs tie, kas ir līdzīgi gan iedzīvotāju skaitam gan ienākumu vērtībām. 
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>Parādīt</h2></div>
+        <hr/>
+        <div>
+            <p>Jūs varat vai nu redzēt visu kandidātu meklē&scaron;anas vietas sakārtotas pēc visvairāk līdzīgiem uz vismazāk līdzīgiem, vai arī varat norādīt rezultātu skaitu, ko vēlaties redzēt. 
+                <ul>
+                    <li> <b>Visas vietas no lielākās uz vismazāk līdzīgu</b>&nbsp;&mdash; visi elementi &scaron;ajā kandidātu meklē&scaron;anas slānī tiks iekļauti rangu secībā rezultāta slānī
+                    </li>
+                    <li> <b>Uzrādītais atra&scaron;anās vietu skaits</b>&nbsp;&mdash; jūs nosakiet, cik daudzi no visvairāk līdzīgajiem un kandidātiem jāiekļauj rezultātu slānī. Noklusējuma ievades vērtība ir&nbsp;1.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Norādiet slāņa nosaukumu, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. &Scaron;is rezultātu slānis satur references atra&scaron;anās vietas un skaitu, kas sarindoti pēc kandidātu meklē&scaron;anas vietas, ko jūs norādījāt. Ja rezultāta slāņa nosaukums jau pastāv, jums tiks uzdots jautājums, vai vēlaties to pārdēvēt.
+            </p>
+            <p>Lietojot iespēju  <b>Saglabāt rezultātu</b> nolaižamā saraksta lodziņā, jūs varat norādīt mapes nosaukumu sadaļā <b>Mans saturs</b>, kur tiks saglabāts rezultāts.
+            </p>  
+        </div>
+    </div>
+</div>
+</html>

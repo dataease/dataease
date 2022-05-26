@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Enriqueix la capa</h2><p/>
+        <h2><img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" alt="Enriqueix la capa"></h2>
+        <hr/>
+    <p>Aquesta eina enriqueix les dades per mitj&agrave; de l'obtenci&oacute; d'informaci&oacute; sobre les persones, els llocs i els negocis al voltant de les vostres ubicacions de dades i us permet respondre preguntes noves sobre ubicacions que no podeu contestar nom&eacute;s amb els mapes. Per exemple: quina classe de persones viu aqu&iacute;? Qu&egrave; els agrada fer als residents d'aquesta &agrave;rea? Quins s&oacute;n els seus h&agrave;bits i estils de vida? Quin tipus de negocis hi ha en aquesta &agrave;rea?
+    </p>
+    <p>El resultat ser&agrave; una capa nova que contindr&agrave; tota la informaci&oacute; demogr&agrave;fica i geogr&agrave;fica de determinades col&middot;leccions de dades.  Aquesta informaci&oacute; nova s'afegeix com a camps a la taula.
+    </p>
+    <p>Si s'ha activat  <b>Utilitza l'extensi&oacute; del mapa actual</b>, nom&eacute;s s'enriquiran les entitats de la capa d'entrada que siguin visibles a l'extensi&oacute; de mapa actual.  Si l'opci&oacute; est&agrave; desactivada, s'enriquiran totes les entitats de la capa d'entrada, encara que estiguin fora de l'extensi&oacute; de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Trieu una capa que s'enriquirà amb dades noves</h2></div>
+        <hr/>
+        <div>
+            <p>Capa de punts, de l&iacute;nies o d'&agrave;rees que s'enriquir&agrave; amb les dades d'atributs noves. 
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b>, que es troba al final de la llista desplegable. Aquesta opci&oacute; obre una galeria on podeu cercar i seleccionar datasets de diversos or&iacute;gens per u utilitzar-los a l'an&agrave;lisi. 
+            </p>
+        </div>
+    </div>
+    <div id="DataCollection">
+        <div><h2>Variables d'enriquiment</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Feu clic a  <b>Selecciona variables</b> per obrir l' <b>Explorador de dades</b> i cercar variables.  L' <b>Explorador de dades</b> us ajuda a cercar i seleccionar variables d'enriquiment per separat o en conjunts.
+            </p>
+            <p>Se selecciona autom&agrave;ticament una regi&oacute; en funci&oacute; de les vostres dades. Podeu triar una altra regi&oacute; si les dades cobreixen m&eacute;s d'un pa&iacute;s. 
+            </p>
+            <p>Les variables d'enriquiment s'organitzen en col&middot;leccions de dades per accedir-hi m&eacute;s f&agrave;cilment.   Quan seleccioneu una col&middot;lecci&oacute; de dades, l'explorador mostra algunes de les variables d'enriquiment m&eacute;s populars que cont&eacute;.  A  <b>Continua navegant</b>, tamb&eacute; es mostren les categories de la col&middot;lecci&oacute;. En cada categoria, podeu seleccionar subcategories completes o obtenir els detalls d'una subcategoria i seleccionar variables d'enriquiment individuals. Tamb&eacute; podeu fer servir el quadre de cerca per trobar una variable espec&iacute;fica en una categoria.
+            </p>
+            <p>Quan seleccioneu les variables que s'han d'incloure per a l'enriquiment, s'afegeixen al carret&oacute; de la compra que es troba a la cantonada de l' <b>Explorador de dades</b>. Utilitzeu aquest carret&oacute; de la compra per fer un seguiment del nombre de variables que heu seleccionat.
+            </p>
+            <p>Cada variable seleccionada s'afegir&agrave; com un camp a la capa de resultats.
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Definiu les àrees que s'enriquiran</h2></div>
+        <hr/>
+        <div>
+            <p>Definiu l'&agrave;rea que s'enriquir&agrave;, al voltant dels vostres punts d'entrada o l&iacute;nies, mitjan&ccedil;ant una dist&agrave;ncia en l&iacute;nia recta o un mode de viatge seleccionat. Per a una dist&agrave;ncia en l&iacute;nia recta, introdu&iuml;u un valor de fins a 1.000 milles (1.609 quil&ograve;metres). Els modes de viatge nom&eacute;s es poden utilitzar si la capa d'entrada cont&eacute; punts. L'administrador de la vostra organitzaci&oacute; determina els modes de viatge disponibles. Quan s'utilitza un dels modes de viatge, les mesures es fan al llarg de carreteres o camins i respecten les regles aplicables, com ara les vies de sentit &uacute;nic, els girs prohibits, etc. Despr&eacute;s de triar el mode de viatge i la mesura, introdu&iuml;u una duraci&oacute; o una dist&agrave;ncia de fins a 5 hores (300 minuts) o 300 milles (482,8 quil&ograve;metres).
+            </p>
+            <p>Si s'ha activat  <b>Retorna el resultat com a &agrave;rees de delimitaci&oacute;</b>, el resultat que es retorni seran entitats d'&agrave;rees tal com defineixin els valors de temps o de dist&agrave;ncia anteriors.  Si s'ha desactivat, el resultat que es retorni seran entitats de punts.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa.  El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si el nom de la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Mitjan&ccedil;ant el men&uacute; desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta d' <b>El meu contingut</b> on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

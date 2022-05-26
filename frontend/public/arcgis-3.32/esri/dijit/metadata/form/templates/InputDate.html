@@ -1,0 +1,12 @@
+<div class="gxeInput gxeInputText">
+  <input class="gxeEditOnly" type="text" size="${size}" maxlength="${maxlength}"
+    data-dojo-attach-point="focusNode"
+    data-dojo-attach-event="onchange: _onChange, onkeyup: _onKeyup"/>
+  <span class="gxeClickableText gxeEditOnly" data-dojo-attach-point="calendarNode" tabindex="0" role="button"
+    data-dojo-attach-event="onclick: _onCalendarClick">${i18nBase.calendar.button}</span>
+  <span class="gxeClickableText gxeEditOnly" data-dojo-attach-point="stampNode" tabindex="0" role="button"
+    data-dojo-attach-event="onclick: _onStampClick">${i18nBase.general.now}</span>
+  <div class="gxeViewOnlyText gxeViewOnly" data-dojo-attach-point="viewOnlyNode"></div>
+  <div class="gxeContainer" data-dojo-attach-point="containerNode"></div>
+  <div class="gxeHint gxeEditOnly" data-dojo-attach-point="hintNode"></div>
+</div>

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="raToolbox">
+        <p>Rasterianalyysin avulla voit analysoida suuria rasteriaineistoryhmi&auml;  ArcGIS Image Serverin avulla. Voit analysoida aiempaa enemm&auml;n tietoja entist&auml; nopeammin hy&ouml;dynt&auml;m&auml;ll&auml; palvelimen tehoa.  Portal for ArcGIS -verkkoportaalin kautta t&auml;ll&auml; hetkell&auml; k&auml;ytett&auml;viss&auml; olevat ty&ouml;kalusarjat ovat  <b>Aineiston yhteenveto</b>, <b>Analysoi kaavat</b>, <b>K&auml;yt&auml; l&auml;heisyytt&auml;</b>, <b>Analysoi kuva</b>, <b>Analysoi maasto</b>, <b>Hallitse aineistoa</b> ja <b>Syv&auml;oppiminen</b>.
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="smallsize">
+        <h2>Aineiston yhteenveto</h2>
+        <hr/>
+        <p>T&auml;m&auml; ty&ouml;kalusarja sis&auml;lt&auml;&auml; ty&ouml;kalun m&auml;&auml;ritettyjen aluerajojen sis&auml;ll&auml; olevan rasterikarttatason tilastotietojen laskemiseen. 
+            <ul>
+                <li> <b>Koosta rasteri sijainnissa</b> -ty&ouml;kalu laskee m&auml;&auml;ritettyjen aluerajojen sis&auml;ll&auml; olevien rasterisolujen tilastotiedot.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="SummarizeRasterWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Koosta rasteri sijainnissa</h2></td>
+                    <td>
+                    <img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" class="titleImage" alt="Koosta rasteri sijainnissa -ty&ouml;kalu">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Laskee m&auml;&auml;ritettyjen alueiden rasterisolujen yhteenvetotilastotietoja.
+            </p>
+            <p>Seuraavassa on luettelo joistakin sovelluksista: 
+
+                <ul>
+                    <li>Kun valuma-alueiden karttataso ja korkeuden rasterikarttataso on annettu, voit laskea jokaisen valuma-alueen korkeuden vaihteluv&auml;lin ja m&auml;&auml;ritt&auml;&auml;, mink&auml; valuma-alueiden energianvirtaus on suurin.
+                        
+
+                    </li>
+                    <li>Jos hallinnollisten hallinta-alueiden karttataso ja maank&auml;ytt&ouml;luokkien rasterikarttataso on annettu, voit laskea maank&auml;ytt&ouml;arvot kullakin hallinta-alueella ja tunnistaa ne alueet, joiden hallintasuunnitelman laatimiseen tarvitaan eniten ty&ouml;t&auml;.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="regularsize">
+        <h2>Analysoi kaavat</h2>
+        <hr/>
+        <p>N&auml;iden ty&ouml;kalujen avulla voit tunnistaa, m&auml;&auml;ritt&auml;&auml; ja visualisoida tiedoistasi tila-avaruuden malleja. 
+
+            <ul>
+                <li> <b>Laske tiheys</b> analysoi tietyn ilmi&ouml;n tunnetut m&auml;&auml;r&auml;t ja luo tiheyskartan jakamalla n&auml;m&auml; m&auml;&auml;r&auml;t kartan alueelle.
+                    
+
+                </li>
+                <li> <b>Interpoloi pisteet</b> ennustaa uusien sijaintien arvoja ker&auml;tyist&auml; pisteist&auml; l&ouml;ytyvien mittausten perusteella.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityRasterTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Laske tiheys</h2></td>
+                    <td>
+                    <img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" class="titleImage" alt="Laske tiheys -ty&ouml;kalu">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Tiheysanalyysi analysoi tietyn ilmi&ouml;n tunnetut m&auml;&auml;r&auml;t ja luo tiheyskartan jakamalla n&auml;m&auml; m&auml;&auml;r&auml;t kartan alueelle. Voit k&auml;ytt&auml;&auml; t&auml;t&auml; ty&ouml;kalua esimerkiksi salamaniskujen ja tornadojen keskittymien, terveydenhuollon palvelujen saatavuuden tai v&auml;est&ouml;tiheyden esitt&auml;miseen.
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsEBKTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Interpoloi pisteet</h2></td>
+                    <td>
+                    <img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" class="titleImage" alt="Interpoloi pisteet -ty&ouml;kalu">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>T&auml;m&auml;n ty&ouml;kalun avulla voit ennustaa uusien sijaintien arvoja ker&auml;ttyjen pisteiden avulla tehtyjen mittausten perusteella. Ty&ouml;kalu analysoi kustakin pisteest&auml; ker&auml;ttyjen arvojen pisteaineiston ja palauttaa alueet luokiteltuna ennustetuilla arvoilla. Voit k&auml;ytt&auml;&auml; t&auml;t&auml; ty&ouml;kalua esimerkiksi sadem&auml;&auml;rien ennustamiseen tietyll&auml; valuma-alueella yksitt&auml;isill&auml; sademittareilla ker&auml;ttyjen mittausten perusteella.
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="regularsize">
+        <h2>Käytä läheisyyttä</h2>
+        <hr/>
+        <p>N&auml;iden ty&ouml;kalujen avulla saat vastauksen yhteen paikkatietojen analysoinnin peruskysymyksist&auml;: &rdquo;Mik&auml; on mink&auml;kin l&auml;hell&auml;?&rdquo;
+
+            <ul>
+                <li> <b>Laske et&auml;isyys</b> laskee euklidisen et&auml;isyyden, suunnan ja allokaation yhdest&auml; l&auml;hteest&auml; tai l&auml;hdejoukosta.
+                    
+
+                </li>
+                <li> <b>M&auml;&auml;rit&auml; optimaalinen matkakuluverkko</b> laskee optimaalisen kustannusverkon l&auml;ht&ouml;aluejoukosta.
+                    
+
+                </li>
+                <li> <b>M&auml;&auml;rit&auml; matkakustannusten polku</b> Laskee pienimm&auml;n kustannuksen taiteviivareitin l&auml;ht&ouml;paikkojen ja tunnettujen kohteiden v&auml;lill&auml;.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDistanceTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Laske etäisyys</h2></td>
+                    <td>
+                    <img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" class="titleImage" alt="Laske et&auml;isyys">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Laskee euklidisen et&auml;isyyden, suunnan ja allokaation yhdest&auml; l&auml;hteest&auml; tai l&auml;hdejoukosta. T&auml;m&auml;n ty&ouml;kalun avulla voit m&auml;&auml;ritt&auml;&auml;, miten kaukana sijainti on tiest&auml;, rakennuksesta tai puistosta. Voit my&ouml;s m&auml;&auml;ritt&auml;&auml;, mihin suuntaan sinun pit&auml;&auml; matkustaa, jotta voit palata suorinta reitti&auml; takaisin l&auml;ht&ouml;paikkaan. N&auml;et tarkastelualueen kaikista sijainneista, mik&auml; on l&auml;hin l&auml;ht&ouml;paikka.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineOptimumTravelCostNetworkTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Määritä optimaalinen matkakuluverkko</h2></td>
+                    <td>
+                    <img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" class="titleImage" alt="Optimaalisen matkakuluverkkoty&ouml;kalun kuvauksen m&auml;&auml;rittely ">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Laskee optimaalisen kustannusverkon l&auml;ht&ouml;aluejoukosta.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineTravelCostPathAsPolylineTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Määritä matkakustannusten polku taiteviivana</h2></td>
+                    <td>
+                    <img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" class="titleImage" alt="Matkakustannusten polun taiteviivaty&ouml;kalun kuvauksen m&auml;&auml;rittely">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Laskee pienimm&auml;n kustannuksen taiteviivareitin l&auml;ht&ouml;paikkojen ja tunnettujen kohteiden v&auml;lill&auml;.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeImageCategory" class="smallsize">
+        <h2>Analysoi kuva</h2>
+        <hr/>
+        <p>Seuraavien ty&ouml;kalujen avulla voit analysoida kuvia. 
+            <ul>
+                <li> <b>K&auml;yt&auml; rasteritoiminnon mallia</b> k&auml;sittelee kuvasi toimintoketjulla rasteritoiminnon mallin mukaisesti.
+                </li>
+                <li> <b>Tarkkaile kasvillisuutta</b> havaitsee kasvillisuuden kuvassa kaistoissa suoritettujen laskutoimitusten perusteella.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ApplyRFxTemplateTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Käytä rasteritoiminnon mallia</h2></td>
+                    <td>
+                    <img src="../images/GUID-6464A140-88C7-4CCB-BB2A-07548ADC9981-web.png" class="titleImage" alt="K&auml;yt&auml; rasteritoiminnon mallia">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>K&auml;sittelee kuvasi toimintoketjulla rasteritoiminnon mallin mukaisesti.
+            </p>
+            <br/>
+        </div>
+        <div id="MonitorVegetationTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Tarkkaile kasvillisuutta</h2></td>
+                    <td>
+                    <img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" class="titleImage" alt="Portaalin Tarkkaile kasvillisuutta -ty&ouml;kalu">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>T&auml;m&auml;n ty&ouml;kalun avulla voidaan hankkia tietoja tutkimusalueen kasvillisuuspeitteest&auml; suorittamalla laskutoimituksia monikaistaisen rasterikarttatason kaistoissa.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeTerrainCategory" class="regularsize">
+        <h2>Analysoi maasto</h2>
+        <hr/>
+        <p>N&auml;iden ty&ouml;kalujen avulla voit analysoida rasteripintoja. 
+            <ul>
+                <li> <b>Laske kaltevuus</b> laskee maaston jyrkkyyden.
+                    
+
+                </li>
+                <li> <b>Johda aspekti</b> laskee jyrkimm&auml;n kaltevuuden suunnan kullekin sijainnille.
+                    
+
+                </li>
+                <li> <b>Luo n&auml;kym&auml;alue</b> yksil&ouml;i sen, mit&auml; voidaan n&auml;hd&auml; mist&auml; tahansa maiseman pisteest&auml;.
+                    
+
+                </li>
+                <li> <b>Valuma-alue</b> laskee kokooma-alueen, joka on pinnalla olevan tunnistettavan kohteen/kohteiden yl&auml;puolella.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateSlopeTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Laske kaltevuus</h2></td>
+                    <td>
+                    <img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" class="titleImage" alt="Portaalin Laske kaltevuus -ty&ouml;kalu">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Yksil&ouml;i pinnan, joka osoittaa l&auml;ht&ouml;korkeusaineiston kaltevuuden. Kaltevuus edustaa jokaisen DEM (Digital Elevation Model) -solun korkeuden arvonmuutosta.
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveAspectTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Johda aspekti</h2></td>
+                    <td>
+                    <img src="../images/GUID-D03FF025-0530-4D0D-87A3-B25D6716F8F0-web.png" class="titleImage" alt="Portaalin Johda aspekti -ty&ouml;kalu">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Tunnistaa arvonmuutoksen enimm&auml;ism&auml;&auml;r&auml;n laskevan suunnan kustakin solusta naapurisoluihin. Aspekti voidaan ajatella kaltevuuden suunnaksi.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Luo näkymäalue</h2></td>
+                    <td>
+                    <img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" class="titleImage" alt="Luo n&auml;kym&auml;alue -ty&ouml;kalu">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>M&auml;&auml;ritt&auml;&auml; rasteripinnan sijainnit, jotka n&auml;kyv&auml;t joukolle tarkkailijoita.
+            </p>
+            <br/>
+        </div>
+        <div id="WatershedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Valuma-alue</h2></td>
+                    <td>
+                    <img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" class="titleImage" alt="Valuma-alueteht&auml;v&auml;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>M&auml;&auml;ritt&auml;&auml; rasterin solujoukon yl&auml;puolella olevan osallisuusalueen.
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="regularsize">
+        <h2>Hallitse aineistoa</h2>
+        <hr/>
+        <p>N&auml;it&auml; ty&ouml;kaluja k&auml;ytet&auml;&auml;n sek&auml; maantieteellisten tietojen p&auml;ivitt&auml;isess&auml; hallinnassa ett&auml; tietojen yhdist&auml;misess&auml; ennen analyysi&auml;. 
+            <ul>
+                <li> <b>Pura rasteri</b> leikkaa osia rasteriaineistoryhm&auml;st&auml; lis&auml;analysointia varten.
+                    
+
+                </li>
+                <li> <b>T&auml;sm&auml;yt&auml; arvot uudelleen</b> m&auml;&auml;ritt&auml;&auml; eri arvot rasterisoluille.
+                    
+
+                </li>
+                <li> <b>Muunna kohde rasteriksi</b> rasteroi vektoriaineiston.
+                    
+
+                </li>
+                <li> <b>Muunna rasteri kohteeksi</b> vektoroi rasteriaineiston.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ExtractRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Pura rasteri</h2></td>
+                    <td>
+                    <img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" class="titleImage" alt="Portaalin Pura rasteri -ty&ouml;kalu">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Pura solut rasterista arvon, muodon tai eri aineistoryhm&auml;n laajuuden perusteella.
+            </p>
+            <br/>
+        </div>
+        <div id="RemapValuesTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Täsmäytä arvot uudelleen</h2></td>
+                    <td>
+                    <img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" class="titleImage" alt="Portaalin T&auml;sm&auml;yt&auml; arvot uudelleen -ty&ouml;kalu">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Muuta yksitt&auml;isen solun tai solujoukon arvoja uusiksi arvoiksi.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertFeatureToRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Muunna kohde rasteriksi</h2></td>
+                    <td>
+                    <img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" class="titleImage" alt="Muunna kohde rasteriksi -ty&ouml;kalu">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Luo uusi rasteriaineistoryhm&auml; aiemmin luodusta kohdeaineistoryhm&auml;st&auml;.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertRasterToFeatureTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Muunna rasteri kohteeksi</h2></td>
+                    <td>
+                    <img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" class="titleImage" alt="Muunna rasteri kohteeksi -ty&ouml;kalu">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Luo uusi kohdeaineistoryhm&auml; aiemmin luodusta rasteriaineistoryhm&auml;st&auml;.
+            </p>
+            <br/>
+        </div>
+    <div id="DeepLearningCategory" class="largesize">
+        <h2>Syväoppimisen työkalusarja</h2>
+        <hr/>
+        <p>N&auml;iden ty&ouml;kalujen avulla voit havaita tiettyj&auml; kohteita kuvassa tai luokitella rasteriaineistoryhm&auml;n pikseleit&auml;. Syv&auml;oppiminen on er&auml;&auml;nlainen teko&auml;lyn koneoppimismenetelm&auml;, joka havaitsee kohteita kuva-aineistossa k&auml;ytt&auml;m&auml;ll&auml; useita karttatasoja neuroverkoissa, joissa kukin karttataso kykenee poimimaan v&auml;hint&auml;&auml;n yhden kohteen kuvasta. N&auml;iss&auml; ty&ouml;kaluissa k&auml;ytet&auml;&auml;n malleja, jotka on koulutettu havaitsemaan tiettyj&auml; kohteita kolmannen osapuolen syv&auml;oppimiskehyksiss&auml; &ndash; kuten TensorFlow, CNTK ja Keras &ndash; ja ty&ouml;kalut tulostavat kohteita tai luokkakarttoja.
+            <ul>
+                <li> <b>Luokittele pikselit syv&auml;oppimisen avulla</b> tuottaa luokitellun rasterin k&auml;ytt&auml;m&auml;ll&auml; koulutettua syv&auml;oppimismallia.
+                </li>
+                <li> <b>Havaitse objektit syv&auml;oppimisen avulla</b> tuottaa kohdeluokan, joka sis&auml;lt&auml;&auml; l&auml;ht&ouml;aineiston rasterista l&ouml;yt&auml;m&auml;ns&auml; objektit, k&auml;ytt&auml;m&auml;ll&auml; syv&auml;oppimismallia.
+                </li>
+            </ul>
+             
+        </p>
+    </div>
+        <div id="ClassifyPixelsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Luokittele pikselit syväoppimisen avulla</h2></td>
+                    <td>
+                    <img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" class="titleImage" alt="Luokittele pikselit syv&auml;oppimisen avulla">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Runs a trained deep learning model on an input raster to produce a classified raster, with each valid pixel having a class label assigned.
+            </p>
+            <br/>
+        </div>
+        <div id="DetectObjectsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Havaitse objektit syväoppimisen avulla</h2></td>
+                    <td>
+                    <img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" class="titleImage" alt="Havaitse objektit syv&auml;oppimisen avulla">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Runs a trained deep learning model on an input raster to produce a feature class containing the objects it finds. The features can be bounding boxes or polygons around the objects found, or points at the centers of the objects.
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

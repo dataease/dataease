@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Regressão Linear Generalizada</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="Diagrama do fluxo de trabalho Regress&atilde;o Linear Generalizada"></h2>
+        <hr/>
+    <p>Executa Regress&atilde;o Linear Generalizada (GLR) para gerar previs&otilde;es ou para modelar uma vari&aacute;vel dependente no que respeita &agrave; sua rela&ccedil;&atilde;o com um conjunto de vari&aacute;veis explanat&oacute;rias.  Esta ferramenta pode ser utilizada para ajustar modelos cont&iacute;nuos (gaussianos), bin&aacute;rios (log&iacute;stica) e de contagem (Poisson).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Tipo de Análise</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica o modo de funcionamento da ferramenta. A ferramenta pode ser executada para treinar um modelo para apenas avaliar o desempenho, ou treinar um modelo e prever para elementos. Os tipos de previs&atilde;o s&atilde;o os seguintes:
+                <ul>
+                    <li> <b>Ajustar um modelo para avaliar o desempenho do modelo</b>&mdash;Ser&aacute; ajustado um modelo, e aplicado aos dados de entrada. Utilize esta op&ccedil;&atilde;o para avaliar a precis&atilde;o do seu modelo antes de gerar previs&otilde;es sobre um novo conjunto de dados ou entender rela&ccedil;&otilde;es e fatores da sua vari&aacute;vel prevista. O resultado desta op&ccedil;&atilde;o ser&aacute; um servi&ccedil;o de elementos dos seus dados ajustados e um diagn&oacute;stico do modelo.
+                    </li>
+                    <li> <b>Ajustar um modelo e prever valores</b>&mdash; Ser&atilde;o geradas previs&otilde;es ou classifica&ccedil;&otilde;es para elementos de entrada e elementos de previs&atilde;o. Ter&atilde;o de ser fornecidas vari&aacute;veis explanat&oacute;rias quer para os elementos de previs&atilde;o quer para os elementos a prever. O resultado desta op&ccedil;&atilde;o ser&aacute; um servi&ccedil;o de elementos do seu modelo ajustado dos seus dados de entrada, um servi&ccedil;o de elementos de valores previstos e um diagn&oacute;stico do modelo.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>Ajustar um modelo para avaliar o desempenho do modelo</h2></div>
+        <hr/>
+        <div>
+            <p>Utilize este modo se pretende ajustar um modelo, e investigar o ajuste.
+            </p>
+            <p>Com esta escolha, o modelo ser&aacute; treinado, utilizando uma camada de entrada. Utilize esta op&ccedil;&atilde;o para avaliar a precis&atilde;o do seu modelo antes de gerar previs&otilde;es sobre um novo conjunto de dados. Esta op&ccedil;&atilde;o produzir&aacute; diagn&oacute;sticos do modelo e aplicar&aacute; o modelo aos seus dados de treino.
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>Ajustar um modelo e prever valores</h2></div>
+        <hr/>
+        <div>
+            <p>Utilize este modo se pretende ajustar um modelo, e aplique o modelo ao conjunto de dados para gerar previs&otilde;es.
+            </p>
+            <p>Ser&atilde;o geradas previs&otilde;es ou classifica&ccedil;&otilde;es para elementos. O resultado desta op&ccedil;&atilde;o ser&aacute; um servi&ccedil;o de elementos, diagn&oacute;stico do modelo, e uma tabela opcional de import&acirc;ncia vari&aacute;vel.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>Escolher uma camada a partir da qual gerar um modelo</h2></div>
+        <hr/>
+        <div>
+            <p>A camada que cont&eacute;m elementos de pontos, linhas, &aacute;reas ou tabulares que cont&ecirc;m as vari&aacute;veis dependentes e explanat&oacute;rias.
+            </p>
+            <p>Para al&eacute;m de escolher uma camada do seu mapa, pode escolher  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista pendente para navegar at&eacute; aos seus conte&uacute;dos de um conjunto de dados de partilha de ficheiros de big data ou camada de elementos.
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>Escolher o campo a modelar</h2></div>
+        <hr/>
+        <div>
+            <p>O campo num&eacute;rico que cont&eacute;m os valores observados a modelar e o tipo de valor que est&aacute; a modelar. Existem tr&ecirc;s tipos de valores que pode modelar
+                <ul>
+                    <li>Cont&iacute;nuos&mdash;Representa valores cont&iacute;nuos. O modelo utilizado &eacute; Gaussiano, e a ferramenta executa regress&atilde;o de m&iacute;nimos quadrados ordin&aacute;rios.
+                    </li>
+                    <li>Bin&aacute;rios&mdash;Representa valores de presen&ccedil;a ou aus&ecirc;ncia. Estes t&ecirc;m de ser 1 e 0. O modelo utilizado &eacute; a Regress&atilde;o Log&iacute;stica.
+                    </li>
+                    <li>Count&mdash;Representa discretos e representa eventos, por exemplo, contagens de crimes, incidentes relacionados com doen&ccedil;as ou acidentes de tr&acirc;nsito. O modelo utilizado &eacute; a regress&atilde;o de Poisson. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Escolher uma camada para a qual prever valores</h2></div>
+        <hr/>
+        <div>
+            <p>Uma camada com elementos que representam locais onde devem ser calculadas estimativas. Cada elemento neste conjunto de dados deve conter valores para todas as vari&aacute;veis explanat&oacute;rias especificadas. A vari&aacute;vel dependente para estes elementos ser&aacute; estimada utilizando o modelo calibrado para a camada de entrada.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Escolher os campos explanatórios</h2></div>
+        <hr/>
+        <div>
+            <p>Um ou mais campos que representam as vari&aacute;veis explanat&oacute;rias (campos) que ajudam a prever o valor. Apenas os campos num&eacute;ricos ser&atilde;o vis&iacute;veis.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Escolher de que forma os campos explanatórios são correspondidos</h2></div>
+        <hr/>
+        <div>
+            <p>De que forma as vari&aacute;veis correspondentes na camada de entrada ir&atilde;o corresponder &agrave;s vari&aacute;veis na camada de previs&atilde;o. Apenas as vari&aacute;veis utilizadas na cria&ccedil;&atilde;o do modelo ser&atilde;o inclu&iacute;das na tabela. Apenas podem ser utilizados valores num&eacute;ricos. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p> O nome da camada que ser&aacute; criada.  Se estiver a escrever para ArcGIS Data Store, os seus resultados ser&atilde;o gravados em  <b>O Meu Conte&uacute;do</b> e adicionados ao mapa. Se estiver a escrever para uma partilha de ficheiros big data, os seus resultados ser&atilde;o guardados numa partilha de ficheiros big data e adicionados ao seu manifesto. N&atilde;o ser&atilde;o adicionados ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Caso a camada j&aacute; existe, a ferramenta ir&aacute; falhar.
+            </p>
+            <p>Os resultados devolvidos depender&atilde;o do tipo de an&aacute;lise. Caso esteja a ajustar para avaliar o ajuste do modelo, os resultados ir&atilde;o conter uma camada de dados de entrada ajustados ao modelo e informa&ccedil;&otilde;es do resultado da avalia&ccedil;&atilde;o do ajuste do modelo. Caso esteja a ajustar e a prever, os resultados ir&atilde;o conter uma camada de dados de entrada ajustados ao modelo, uma camada de resultados previstos e informa&ccedil;&otilde;es do resultado da avalia&ccedil;&atilde;o do ajuste do modelo.
+            </p>
+            <p>Ao escrever para   ArcGIS Data Store  (armazenamento relacional ou espaciotemporal de dados big data) utilizando a caixa suspensa  <b>Guardar resultado em</b> pode especificar o nome de uma pasta em <b>O Meu Conte&uacute;do</b>, onde ser&aacute; armazenado o resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

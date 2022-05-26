@@ -1,0 +1,27 @@
+@import "../css3.less";
+.mblCoverv {
+	.transition-property(none);
+	.transition-duration(0s);
+}
+.mblCoverv.mblTransition {
+	.transition-property-transform();
+	.transition-duration(.4s);
+}
+.mblCoverv.mblOut {
+	z-index: -100;
+	.transform(translate3d(0px,0%,-1px) ) !important;
+}
+.mblCoverv.mblIn {
+	.transform(translate3d(0px,100%,0px) ) !important;
+}
+.mblCoverv.mblIn.mblReverse {
+	.transform(translate3d(0px,-100%,0px) ) !important;
+}
+.mblCoverv.mblOut.mblTransition,
+.mblCoverv.mblIn.mblTransition {
+	.transform(translate3d(0px,0%,0px) ) !important;
+}
+.dj_android.dj_tablet .mblCoverv.mblTransition {
+	.transition-duration(.6s);
+	.transition-timing-function(linear);
+}

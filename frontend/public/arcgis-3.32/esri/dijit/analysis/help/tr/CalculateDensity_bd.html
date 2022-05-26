@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Yoğunluğu Hesaplama</h2><p/>
+        <h2><img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" alt="Yoğunluğu Hesapla"></h2>
+        <hr/>
+    <p>Yoğunluğu Hesaplama aracı, bazı olayların bilinen miktarlarını (nokta &ouml;znitelikleri olarak g&ouml;sterilen) haritada dağıtarak nokta detaylı bir yoğunluk haritası oluşturur. Sonu&ccedil;ta ortaya en az yoğundan en fazla yoğun olana doğru sınıflanan bir alan katmanı &ccedil;ıkar.   
+
+    </p>
+    <p>Nokta girdileri i&ccedil;in her noktanın bazı olay veya oluşumları temsil etmesi gerekir; sonu&ccedil; katmanı birim alan başına olay sayısını g&ouml;sterir. Yeni konumdaki daha y&uuml;ksek bir yoğunluk değeri, o konumda daha fazla nokta olduğu anlamına gelir. Pek &ccedil;ok durumda sonu&ccedil; katmanı gelecekteki olaylar a&ccedil;ısından bir risk y&uuml;zeyi olarak yorumlanabilir. &Ouml;rneğin, girdi noktaları yıldırım d&uuml;şen yerleri g&ouml;steriyorsa, sonu&ccedil; katmanı gelecekteki yıldırım d&uuml;şme olayları i&ccedil;in bir risk y&uuml;zeyi olarak yorumlanabilir.
+    </p>
+    <p>Bu aracın kullanıldığı diğer durumlar şunlardır:
+        <ul>
+            <li>Polis merkezlerinin y&uuml;ksek su&ccedil; oranlı alanlarda uygun kaynak bulundurmasına yardımcı olmak amacıyla su&ccedil; yoğunluğu haritaları oluşturulması.
+            </li>
+            <li>B&ouml;lgedeki hastane yoğunluğunu hesaplama. Sonu&ccedil; katmanı, y&uuml;ksek ve d&uuml;ş&uuml;k hastane erişimini g&ouml;sterir ve bu bilgiler yeni hastanelerin yapılması gereken yerleri belirlemek i&ccedil;in kullanılabilir.
+            </li>
+            <li>Orman yangınlarının ge&ccedil;mişte oluştuğu yerlere g&ouml;re, orman yangını riskinin y&uuml;ksek olduğu alanların tanımlanması.
+            </li>
+            <li>Yeni yolların nereye yapılması gerektiğini planlamak amacıyla ana yollardan uzakta yaşayan toplulukların belirlenmesi.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Yoğunluğun hesaplanacağı bir nokta katmanı seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Yoğunluğun hesaplanacağı nokta katmanıdır.
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;ebileceğiniz gibi, a&ccedil;ılan listenin en altından  <b>Analiz Katmanını Se&ccedil;</b> &ouml;gesini belirleyerek b&uuml;y&uuml;k veri dosya paylaşımı veri k&uuml;mesi veya detay katmanı i&ccedil;eriğinize g&ouml;z atabilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Yoğunluğunun hesaplanacağı bir veya birkaç alan seçin (isteğe bağlı)</h2></div>
+        <hr/>
+        <div>
+            <p>Her konumdaki olay sayısını belirten bir veya birden fazla alan girin. &Ouml;rneğin, şehirleri g&ouml;steren noktalarınız varsa, hesaplama alanı olarak şehir n&uuml;fusunu g&ouml;steren bir alanı kullanabilirsiniz; sonu&ccedil; n&uuml;fus yoğunluğu katmanı, yoğun n&uuml;fusa sahip şehirlerin etrafındaki daha yoğun n&uuml;fus yoğunluklarını hesaplar.
+            </p>
+            <p>Nokta sayısına ait yoğunluk her zaman hesaplanacaktır. Alanlardan hi&ccedil;biri se&ccedil;ilmediğinde, her konumun bir tek sayımı temsil ettiği varsayılır.
+            </p>
+        </div>
+    </div>
+    <div id="binType">
+        <div><h2>Bir kutu şekli seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Noktaların toplandığı ve yoğunluk hesaplaması i&ccedil;in kullanıldığı kutuların şekli.
+            </p>
+            <p> <b>Kare</b> veya <b>Altıgen</b> kutu kullanan analiz, izd&uuml;ş&uuml;ml&uuml; bir koordinat sistemi gerektirir. <b>İşlem koordinat sistemini</b> <b>Analiz Ortamları</b> i&ccedil;inden ayarlayabilirsiniz. 
+ İşlem koordinat sisteminiz izd&uuml;ş&uuml;ml&uuml; bir koordinat sistemine ayarlanmamış ise, <b>Analizi &Ccedil;alıştır</b> dığınızda bu ayarlamayı yapmanız istenir.
+            </p>
+        </div>
+    </div>
+    <div id="binSizing">
+        <div><h2>Birleştirme için kutu boyutunu seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Oluşturulan kutuların boyutu. Kare bir kutu i&ccedil;in boyut, karenin y&uuml;ksekliğini g&ouml;sterir. Altıgen i&ccedil;in boyut, altıgenin y&uuml;ksekliğini (paralel kenarlar arası mesafeyi) g&ouml;sterir.
+            </p>
+        </div>
+    </div>
+    <div id="weight">
+        <div><h2>Uygulanacak yoğunluk ağırlıklandırmasını seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Yoğunluk hesaplamasına uygulanan ağırlıklandırma t&uuml;r&uuml;. İki se&ccedil;enek mevcuttur:
+                <ul>
+                    <li> <b>Uniform</b>&mdash;Bu, alan başına b&uuml;y&uuml;kl&uuml;ğ&uuml; hesaplar.
+                    </li>
+                    <li> <b>Kernel</b>&mdash;P&uuml;r&uuml;zs&uuml;z konik bir y&uuml;zeyi her noktaya sığdırmak i&ccedil;in bir kernel işlevi uygular.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Komşu boyutunu seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Yoğunluğu hesaplamak i&ccedil;in kullanılan alanın boyutu. Komşuluk boyutu kutu boyutundan b&uuml;y&uuml;k olmalıdır.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Yoğunluk için çıktı birimini seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Yoğunluk değerlerinin istenen &ccedil;ıktı birimleri. Varsayılan olarak, profilinizde belirtilen varsayılan birimler temel alınarak kilometrekare veya milkare olarak ayarlıdır. Yoğunluk değerleri &ccedil;ok k&uuml;&ccedil;&uuml;kse, daha b&uuml;y&uuml;k değerler almak i&ccedil;in alan birimlerinin boyutunu (&ouml;rneğin metrekareden kilometrekareye kadar) artırabilirsiniz. Değerler yalnızca sonucu &ouml;l&ccedil;eklendirir.  
+
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Yoğunluğu zaman adımlarını kullanarak hesapla (isteğe bağlı)</h2></div>
+        <hr/>
+        <div>
+            <p>Girdi nokta katmanında zaman etkinleştirilmiş ve t&uuml;r&uuml; de anlık ise, zaman adımlamasını kullanarak analiz yapabilirsiniz. Zaman &ouml;gesini kullanırken ayarlayabileceğiniz &uuml;&ccedil; parametre vardır:
+                <ul>
+                    <li> <b>Zaman adımı aralığı</b>
+                    </li>
+                    <li> <b>Zaman adımını yineleme aralığı</b>
+                    </li>
+                    <li> <b>Zaman adımlarını d&uuml;zenleme s&uuml;resi</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>&Ouml;rneğin, bir yılı temsil eden verileriniz varsa ve bu verileri haftalık adımlar kullanarak analiz etmek istiyorsanız,  <b>Zaman adımı aralığı</b> &ouml;ğesini <code>1 hafta</code> olarak ayarlayın. 
+            </p>
+            <p>&Ouml;rneğin, bir yılı temsil eden verileriniz varsa ve bu verileri ayın ilk haftasını kullanarak analiz etmek istiyorsanız,  <b>Zaman adımı aralığı</b> &ouml;ğesini <code>1 hafta</code>, <b>Zaman adımı yineleme sıklığı</b> &ouml;ğesini <code>1 ay</code> ve <b>Zaman adımlarının ayarlanacağı zaman</b> &ouml;ğesini <code>1 Ocak saat g&uuml;nd&uuml;z 12:00</code> olarak ayarlayın.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Zaman adımı aralığı</h2></div>
+        <hr/>
+        <div>
+            <p>Zaman adımı oluşturmak i&ccedil;in kullanılan zaman aralığı.  <b>Zaman adımı aralığını</b> tek başına veya <b>Zaman adımını tekrarlama sıklığı</b> ya da <b>Zaman adımlarının ayarlanacağı zaman</b> parametresiyle birlikte kullanabilirsiniz.
+            </p>
+            <p>&Ouml;rneğin,her Pazartesi saat 9:00 ile 10:00 arasında ger&ccedil;ekleşen zaman adımları oluşturmak isterseniz ,  <b>Zaman adımı aralığı</b> değerini <code>1 saat</code>, <b>Zaman adımını yineleme aralığı</b> değerini <code>1 hafta</code> ve <b>Zaman adımlarının ayarlanacağı zaman</b> değerini <code>Pazartesi g&uuml;n&uuml; sabah 9:00:00</code> olarak ayarlayın.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Zaman adımını yineleme aralığı</h2></div>
+        <hr/>
+        <div>
+            <p> Bir zaman adımını hesaplamak i&ccedil;in kullanılan adım. <b>Zaman adımını yineleme aralığı</b>  tek başına, <b>Zaman adımı aralığı</b> ile birlikte veya <b>Referans Zaman</b> ile birlikte ya da <b>Zaman adımı aralığı</b> ve <b>Zaman adımlarının ayarlanacağı zaman</b> parametrelerinin her ikisi ile birlikte kullanılabilir.
+            </p>
+            <p> &Ouml;rneğin, her Pazartesi saat 9:00 ile 10:00 arasında ger&ccedil;ekleşen zaman adımları oluşturmak isterseniz, <b>Zaman adımı aralığı</b> değerini <code>1 saat</code>, <b>Zaman adımını yineleme aralığı</b> değerini <code>1 hafta</code> ve <b>Zaman adımlarının ayarlanacağı zaman</b> değerini <code>Pazartesi g&uuml;n&uuml; sabah 9:00:00</code> olarak ayarlayın.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Zaman adımlarını düzenleme süresi</h2></div>
+        <hr/>
+        <div>
+            <p>Zaman dilimlemeyi eşleştirmek i&ccedil;in kullanılan tarih ve saat. Zaman adımlaması saatinde başlatılır ve buradan geriye doğru devam eder. Referans saat se&ccedil;ilmezse, zaman adımlaması 1 Ocak 1970&rsquo;ten başlatılır. 
+            </p>
+            <p> &Ouml;rneğin,  her Pazartesi saat 9:00 ile 10:00 arasında ger&ccedil;ekleşen zaman adımları oluşturmak isterseniz, <b>Zaman adımı aralığı</b> değerini <code>1 saat</code>, <b>Zaman adımını yineleme aralığı</b> değerini <code>1 hafta</code> ve <b>Zaman adımlarının ayarlanacağı zaman</b> değerini <code>Pazartesi g&uuml;n&uuml; sabah 9:00:00</code> olarak ayarlayın.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Bu, mekansal referansı ayarlamak amacıyla &ouml;n s&uuml;r&uuml;m i&ccedil;in ge&ccedil;ici bir parametredir. B&uuml;y&uuml;k veri ara&ccedil;larının pek &ccedil;oğu, işlem i&ccedil;in mekansal referans olarak izd&uuml;ş&uuml;mlendirilmiş bir koordinat sisteminin kullanılmasını gerektirir. Varsayılan olarak, ara&ccedil; girdi koordinat sistemini kullanır, ancak bu bir coğrafi koordinat sistemi olduğunda &ccedil;alışmaz. İzd&uuml;ş&uuml;mlendirilmiş bir koordinat sistemi ayarlamak i&ccedil;in WKID girin. &Ouml;rneğin,  <b>Web Mercator</b> değeri, <code>3857</code>olarak girilebilir.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Veri deposu seç</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics sonu&ccedil;ları,  bir veri deposunda saklanır ve  Portal for ArcGIS i&ccedil;inde bir detay katmanı olarak yansıtılır. Pek &ccedil;ok durumda sonu&ccedil;ların mekan-zamansal b&uuml;y&uuml;k veri deposuna depolanması gerekir ve bu varsayılan ayardır. Bazı durumlarda, sonu&ccedil;ların ilişkisel veri deposuna kaydedilmesi iyi bir se&ccedil;enektir. Sonu&ccedil;ların ilişkisel veri deposuna  saklanmasını isteyebileceğiniz nedenler aşağıda sunulmuştur: 
+                <ul>
+                    <li>Bu sonu&ccedil;ları, portaldan-portala işbirliğinde kullanabilirsiniz.
+                    </li>
+                    <li>Sonu&ccedil;larınızı eşzamanlama &ouml;zellikleriyle etkinleştirebilirsiniz.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>GeoAnalytics sonu&ccedil;larınızın artmasını bekliyorsanız, ilişkisel veri deposunu kullanmamalı ve b&uuml;y&uuml;k miktarda veri s&ouml;z konusu olduğunda bunları işlemek i&ccedil;in mekan-zamansal b&uuml;y&uuml;k veri deposunun avantajından yararlanmalısınız.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> Oluşturulacak katmanın adı. Bir ArcGIS Data Store&lsquo;a yazdığınızda, sonu&ccedil;larınız  <b>İ&ccedil;eriğime</b> kaydedilir ve haritaya eklenir. Bir b&uuml;y&uuml;k veri dosya paylaşımına yazdığınızda,  sonu&ccedil;larınız b&uuml;y&uuml;k veri dosya paylaşımı i&ccedil;ine kaydedilir ve   manifestosuna eklenir.  haritaya eklenmez. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Detay katmanı zaten varsa ara&ccedil; &ccedil;alışmaz.
+            </p>
+            <p> ArcGIS Data Store&lsquo;a yazarken (ilişkisel ya da mekan-zamansal b&uuml;y&uuml;k veri deposu)  <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır kutusunu kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

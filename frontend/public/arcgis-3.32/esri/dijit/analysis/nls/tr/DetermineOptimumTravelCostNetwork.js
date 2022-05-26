@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/tr/DetermineOptimumTravelCostNetwork",{inputLayerLabel:"\u015eunlar\u0131n aras\u0131ndaki seyahat yollar\u0131n\u0131 belirlemek i\u00e7in raster veya detay konumu katman\u0131 se\u00e7in",inputCostRasterLabel:"Seyahat maliyeti raster katman\u0131 se\u00e7in",outputOptimumNetworkName:"Sonu\u00e7 optimum yol \u00e7oklu \u00e7izgi katman\u0131 ad\u0131",outputNeighborNetworkName:"Sonu\u00e7 kom\u015fu yol \u00e7oklu \u00e7izgi katman\u0131 ad\u0131 (iste\u011fe ba\u011fl\u0131)",
+outputLayerName:"${Layername} katman\u0131n\u0131n optimum seyahat maliyetini se\u00e7in",itemDescription:"Detay katman\u0131 ${layerName} \u00fczerindeki optimum seyahat maliyeti a\u011f\u0131n\u0131 belirle, \u00e7al\u0131\u015ft\u0131r\u0131larak olu\u015fturuldu. ",itemTags:"Analiz Sonucu, Optimum Seyahat Maliyeti A\u011f\u0131n\u0131 Belirle, ${layername} ${fieldname}",itemSnippet:"Detay katman\u0131 Optimum Seyahat Maliyeti A\u011f\u0131n\u0131 Belirle ile olu\u015fturuldu."});

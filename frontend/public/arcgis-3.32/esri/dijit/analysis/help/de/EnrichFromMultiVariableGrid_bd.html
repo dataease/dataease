@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Über Gitter mit mehreren Variablen anreichern</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="&Uuml;ber Gitter mit mehreren Variablen anreichern"></h2>
+        <hr/>
+    <p>Mit dem Werkzeug  &Uuml;ber Gitter mit mehreren Variablen anreichern werden Attribute aus einem Gitter mit mehreren Variablen effizient mit einem Punkt-Layer verbunden.
+    </p>
+    <p>Ein Gitter mit mehreren Variablen ist ein Layer, der mit dem Werkzeug &quot;Gitter mit mehreren Variablen erstellen&quot; erstellt wurde, das Attribute aus mehreren Layern in einem einzelnen Gitter aus Polygonen zusammenstellt.  Wenn Sie ein Gitter mit mehreren Variablen f&uuml;r die Anreicherung verwenden, k&ouml;nnen Sie Punktdaten gro&szlig;e und vielf&auml;ltige Sammlungen von Informationen f&uuml;r weitere r&auml;umliche Analysen schnell hinzuf&uuml;gen.
+    </p>
+    <p>Angenommen, Sie verf&uuml;gen &uuml;ber einen Layer mit neuen Verbrechensf&auml;llen, die im letzten Jahr in einer Stadt aufgetreten sind. Sie m&ouml;chten die Beziehungen zwischen der H&auml;ufigkeit von Delikten und unterschiedlichen demografischen, &ouml;konomischen und geographischen Faktoren modellieren. Sie haben Zugriff auf Daten, die diese Faktoren beschreiben, diese sind jedoch in f&uuml;nf verschiedenen Layern mit unterschiedlichen Geometrietypen gespeichert. Au&szlig;erdem sind einige Layer in einer Big-Data-Dateifreigabe gespeichert, w&auml;hrend andere als Feature-Services gespeichert sind. Wenn Sie ein Gitter mit mehreren Variablen erstellen, um diese Informationen zu speichern, und das Gitter anschlie&szlig;end mithilfe des Werkzeugs  &Uuml;ber Gitter mit mehreren Variablen anreichern mit Ihren Verbrechensf&auml;llen verbinden, k&ouml;nnen Sie die unterschiedlichsten Attribute mit Ihrem Punkt-Layer verbinden, indem das Werkzeug nur zweimal ausgef&uuml;hrt wird. Anschlie&szlig;end k&ouml;nnen Sie die verbundenen Attribute als erkl&auml;rende Variablen verwenden und beginnen, ein Modell der H&auml;ufigkeit von Delikten mit dem Ergebnis-Layer zu erstellen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>Anzureichernde Punkt-Features auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Die Punkt-Features, die vom Gitter mit mehreren Variablen angereichert werden.
+            </p>
+            <p>Sie k&ouml;nnen nicht nur einen Layer aus der Karte ausw&auml;hlen, sondern auch unten in der Dropdown-Liste die Option  <b>Analyse-Layer ausw&auml;hlen</b> ausw&auml;hlen, um zu Ihren Inhalten f&uuml;r ein Big-Data-Dateifreigabe-Dataset bzw. -Feature-Layer zu navigieren.
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>Gitter mit mehreren Variablen auswählen, über das angereichert werden soll</h2></div>
+        <hr/>
+        <div>
+            <p>Der Layer f&uuml;r Gitter mit mehreren Variablen, der die Attribute enth&auml;lt, die mit den Eingabe-Punkt-Features verbunden werden. Der Layer muss mit dem Werkzeug &quot;Gitter mit mehreren Variablen erstellen&quot; erstellt worden und ein gehosteter Feature-Layer sein. Gitter mit mehreren Variablen, die in einer Big Data-Dateiffreigabe gespeichert sind, werden nicht als Eingabe f&uuml;r dieses Werkzeug unterst&uuml;tzt.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>Hinzuzufügende Variablen auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Die Attribute im Layer f&uuml;r Gitter mit mehreren Variablen, die mit den Eingabe-Punkt-Features verbunden werden, sobald die Punkt-Features das Gitter schneiden.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p> Der Name des Layers, der erstellt wird.  Wenn Sie in einen ArcGIS Data Store schreiben, werden Ihre Ergebnisse in  <b>Eigene Inhalte</b> gespeichert und der Karte hinzugef&uuml;gt. Wenn Sie in eine Big-Data-Dateifreigabe schreiben, werden Ihre Ergebnisse in der Big-Data-Dateifreigabe gespeichert und  ihrem Manifest hinzugef&uuml;gt. Sie werden nicht der Karte hinzugef&uuml;gt. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, kann das Werkzeug nicht ausgef&uuml;hrt werden.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

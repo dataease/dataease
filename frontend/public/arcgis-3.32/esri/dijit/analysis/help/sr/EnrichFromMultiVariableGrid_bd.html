@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Obogaćivanje iz mreže sa više promenljivih</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="Obogaćivanje iz mreže sa vi&scaron;e promenljivih"></h2>
+        <hr/>
+    <p>Alatka  Obogaćivanje iz mreže sa vi&scaron;e promenljivih efikasno pridružuje atribute iz mreže sa vi&scaron;e promenljivih tačkastom sloju.
+    </p>
+    <p>Mreža sa vi&scaron;e promenljivih je bilo koji sloj koji je kreiran pomoću alatke Izgradi mrežu sa vi&scaron;e promenljivih, koja sastavlja atribute iz vi&scaron;e slojeva u jednu mrežu poligona.  Kori&scaron;ćenje mreže sa vi&scaron;e promenljivih za obogaćivanje vam omogućava da brzo dodajete velike i različite kolekcije informacija u podatke o tačkama za kori&scaron;ćenje u dodatnoj prostornoj analizi.
+    </p>
+    <p>Na primer, pretpostavimo da ste pribavili sloj novih zločina koji su se dogodili pro&scaron;le godine &scaron;irom grada. Želite da modelujete odnose između učestalosti zločina i mno&scaron;tva demografskih, ekonomskih i geografskih faktora. Imate pristup podacima koji opisuju ove faktore, ali su oni uskladi&scaron;teni u pet različitih slojeva sa različitim tipovima geometrija. Pored toga, neki slojevi su uskladi&scaron;teni u deljenom resursu za datoteke sa velikim podacima, dok su drugi uskladi&scaron;teni kao servisi geoobjekata. Kreiranjem mreže sa vi&scaron;e promenljivih za skladi&scaron;tenje ovih informacija i zatim spajanjem mreže sa va&scaron;im zločinima pomoću alatke  Obogaćivanje iz mreže sa vi&scaron;e promenljivih, u stanju ste da efikasno spajate mno&scaron;tvo raznih atributa sa tačkastim slojem sa samo dva pokretanja alatke. Zatim možete da koristite spojene atribute kao opisne promenljive i da počnete sa pravljenjem modela učestalosti zločina pomoću sloja sa rezultatima.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>Odaberite tačkaste geoobjekte za obogaćivanje</h2></div>
+        <hr/>
+        <div>
+            <p>Tačkasti geoobjekti koji će biti obogaćeni mrežom sa vi&scaron;e promenljivih.
+            </p>
+            <p>Kao dodatak odabiru sloja iz mape, možete da odaberete  <b>Izaberi sloj za analizu</b> na dnu padajuće liste da biste potražili deljeni skup podataka za datoteke sa velikim podacima ili sloj geoobjekta u svojim sadržajima.
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>Izaberite mrežu sa više promenljivih iz koje će se vršiti obogaćivanje</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj mreže sa vi&scaron;e promenljivih koji sadrži atribute koji će biti spojeni sa ulaznim tačkastim geoobjektima. Sloj mora da bude kreiran pomoću alatke Izgradi mrežu sa vi&scaron;e promenljivih i mora biti hostovani sloj geoobjekata. Slojevi mreže sa vi&scaron;e promenljivih uskladi&scaron;teni u deljenom resursu za datoteke sa velikim podacima nisu podržani kao ulaz za ovu alatku.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>Odaberite promenljive za dodavanje</h2></div>
+        <hr/>
+        <div>
+            <p>Atributi u sloju mreže sa vi&scaron;e promenljivih koje će biti spojene sa ulaznim tačkastim geoobjektima kad god tačkasti geoobjekti presecaju mrežu.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p> Ime sloja koji će se kreirati. Ako vr&scaron;ite upis u ArcGIS Data Store, va&scaron;i rezultati će se čuvati u  <b>Mom sadržaju</b> i biće dodati na mapu. Ako vr&scaron;ite upis u deljeni resurs za datoteke sa velikim podacima, va&scaron;i rezultati će se čuvati u deljenom resursu za datoteke sa velikim podacima i biti dodati u njegov manifest. On neće biti dodat na mapu. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako sloj već postoji, alatka će otkazati.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

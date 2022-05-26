@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src * 'unsafe-inline'">
+
+  <script>
+    var dojoConfig = {
+      async: true,
+      baseUrl: "../../../dojo/",
+      has: {
+        "csp-restrictions": true,
+        "dojo-preload-i18n-Api": false
+      }
+    };
+  </script>
+  <!--
+  This src is relative to this page and assumes dojo is a sibling to esri.
+  It is updated when this file is set as the iframe's `srcdoc` value.
+  -->
+  <script src="../../../dojo/dojo.js"></script>
+
+  <script>
+    function windowMessageHandler(event) {
+      window.removeEventListener("message", windowMessageHandler);
+
+      var port = event.ports[0];
+
+      require([
+        "dojo/request/script"
+      ], function(script) {
+        port.postMessage("ready");
+
+        port.addEventListener("message", function(event) {
+          var data = event.data;
+          script.get(data.url, data.options)
+              .then(function(response) {
+                port.postMessage({
+                  id: data.id,
+                  response: response
+                });
+              })
+              .otherwise(function(error) {
+                port.postMessage({
+                  id: data.id,
+                  isError: true,
+                  message: error.message
+                });
+              });
+        });
+        port.start();
+      });
+    }
+
+    window.addEventListener("message", windowMessageHandler);
+  </script>
+</head>
+<body>
+</body>
+</html>

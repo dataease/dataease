@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Titik Agregat</h2><p/>
+        <h2><img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" alt="Titik Agregat"></h2>
+        <hr/>
+    <p>Alat ini bekerja dengan layer fitur titik dan layer fitur area. Ini menentukan terlebih dahulu titik mana yang diletakkan dalam setiap area. Setelah menentukan hubungan spasial titik di dalam area ini, statistik terkait semua titik di dalam area dihitung dan ditetapkan ke area. Statistik yang paling dasar adalah jumlah titik di dalam area, tapi Anda juga dapat memperoleh statistik lain. 
+    </p>
+    <p>Misalnya, Anda memiliki fitur titik dari lokasi sebuah warung kopi dan fitur area dari suatu daerah, serta Anda ingin merekapitulasi penjualan kopi menurut daerah tertentu.  Misalnya warung kopi memiliki atribut  <i>TOTAL_SALES</i>, Anda dapat memperoleh jumlah dari seluruh <i>TOTAL_SALES</i> dalam setiap daerah, atau jumlah minimal atau maksimal <i>TOTAL_SALES</i>
+ dalam setiap wilayah, atau simpangan baku dari semua penjualan di dalam setiap daerah.
+    </p>
+    <p>Jika  <b>Gunakan jangkauan peta saat ini</b> dicentang, maka hanya fitur dalam layer titik input dan layer area yang terlihat dalam jangkauan peta saat ini yang akan dianalisis. Jika centang dihapus, semua fitur baik pada layer titik input maupun layer area akan dianalisis, meskipun berada di luar jangkauan peta yang ada.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Pilih layer berisi titik yang akan diagregasi ke dalam area</h2></div>
+        <hr/>
+        <div>
+            <p>Layer titik yang akan diagregasi ke dalam area.
+            </p>
+            <p>Selain memilih sebuah layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> yang terdapat di bagian paling bawah daftar drop-down. Opsi ini membuka galeri di mana Anda dapat menelusuri dan memilih set data dari berbagai sumber untuk digunakan dalam analisis Anda. 
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Pilih layer yang berisi area agregasi</h2></div>
+        <hr/>
+        <div>
+            <p>Layer area tempat titik akan diagregasi. Titik mana saja yang berada di dalam batasan area dalam layer ini akan dihitung dan secara opsional akan direkapitulasi menggunakan pilihan statistik Anda.  
+            </p>
+            <p>Anda dapat memilih antara layer area yang Anda sediakan atau bin yang dihasilkan ketika alat dijalankan. Ketika membuat bin, untuk  <b>Persegi</b>, angka dan unit yang disebutkan akan menentukan tinggi dan panjang persegi. Untuk <b>Heksagon</b>, angka dan unit yang ditentukan akan menentukan jarak antara sisi paralel.
+            </p>
+            <p>Selain memilih sebuah layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> yang terdapat di bagian paling bawah daftar drop-down. Opsi ini membuka galeri di mana Anda dapat menelusuri dan memilih set data dari berbagai sumber untuk digunakan dalam analisis Anda. 
+            </p>
+        </div>
+    </div>
+    <div id="KeepBoundaryNoPoints">
+        <div><h2>Simpan area tanpa titik</h2></div>
+        <hr/>
+        <div>
+            <p>Tentukan apakah area yang tidak memiliki titik di dalamnya akan muncul di layer hasil. Jika tidak dicentang, area tanpa titik tidak akan muncul pada hasil.  Jika dicentang, area tanpa titik akan muncul pada hasil.  
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Tambahkan statistik</h2></div>
+        <hr/>
+        <div>
+            <p>Anda dapat menghitung statistik tentang atribut dari layer titik input seperti penjumlahan, rata-rata, minimal, maksimal, dan simpangan baku. Layer hasil akan berisi atribut baru untuk setiap statistik yang dihitung. Angka statistik mana saja dapat ditambahkan dengan memilih sebuah atribut dan statistik (sebuah kotak drop-down akan muncul).
+ 
+            </p>
+            <p>Jika layer yang akan diringkas tidak memiliki kolom angka apa pun, statistik tambahan tidak akan tersedia.
+            </p>
+        </div>
+    </div>
+    <div id="GroupByField">
+        <div><h2>Pilih kolom untuk dikelompokkan</h2></div>
+        <hr/>
+        <div>
+            <p> Anda dapat membuat kelompok statistik menggunakan atribut di layer titik input.    Misalnya, jika Anda mengumpulkan kejahatan ke batasan lingkungan sekitar, Anda dapat menggunakan atribut <i>Crime_type</i> dengan lima tipe kejahatan berbeda.  Setiap tipe kejahatan yang unik membentuk sebuah kelompok, dan statistik yang Anda pilih akan dihitung untuk setiap nilai unik dari <i>Crime_type</i>.  Statistik untuk setiap kelompok, seperti halnya jumlah titik, akan ditampilkan di pop-up layer hasil.  Ketika Anda memilih sebuah atribut pengelompokan, dua hasil akan dibuat: layer hasil dan tabel hasil yang berisi statistik untuk setiap kelompok unik.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Tambahkan minoritas, mayoritas</h2></div>
+        <hr/>
+        <div>
+            <p>Kotak centang ini diaktifkan ketika Anda memilih kolom untuk dikelompokkan.    Jika Anda ingin menemukan nilai atribut mana dalam setiap kelompok yang merupakan minoritas (lebih tidak dominan) atau mayoritas (paling dominan) dalam setiap batasan, pilih  <b>Tambahkan minoritas, mayoritas</b>.   Ketika Anda memilih <b>Tambahkan minoritas, mayoritas</b>, dua kolom baru telah ditambahkan ke layer hasil Anda. Jika Anda juga memilih <b>Tambahkan persentase</b>, dua kolom tambahan ditambahkan ke layer hasil berisi persentase nilai atribut minoritas dan mayoritas dalam setiap kelompok.
+            </p>
+            <p>Misalnya, jika Anda adalah perencana kota dan Anda ingin menemukan spesies pohon mana yang merupakan minoritas dan spesies mana yang merupakan mayoritas dalam semua taman kota, rekapitulasi data pohon Anda dengan area taman dan centang opsi ini.
+            </p>
+        </div>
+    </div>
+    <div id="PercentPoints">
+        <div><h2>Tambahkan persentase</h2></div>
+        <hr/>
+        <div>
+            <p>Kotak centang ini aktif bila Anda memilih kolom untuk pengelompokan. Pilih  <b>Tambahkan persentase</b> jika Anda ingin melihat nilai persentase dari setiap nilai atribut di dalam setiap kelompok. Kolom baru telah ditambahkan ke dalam tabel hasil yang memuat nilai persentase dari masing-masing nilai atribut di dalam setiap kelompok. Jika <b>Tambahkan minoritas, mayoritas</b> juga dicentang, dua kolom lagi akan ditambahkan ke layer hasil yang memuat persentase dari nilai atribut minoritas dan mayoritas di dalam setiap kelompok.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Ini adalah nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta.  Nama default ditetapkan berdasarkan nama layer input. Jika nama layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Dengan menggunakan  <b>Simpan hasil di</b> menu drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> sebagai tempat penyimpanan hasil.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

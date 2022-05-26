@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/arcade/polyfill/sql/FieldsIndex",["require","exports"],function(g,h){return function(){function a(b){this.uid="";this._fieldsMap={};if(b){for(var e=[],c=0;c<b.length;c++){var d=b[c],a=d&&d.name&&d.name;if(a){var f=a.toLowerCase().trim();this._fieldsMap[a]=d;this._fieldsMap[f]=d;e.push(f)}}e.sort();this.uid=e.join(",")}}a.prototype.destroy=function(){this._fieldsMap={}};a.prototype.has=function(b){return null!=this[b]};a.prototype.get=function(b){return b&&(this._fieldsMap[b]||this._fieldsMap[b.toLowerCase().trim()])};
+a.prototype.set=function(b){if(b)for(var a=0;a<b.length;a++){var c=b[a],d=c&&c.name&&c.name.trim();d&&(this._fieldsMap[d]=c,this._fieldsMap[d.toLowerCase()]=c)}};return a}()});

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Calcular densidad</h2><p/>
+        <h2><img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" alt="Herramienta Calcular densidad"></h2>
+        <hr/>
+    <p>Esta herramienta crea un mapa de densidad a partir de entidades de punto o de l&iacute;nea mediante la extensi&oacute;n de cantidades conocidas de alg&uacute;n fen&oacute;meno (representado como atributos de los puntos o las l&iacute;neas) a todo el mapa. El resultado es una capa de &aacute;reas clasificadas de menor a mayor densidad.
+    </p>
+    <p>En una entrada de punto, cada punto debe representar la ubicaci&oacute;n de un evento o un incidente, y la capa de resultados representa un recuento del incidente por unidad de &aacute;rea. Un valor de densidad m&aacute;s grande en una nueva ubicaci&oacute;n significa que hay m&aacute;s puntos cerca de esa ubicaci&oacute;n. En muchos casos, la capa de resultados se puede interpretar como una superficie de riesgo para eventos futuros. Por ejemplo, si los puntos de entrada representan ubicaciones en las que ha ca&iacute;do un rayo, la capa de resultados se puede interpretar como una superficie de riesgo para la ca&iacute;da de rayos en el futuro.
+    </p>
+    <p>En el caso de la entrada de l&iacute;nea, la superficie de densidad de l&iacute;nea representa la cantidad total de la l&iacute;nea que est&aacute; cerca de cada ubicaci&oacute;n. Las unidades de los valores de la densidad calculada corresponden a la longitud del &aacute;rea de l&iacute;nea por unidad. Por ejemplo, si las l&iacute;neas representan r&iacute;os, la capa de resultados representar&aacute; la longitud total de los r&iacute;os que est&aacute;n dentro del radio de b&uacute;squeda. Este resultado se puede usar para identificar las &aacute;reas que son adecuadas como pastos para animales.
+    </p>
+    <p>Se describen a continuaci&oacute;n otros ejemplos de uso de esta herramienta:
+
+        <ul>
+            <li>Crear mapas de densidad de delitos para ayudar a los departamentos de polic&iacute;a a asignar los recursos adecuados a las zonas con un alto nivel de delitos.
+                
+ 
+            </li>
+            <li>Calcular las densidades de hospitales en un condado. La capa de resultados mostrar&aacute; las &aacute;reas con una accesibilidad alta y baja a los hospitales, y esta informaci&oacute;n se puede usar para decidir d&oacute;nde se deben construir nuevos hospitales.
+                
+ 
+            </li>
+            <li>Identificar &aacute;reas con un alto riesgo de incendio forestal en funci&oacute;n del historial de ubicaciones de estos incendios.
+                
+ 
+            </li>
+            <li>Buscar comunidades alejadas de las principales carreteras para planificar d&oacute;nde se deben construir nuevas carreteras.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointOrLineFeatures">
+        <div><h2>Elija la capa de puntos o líneas de entrada a partir de la cual se debe calcular la densidad</h2></div>
+        <hr/>
+        <div>
+            <p>Capa de puntos o l&iacute;neas de entrada que se utilizar&aacute; para calcular la capa de densidad.
+            </p>
+        </div>
+    </div>
+    <div id="countField">
+        <div><h2>Usar un campo de recuento</h2></div>
+        <hr/>
+        <div>
+            <p>Proporciona un campo que especifique el n&uacute;mero de incidentes de cada ubicaci&oacute;n. Por ejemplo, si tiene puntos que representan ciudades, puede usar un campo que represente la poblaci&oacute;n de la ciudad como campo de recuento, y la capa de densidad de poblaci&oacute;n resultante calcular&aacute; las densidades de poblaci&oacute;n m&aacute;s altas cerca de las ciudades con las mayores poblaciones.
+            </p>
+            <p>Si se usa la opci&oacute;n predeterminada  <b>Ninguno</b>, se entender&aacute; que cada ubicaci&oacute;n representa un solo recuento.
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Distancia de búsqueda</h2></div>
+        <hr/>
+        <div>
+            <p>Introduce una distancia que especifique hasta d&oacute;nde se debe buscar para encontrar entidades de punto o de l&iacute;nea al calcular valores de densidad. Por ejemplo, si proporcionas una distancia de b&uacute;squeda de 10.000 metros, la densidad de cualquier ubicaci&oacute;n en la capa de salida se calcula a partir de las entidades que est&aacute;n a 10.000 metros de la ubicaci&oacute;n. Cualquier ubicaci&oacute;n que no tenga incidentes en un radio de 10.000 metros tendr&aacute; un valor de densidad igual a cero.
+            </p>
+            <p>Si no se proporciona ninguna distancia, se calcular&aacute; una predeterminada a partir de las ubicaciones de las entidades de entrada y de los valores del campo de recuento (si lo hay).
+            </p>
+        </div>
+    </div>
+    <div id="outputAreaUnits">
+        <div><h2>Unidades de área de salida</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica la unidad de &aacute;rea de salida. La densidad es el n&uacute;mero de entidades dividido por el &aacute;rea, y este par&aacute;metro especifica la unidad de &aacute;rea en el c&aacute;lculo de densidad.
+            </p>
+            <p>Las unidades de &aacute;rea disponibles son: millas cuadradas, pies cuadrados, metros cuadrados y kil&oacute;metros cuadrados.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Tamaño de celda de salida</h2></div>
+        <hr/>
+        <div>
+            <p>El tama&ntilde;o de celda y las unidades para los r&aacute;steres de salida.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>El nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y que se agregar&aacute; al mapa. El nombre predeterminado se basa en el nombre de la herramienta y en el nombre de la capa de entrada. Si la capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Puede especificar el nombre de una carpeta de  <b>Mi contenido</b> en la que se guardar&aacute; el resultado con el cuadro desplegable <b>Guardar el resultado en</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

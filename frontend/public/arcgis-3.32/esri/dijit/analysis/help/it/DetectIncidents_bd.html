@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Rileva Eventi</h2><p/>
+        <h2><img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" alt="Rileva Eventi"></h2>
+        <hr/>
+    <p> Questo strumento funziona con un layer abilitato per variazioni temporali di punti, linee, aree o tabelle che rappresentano un istante nel tempo. L&rsquo;uso di feature ordinate in sequenza, denominate tracce, questo strumento determina quali feature sono eventi di interesse. Gli eventi vengono determinati dalle condizioni specificate.
+    </p>
+    <p>Innanzitutto, lo strumento determina le feature che appartengono ad una traccia utilizzando uno o pi&ugrave; campi. Utilizzando il tempo per ciascuna feature, le tracce vengono ordinate in sequenza e viene applicata la condizione di evento. Le feature che soddisfano la condizione di evente iniziale sono contrassegnate come evento. Opzionalmente, &egrave; possibile applicare una condizione di evento finale; quando la condizione finale &egrave; vera, la feature non &egrave; pi&ugrave; un evento. I risultati vengono restituiti con le feature originali, con nuove colonne che rappresentano il nome dell'evento, e indicano la feature che soddisfa la condizione di evento. &Egrave; possibile restituire tutte le feature originali o solo le feature che sono eventi.
+    </p>
+    <p>Si supponga, ad esempio, di avere misurazioni GPS di uragani ogni 10 minuti. Ogni misurazione GPS registra il nome dell'uragano, la posizione, l'ora di registrazione e la velocit&agrave; del vento. Utilizzando questi campi, &egrave; possibile creare un evento in cui la misurazione con una velocit&agrave; del vento superiore a 208 km/h &egrave; un evento denominato  <code>Catastrofico</code>. Non impostando una condizione finale, l'evento termina se la funzione non soddisfa pi&ugrave; la condizione iniziale (la velocit&agrave; del vento rallenta a meno di 208).
+    </p>
+    <p>Usando un altro esempio, si supponga di monitorare le concentrazioni di una sostanza chimica nella rete idrica locale utilizzando un campo denominato  <code>contaminateLevel</code>. &Egrave; noto che i livelli raccomandati sono inferiori a 0,01 mg/L e i livelli pericolosi sono superiori a 0,03 mg/L. Per rilevare gli eventi in cui un valore superiore a 0,03 mg/L &egrave; e rimane un evento finch&eacute; i livelli di contaminazione non tornano alla normalit&agrave;, si crea un evento utilizzando una condizione iniziale di <code>contaminateLevel &gt; 0,03</code> e una condizione finale di <code>contaminateLevel &lt; 0,01</code>. Ci&ograve; contrassegna qualsiasi sequenza in cui i valori superano 0,03 mg/L finch&eacute; non torna ad un valore inferiore a 0,01.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Scegliere il layer per rilevare eventi da</h2></div>
+        <hr/>
+        <div>
+            <p>Punti, linee, aree o tabelle utilizzati per trovare eventi. Il layer di input deve essere abilitato per variazioni temporali con feature che rappresentano un istante nel tempo e dispone di uno o pi&ugrave; campi che possono essere utilizzati per identificare tracce.
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> alla base dell'elenco a discesa per cercare un dataset di condivisione file Big Data o un feature layer.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Selezionare uno o più campi per identificare le tracce</h2></div>
+        <hr/>
+        <div>
+            <p>I campi che rappresentano l'identificatore di tracce. &Egrave; possibile utilizzare uno o pi&ugrave; campi per rappresentare valori univoci delle tracce.
+            </p>
+            <p>Ad esempio, se si stanno ricostruendo tracce di uragani, si dovrebbe usare il nome dell'uragano come campo della traccia.
+            </p>
+        </div>
+    </div>
+    <div id="startConditionExpression">
+        <div><h2>Costruire una condizione di espressione per segnalare l'inizio di un evento</h2></div>
+        <hr/>
+        <div>
+            <p>Aggiungere una condizione utilizzando il generatore di espressioni per determinare cosa &egrave; un evento. Se la condizione specificata &egrave; vera, la feature &egrave; un evento. Se non si specifica una condizione finale, un evento termina quando la condizione di avvio non &egrave; pi&ugrave; vera.
+            </p>
+            <p>Si supponga, ad esempio, di voler essere avvisati quando la somma dei campi  <code>concentrazione_1</code> e <code>concentrazione_2</code> &egrave; superiore a <code>concentrazione_3</code>. A tal fine, applicare una condizione di <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; $feature[&quot;concentration_3&quot;])</code>.
+            </p>
+            <p>Se si &egrave; interessati alle variazioni delle concentrazioni nel tempo e si desidera essere avvisati quando  <code>concentration_1</code> corrente &egrave; maggiore delle due precedenti misurazioni di <code>concentration_2</code>, si pu&ograve; usare un'espressione come <code>$feature[&quot;concentration_1&quot;] &gt;   $track.field[&quot;concentration_2&quot;].history(-3,-1)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="endConditionExpression">
+        <div><h2>Costruire una condizione di espressione per indicare la fine di un incidente (opzionale)</h2></div>
+        <hr/>
+        <div>
+            <p>Opzionalmente, aggiungere una condizione utilizzando il generatore di espressioni per determinare la fine di un evento. Se la condizione finale specificata &egrave; vera, la feature non &egrave; pi&ugrave; un evento. Se non si specifica una condizione finale, un evento termina quando la condizione di avvio non &egrave; pi&ugrave; vera.    
+            </p>
+            <p>Si supponga, ad esempio, di voler essere avvisati quando la somma dei campi  <code>concentrazione_1</code> e <code>concentrazione_2</code> &egrave; superiore <code>concentrazione_3</code>, e di volere che l&rsquo;evento termini se <code>concentrazione_4</code> &egrave; inferiore a <code>concentrazione_1</code>. A tal fine, applicare una condizione iniziale di <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; ($join[&quot;income&quot;] * .20)</code> e una condizione finale di <code>($feature[&quot;concentration_4&quot;] &lt; $feature[&quot;concentration_1&quot;])</code>.
+            </p>
+            <p>Se si desidera che un incidente termini quando la media di   <code>concentration_1</code> e le quattro misurazioni precedenti sono maggiori della prima misurazione, si pu&ograve; usare un'espressione come <code>$track.field[&quot;concentration_1&quot;].history(-5) &gt; $track.field[&quot;concentration_1&quot;].history(0)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="outputMode">
+        <div><h2>Mostra</h2></div>
+        <hr/>
+        <div>
+            <p>Tutti i metodi di output aggiungono campi alle feature originali. Vi sono due metodi per determinare le feature da restituire:
+                <ul>
+                    <li> <b>Tutte le feature</b>: &egrave; l'impostazione predefinita. Tutte le feature nell&rsquo;input vengono restituite.
+                    </li>
+                    <li> <b>Solo eventi</b>: questo metodo restituisce solo le feature che sono eventi. Tutte le feature non rilevate come eventi non vengono resituite.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analizzare dati con intervalli di tempo (opzionale)</h2></div>
+        <hr/>
+        <div>
+            <p>Specificare se si desidera rilevare gli eventi usando intervalli di tempo che segmentano le feature di input per l'analisi. Se si utilizzano intervalli di tempo, &egrave; necessario impostare l'intervallo di tempo da usare e, facoltativamente, impostare un riferimento temporale. Se non si imposta un riferimento temporale, si user&agrave; il 1 gennaio 1970. 
+            </p>
+            <p>Ad esempio, se si imposta come confine temporale 1 giorno, a partire dalle 9:00 del 1&ordm; gennaio 1990, ogni traccia sar&agrave; troncata alle 9:00 di ogni giorno e analizzata all'interno di tale segmento. 
+            </p>
+            <p>L'utilizzo di intervalli di tempo &egrave; un modo rapido per accelerare il tempo di calcolo, perch&eacute; crea rapidamente tracce pi&ugrave; piccole per l'analisi. Se per l'analisi &egrave; conveniente dividere in base a un intervallo di tempo ricorrente, si consiglia per l'elaborazione di Big Data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p> Il nome del layer che verr&agrave; creato.  Se si scrive su un ArcGIS Data Store, i risultati saranno salvati in  <b>I miei contenuti</b> e aggiunti alla mappa. Se si scrive su una condivisione file Big Data, i risultati saranno memorizzati nella condivisione file Big Data e aggiunti al suo Manifest. Non saranno aggiunti alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, lo strumento non verr&agrave; eseguito.
+            </p>
+            <p>Quando si scrive su  ArcGIS Data Store (data store relazionale o Spatiotemporal Big Data Store) usando la casella a discesa  <b>Salva risultato in</b>, &egrave; possibile specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

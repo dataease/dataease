@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Geokódolási helyszínek táblázatból</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="Geok&oacute;dol&aacute;si helysz&iacute;nek t&aacute;bl&aacute;zatb&oacute;l"></h2>
+        <hr/>
+    <p>A geok&oacute;dol&aacute;s c&iacute;meket koordin&aacute;t&aacute;kk&aacute; alak&iacute;t. Ez az eszk&ouml;z egy big data-f&aacute;jlmegoszt&oacute; t&aacute;bl&aacute;zat&aacute;ban tal&aacute;lhat&oacute; c&iacute;meket vektoros r&eacute;tegg&eacute; alak&iacute;tja, amely a koordin&aacute;t&aacute;kat egy &uacute;j oszlopban tartalmazza.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>Bemeneti táblázat kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>A geok&oacute;dolni k&iacute;v&aacute;nt c&iacute;meket tartalmaz&oacute; bemeneti t&aacute;bl&aacute;zat. 
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Válasszon helymeghatározót!</h2></div>
+        <hr/>
+        <div>
+            <p>V&aacute;lassza ki a locator szolg&aacute;ltat&aacute;st, amely alapj&aacute;n a geok&oacute;dol&aacute;st v&eacute;gre k&iacute;v&aacute;nja hajtani. Ha a haszn&aacute;lni k&iacute;v&aacute;nt locator szolg&aacute;ltat&aacute;s nem szerepel a leg&ouml;rd&uuml;lő men&uuml;ben, akkor l&eacute;pjen kapcsolatba a rendszergazd&aacute;val, &eacute;s konfigur&aacute;ltassa a szolg&aacute;ltat&aacute;st k&ouml;tegelt geok&oacute;dol&aacute;shoz.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>Ország</h2></div>
+        <hr/>
+        <div>
+            <p>Ha minden c&iacute;m egy orsz&aacute;gban tal&aacute;lhat&oacute;, akkor v&aacute;lassza ki az orsz&aacute;got a legpontosabb eredm&eacute;nyek &eacute;rdek&eacute;ben. Ha nem, akkor hagyja &uuml;resen ezt a param&eacute;tert.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Adatmezők kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>A locator szolg&aacute;ltat&aacute;s elv&aacute;rja, hogy az adatok k&ouml;z&ouml;tt szerepeljenek bizonyos mezők, p&eacute;ld&aacute;ul c&iacute;m, helys&eacute;g, &aacute;llam &eacute;s ir&aacute;ny&iacute;t&oacute;sz&aacute;m. A leg&ouml;rd&uuml;lő mezők seg&iacute;ts&eacute;g&eacute;vel egyeztesse a bemeneti f&aacute;jl vagy t&aacute;bl&aacute;zat adatmezőit a locator &aacute;ltal v&aacute;rt mezőkkel. Min&eacute;l t&ouml;bb mezőt k&eacute;pez le, ann&aacute;l pontosabbak lesznek az eredm&eacute;nyek. Ha a bemeneti t&aacute;bl&aacute;zat minden adata egy oszlopban tal&aacute;lhat&oacute;, akkor jel&ouml;lje ki az  <b>Egy mező</b> lehetős&eacute;get, &eacute;s v&aacute;lasszon ki egy adatmezőt a leg&ouml;rd&uuml;lő men&uuml;ből. Ha nem, akkor jel&ouml;lje ki a <b>T&ouml;bb mező</b> lehetős&eacute;get, &eacute;s k&eacute;pezze le a locator megfelelő mezőit a t&aacute;bl&aacute;zat t&ouml;bbmezős oszlopaira.
+            </p>
+        </div>
+    </div>
+    <div id="includeAttributes">
+        <div><h2>Minden helyhez</h2></div>
+        <hr/>
+        <div>
+            <p>A locator szolg&aacute;ltat&aacute;s &aacute;ltal visszaadott tov&aacute;bbi mezőkkel egy&uuml;tt. A lehetős&eacute;g bejel&ouml;l&eacute;sekor az eredm&eacute;nyek k&ouml;z&ouml;tt a locator &aacute;ltal l&eacute;trehozott &ouml;sszes mező szerepel. Ha nincs bejel&ouml;lve, az eredm&eacute;nyek k&ouml;z&ouml;tt a bemeneti adatok is szerepelnek a geok&oacute;dolt koordin&aacute;t&aacute;kkal egy&uuml;tt. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Kimeneti eredmény neve</h2></div>
+        <hr/>
+        <div>
+            <p> A l&eacute;trehozand&oacute; r&eacute;teg neve.  Ha egy ArcGIS Data Store helyre &iacute;r, akkor  eredm&eacute;nyei a  <b>Saj&aacute;t tartalom</b> alatt lesznek elmentve, &eacute;s hozz&aacute; lesznek adva a t&eacute;rk&eacute;phez. Ha egy big data f&aacute;jlmegoszt&oacute;ba &iacute;r, akkor eredm&eacute;nyei a big data f&aacute;jlmegoszt&oacute;ba lesznek elmentve, &eacute;s hozz&aacute; lesznek adva annak jegyz&eacute;kf&aacute;jlj&aacute;hoz. Nem lesznek hozz&aacute;adva a t&eacute;rk&eacute;phez. Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a művelet sikertelen lesz.
+            </p>
+            <p>Ha   ArcGIS Data Store (rel&aacute;ci&oacute;s vagy t&eacute;rbeli-időbeli big data adatt&aacute;rba) &iacute;r az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő mező haszn&aacute;lat&aacute;val, akkor megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

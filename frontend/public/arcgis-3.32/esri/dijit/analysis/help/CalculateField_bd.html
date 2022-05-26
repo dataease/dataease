@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Calculate Field</h2><p/>
+        <h2><img src="./images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" alt="Calculate Field"></h2>
+        <hr/>
+    <p> This tool works with a input layer to calculate values for a new or existing field. Build an Arcade expression to calculate the values to populate features with.   If your data is time-enabled and of time type instant, you can optionally build expressions that are track aware.
+    </p>
+    <p>For example, suppose you want to modify an existing field named  <i>TotalSales</i>. You want the field to be represented by the sum of the total sales in 2016 and 2017. Using those fields in the expression, you calculate the field value as <pre>$feature[&quot;Sales2016&quot;] + $feature[&quot;Sales2017&quot;]</pre>.
+    </p>
+    <p>Using another example, suppose you have GPS measurements that record the location, time,  bus ID, and speed of the busses in a city. We want to create a new field called  <i>SpeedFrom3</i> that averages the speed of the last 3 recorded GPS measurements for each feature. For this calculation we would use a track aware calculation, where the track is a bus denoted by the bus ID.    The calculation to determine the average speed of the previous 3 time steps and the current time step is <pre>average($track.field[&quot;speed&quot;].history(-4))</pre>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choose layer to calculate field values for</h2></div>
+        <hr/>
+        <div>
+            <p>The points, lines, areas, or table that will have field values calculated.  
+            </p>
+            <p>In addition to choosing a layer from your map, you can choose  <b>Choose Analysis Layer</b> at the bottom of the drop-down list to browse to your contents for a big data file share dataset or feature layer. You may optionally apply a filter on your input layer or apply a selection on hosted layers added to your map. Filters and selections are only applied for analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Calculate field values for the field</h2></div>
+        <hr/>
+        <div>
+            <p>The new or existing field that will have values calculated and the data type of that field. If you are calculating values on a field that already exists, you do not need to match the data type. 
+            </p>
+        </div>
+    </div>
+    <div id="expression">
+        <div><h2>Build an expression to calculate the field values</h2></div>
+        <hr/>
+        <div>
+            <p>Add an expression using the expression builder to calculate field values. 
+            </p>
+            <p>For example, suppose we want to add the values of a field named  <i>income</i>  and <i>bonus</i>. To do this,  add the expression <code>$feature[&quot;income&quot;] + $feature[&quot;bonus&quot;] </code>.
+            </p>
+        </div>
+    </div>
+    <div id="trackInfo">
+        <div><h2>The expression is track aware</h2></div>
+        <hr/>
+        <div>
+            <p>Specify if your expression is track aware. A track aware expression will include formatting like       <pre>$track.field[&quot;fieldname&quot;].history(...)</pre>. Track aware expressions require fields to identify individual tracks. Tracks can be composed of points, lines, areas or tables and only require that the input has a track identifier and the data is time-enabled of time type instant.
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analyze data with time intervals</h2></div>
+        <hr/>
+        <div>
+            <p>Specify if you want to calculate values for your tracks using time intervals which will segment your inputs for analysis. If you use time intervals you must set the time interval you want to use, and optionally set the reference time. If you don't set a reference time, Jan 1, 1970 will be used. 
+            </p>
+            <p>For example, if you set the time boundary to be 1 day, starting at 9:00 AM on January 1st, 1990, than each track will be truncated at 9:00 am for every day and analyzed within that segment. 
+            </p>
+            <p>Using time intervals is a fast way to accelerate computing time, as it quickly creates smaller tracks for analysis. If splitting by a reoccurring time interval makes sense for your analysis, it is recommend for big data processing.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p> The name of the layer that will be created.  If you are writing to an ArcGIS Data Store, your results will be saved in  <b>My
+Content</b> and added to the map. If you are writing to a big data file share, your results will be stored in the big data file share and added to its manifest. It will not be added to the map. The default name is based on the
+tool name and the input layer name. If the layer already exists, the tool will fail.
+            </p>
+            <p>When writing to   ArcGIS Data Store  (relational or spatiotemporal big data store) using the  <b>Save result in</b> drop-down box, you can specify
+the name of a folder in <b>My Content</b> where the result will be
+saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Ekstrak Data</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="Ekstrak Data"></h2>
+        <hr/>
+    <p>Dengan alat ini, Anda dapat memilih dan mengunduh data untuk area acuan tertentu. Layer yang Anda pilih akan ditambahkan ke file ZIP, CSV, atau KMZ.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>Layer yang akan Diekstrak</h2></div>
+        <hr/>
+        <div>
+            <p>Ada beberapa layer dalam daftar isi Anda yang dapat digunakan untuk mengekstrak fitur.  Layer-layer yang dicentang adalah layer yang diekstrak dan termasuk pada file hasil yang berupa ZIP atau CSV.
+            </p>
+            <p>Agar layer-layer tersebut muncul pada daftar layer yang akan diekstrak, Anda harus merupakan pemilik data atau pemilik data tersebut harus mengaktifkan fitur ekspor data.    Untuk mengaktifkan fitur ekspor data pada data yang Anda miliki: 
+                <ul>
+                    <li>Buka item data deskripsi
+                    </li>
+                    <li>Klik tab  <b>Pengaturan</b>.
+                    </li>
+                    <li>Gulir ke bawah ke bagian  <b>Ekspor Data</b>
+                    </li>
+                    <li>Centang  <b>Izinkan orang lain mengekspor ke format berbeda</b>.  Klik <b>Simpan</b> saat selesai.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Jika layer analisis Anda mengandung lampiran, perhatikan bahwa lampiran tersebut hanya akan diekstrak jika format data output adalah file geodatabase dan  <b>Potong fitur</b> tidak dicentang.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>Area studi</h2></div>
+        <hr/>
+        <div>
+            <p>Area yang menentukan fitur mana yang akan dimasukkan sebagai file output ZIP atau CSV.   Anda dapat memilih dari yang berikut ini:
+                <ul>
+                    <li>Jangkauan yang terlihat pada peta Anda saat ini ( <b>Sama seperti Tampilan</b>).
+                    </li>
+                    <li>Salah satu layer di daftar isi Anda. Jika layer pilihan adalah titik atau garis, jangkauan layer akan digunakan sebagai area studi.
+                    </li>
+                    <li>Gambar area untuk menentukan area studi.
+                    </li>
+                </ul>
+                 Semua fitur yang berada dalam jangkauan peta akan diekstrak.  Untuk fitur-fitur yang bersilangan atau memotong batas jangkauan peta, namun tidak sepenuhnya berada dalam jangkauan peta, Anda memiliki dua opsi:
+                <ul>
+                    <li> <b>Pilih fitur</b>&mdash;Seluruh fitur yang melewati batas area studi akan diekstrak.
+                    </li>
+                    <li> <b>Potong fitur</b>&mdash;Hanya bagian fitur yang berada dalam area studi yang akan diekstrak.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>Format data output</h2></div>
+        <hr/>
+        <div>
+            <p>Format data yang akan diekstrak. Saat mengekspor fitur garis atau area ke file CSV, hanya atribut nonspasial yang akan diekstrak.  Saat mengekspor fitur titik, baik atribut spasial maupun nonspasial akan diekstrak.  
+            </p>
+            <p>Data yang diekstrak akan menggunakan proyeksi Web Mercator 1984.  Untuk file CSV, kolom  <i>Lat</i> dan <i>Long</i> akan ditambahkan ke data dengan koordinat dalam Web Mercator 1984.
+            </p> 
+            <p>Format keluaran berikut didukung:
+                <ul>
+                    <li>Nilai yang dipisahkan koma (CSV)&mdash; <code>.csv</code> atau <code>.zip</code>
+                    </li>
+                    <li>File geodatabase&mdash; <code>.zip</code>
+                    </li>
+                    <li>Bahasa Markup Lubang Kunci (KML)&mdash; <code>.kmz</code> atau <code>.zip</code>
+                    </li>
+                    <li>Shapefile&mdash; <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nama file output</h2></div>
+        <hr/>
+        <div>
+            <p>Ini adalah nama item yang akan ditambahkan ke  <b>Konten Saya</b>.  Nama item akan dipilih berdasarkan dengan <b>Format data output</b> yang dipilih.     Jika item sudah ada, Anda akan diminta untuk memberikan nama lain.
+            </p>
+            <p>Dengan menggunakan kotak drop-down  <b>Simpan hasil</b>, Anda dapat menentukan nama folder di <b>Konten Saya</b> sebagai tempat penyimpanan hasil.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

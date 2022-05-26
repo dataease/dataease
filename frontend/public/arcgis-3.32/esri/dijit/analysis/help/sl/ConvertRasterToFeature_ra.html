@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Pretvori raster v geoobjekt</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="Orodje Pretvori raster v geoobjekt"></h2>
+        <hr/>
+    <p>To orodje pretvori raster v geoobjektni sklop podatkov kot točke, linije ali poligone.
+    </p>
+    <p>Parameter  <b>Izberi polje</b> vam omogoča možnost izbire, katero atributno polje vhodnega rastrskega sklopa podatkov bo postalo atribut v izhodnem razredu geoobjektov. Ta parameter je na voljo samo za rastre celih &scaron;tevil, ki imajo dodatne atribute v povezani tabeli.
+    </p>
+    <p>Celica vhodnega rastra je lahko katere koli velikosti.
+    </p>
+    <p>Rastre celih &scaron;tevil je mogoče pretvoriti v točkovne, linijske ali poligonske geoobjekte, medtem ko je rastre plavajočih vejic mogoče pretvoriti samo v točkovne geoobjekte.
+    </p>
+    <p>Če je obkljukano  <b>Uporabi trenutni obseg karte</b>, bodo pretvorjene samo rastrske celice, vidne znotraj trenutnega obsega karte. Če je odkljukano, bodo pretvorjene vse celice v rastrskem sloju, tudi če so zunaj trenutnega obsega karte. Upo&scaron;tevajte to, če je rastrski sloj velik ali ima zelo visoko ločljivost.
+    </p>
+    <p>Primeri uporabe tega orodja vključujejo naslednje:
+ 
+        <ul>
+            <li>Ustvarite poligonske geoobjekte iz klasifikacijskega rastra za rabo tal.
+                
+ 
+            </li>
+            <li>Realnočasovne pretoke, identificirane v DMV-ju, je mogoče pretvoriti v linijske geoobjekte.
+                
+
+            </li>
+            <li>DMV je mogoče pretvoriti v točkovne geoobjekte, ki se lahko uporabljajo v delovnem procesu, ki ne temelji na rastru.
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izberi rastrski sloj za pretvorbo</h2></div>
+        <hr/>
+        <div>
+            <p>Vhodni rastrski sloj, ki bo pretvorjen v geoobjektne sloje.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Izberi polje</h2></div>
+        <hr/>
+        <div>
+            <p>Vnesite polje, ki določa vrednost, ki se bo uporabljala za pretvorbo.
+            </p>
+            <p>Lahko je katero koli celo &scaron;tevilo ali besedilna vrednost.
+            </p>
+            <p>Polje, ki vsebuje vrednosti plavajoče vejice, se lahko uporablja samo, če je izhod v točkovnem sklopu podatkov.
+            </p>
+            <p>Privzeta izbira je uporaba polja  <i>Value</i>, ki vsebuje vrednost v vsaki rastrski celici.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Izberi izhodni tip</h2></div>
+        <hr/>
+        <div>
+            <p>Izberite tip izhoda med točko, linijo ali poligonom.
+            </p>
+            <ul>
+                <li>Točka &ndash; raster bo pretvorjen v točkovni sklop podatkov.
+                    
+ 
+                </li>
+                <li>Linija &ndash; raster bo pretvorjen v linijski geoobjektni sklop.
+                    
+ 
+                </li>
+                <li>Poligon &ndash; raster bo pretvorjen v poligonski geoobjektni sklop.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>Poenostavi linije ali poligone</h2></div>
+        <hr/>
+        <div>
+            <p>Navedite, ali je treba geoobjekte poenostaviti.
+            </p>
+            <p>Če je obkljukano (privzeto), bodo linijski ali poligonski geoobjekti izravnani zaradi pridobivanja bolj posplo&scaron;enega rezultata. Če je možnost odkljukana, bodo linearni geoobjekti sledili omejitvam celic rastrskega sklopa podatkov.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>Ime sloja, ki bo ustvarjen v odseku  <b>Moja vsebina</b> in dodan na karto. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, bo od vas zahtevano, da vnesete drugo ime.
+            </p>
+            <p>Lahko navedete ime mape v  <b>Moji vsebini</b>, kjer bo rezultat shranjen s pomočjo spustnega menija <b>Shrani rezultat v</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Nova representació cartogràfica de valors</h2><p/>
+        <h2><img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" alt="Eina Nova representaci&oacute; cartogr&agrave;fica de valors del portal"></h2>
+        <hr/>
+    <p>Aquesta eina permet canviar o tornar a classificar els valors de p&iacute;xel de les dades del r&agrave;ster. Els valors de p&iacute;xel es tornen a assignar especificant un interval de valors de p&iacute;xel per assignar a un valor de p&iacute;xel de sortida. El valor del p&iacute;xel de sortida pot ser un valor v&agrave;lid o un valor NoData, que s&oacute;n p&iacute;xels que no tenen cap valor conegut associat.
+    </p>
+    <p>Si s'ha activat  <b>Utilitza l'extensi&oacute; del mapa actual</b>, nom&eacute;s es tornaran a representar cartogr&agrave;ficament les cel&middot;les que siguin visibles a l'extensi&oacute; de mapa actual. Si l'opci&oacute; est&agrave; desactivada, es processaran totes les cel&middot;les del r&agrave;ster, encara que estiguin fora de l'extensi&oacute; de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Dades d'entrada</h2></div>
+        <hr/>
+        <div>
+            <p>Els valors de les dades d'entrada s'hauran tornat a representar cartogr&agrave;ficament.
+            </p>
+        </div>
+    </div>
+    <div id="RemapList">
+        <div><h2>Nova representació cartogràfica dels valors de píxel amb valors nous</h2></div>
+        <hr/>
+        <div>
+            <p>Per introduir un interval de valors, especifiqueu un valor m&agrave;xim i un valor m&iacute;nim i, despr&eacute;s, assigneu un valor de sortida o NoData a l'interval especificat.
+            </p>
+            <p>Per tornar a representar cartogr&agrave;ficament un interval de valors nou, feu clic a  <b>Afegeix</b> per afegir una fila. Feu clic en cadascun dels valors per editar la taula segons els intervals i el valor de nova representaci&oacute; cartogr&agrave;fica que necessiteu. Quan especifiqueu els intervals de valors, s'utilitzen dues regles importants:
+                <ul>
+                    <li>El valor m&iacute;nim de l'interval &eacute;s inclusiu i el valor m&agrave;xim &eacute;s exclusiu.
+                    </li>
+                    <li>Les files de la taula es processen de dalt a baix.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>A la taula seg&uuml;ent es mostra que el valor m&iacute;nim est&agrave; incl&ograve;s dins de la sortida, per&ograve; el valor m&agrave;xim no ho est&agrave;.
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>20
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;19
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+                <td>
+                    <p>51
+                    </p>
+                </td>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>L'ordre dels intervals especificat a la taula tamb&eacute; &eacute;s important. La fila superior de la taula es processa primer i despr&eacute;s la fila seg&uuml;ent. A les dues taules seg&uuml;ents es mostra com els mateixos intervals de valors produiran resultats diferents a causa de l'ordre de les files de les taules.
+            </p> 
+            <p>A la taula seg&uuml;ent es mostra el valor de sortida quan la primera columna est&agrave; ordenada num&egrave;ricament:
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;14
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>15&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>A la taula seg&uuml;ent es mostra com un ordre de files diferent produir&agrave; valors de sortida diferents:
+            </p> 
+            <table border="1">
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>10&ndash;29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30&ndash;39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Ambdues regles s'utilitzen per reordenar els valors. Com que cada fila es processa de dalt a baix, aquests valors tenen prioritat quan es determina la sortida, encara que s'utilitzin els mateixos intervals.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Podeu especificar el nom d'una carpeta de  <b>El meu contingut</b> on es desar&agrave; el resultat mitjan&ccedil;ant el quadre desplegable <b>Desa el resultat a</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

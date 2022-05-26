@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Udtræk data</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="Udtr&aelig;k data"></h2>
+        <hr/>
+    <p>Med dette v&aelig;rkt&oslash;j kan du v&aelig;lge og downloade data for et bestemt interesseomr&aring;de. De lag, du v&aelig;lger, vil blive f&oslash;jet til en zip-, csv- eller kmz-fil.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>Lag, der skal ekstraheres</h2></div>
+        <hr/>
+        <div>
+            <p>Disse lag er placeret i din indholdsfortegnelse, hvorfra du kan udtr&aelig;kke objekter. De lag, der er markeret, udtr&aelig;kkes og medtages i en resulterende zip- eller csv-fil.
+            </p>
+            <p>Hvis et lag skal vises p&aring; listen over lag, der skal ekstraheres, skal du enten eje dataene, eller ejeren af dataene skal aktivere eksport af dataene. For at aktivere eksport af data, som du ejer: 
+                <ul>
+                    <li>&Aring;bn elementoplysningerne om dataene.
+                    </li>
+                    <li>Klik p&aring; fanen  <b>Indstillinger</b>.
+                    </li>
+                    <li>Rul ned til sektionen  <b>Eksport&eacute;r data</b>.
+                    </li>
+                    <li>Mark&eacute;r  <b>Tillad andre at eksportere til forskellige formater</b>. Klik p&aring; <b>Gem</b>, n&aring;r du er f&aelig;rdig.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Hvis dit analyselag indeholder vedh&aelig;ftninger, skal du v&aelig;re opm&aelig;rksom p&aring;, at vedh&aelig;ftningerne kun udtr&aelig;kkes, hvis outputdataformatet er en filgeodatabase, og  <b>Klip-features</b> ikke er markeret.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>Undersøgelsesområde</h2></div>
+        <hr/>
+        <div>
+            <p>Det omr&aring;de, der definerer, hvilke objekter der skal medtages i outputzipfilen eller csv-filen. Du kan v&aelig;lge mellem f&oslash;lgende:
+                <ul>
+                    <li>Den aktuelle synlige kortudstr&aelig;kning  ( <b>Samme som Visning</b>).
+                    </li>
+                    <li>&Eacute;t af lagene i din indholdsfortegnelse. Hvis det valgte lag best&aring;r af punkt- eller linjeobjekter, benyttes lagets udstr&aelig;kning som unders&oslash;gelsesomr&aring;de.
+                    </li>
+                    <li>Tegn et omr&aring;de for at definere unders&oslash;gelsesomr&aring;det.
+                    </li>
+                </ul>
+                 Alle de objekter, der befinder sig helt inden for kortets udstr&aelig;kning, vil blive udtrukket. For de objekter, der g&aring;r p&aring; tv&aelig;rs af eller gennemsk&aelig;rer kortets udstr&aelig;kningsgr&aelig;nse, men ikke ligger helt inden for udstr&aelig;kningen, har du to muligheder:
+                <ul>
+                    <li> <b>V&aelig;lg objekter</b> &ndash; Hele objekter, der g&aring;r p&aring; tv&aelig;rs af unders&oslash;gelsesomr&aring;dets gr&aelig;nse, vil blive udtrukket.
+                    </li>
+                    <li> <b>Klip-features</b> &ndash; Kun de dele af objekterne, der ligger inden for unders&oslash;gelsesomr&aring;det, vil blive udtrukket.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>Outputdataformat</h2></div>
+        <hr/>
+        <div>
+            <p>Formatet af de data, der vil blive udtrukket. N&aring;r linje- eller omr&aring;deobjekter eksporteres til csv-filer, udtr&aelig;kkes kun ikke-rumlige attributter. N&aring;r punktobjekter eksporteres, udtr&aelig;kkes b&aring;de rumlige og ikke-rumlige attributter.  
+            </p>
+            <p>Udtrukne data vil anvende Web Mercator 1984-projektion.  For CSV-filer vil felterne  <i>Lat</i> og <i>Long</i> v&aelig;re knyttet til data med koordinater i Web Mercator 1984.
+            </p> 
+            <p>F&oslash;lgende outputformater underst&oslash;ttes:
+                <ul>
+                    <li>Kommaseparerede v&aelig;rdier (CSV) &ndash;  <code>.csv</code> eller <code>.zip</code>
+                    </li>
+                    <li>Filgeodatabase &ndash;  <code>.zip</code>
+                    </li>
+                    <li>KML-samling (Keyhole Markup Language) &ndash;  <code>.kmz</code> eller <code>.zip</code>
+                    </li>
+                    <li>Shapefil &ndash;  <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Output-filnavn</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; det element, som f&oslash;jes til  <b>Mit indhold</b>. Navnet p&aring; elementet baseres p&aring; det valgte <b>Outputdataformat</b>. Hvis elementet allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Ved hj&aelig;lp af rullelisten  <b>Gem resultat i</b> kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet skal gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

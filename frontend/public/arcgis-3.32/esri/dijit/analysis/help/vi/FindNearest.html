@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Tìm Vị trí Gần nhất</h2><p/>
+        <h2><img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" alt="T&igrave;m Vị tr&iacute; Gần nhất"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y gi&uacute;p t&igrave;m thấy c&aacute;c đối tượng gần nhất v&agrave; b&aacute;o c&aacute;o cũng như xếp hạng khoảng c&aacute;ch đến c&aacute;c đối tượng gần đ&oacute;. Để t&igrave;m thấy vị tr&iacute; gần nhất, c&ocirc;ng cụ c&oacute; thể đo khoảng c&aacute;ch đường thẳng hoặc phương thức đi lại được chọn. C&oacute; một số lựa chọn gi&uacute;p hạn chế số lượng c&aacute;c đối tượng gần nhất hoặc giới hạn phạm vi t&igrave;m kiếm để dễ d&agrave;ng t&igrave;m thấy ch&uacute;ng. C&aacute;c kết quả từ c&ocirc;ng cụ n&agrave;y c&oacute; thể gi&uacute;p bạn trả lời những loại c&acirc;u hỏi sau đ&acirc;y:
+        <ul>
+            <li>C&ocirc;ng vi&ecirc;n n&agrave;o gần nhất t&iacute;nh từ đ&acirc;y?
+            </li>
+            <li>Bệnh viện n&agrave;o t&ocirc;i c&oacute; thể đến trong khoảng thời gian l&aacute;i xe ngắn nhất? Chuyến đi mất bao l&acirc;u khi khởi h&agrave;nh v&agrave;o thứ ba l&uacute;c 5:30 chiều trong giờ cao điểm?
+            </li>
+            <li>Khoảng c&aacute;ch đường bộ giữa c&aacute;c th&agrave;nh phố lớn?
+            </li>
+            <li>Bệnh nh&acirc;n n&agrave;o trong số n&agrave;y cư tr&uacute; trong phạm vi c&aacute;ch nh&agrave; m&aacute;y h&oacute;a chất hai dặm?
+            </li>
+        </ul>
+        
+    </p>
+    <p>T&igrave;m Vị tr&iacute; Gần nhất sẽ trả về một lớp c&oacute; chứa c&aacute;c vị tr&iacute; gần nhất v&agrave; một lớp đường li&ecirc;n kết c&aacute;c vị tr&iacute; đầu với vị tr&iacute; gần nhất. Lớp đường n&agrave;y chứa th&ocirc;ng tin về vị tr&iacute; bắt đầu v&agrave; vị tr&iacute; gần nhất cũng như khoảng c&aacute;ch giữa c&aacute;c vị tr&iacute;.
+    </p>
+    <p>Nếu chọn t&ugrave;y chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b>, th&igrave; chỉ c&aacute;c đối tượng n&agrave;o nh&igrave;n thấy trong phạm vi bản đồ hiện tại mới được xem l&agrave; c&aacute;c vị tr&iacute; bắt đầu v&agrave; c&oacute; khả năng l&agrave; c&aacute;c đối tượng gần nhất. Nếu bỏ chọn, tất cả c&aacute;c đối tượng trong lớp đầu v&agrave;o sẽ được xem x&eacute;t, ngay cả khi ch&uacute;ng nằm ngo&agrave;i phạm vi bản đồ hiện tại.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Xác định vị trí bắt đầu</h2></div>
+        <hr/>
+        <div>
+            <p>C&ocirc;ng cụ T&igrave;m Vị tr&iacute; Gần nhất đo khoảng c&aacute;ch từ đối tượng tr&ecirc;n lớp m&agrave; bạn x&aacute;c định ở đ&acirc;y (vị tr&iacute; bắt đầu) đến vị tr&iacute; m&agrave; bạn x&aacute;c định trong th&ocirc;ng số tiếp theo. C&ocirc;ng cụ hỗ trợ tối đa  5.000 đối tượng ở mỗi lớp. 
+            </p>
+        </div>
+    </div>
+    <div id="NearbyLocationsLayer">
+        <div><h2>Tìm các vị trí gần nhất tại</h2></div>
+        <hr/>
+        <div>
+            <p>C&ocirc;ng cụ T&igrave;m Vị tr&iacute; Gần nhất đo khoảng c&aacute;ch từ từng đối tượng trong lớp đầu ti&ecirc;n đến c&aacute;c vị tr&iacute; trong lớp n&agrave;y. C&ocirc;ng cụ hỗ trợ tối đa  5.000 vị tr&iacute; ở mỗi lớp. </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp từ bản đồ của bạn, bạn c&oacute; thể chọn  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới c&ugrave;ng trong danh s&aacute;ch xổ xuống. T&ugrave;y chọn n&agrave;y mở ra một thư viện, tại đ&oacute; bạn c&oacute; thể duyệt v&agrave; chọn c&aacute;c bộ dữ liệu từ nhiều nguồn kh&aacute;c nhau để sử dụng trong ph&acirc;n t&iacute;ch của m&igrave;nh. 
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Đo lường</h2></div>
+        <hr/>
+        <div>
+            <p>Lựa chọn để t&igrave;m vị tr&iacute; gần nhất theo khoảng c&aacute;ch đường thẳng hoặc theo phương thức đi lại đ&atilde; chọn. Chỉ c&oacute; thể k&iacute;ch hoạt phương thức đi lại khi lớp đầu v&agrave;o của bạn c&oacute; chứa c&aacute;c điểm. Người quản trị tổ chức của bạn c&oacute; thể chỉ định c&aacute;c phương thức đi lại n&agrave;o l&agrave; khả dụng. Khi sử dụng một trong c&aacute;c phương thức đi lại, thực hiện c&aacute;c ph&eacute;p đo dọc theo con đường hoặc lối đi, v&agrave; tu&acirc;n theo c&aacute;c quy tắc hiện h&agrave;nh, v&iacute; dụ như đường một chiều hay chỗ cấm quay đầu xe, v.v.
+            </p>
+            <p>Khi đo lường giữa c&aacute;c con đường hoặc khu vực, khoảng c&aacute;ch bắt đầu từ điểm gần nhất hoặc đến điểm gần nhất sẽ chạy dọc theo đường hoặc ranh giới khu vực được t&igrave;m thấy. 
+            </p> 
+            <p>Nếu bạn chọn t&ugrave;y chọn  <b>Thời gian L&aacute;i xe</b>, <b>Thời gian L&aacute;i xe ở N&ocirc;ng th&ocirc;n</b> hoặc <b>Thời gian Vận chuyển bằng Xe tải</b>, bạn sẽ c&oacute; th&ecirc;m c&aacute;c t&ugrave;y chọn kh&aacute;c về c&aacute;ch đo khoảng thời gian l&aacute;i xe.
+                <ul>
+                    <li>
+                        <p>Bỏ chọn t&ugrave;y chọn  <b>Sử dụng Giao th&ocirc;ng</b> để t&igrave;m c&aacute;c vị tr&iacute; gần nhất dựa tr&ecirc;n tốc độ di chuyển tĩnh, v&iacute; dụ như giới hạn tốc độ, kh&ocirc;ng quan t&acirc;m đến việc thay đổi tốc độ g&acirc;y ra khi điều kiện giao th&ocirc;ng thay đổi.
+                        </p>
+                        <p>Đ&acirc;y l&agrave; t&ugrave;y chọn để lựa chọn nếu bạn muốn biết những g&igrave; đang c&oacute; xung quanh bạn, nhưng kh&ocirc;ng nhất thiết phải dựa tr&ecirc;n điều kiện giao th&ocirc;ng gần nhất với thời gian hay ng&agrave;y cụ thể.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Chọn t&ugrave;y chọn  <b>Sử dụng Th&ocirc;ng tin Giao th&ocirc;ng</b> để t&igrave;m ra c&aacute;c vị tr&iacute; gần nhất dựa tr&ecirc;n thời gian bắt đầu cho trước v&agrave; điều kiện giao th&ocirc;ng c&oacute; thể thay đổi. Đồng thời bằng c&aacute;ch chọn t&ugrave;y chọn <b>Giao th&ocirc;ng trực tiếp</b>, thời gian khởi h&agrave;nh từ vị tr&iacute; bắt đầu được thiết lập đến thời gian hiện tại, tốc độ giao th&ocirc;ng hiện tại v&agrave; dự kiến được tham chiếu từ bộ cảm biến v&agrave; nguồn cung cấp dữ liệu để x&aacute;c định vị tr&iacute; gần nhất. Tốc độ giao th&ocirc;ng dự kiến được t&iacute;nh to&aacute;n bằng c&aacute;ch tham chiếu đến tốc độ giao th&ocirc;ng hiện tại, tốc độ giao th&ocirc;ng trong lịch sử v&agrave; c&aacute;c điều kiện xảy ra hiện tại chẳng hạn như t&igrave;nh h&igrave;nh thời tiết. Tốc độ giao th&ocirc;ng được dự kiến đến 12 giờ trong tương lai, do đ&oacute; bạn c&oacute; thể di chuyển thanh trượt để thiết lập trước thời gian khởi h&agrave;nh l&ecirc;n tới 12 giờ.
+                        </p>
+                        <p>Sử dụng c&aacute;c thiết lập giao th&ocirc;ng trực tiếp n&agrave;y để t&igrave;m ra c&aacute;c vị tr&iacute; c&oacute; thể đi đến trong khoảng thời gian ngắn nhất khi khởi h&agrave;nh ngay b&acirc;y giờ hoặc khởi h&agrave;nh trong một giờ nữa, v.v.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Bằng c&aacute;ch chọn t&ugrave;y chọn  <b>Sử dụng Th&ocirc;ng tin Giao th&ocirc;ng</b> v&agrave; chọn <b>Th&ocirc;ng tin Giao th&ocirc;ng dựa tr&ecirc;n điều kiện đặc trưng cho</b> ng&agrave;y v&agrave; thời gian, c&ocirc;ng cụ sẽ t&igrave;m c&aacute;c vị tr&iacute; gần nhất dựa tr&ecirc;n tốc độ trung b&igrave;nh lịch sử cho khoảng thời gian mỗi năm ph&uacute;t trong một tuần. C&aacute;c kết quả bao gồm th&ocirc;ng tin giao th&ocirc;ng nhưng loại bỏ đi sự ảnh hưởng của c&aacute;c điều kiện giao th&ocirc;ng v&agrave; c&aacute;c sự kiện hiện tại, c&oacute; thể sẽ l&agrave;m thay đổi đ&aacute;ng kể so với kết quả ban đầu.
+                        </p>
+                        <p>Bạn c&oacute; thể sử dụng c&aacute;c thiết lập giao th&ocirc;ng lịch sử để đặt ra c&aacute;c c&acirc;u hỏi như &quot;T&ocirc;i c&oacute; thể đến vị tr&iacute; n&agrave;o nhanh nhất khi khởi h&agrave;nh v&agrave;o l&uacute;c 11:30 s&aacute;ng v&agrave;o thứ tư?&quot; 
+                        </p>
+                        <p>Thời gian bạn thiết lập li&ecirc;n quan đến m&uacute;i giờ nơi đặt vị tr&iacute; bắt đầu. V&igrave; vậy, nếu bạn thiết lập thời gian đến 8:00 s&aacute;ng v&agrave; c&oacute; hai vị tr&iacute; bắt đầu, một ở Th&agrave;nh phố New York v&agrave; một ở Los Angeles, c&aacute;c vị tr&iacute; gần nhất sẽ được t&igrave;m thấy bằng c&aacute;ch giả định thời gian khởi h&agrave;nh l&uacute;c 8:00 s&aacute;ng Theo Giờ ph&iacute;a Đ&ocirc;ng v&agrave; 8:00 s&aacute;ng theo Giờ Th&aacute;i B&igrave;nh Dương tương ứng.
+                        </p>
+                    </li>
+                </ul>
+                Lưu &yacute; rằng khi một phương tiện l&aacute;i ra ngo&agrave;i từ một điểm, thời gian tr&ocirc;i qua v&agrave; điều kiện giao th&ocirc;ng sẽ thay đổi. C&ocirc;ng cụ sẽ xem x&eacute;t c&aacute;c thay đổi n&agrave;y khi bạn chọn t&ugrave;y chọn <b>Sử dụng giao th&ocirc;ng</b>; tuy nhi&ecirc;n, c&oacute; nhiều khu vực vẫn chưa hỗ trợ th&ocirc;ng tin giao th&ocirc;ng. Bấm v&agrave;o li&ecirc;n kết <b>Xem t&iacute;nh khả dụng</b> tr&ecirc;n c&ocirc;ng cụ để t&igrave;m xem liệu t&iacute;nh năng c&oacute; được cung cấp tại khu vực nghi&ecirc;n cứu của bạn kh&ocirc;ng. 
+            </p>
+            <p> <b>Thời gian Vận chuyển bằng Xe tải</b> c&oacute; thể sử dụng tốc độ di chuyển động dựa tr&ecirc;n lưu lượng v&agrave; điều kiện giao th&ocirc;ng, nhưng tốc độ tối đa phải ph&ugrave; hợp với giới hạn cho ph&eacute;p d&agrave;nh cho xe tải. Chẳng hạn, nếu tốc độ động cho một con đường dựa tr&ecirc;n điều kiện giao th&ocirc;ng thực tế l&agrave; 65 dặm/giờ, nhưng giới hạn tốc độ xe tải tr&ecirc;n đường đ&oacute; l&agrave; 55 dặm/giờ, th&igrave; giới hạn 55 dặm/giờ cho đường đ&oacute; sẽ được d&ugrave;ng để t&iacute;nh to&aacute;n.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Chọn lớp rào cản</h2></div>
+        <hr/>
+        <div>
+            <p> Một hoặc nhiều đối tượng hoạt động như c&aacute;c vị tr&iacute; hạn chế tạm thời (r&agrave;o cản) khi di chuyển tr&ecirc;n c&aacute;c đường phố b&ecirc;n dưới. Bạn c&oacute; thể chọn r&agrave;o cản dạng điểm, đường hoặc v&ugrave;ng.
+            </p>
+            <p>Một r&agrave;o cản dạng điểm c&oacute; thể m&ocirc; phỏng cho một vị tr&iacute; c&oacute; c&acirc;y đổ, một vụ tai nạn, một đường d&acirc;y điện bị rơi, hoặc bất cứ sự việc n&agrave;o l&agrave;m tr&igrave; ho&atilde;n t&igrave;nh h&igrave;nh giao th&ocirc;ng tại một vị tr&iacute; cụ thể dọc theo đường phố. Di chuyển được cho ph&eacute;p tr&ecirc;n đường nhưng kh&ocirc;ng được đi qua r&agrave;o cản. Bạn c&oacute; thể chỉ định tối đa 250 đối tượng để hoạt động như c&aacute;c r&agrave;o cản dạng điểm.
+            </p>
+            <p>Một r&agrave;o cản dạng đường cấm di chuyển bất cứ nơi n&agrave;o m&agrave; n&oacute; với đường giao nhau. V&iacute; dụ: một cuộc diễu h&agrave;nh hoặc biểu t&igrave;nh l&agrave;m chặn việc giao th&ocirc;ng tr&ecirc;n một số đoạn đường c&oacute; thể được m&ocirc; h&igrave;nh h&oacute;a bằng một r&agrave;o cản dạng đường. Nếu số lượng giao nhau giữa c&aacute;c đối tượng đường phố với tất cả c&aacute;c r&agrave;o cản dạng đường vượt qu&aacute; 500 điểm, c&ocirc;ng cụ sẽ trả về lỗi.
+            </p>
+            <p>Một r&agrave;o cản dạng v&ugrave;ng cấm di chuyển bất cứ nơi n&agrave;o m&agrave; n&oacute; với đường giao nhau. Một ứng dụng thực tiễn của loại r&agrave;o cản n&agrave;y l&agrave; để m&ocirc; h&igrave;nh h&oacute;a khu vực lũ lụt tr&ecirc;n một mạng lưới đường phố l&agrave;m cho c&aacute;c con đường ở đ&oacute; kh&ocirc;ng thể lưu th&ocirc;ng. Nếu số lượng giao nhau giữa c&aacute;c đối tượng đường phố với tất cả c&aacute;c r&agrave;o cản dạng v&ugrave;ng vượt qu&aacute; 2000 điểm, c&ocirc;ng cụ sẽ trả về lỗi.
+            </p>
+        </div>
+    </div>
+    <div id="Cutoffs">
+        <div><h2>Cho từng vị trí trong lớp đầu vào</h2></div>
+        <hr/>
+        <div>
+            <p>Bạn c&oacute; hai t&ugrave;y chọn để giới hạn việc t&igrave;m kiếm vị tr&iacute; gần nhất. Một t&ugrave;y chọn l&agrave; giới hạn số lượng vị tr&iacute; gần nhất tối đa để t&igrave;m tr&ecirc;n từng vị tr&iacute; bắt đầu. Bạn c&oacute; thể t&igrave;m ra một c&ocirc;ng vi&ecirc;n gần nhất, hai c&ocirc;ng vi&ecirc;n gần nhất, v.v. T&ugrave;y chọn thứ hai l&agrave; thiết lập một khoảng c&aacute;ch t&igrave;m kiếm hoặc thời gian l&aacute;i xe tối đa.
+            </p>
+            <p>Bằng c&aacute;ch bỏ chọn c&aacute;c t&ugrave;y chọn, số lượng vị tr&iacute; gần nhất tối đa được t&igrave;m ra l&agrave; 100 (giới hạn của c&ocirc;ng cụ), v&agrave; phạm vi t&igrave;m kiếm tối đa l&agrave; kh&ocirc;ng giới hạn.
+            </p>
+            <p>Thời gian xử l&yacute; phụ thuộc v&agrave;o số lượng vị tr&iacute; bắt đầu, số lượng vị tr&iacute; gần kề, v&agrave; phạm vi t&igrave;m kiếm tối đa. Phải mất nhiều thời gian hơn để xử l&yacute; khi c&oacute; nhiều vị tr&iacute; hoặc phạm vi t&igrave;m kiếm lớn hơn.
+            </p>
+            <p>Lưu &yacute; rằng khi một giới hạn được thiết lập tr&ecirc;n phạm vi t&igrave;m kiếm, c&ocirc;ng cụ c&oacute; thể kh&ocirc;ng t&igrave;m thấy bất kỳ vị tr&iacute; gần nhất n&agrave;o trong phạm vi thiết lập, hoặc t&igrave;m thấy c&aacute;c vị tr&iacute; &iacute;t hơn so với số lượng vị tr&iacute; gần nhất tối đa bạn chỉ định.
+            </p>
+        </div>
+    </div>
+    <div id="OutputNearestLocationsLayer">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&acirc;y l&agrave; t&ecirc;n lớp đối tượng sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. Nếu lớp đối tượng đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n mới. Lớp đối tượng n&agrave;y sẽ bao gồm hai lớp: một thể hiện cho những vị tr&iacute; gần nhất v&agrave; một thể hiện những đường kết nối c&aacute;c vị tr&iacute; bắt đầu đến c&aacute;c vị tr&iacute; gần nhất.
+            </p>
+            <p>Nếu bạn chọn  <b>Bao gồm c&aacute;c lớp tuyến đường</b>, mỗi tuyến đường trong kết quả sẽ đồng thời được lưu th&agrave;nh một lớp tuyến đường. Lớp tuyến đường bao gồm mọi th&ocirc;ng tin d&agrave;nh cho một tuyến đường cụ thể như c&aacute;c điểm dừng được g&aacute;n cho tuyến đường cũng như chiều di chuyển. Việc tạo c&aacute;c lớp tuyến đường sẽ hữu &iacute;ch nếu bạn muốn chia sẻ c&aacute;c tuyến đường ri&ecirc;ng với những th&agrave;nh vi&ecirc;n kh&aacute;c trong tổ chức hoặc chỉnh sửa th&ecirc;m tuyến đường bằng c&aacute;ch d&ugrave;ng n&uacute;t <b>Chỉ đường</b> trong tr&igrave;nh xem bản đồ. Lớp tuyến đường sử dụng t&ecirc;n được cung cấp d&agrave;nh cho lớp đối tượng như một tiền tố v&agrave; t&ecirc;n tuyến đường đ&atilde; tạo như một phần của ph&acirc;n t&iacute;ch, được th&ecirc;m để tạo ra t&ecirc;n duy nhất cho mỗi lớp tuyến đường.
+            </p>
+            <p>Số lớp tuyến đường tối đa c&oacute; thể được tạo ra l&agrave;  1.000 Nếu kết quả c&oacute; nhiều hơn  1.000 tuyến đường v&agrave;  <b>bao gồm c&aacute;c lớp tuyến đường</b> kh&ocirc;ng được kiểm tra, c&ocirc;ng cụ sẽ chỉ tạo ra dịch vụ đối tượng đầu ra.
+            </p>
+            <p>Sử dụng menu thả xuống  <b>Lưu kết quả trong</b>, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong phần <b>Nội dung của T&ocirc;i</b> nơi sẽ lưu trữ lớp đối tượng v&agrave; lớp tuyến đường, nếu được tạo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

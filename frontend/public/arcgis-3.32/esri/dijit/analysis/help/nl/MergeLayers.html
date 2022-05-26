@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Lagen samenvoegen</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Lagen samenvoegen"></h2>
+        <hr/>
+    <p>Met deze tool worden objecten van twee kaartlagen naar een nieuwe kaartlaag gekopieerd. De kaartlagen die worden samengevoegd, moeten dezelfde objecttypen bevatten (punten, lijnen of gebieden). U kunt bepalen hoe de velden van de invoerlagen worden samengevoegd en gekopieerd. Bijvoorbeeld:
+        <ul>
+            <li>Ik heb drie kaartlagen voor Engeland, Wales en Schotland en ik wil &eacute;&eacute;n kaartlaag van Groot-Brittanni&euml;. 
+            </li>
+            <li>Ik heb 12 kaartlagen en elke laag bevat perceelinformatie voor aangrenzende buurtschappen. Ik wil ze samenvoegen tot &eacute;&eacute;n kaartlaag en ik wil alleen de velden van de 12 invoerlagen behouden met dezelfde naam en van hetzelfde type.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Als  <b>Huidige kaartextent gebruiken</b> is geselecteerd, worden alleen de objecten samengevoegd die zichtbaar zijn op de huidige kaartextent. Als deze optie niet is aangevinkt, worden alle objecten in beide kaartlagen samengevoegd, ook als ze zich buiten het huidige kaartextent bevinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Kies laag</h2></div>
+        <hr/>
+        <div>
+            <p>De punt, lijn of gebiedsobjecten om samen te voegen met de laag hieronder weergegeven. 
+            </p>
+        </div>
+    </div>
+    <div id="MergeLayer">
+        <div><h2>Kaartlaag kiezen voor samenvoegen</h2></div>
+        <hr/>
+        <div>
+            <p>Kies de kaartlaag die u wilt samenvoegen met de eerste laag.
+            </p>
+        </div>
+    </div>
+    <div id="MergingAttributes">
+        <div><h2>Samengevoegde velden bewerken</h2></div>
+        <hr/>
+        <div>
+            <p>Standaard worden alle velden van beide invoerlagen naar de uitvoer overgezet. U kunt als volgt wijzigen hoe velden naar de uitvoer worden overgedragen:
+                <ul>
+                    <li> <b>Naam wijzigen</b>&mdash;De naam van het veld wordt gewijzigd op de uitvoer.
+                    </li>
+                    <li> <b>Verwijderen</b>&mdash;Het veld wordt verwijderd van de uitvoer.
+                    </li>
+                    <li> <b>Overeenkomen</b>&mdash;De veldnamen worden gelijkgemaakt. Waarden van het veld van de samen te voegen kaartlaag worden gekopieerd naar het overeenkomende uitvoerveld.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Als beide lagen een veld bevatten met een identieke naam of gegevenstype, worden beide velden samengevoegd in een veld met die naam. Dit geldt niet voor velden waar  <b>Overeenkomen</b> is gebruikt in de <b>Wijzig samenvoegende velden</b>-parameter.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>Dit is de naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laagnaam al bestaat, wordt u gevraagd een nieuwe naam te verschaffen.
+            </p>
+            <p>Met behulp van het vervolgkeuzemenu  <b>Resultaat opslaan in</b> kunt u de naam van een map opgeven in <b>Mijn Content</b> waar het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

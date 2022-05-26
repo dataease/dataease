@@ -1,0 +1,29 @@
+<div data-dojo-attach-point="containerNode">
+
+  <div data-dojo-type="esri/dijit/metadata/form/iso/AbstractObject"
+    data-dojo-props="target:'gmd:MD_BrowseGraphic',minOccurs:0">
+     
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'gmd:fileName',
+        label:'${i18nIso.MD_BrowseGraphic.fileName}'">
+      <div data-dojo-type="esri/dijit/metadata/form/iso/GcoElement"
+        data-dojo-props="target:'gco:CharacterString'"></div>
+    </div>
+    
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'gmd:fileDescription',minOccurs:0,
+        label:'${i18nIso.MD_BrowseGraphic.fileDescription}'">
+      <div data-dojo-type="esri/dijit/metadata/form/iso/GcoElement"
+        data-dojo-props="target:'gco:CharacterString'"></div>
+    </div>
+    
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'gmd:fileType',minOccurs:0,
+        label:'${i18nIso.MD_BrowseGraphic.fileType}'">
+      <div data-dojo-type="esri/dijit/metadata/form/iso/GcoElement"
+        data-dojo-props="target:'gco:CharacterString'"></div>
+    </div>
+
+  </div>
+  
+</div>

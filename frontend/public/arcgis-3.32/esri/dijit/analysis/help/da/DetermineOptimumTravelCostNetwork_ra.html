@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Beregn optimale rejseomkostninger-netværk</h2><p/>
+        <h2><img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" alt="Illustration af v&aelig;rkt&oslash;jet Beregn optimale rejseomkostninger-netv&aelig;rk"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j beregner det optimale omkostningsnetv&aelig;rk ud fra et s&aelig;t af input-regioner.
+    </p>
+    <p>Et af anvendelsesomr&aring;derne for dette v&aelig;rkt&oslash;j er at finde det bedste netv&aelig;rk til redningsk&oslash;ret&oslash;jer.
+    </p>
+    <p>Hvis  <b>Anvend aktuel kortudstr&aelig;kning</b> er markeret, vil kun de steder i inputlaget, der er synlige i den aktuelle kortudstr&aelig;kning, blive analyseret. Hvis markeringen fjernes, analyseres alle steder i inputlaget, ogs&aring; selvom de er placeret uden for den aktuelle kortudstr&aelig;kning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRegionsRasterOrFeatures">
+        <div><h2>Vælg det raster- eller vektorpositionslag, der skal beregnes rejseruter mellem</h2></div>
+        <hr/>
+        <div>
+            <p>De input-regioner, der skal forbindes via netv&aelig;rket med de laveste omkostninger.
+            </p>
+            <p>Regioner kan defineres af en billedtjeneste eller en featuretjeneste.
+            </p>
+            <p>For billedtjenester defineres regionerne af grupper af celler, der gr&aelig;nser op til hinanden, og som har samme v&aelig;rdi. Hver region skal have sit eget unikke nummer. De celler, der ikke er en del af en region, skal v&aelig;re NoData. Rastertypen skal v&aelig;re heltal, og v&aelig;rdierne kan v&aelig;re positive eller negative.
+            </p>
+            <p>For featuretjenester kan input v&aelig;re et punkt, en linje eller en polygon.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Vælg rasterlag for rejseomkostninger</h2></div>
+        <hr/>
+        <div>
+            <p>En raster, der definerer impedans eller omkostning ved at bev&aelig;ge sig planimetrisk gennem hver celle.
+            </p>
+            <p>V&aelig;rdien ved hver cellelokation repr&aelig;senterer omkostning pr. enhed-afstanden ved at bev&aelig;ge sig gennem cellen. V&aelig;rdien ved hver cellelokation ganges med celleopl&oslash;sningen, og der kompenseres for diagonal bev&aelig;gelse for at f&aring; de samlede omkostninger ved at bev&aelig;ge sig gennem cellen.
+            </p>
+            <p>V&aelig;rdierne af omkostningsrasteren kan v&aelig;re heltal eller flydende komma, men de kan ikke v&aelig;re negative eller nul (man kan ikke have omkostninger, der er negative eller nul).
+            </p> 
+        </div>
+    </div>
+    <div id="outputOptimumNetworkName">
+        <div><h2>Navn på resulterende polylinjelag for optimale ruter</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; det lag, som oprettes under  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Du kan angive navnet p&aring; en mappe i  <b>Mit indhold</b>, hvor resultatet bliver gemt ved at benytte rullelisten <b>Gem resultat i</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputNeighborNetworkName">
+        <div><h2>Navn på resulterende polylinjelag for tilstødende ruter</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; det lag, som oprettes under  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Du kan angive navnet p&aring; en mappe i  <b>Mit indhold</b>, hvor resultatet bliver gemt ved at benytte rullelisten <b>Gem resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

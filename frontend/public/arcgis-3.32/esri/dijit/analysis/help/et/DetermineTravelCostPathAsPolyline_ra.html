@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Määra sõidukulude tee murdjoonena</h2><p/>
+        <h2><img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" alt="T&ouml;&ouml;vahendi M&auml;&auml;ra s&otilde;idukulude tee murdjoonena illustratsioon"></h2>
+        <hr/>
+    <p>See t&ouml;&ouml;riist arvutab odavaima murdjoone tee l&auml;htekohtade ja teadaolevate sihtkohtade vahel.
+    </p>
+    <p>M&otilde;ned n&auml;ited kasutusaladest:
+        <ul>
+            <li>Leidke uuele teele ehituskulude poolest parim trass.
+                
+
+            </li>
+            <li>M&auml;&auml;rake tee, mis viib mitmest linnal&auml;hedasest kohast (l&auml;htepunktist) tl&auml;hina kaubanduskeskuseni (sihtkohani).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Kui ruut  <b>Kasuta praegust kaardi ulatust</b> on m&auml;rgitud, anal&uuml;&uuml;sitakse ainult neid sisendkihi objekte, mis on n&auml;htavad kaardi praeguses ulatuses. Kui see ruut pole m&auml;rgitud, kasutatakse anal&uuml;&uuml;si koostamisel k&otilde;iki sisendkihis olevaid objekte ka siis, kui neid pole praegu kaardil n&auml;ha.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Teede määramiseks valige objekti asukohakihi raster</h2></div>
+        <hr/>
+        <div>
+            <p>Pilditeenus v&otilde;i objektiteenus, mis identifitseerib pikslid, millest m&auml;&auml;ratakse k&otilde;ige odavam tee k&otilde;ige odavama sihtkohani.
+            </p>
+            <p>Kui sisend on pilditeenus, sisaldab sisend kehtivate v&auml;&auml;rtustega piksleid (null on kehtiv v&auml;&auml;rtus) ja &uuml;lej&auml;&auml;nud pikslitele tuleb m&auml;&auml;rata olek NoData.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Valige sõidukulude rasterkiht.</h2></div>
+        <hr/>
+        <div>
+            <p>Raster m&auml;&auml;rab takistuse v&otilde;i kulu planimeetrilisel liikumisel l&auml;bi iga piksli.
+            </p>
+            <p>Piksli iga asukoha v&auml;&auml;rtus v&auml;ljendab vahemaa &uuml;hiku maksumuse liikumisel l&auml;bi piksli. Iga piksli asukoha v&auml;&auml;rtus korrutatakse piksli resolutsiooniga, mis kompenseerib ka diagonaalliikumist, et saada l&auml;bi piksli liikumise kogukulu.
+            </p>
+            <p>Kulurastri v&auml;&auml;rtus v&otilde;ib t&auml;isarv v&otilde;i ujuva v&auml;&auml;rtusega arv, kuid ei tohi olla negatiivne v&otilde;i null (kulu ei saa olla negatiivne v&otilde;i null).
+            </p>
+        </div>
+    </div>
+    <div id="inputDestinationRasterOrFeatures">
+        <div><h2>Sisendi sihtkoht on raster või objektid</h2></div>
+        <hr/>
+        <div>
+            <p>Sisend, mis m&auml;&auml;rab vahemaa arvutamiseks kasutatavad sihtkohad. Kiht v&otilde;ib olla raster v&otilde;i objekt.
+            </p>
+            <p>Kui sisend on pilditeenus, sisaldab sisend kehtivate v&auml;&auml;rtustega piksleid (null on kehtiv v&auml;&auml;rtus) ja &uuml;lej&auml;&auml;nud pikslitele tuleb m&auml;&auml;rata olek NoData.
+            </p>
+        </div>
+    </div>
+    <div id="outputPolylineName">
+        <div><h2>Tulem-murdjoone kihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+    <div id="pathType">
+        <div><h2>Valige määratavate teede tüüp</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rab viisi, kuidas v&auml;&auml;rtusi ja tsoone saab sihtkoha sisendandmetel t&otilde;lgendada tee kuluarvutustes.
+            </p>
+            <ul>
+                <li>Parim &uuml;ksik &mdash; Sihtkoha sisendandmetel tuletatakse odavaim tee k&otilde;igi pikslite v&otilde;i asukohtade puhul asukohast, millest on sihtkohani k&otilde;ige odavam tee. See on vaikimisi valitud
+                    
+
+                </li>
+                <li>Iga pikslini &mdash; Igal pikslil v&otilde;i asukohal, mille sihtkoha sisendandmed on kehtivad, m&auml;&auml;ratakse odavaim tee ja salvestatakse v&auml;ljundobjekti teenusena. Selle variandi puhul k&auml;sitletakse sihtkoha sisendandmete iga pikslit eraldi ja igast pikslist m&auml;&auml;ratakse odavaim tee.
+                    
+
+                </li>
+                <li>Iga tsoonini &mdash; Igal tsoonil m&auml;&auml;ratakse sihtkoha sisendandmete hulgas odavaim tee ja salvestatakse v&auml;ljundobjekti teenusena. Selle variandi korral algab iga tsooni odavaim tee pikslist v&otilde;i asukohast, mille tsooni kaalutud kaugus on k&otilde;ige odavam.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
+</html>

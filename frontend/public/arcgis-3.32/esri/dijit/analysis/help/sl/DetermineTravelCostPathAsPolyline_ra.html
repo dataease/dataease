@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Določi pot potnih stroškov kot polilinijo</h2><p/>
+        <h2><img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" alt="Prikaz orodja Določi pot potnih stro&scaron;kov kot polilinijo"></h2>
+        <hr/>
+    <p>To orodje izračuna polilinijo poti med viri in znanimi cilji z najmanj stro&scaron;ki.
+    </p>
+    <p>Primeri uporabe vključujejo naslednje:
+        <ul>
+            <li>Poi&scaron;či najbolj&scaron;o pot za novo cesto glede na stro&scaron;ke izgradnje.
+                
+
+            </li>
+            <li>Identificiraj pot z več predmestnih lokacij (virov) do najbližjega nakupovalnega centra (cilj).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Če je obkljukano  <b>Uporabi trenutni obseg karte</b>, bodo analizirane samo tiste lokacije vhodnih slojev, ki so vidne znotraj trenutnega obsega karte. Če je možnost odkljukana, bodo analizirane vse lokacije v vhodnih slojih, tudi če so zunaj trenutnega obsega karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Izberite rastrski ali geoobjektni izvorni sloj za določitev poti od</h2></div>
+        <hr/>
+        <div>
+            <p>Slikovna ali geoobjektna storitev, ki identificira celice, iz katerih je določena pot s ciljem z najmanj stro&scaron;ki.
+            </p>
+            <p>Če je vhod slikovna storitev, jo sestavljajo celice, ki imajo veljavne vrednosti (nič je veljavna vrednost), preostale celice pa morajo imeti dodeljeno vrednost NoData.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Izberite rastrski sloj s potnimi stroški</h2></div>
+        <hr/>
+        <div>
+            <p>Raster definira impendanco ali stro&scaron;ke, da se planimetrično premikajo skozi celice.
+            </p>
+            <p>Vrednost na lokaciji vsake celice predstavlja razdaljo stro&scaron;kov na enoto za premikanje skozi celice. Vrednost lokacije vsake celice je pomnožena z resolucijo celice, hkrati pa upo&scaron;teva diagonalno premikanje, da se pridobi celoten stro&scaron;ek premika skozi celico.
+            </p>
+            <p>Vrednosti rastra stro&scaron;kov so lahko celo &scaron;tevilo ali &scaron;tevilo s plavajočo vejico, vendar ne morejo biti negativne ali ničla (ne morete imeti negativnih ali ničelnih stro&scaron;kov).
+            </p>
+        </div>
+    </div>
+    <div id="inputDestinationRasterOrFeatures">
+        <div><h2>Raster ali geoobjekti z vhodnim ciljem</h2></div>
+        <hr/>
+        <div>
+            <p>Vhod, ki definira cilje, uporabljene za izračun razdalje. Sloj je lahko raster ali geoobjekt.
+            </p>
+            <p>Če je vhod slikovna storitev, jo sestavljajo celice, ki imajo veljavne vrednosti (nič je veljavna vrednost), preostale celice pa morajo imeti dodeljeno vrednost NoData.
+            </p>
+        </div>
+    </div>
+    <div id="outputPolylineName">
+        <div><h2>Ime sloja z rezultati polilinije</h2></div>
+        <hr/>
+        <div>
+            <p>Ime sloja, ki bo ustvarjen v odseku  <b>Moja vsebina</b> in dodan na karto. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, bo od vas zahtevano, da vnesete drugo ime.
+            </p>
+            <p>Lahko navedete ime mape v  <b>Moji vsebini</b>, kjer bo rezultat shranjen s pomočjo spustnega menija <b>Shrani rezultat v</b>.
+            </p>
+        </div>
+    </div>
+    <div id="pathType">
+        <div><h2>Izberite tip poti za določitev</h2></div>
+        <hr/>
+        <div>
+            <p>Definira način, na katerega bodo v izračunih stro&scaron;kov poti interpretirane vrednosti in območja na vhodnih podatkih cilja.
+            </p>
+            <ul>
+                <li>Najbolj&scaron;e enojno &ndash; Za vse celice ali lokacije na vhodnih podatkih cilja pot z najmanj stro&scaron;ki izhaja iz lokacije z najmanj potmi z najmanj&scaron;imi stro&scaron;ki do izvirne lokacije. To je privzeto
+                    
+
+                </li>
+                <li>Do vsake celice &ndash; Za vsako celico ali lokacijo z veljavnimi vrednostmi na vhodnih podatkih cilja je pot z najmanj&scaron;imi stro&scaron;ki določena in shranjena na izhodni geoobjektni storitvi. S to možnostjo je vsaka celica vhodnih podatkov cilja obravnavana ločeno, iz celice pa je za vsako določena pot z najmanj stro&scaron;ki.
+                    
+
+                </li>
+                <li>Do vsakega območja &ndash; Za vsako območje na vhodnih podatkih cilja je pot z najmanj&scaron;imi stro&scaron;ki določena in shranjena na izhodni geoobjektni storitvi. S to možnostjo se pot z najmanj&scaron;imi stro&scaron;ki začne v celici ali lokaciji z najmanj&scaron;imi stro&scaron;ki glede na razdaljo na območju.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
+</html>

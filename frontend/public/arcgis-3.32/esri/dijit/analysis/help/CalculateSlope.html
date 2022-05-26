@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <title></title>
+  <link rel="Stylesheet" href="css/analysis.css" />
+  <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+  </script>
+</head>
+<body onload="init()">
+  <div id="topics">
+    <div id="toolDescription" class="largesize">
+      <h2>Calculate Slope</h2><p />
+      <hr />
+      <p>
+        The Calculate Slope tool creates a slope map from an elevation data source.
+
+      </p>
+      <p>
+      </p>
+      <p>
+      </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+      <div><h2>Choose elevation layer from which to calculate slope</h2></div>
+      <hr />
+      <div>
+        <p>
+          The elevation layer from which density will be calculated.
+
+        </p>
+        <p class="OnlineOnly">
+          In addition to choosing a layer from your map, you can select  <b>Choose Living Atlas Analysis Layer</b> found at the bottom of the drop-down list. This opens a gallery containing a collection of layers useful for many analyses.
+        </p>
+      </div>
+    </div>
+    <div id="zFactor">
+      <div><h2>Z Factor</h2></div>
+      <hr />
+      <div>
+        <p>
+          Enter a z factor.
+        </p>
+        <p>
+          The z-factor is a scaling factor used to convert the elevation values for two purposes:
+
+          To convert the elevation units (such as meters or feet) to the horizontal coordinate units of the dataset, which may be feet, meters, or degrees
+          To add vertical exaggeration for visual effect
+        </p>
+      </div>
+    </div>
+    <div id="outputLayer">
+      <div><h2>Result layer name</h2></div>
+      <hr />
+      <div>
+        <p>
+          This is the name of the layer that will be created in  <b>My Content</b>  and added to the map.  The default  name is based on the tool name and the input layer name. If the layer already exists, you will be asked to provide another name.
+        </p>
+        <p>
+          Using the  <b>Save result in</b> drop-down box, you can  specify the name of a folder in <b>My Content</b> where the result will be saved.
+        </p>
+      </div>
+    </div>
+  </div>
+</html>

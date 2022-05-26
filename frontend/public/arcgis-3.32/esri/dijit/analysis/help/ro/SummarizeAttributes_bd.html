@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Sumarizare atribute</h2><p/>
+        <h2><img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" alt="Diagramă pentru Sumarizare atribute"></h2>
+        <hr/>
+    <p> Acest instrument rezumă toate valorile corespunzătoare din unul sau mai multe c&acirc;mpuri şi calculează statistici pentru acestea. Cea mai simplă statistică este calculul obiectelor spaţiale care au fost rezumate &icirc;mpreună, &icirc;nsă puteţi calcula şi statistici mai avansate.
+    </p>
+    <p>De exemplu, să presupunem că aveţi obiecte spaţiale punct reprezent&acirc;nd locaţii de magazine cu un c&acirc;mp  <i>DISTRICT_MANAGER_NAME</i>, şi doriţi un rezumat al v&acirc;nzărilor de cafea după manager. Puteţi specifica c&acirc;mpul <i>DISTRICT_MANAGER_NAME</i> drept c&acirc;mp de dizolvare şi toate r&acirc;ndurile de date care reprezintă manageri individuali vor fi rezumate. Aceasta &icirc;nseamnă că toate locaţiile de magazine care sunt gestionate de <pre>Manager1</pre> vor fi rezumate &icirc;ntr-un r&acirc;nd, cu statistici de rezumat calculate. &Icirc;n această situaţie, ar fi calculate statisticile precum numărul de magazine şi suma <i>TOTAL_SALES</i> at&acirc;t pentru toate magazinele gestionate de <pre>Manager1</pre> , c&acirc;t şi pentru orice alt manager menţionat &icirc;n c&acirc;mpul <i>DISTRICT_MANAGER_NAME</i>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Alegeţi intrarea pentru rezumat</h2></div>
+        <hr/>
+        <div>
+            <p>Stratul care conţine c&acirc;mpurile care vor fi rezumate.  
+            </p>
+            <p>&Icirc;n afară de a alege un strat tematic din harta dvs., puteţi selecta opţiunile  <b>Alegere strat tematic de analiză</b> &icirc;n partea inferioară a listei verticale pentru a răsfoi conţinutul pentru stratul tematic sau setul de date pentru partajarea de fişiere big data.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Alegeţi cum veţi rezuma datele</h2></div>
+        <hr/>
+        <div>
+            <p>Sunt disponibile două moduri pentru rezumarea datelor:
+                <ul>
+                    <li> <b>Toate obiectele spaţiale &icirc;ntr-un singur obiect spaţial</b>&mdash;Calculează statistici pentru toate obiectele spaţiale.
+                    </li>
+                    <li> <b>Pe c&acirc;mpuri</b>&mdash;Grupează obiectele spaţiale pe valori similare &icirc;n c&acirc;mpurile specificate.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>De exemplu, să presupunem că aveţi un set de date de copaci care include c&acirc;mpurile   <i>tipul copacului (treetype)</i> cu valorile <code>Arţar (Maple)</code>, <code>Brad (Fir)</code> şi <code>Pin (Pine(</code> şi un c&acirc;mp <i>&icirc;nălţime copac (treeheight)</i> şi doriţi să aflaţi media pentru <i>&icirc;nălţime copac (treeheight)</i>. Dacă rezumaţi toate obiectele spaţiale &icirc;ntr-un singur obiect spaţial, veţi afla &icirc;nălţimea medie pentru toţi copacii care rezultă &icirc;ntr-o singură valoare medie. Dacă rezumaţi după c&acirc;mpul <i>&icirc;nălţime copac (treeheight)</i>, veţi avea o medie pentru arţari, o medie pentru brazi  şi o medie pentru pini.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Adăugare statistici (opţional)</h2></div>
+        <hr/>
+        <div>
+            <p> Puteţi calcula statistici despre obiectele spaţiale rezumate. Puteți calcula următoarele pe c&acirc;mpuri numerice:
+                <ul>
+                    <li>Numărare&mdash;Calculează numărul de valori care nu sunt nule. Poate fi utilizat &icirc;n c&acirc;mpuri numerice sau șiruri. Calculul [nul, 0, 2] este egal cu 2.
+                    </li>
+                    <li>Sumă - Suma valorilor numerice dintr-un c&acirc;mp. Suma [nul, 0, 3] este egală cu 3.
+                    </li>
+                    <li>Media&mdash;Media valorilor numerice. Media dintre [0, 2, nul] este 1.
+                    </li>
+                    <li>Min&mdash;Valoarea minimă a unui c&acirc;mp numeric. Minimul dintre [0, 2, nul] este 0. 
+                    </li>
+                    <li>Max&mdash;Valoarea maximă a unui c&acirc;mp numeric. Valoarea maximă a [0, 2, nul] este 2.
+                    </li>
+                    <li>Interval&mdash;Intervalul unui c&acirc;mp numeric. Acesta este calculat ca valoare minimă scăzută din valoare maximă. Intervalul [nul, 0, 1] este 1. Intervalul [nul, 0, 4] este 0.
+                    </li>
+                    <li>Variaţia&mdash;Variaţia unui c&acirc;mp numeric pe o pistă. Variaţia [1] este nulă. Variația [nul, 1,0,1,1] este de 0,25.
+                    </li>
+                    <li>Deviaţia standard&mdash;Deviaţia standard a unui c&acirc;mp numeric. Deviaţia standard [1] este nulă. Deviaţia standard [nul, 1,0,1,1] este 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Puteți calcula următoarele pe c&acirc;mpuri de șiruri:
+                <ul>
+                    <li>Calcul&mdash;Numărul şirurilor care nu sunt nule.
+                    </li>
+                    <li>Oricare - Această statistică este un exemplu aleatoriu al unei valori de tip şir &icirc;n c&acirc;mpul specificat.
+                    </li>
+                </ul>
+                Toate statisticile sunt calculate pentru valori care nu sunt nule. Stratul tematic rezultat va conţine un c&acirc;mp nou pentru fiecare statistică calculată. Se pot adăuga oric&acirc;te statistici aleg&acirc;nd un atribut şi o statistică. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Selectare depozit de date</h2></div>
+        <hr/>
+        <div>
+            <p>Rezultatele GeoAnalytics sunt stocate &icirc;ntr-un depozit de date și sunt expuse ca strat tematic de obiecte spaţiale &icirc;n  Portal for ArcGIS. &Icirc;n cele mai multe situaţii, rezultatele trebuie stocate &icirc;n depozitul de date spaţio-temporar, &icirc;n mod implicit. &Icirc;n unele cazuri, salvarea rezultatelor &icirc;n depozitul depozit de date relaţionale este o opțiune bună. Mai jos sunt motivele pentru care ați dori să stocați rezultatele &icirc;n depozitul depozit de date relaţionale: 
+                <ul>
+                    <li>Puteți folosi rezultatele &icirc;n colaborarea-dintre-portaluri.
+                    </li>
+                    <li>Puteți activa capacitățile de sincronizare cu rezultatele dvs.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p> Numele stratului tematic care va fi creat. Dacă scrieți &icirc;ntr-un ArcGIS Data Store, rezultatele dvs. vor fi salvate &icirc;n  <b>Resursele mele</b> și adăugate pe hartă. Dacă scrieți &icirc;ntr-o partajare de fişiere big data, rezultatele dvs. vor fi stocate &icirc;n partajarea de fişiere big data și adăugate la manifestul acesteia. Nu vor fi adăugate pe hartă. Numele implicit se bazează pe numele instrumentului şi numele stratului tematic de intrare. Dacă stratul tematic există deja, instrumentul va eşua.
+            </p>
+            <p>C&acirc;nd scrieți &icirc;n  ArcGIS Data Store (depozit de date relaționale sau spațio-temporale de volum mare) utiliz&acirc;nd caseta derulantă  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

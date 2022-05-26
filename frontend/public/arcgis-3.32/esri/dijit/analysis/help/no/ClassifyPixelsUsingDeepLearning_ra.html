@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Klassifiser piksler ved hjelp av dyp læring</h2><p/>
+        <h2><img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" alt="Klassifiser piksler ved hjelp av dyp l&aelig;ring"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet kj&oslash;rer en opptrent modell for dyp l&aelig;ring p&aring; et inndataraster for &aring; produsere et klassifisert raster, og hver gyldige piksel har en tilordnet klassemerking.
+    </p>
+    <p>Hvis det er merket av for  <b>Bruk gjeldende kartutstrekning</b>, analyseres bare rasteromr&aring;det som vises i gjeldende kartutstrekning. Hvis dette ikke er avmerket, analyseres hele rasteret, selv om det befinner seg utenfor gjeldende kartutstrekning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Velg bilde som skal brukes til å klassifisere piksler</h2></div>
+        <hr/>
+        <div>
+            <p>Inndatabilde for klassifisering.
+            </p>
+            <p>Det kan v&aelig;re en bildetjeneste-URL, et rasterlag eller et bildetjenestelag.
+            </p>
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Velg modellen for dyp læring som skal brukes til klassifisering av piksler</h2></div>
+        <hr/>
+        <div>
+            <p>Dypl&aelig;ringspakken for ( <code>.dlpk</code>)-elementet som er inndata.
+            </p>
+            <p>Dypl&aelig;ringspakken er sammensatt av Esris JSON-fil for modelldefinering ( <code>.emd</code>), den bin&aelig;re modellfilen for dyp l&aelig;ring og (valgfritt) Python-rasterfunksjonen som skal brukes.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Angi modellargumenter for dyp læring</h2></div>
+        <hr/>
+        <div>
+            <p>Funksjonsargumentene er definert i Python-rasterfunksjonsklassen det vises til i inndatamodellen. Det er her du f&oslash;rer opp ytterligere parametre for dyp l&aelig;ring og argumenter for eksperimenter og avgrensninger, for eksempel en konfidensterskel for justering av f&oslash;lsomhet.
+            </p>
+            <p>Navnene p&aring; argumentene fylles ut av verkt&oslash;yet etter lesing av Python-modulen p&aring; rasteranalyseserveren.
+            </p>  
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputClassifiedRaster">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Du kan angi navnet p&aring; en mappe i  <b>Mitt innhold</b>, der resultatet blir lagret via rullegardinlisten <b>Lagre resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

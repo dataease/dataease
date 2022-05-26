@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Choisir les meilleures ressources</h2><p/>
+        <h2><img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" alt="Choisir les meilleures ressources"></h2>
+        <hr/>
+    <p>L'outil Choisir les meilleures ressources vous permet de choisir les emplacements les mieux adapt&eacute;s aux ressources. L'outil alloue des emplacements avec demande aux ressources de mani&egrave;re &agrave; remplir un objectif en particulier.
+    </p>
+    <p>Les ressources repr&eacute;sentent des emplacements qui offrent un certain type de service, tels que les casernes de pompiers, les &eacute;coles, les biblioth&egrave;ques, les magasins ou les centres de distribution. Les emplacements de demandes repr&eacute;sentent les emplacements dont la demande porte sur les services offerts par les ressources, tels que les points des &icirc;lots de recensement qui synth&eacute;tisent la population d'une zone donn&eacute;e.
+    </p>
+    <p>L'outil Choisir les meilleures ressources peut vous aider &agrave; r&eacute;pondre aux questions suivantes
+        <ul>
+            <li>En cas d'urgence, comment diriger les m&eacute;nages vers le centre d'h&eacute;bergement d'urgence appropri&eacute;, lorsque le nombre de places est limit&eacute; et ne doit pas &ecirc;tre d&eacute;pass&eacute;&nbsp;?
+            </li>
+            <li>Comment attribuer aux diff&eacute;rents quartiers l'antenne de biblioth&egrave;que la plus proche et trouver le nombre d'usagers potentiels que dessert chaque antenne&nbsp;? 
+            </li>
+            <li>Comment trouver le meilleur emplacement pour un centre de distribution alimentaire, qui minimise le temps de trajet global (et par cons&eacute;quent le co&ucirc;t) de livraison d'une cha&icirc;ne de magasins d'alimentation&nbsp;?
+            </li>
+            <li>O&ugrave; localiser un nouveau parc pour s'assurer que le plus grand nombre des habitants de la ville r&eacute;sident &agrave; moins de cinq minutes d'un parc&nbsp;?
+            </li>
+            <li>Quels sont les meilleurs emplacements pour implanter diverses animaleries dans un comt&eacute; afin que 40&nbsp;pour cent des propri&eacute;taires d'animaux du comt&eacute; r&eacute;sident &agrave; moins de dix minutes en voiture d'un des magasins&nbsp;?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="goal">
+        <div><h2>Objectif</h2></div>
+        <hr/>
+        <div>
+            <p>Indiquez l'objectif qui doit &ecirc;tre satisfait lors de l'allocation des emplacements de demandes aux ressources.
+            </p>
+            <p>Avec l'outil Choisir les meilleures ressources, vous pouvez indiquer le type de probl&egrave;me que vous r&eacute;solvez&nbsp;: l'objectif. L'outil est optimis&eacute; en vue d'offrir une solution pour cet objectif en particulier. Quel que soit l'objectif, la m&ecirc;me m&eacute;thode sous-jacente est principalement utilis&eacute;e pour parvenir &agrave; une solution&nbsp;: le volume de demande d'un emplacement de demande en particulier est allou&eacute; &agrave; la ressource la plus proche. Selon les objectifs, le mode de gestion de l'interaction entre la distance (ou le temps) et la demande varie. L'outil consid&egrave;re &agrave; la fois la distance/le temps de trajet et le volume de demande et, dans certains cas, la capacit&eacute; des ressources. Si un objectif favorise la r&eacute;duction du temps de trajet, par exemple, l'outil essaiera toujours dans un deuxi&egrave;me temps d'optimiser la demande qui est allou&eacute;e. De m&ecirc;me, si l'objectif est d'optimiser la demande allou&eacute;e, l'outil s'ex&eacute;cute en minimisant le temps de trajet (en attribuant des emplacements de demandes &agrave; la ressource la plus proche au lieu de choisir n'importe quelle ressource).
+            </p>
+            <p>Selon vos donn&eacute;es et les param&egrave;tres utilis&eacute;s, diff&eacute;rents objectifs peuvent produire des r&eacute;sultats identiques ou similaires. Toutefois, vous devez indiquer l'objectif qui convient le mieux &agrave; votre analyse.
+            </p> 
+        </div>
+    </div>
+    <div id="allocateToExistingFacilities">
+        <div><h2>Allouer aux ressources existantes</h2></div>
+        <hr/>
+        <div>
+            <p>Utilisez cet objectif si vous ne voulez pas localiser de nouvelles ressources et souhaitez attribuer une demande aux ressources existantes dont la capacit&eacute; peut &ecirc;tre limit&eacute;e ou illimit&eacute;e.    
+            </p>
+            <p>Cet objectif attribue une demande aux ressources en fonction de la capacit&eacute; de la ressource et du volume de demande dans la zone environnante. La demande est allou&eacute;e &agrave; la ressource la plus proche jusqu'&agrave; ce que la capacit&eacute; disponible soit atteinte. Si vous sp&eacute;cifiez une plage de d&eacute;placement maximale, les emplacements de demandes au-del&agrave; de la plage ne sont pas attribu&eacute;s &agrave; une ressource, m&ecirc;me si toute la demande n'a pas &eacute;t&eacute; compl&egrave;tement allou&eacute;e.
+            </p> 
+        </div>
+    </div>
+    <div id="minimizeTravel">
+        <div><h2>Limiter le déplacement</h2></div>
+        <hr/>
+        <div>
+            <p>Utilisez cet objectif si vous souhaitez localiser les ressources de fa&ccedil;on que le temps de trajet global, ou la distance &agrave; parcourir, entre les emplacements de demandes et les ressources soit minimis&eacute;.
+            </p>
+            <p>Cet objectif est souvent appropri&eacute; lorsqu'un d&eacute;placement r&eacute;gulier a lieu entre la ressource et tous les emplacements de demandes. Vous pouvez utiliser cet objectif, par exemple, pour minimiser la distance globale parcourue pour le d&eacute;placement de marchandises entre les centres de distribution et les points de vente, ou pour s&eacute;lectionner un lieu pour une conf&eacute;rence de mani&egrave;re &agrave; minimiser le temps de trajet pour tous les participants.
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverage">
+        <div><h2>Optimiser la couverture</h2></div>
+        <hr/>
+        <div>
+            <p>Utilisez cet objectif si vous souhaitez maximiser le volume de demande couvert dans un temps ou une distance sp&eacute;cifique par rapport aux ressources.    
+            </p>
+            <p>Cet objectif choisit les ressources de fa&ccedil;on que le volume de demande maximal soit allou&eacute;, toutes les demandes de chaque emplacement de demande &eacute;tant allou&eacute;es &agrave; la ressource la plus proche.
+            </p>
+            <p>Une plage de d&eacute;placement maximale finie est requise pour cet objectif. Sinon, toute la demande risque d'&ecirc;tre attribu&eacute;e &agrave; une seule ressource. Les emplacements de demandes situ&eacute;s au-del&agrave; de la distance ou du temps par rapport aux ressources ne sont pas allou&eacute;s (cela vous indique o&ugrave; la demande n'est pas satisfaite et o&ugrave; des ressources suppl&eacute;mentaires peuvent &ecirc;tre n&eacute;cessaires).
+            </p> 
+        </div>
+    </div>
+    <div id="maximizeCoverageWithCapacity">
+        <div><h2>Optimiser la couverture avec capacité</h2></div>
+        <hr/>
+        <div>
+            <p>Utilisez cet objectif si vous voulez optimiser le volume de demande couvert par les ressources et que la capacit&eacute; des ressources est limit&eacute;e.    
+            </p>
+            <p>Cet objectif choisit des ressources afin que le volume maximum de demande soit allou&eacute; sans d&eacute;passer la capacit&eacute; des ressources. Toute la demande de chaque emplacement de demande est allou&eacute;e &agrave; la ressource unique la plus proche dont la capacit&eacute; est disponible (c'est-&agrave;-dire, si l'attribution d'un emplacement de demande &agrave; une ressource entra&icirc;ne le d&eacute;passement de la capacit&eacute; disponible de la ressource, l'emplacement de demande n'est pas attribu&eacute;, au lieu d'attribuer une partie de la demande).
+            </p> 
+        </div>
+    </div>
+    <div id="coverAPercentageOfDemand">
+        <div><h2>Couvrir un pourcentage de demande</h2></div>
+        <hr/>
+        <div>
+            <p>Utilisez cet objectif pour conna&icirc;tre le nombre minimal de ressources requises pour couvrir un pourcentage donn&eacute; de demande.
+            </p>
+            <p>Cet objectif choisit le nombre minimal de ressources n&eacute;cessaires pour atteindre le pourcentage de demande sp&eacute;cifi&eacute;. Un emplacement de demande qui se trouve dans la plage de d&eacute;placement maximale de deux ressources ou plus voit sa demande fractionn&eacute;e proportionnellement entre les ressources en fonction de sa distance par rapport &agrave; chacune. Cet objectif est souvent utilis&eacute; lorsque les utilisateurs peuvent choisir la ressource &agrave; visiter. On suppose en g&eacute;n&eacute;ral, qu'ils visitent la ressource la plus proche (tous les autres facteurs &eacute;tant &eacute;gaux).
+            </p>
+            <p>Contrairement aux autres objectifs qui choisissent les ressources, dans lesquels vous sp&eacute;cifiez le nombre de ressources &agrave; choisir, cet objectif choisit le nombre de ressources pour vous, en fonction du pourcentage de demande que vous voulez satisfaire. Il suppose que les ressources n'ont pas une capacit&eacute; limit&eacute;e.
+            </p> 
+        </div>
+    </div>
+    <div id="measure">
+        <div><h2>Mesurer</h2></div>
+        <hr/>
+        <div>
+            <p>Comme avec d'autres outils qui int&egrave;gre le d&eacute;placement dans l'analyse, vous pouvez pr&eacute;ciser si le d&eacute;placement se mesure avec la distance ou le temps et vous pouvez choisir parmi diff&eacute;rents modes de d&eacute;placement, tels que le temps de marche, le temps de trajet, la distance &agrave; parcourir en zone rurale, etc. Les modes de d&eacute;placement &agrave; votre disposition sont d&eacute;termin&eacute;s par l'administrateur de votre organisation. Lorsque vous utilisez l&rsquo;option  <b>Driving Time (Temps de trajet)</b>, <b>Rural Driving Time (Temps de trajet en zone rurale)</b> ou <b>Trucking Time (Temps de trajet pour camions)</b>, vous pouvez si vous le souhaitez inclure le trafic pour un jour et une heure sp&eacute;cifiques.
+            </p>
+            <p> Pour allouer pr&eacute;cis&eacute;ment des emplacements de demandes aux ressources, indiquez si le d&eacute;placement s'effectue des ressources aux emplacements de demandes (des casernes de pompiers aux maisons, par exemple) ou des emplacements de demandes aux ressources (comme dans le cas des usagers de biblioth&egrave;ques). L'outil Choisir les meilleures ressources tient compte de la direction de d&eacute;placement sur les routes &agrave; sens unique, si vous pouvez tourner entre une rue et une autre, si des intersections ne permettent pas de tourner &agrave; gauche, etc., selon que le trajet s'effectue de la ressource vers les emplacements de demandes ou des emplacements de demandes vers les ressources.
+            </p>
+        </div>
+    </div>
+    <div id="demandLocationsLayer">
+        <div><h2>Couche des emplacements de demandes</h2></div>
+        <hr/>
+        <div>
+            <p>Les entit&eacute;s ponctuelles repr&eacute;sentent les emplacements dont la demande porte sur les services offerts par les ressources. L'outil attribue ces emplacements de demandes aux ressources appropri&eacute;es en fonction de l'objectif s&eacute;lectionn&eacute;.
+            </p>
+            <p>Un volume de demande est associ&eacute; aux emplacements de demandes. Utilisez une constante pour sp&eacute;cifier la valeur si tous les emplacements de demandes ont la m&ecirc;me demande. Si le volume de demande varie par emplacement de demande, utilisez un champ dans la couche des emplacements de demandes pour sp&eacute;cifier la valeur de chaque emplacement de demande.
+            </p>
+            <p>La demande est allou&eacute;e aux ressources jusqu'&agrave; ce que toute la demande soit allou&eacute;e, quel que soit l'&eacute;loignement des emplacements de demandes par rapport aux ressources. Vous pouvez attribuer une plage de d&eacute;placement maximale &agrave; la couche des emplacements de demandes pour cr&eacute;er une distance ou un temps limite (les emplacements de demandes au-del&agrave; de la valeur limite ne sont pas allou&eacute;s). Utilisez une constante pour sp&eacute;cifier la valeur si tous les emplacements de demandes ont la m&ecirc;me plage de d&eacute;placement maximale. Si la plage de d&eacute;placement maximale varie par emplacement de demande, utilisez un champ dans la couche des emplacements de demandes pour sp&eacute;cifier la valeur de chaque emplacement de demande.
+            </p>
+            <p>Si le type d'objectif est  <b>Couvrir un pourcentage de demande</b>, vous devez sp&eacute;cifier le pourcentage minimum de demande que les ressources doivent atteindre.
+            </p>
+            <p>Outre le choix d&rsquo;une couche dans votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante. Cette option ouvre une biblioth&egrave;que qui vous permet de s&eacute;lectionner des jeux de donn&eacute;es de diff&eacute;rentes sources pour les utiliser dans votre analyse. 
+            </p>
+            <p>L'outil prend en charge jusqu'&agrave; 10&nbsp;000&nbsp;entit&eacute;s dans la couche des emplacements de demandes.
+            </p>  
+        </div>
+    </div>
+    <div id="requiredFacilitiesLayer">
+        <div><h2>Couche de ressources requises</h2></div>
+        <hr/>
+        <div>
+            <p>Les entit&eacute;s ponctuelles repr&eacute;sentent des emplacements qui jouent le r&ocirc;le de ressources en offrant un certain type de service. Les ressources requises repr&eacute;sentent g&eacute;n&eacute;ralement des emplacements qui existent d&eacute;j&agrave;, contrairement aux ressources candidates qui repr&eacute;sentent g&eacute;n&eacute;ralement les emplacements auxquels de nouvelles ressources seront construites ou positionn&eacute;es. Lors de l'allocation d'emplacements de demandes, l'outil utilise les ressources de la  <b>couche de ressources requises</b> avant les ressources de la <b>couche de ressources candidates</b>.
+            </p>
+            <p>Les ressources requises peuvent avoir une capacit&eacute; illimit&eacute;e (c'est-&agrave;-dire qu'elles peuvent r&eacute;pondre &agrave; toute la demande qui leur est attribu&eacute;e) ou une capacit&eacute; limit&eacute;e. Si toutes les ressources ont la m&ecirc;me capacit&eacute; limit&eacute;e (telle que le nombre de m&eacute;nages qu'une caserne de pompiers peut desservir, par exemple 4&nbsp;000), sp&eacute;cifiez une valeur constante. Si la capacit&eacute; varie entre les ressources (telle que le nombre de places pour les nouveaux venus dans chaque &eacute;cole secondaire), sp&eacute;cifiez un champ contenant la capacit&eacute; de chaque ressource.
+            </p>
+            <p>L'outil prend en charge jusqu'&agrave; 100&nbsp;entit&eacute;s dans la  <b>couche de ressources requises</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="candidateFacilitiesLayer">
+        <div><h2>Couche de ressources candidates</h2></div>
+        <hr/>
+        <div>
+            <p>Les entit&eacute;s ponctuelles repr&eacute;sentent des emplacements qui jouent le r&ocirc;le de ressources en offrant un certain type de service. Les ressources candidates repr&eacute;sentent g&eacute;n&eacute;ralement les emplacements auxquels de nouvelles ressources seront construites ou positionn&eacute;es, contrairement aux ressources requises qui repr&eacute;sentent g&eacute;n&eacute;ralement des emplacements qui existent d&eacute;j&agrave;.
+            </p>
+            <p>Selon l'objectif de votre analyse, vous devez sp&eacute;cifier le nombre de ressources candidates &agrave; choisir parmi l'ensemble des candidates. Si vous sp&eacute;cifiez &agrave; la fois les ressources requises et candidates, l'outil utilise les ressources de la  <b>couche de ressources requises</b> avant les ressources de la <b>couche de ressources candidates</b>.
+            </p>
+            <p>Les ressources candidates peuvent avoir une capacit&eacute; illimit&eacute;e (c'est-&agrave;-dire qu'elles peuvent r&eacute;pondre &agrave; toute la demande qui leur est attribu&eacute;e) ou une capacit&eacute; limit&eacute;e. Si toutes les ressources ont la m&ecirc;me capacit&eacute; limit&eacute;e (telle que le nombre de m&eacute;nages qu'une caserne de pompiers peut desservir, par exemple 4&nbsp;000), sp&eacute;cifiez une valeur constante. Si la capacit&eacute; varie entre les ressources (telle que le nombre de places pour les nouveaux venus dans chaque &eacute;cole secondaire), sp&eacute;cifiez un champ contenant la capacit&eacute; de chaque ressource.
+            </p>
+            <p>L'outil prend en charge jusqu'&agrave; 1&nbsp;000&nbsp;entit&eacute;s dans la  <b>couche de ressources candidates</b>.
+            </p>  
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Sélectionner les couches d’interruptions</h2></div>
+        <hr/>
+        <div>
+            <p> Une ou plusieurs entit&eacute;s qui agissent comme restrictions temporaires (en d&rsquo;autres termes, les interruptions) lors du d&eacute;placement dans les rues sous-jacentes. Vous pouvez pr&eacute;ciser les interruptions &agrave; l&rsquo;aide d&rsquo;entit&eacute;s ponctuelles, lin&eacute;aires ou surfaciques.
+            </p>
+            <p>Une interruption ponctuelle peut mod&eacute;liser un arbre au sol, un accident, une ligne &eacute;lectrique &agrave; terre, ou tout &eacute;l&eacute;ment qui bloque le trafic &agrave; un emplacement donn&eacute; dans la rue. Le d&eacute;placement est autoris&eacute; sur la rue, hormis franchir l&rsquo;interruption. Vous pouvez pr&eacute;ciser jusqu&rsquo;&agrave; 250&nbsp;&eacute;l&eacute;ments comme interruptions ponctuelles.
+            </p>
+            <p>Une interruption lin&eacute;aire interdit le d&eacute;placement l&agrave; o&ugrave; l&rsquo;interruption intersecte les rues. Par exemple, un d&eacute;fil&eacute; ou une manifestation qui bloque la circulation sur plusieurs segments de rue peut &ecirc;tre mod&eacute;lis&eacute; avec une interruption lin&eacute;aire. Si le nombre d&rsquo;entit&eacute;s de rue intersect&eacute;es par toutes les interruptions lin&eacute;aires d&eacute;passe&nbsp;500, l&rsquo;outil renvoie une erreur.
+            </p>
+            <p>Une interruption polygonale interdit le d&eacute;placement l&agrave; o&ugrave; le polygone intersecte les rues. Une utilisation de ce type d&rsquo;interruption consiste &agrave; mod&eacute;liser les inondations couvrant les zones du r&eacute;seau routier et &agrave; identifier la circulation sur la route comme impossible &agrave; ces emplacements pr&eacute;cis. Si le nombre d&rsquo;entit&eacute;s de rue intersect&eacute;es par toutes les interruptions polygonales est sup&eacute;rieur &agrave; 2&nbsp;000, l&rsquo;outil renvoie une erreur.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit du nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte.  Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si le nom de la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>La couche r&eacute;sultat contient une couche pour chacun des &eacute;l&eacute;ments suivants&nbsp;: ressources auxquelles des demandes sont attribu&eacute;es, emplacements de demandes allou&eacute;s &agrave; des ressources et lignes d'allocation reliant les emplacements de demandes &agrave; leurs ressources attribu&eacute;es. Les lignes d'allocation sont trac&eacute;es en ligne droite. Toutefois, le temps de trajet ou la distance de trajet entre la ressource et l'emplacement de demande repose toujours sur le mode de d&eacute;placement que vous sp&eacute;cifiez et non sur les distances en ligne droite.
+            </p>
+            <p>Le menu d&eacute;roulant  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b> permet de sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> dans lequel sera enregistr&eacute; le r&eacute;sultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

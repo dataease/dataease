@@ -1,0 +1,52 @@
+// ┌──────────────────────────────────────────┐
+// │          Variables and Mixins            │
+// └──────────────────────────────────────────┘
+// Variables
+// --------------------------------------------------
+// Common
+@import "../variables/colors-default";
+@import "../variables/colors";
+@import "../variables/fonts-avenir";
+@import "../variables/scaffolding";
+@import "../variables/typography";
+@import "../variables/components";
+@import "../variables/buttons";
+@import "../variables/forms";
+@import "../variables/states";
+@import "../variables/dropdowns";
+// Esri widgets
+$esri-btn-width: 32px !default;
+$esri-btn-height: 32px !default;
+@import "variables/basemap-gallery";
+@import "variables/basemap-toggle";
+@import "variables/bookmarks";
+@import "variables/directions";
+@import "variables/layerswipe";
+@import "variables/legend";
+@import "variables/measurement";
+@import "variables/overview-map";
+@import "variables/popup";
+@import "variables/time-slider";
+@import "variables/scalebar";
+@import "variables/search";
+@import "variables/zoom-slider";
+// Mixins
+// --------------------------------------------------
+// Utilities
+@import "compass/css3";
+@import "compass/utilities/general/clearfix";
+// Components
+@import "../mixins/common";
+@import "../mixins/buttons";
+@import "../mixins/dropdowns";
+@import "../mixins/forms";
+@import "../mixins/iconfonts";
+@import "../mixins/messaging";
+@import "../mixins/progressbar";
+@import "../mixins/slider";
+@import "mixins/buttons";
+@import "mixins/directions";
+// Theme name
+$theme-name: "calcite" !default;
+// Loading Images
+$image-loading-circular: "../images/loadingIndicator/LoadingAnimation16_Trans.gif";

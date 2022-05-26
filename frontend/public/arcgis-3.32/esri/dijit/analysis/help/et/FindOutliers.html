@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Otsi võõrväärtusi</h2><p/>
+        <h2><img src="../images/GUID-2FD18406-6333-45B9-8220-E930C1E154B2-web.png" alt="Otsi v&otilde;&otilde;rv&auml;&auml;rtusi"></h2>
+        <hr/>
+    <p>V&otilde;&otilde;rv&auml;&auml;rtuste otsimise t&ouml;&ouml;riistaga saab m&auml;&auml;rata, kas andmete ruumimustris on statistiliselt olulisi v&otilde;&otilde;rv&auml;&auml;rtusi. 
+        <ul>
+            <li>Kas teie andmete mustris on ebaharilikke alasid (kuriteod, puud, liiklus&otilde;nnetused jms)? Kuidas saate selles kindel olla?
+            </li>
+            <li>Kas olete t&otilde;eliselt uurinud statistiliselt olulisi v&otilde;&otilde;rv&auml;&auml;rtusi (nt kulutused, imikusuremus p&uuml;sivalt k&otilde;rge skooriga jms) v&otilde;i muutub kaardi sisu vastavalt s&uuml;mboloogiale?
+            </li>
+        </ul>
+        Neile k&uuml;simustele kindla vastuse saamiseks kasutage v&otilde;&otilde;rv&auml;&auml;rtuste otsimise t&ouml;&ouml;riista.
+    </p>
+    <p>Iga kord, kui kaarti vaatame, on meie silmadel ja ajul kombeks hakata otsima mustreid, isegi kui neid ei ole. Seega v&otilde;ib olla raske m&otilde;ista, kas mustrid teie andmetes on tingitud reaalsetest geograafilises ruumis aset leidvatest protsessidest v&otilde;i lihtsalt juhuslikust kokkusattumisest. Seet&otilde;ttu kasutavad uurijad ja anal&uuml;&uuml;tikud ruumimustrite m&otilde;&otilde;tmiseks statistilisi meetodeid, nagu n&auml;iteks t&ouml;&ouml;riista &quot;Otsi v&otilde;&otilde;rv&auml;&auml;rtusi&quot; (numbriliste v&auml;&auml;rtuste lokaalse koondumise n&auml;itajad, Anselin Local Moran's I). Kui olete andmetes leidnud statistiliselt olulised v&otilde;&otilde;rv&auml;&auml;rtused v&otilde;i klastrid, on see v&auml;&auml;rtuslik info. Teadmine, kus ja millal v&otilde;&otilde;rv&auml;&auml;rtused esinevad, annab olulisi vihjeid protsesside kohta, mis ilmnevad n&auml;htavates mustrites. J&auml;rgmiseks sammuks on uurida, miks on asjad nendel v&otilde;&otilde;rv&auml;&auml;rtuste aladel m&auml;rkimisv&auml;&auml;rselt erinevad.  Teades n&auml;iteks, et mingis linnaosas on eluhoonetes toime pandud murdvarguste arv m&auml;rkimisv&auml;&auml;rselt suurem kui seda &uuml;mbritsevates v&auml;iksema murdvarguste arvuga linnaosades, on see oluliseks infoks, kui teil on vaja kaaluda t&otilde;husamaid ennetusstrateegiaid, jaotada piiratud kaitseressursse, algatada naabrivalve programme, lubada p&otilde;hjalikumat eeluurimist v&otilde;i tuvastada v&otilde;imalikke kahtlusaluseid.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Vali kiht võõrväärtuste arvutamiseks</h2></div>
+        <hr/>
+        <div>
+            <p>Punkti- v&otilde;i joonekiht, mille p&otilde;hjal v&otilde;&otilde;rv&auml;&auml;rtused arvutatakse. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Otsi võõrväärtusi:</h2></div>
+        <hr/>
+        <div>
+            <p>See anal&uuml;&uuml;s annab vastuse k&uuml;simusele, kus on andmetes ruumilised v&otilde;&otilde;rv&auml;&auml;rtused.  
+            </p>
+            <p>Kui teie andmeteks on punktid ja tegite valiku  <b>Punktide arv</b>, hindab t&ouml;&ouml;riist punktobjektide paiknemise ruumilist korrap&auml;ra, saamaks vastust k&uuml;simusele, kus on punktid oodatust teisiti klasterdatud v&otilde;i hajutatud.
+            </p>
+            <p>V&auml;lja valimisel hindab t&ouml;&ouml;riist iga objektiga seotud v&auml;&auml;rtuste paiknemise ruumilist korrap&auml;ra, saamaks vastust k&uuml;simusele, kus &uuml;mbritsevad suured v&auml;&auml;rtused v&auml;ikseid v&auml;&auml;rtusi. Kus &uuml;mbritsevad suured v&auml;&auml;rtused v&auml;ikseid v&auml;&auml;rtusi?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Loenda piiridesse jäävad punktid</h2></div>
+        <hr/>
+        <div>
+            <p>Vaikimisi loendatakse v&otilde;rkruudustikus olevaid punkte. T&ouml;&ouml;riist loob ruudustiku punktandmete p&otilde;hjal. Teise v&otilde;imalusena saate loendada kuusnurk-ruudustiku punkte v&otilde;i sisestada piirkonnakihi (tavaliselt kajastavad need linnaosade rahvastiku arvu, omavalitsuste piire, maakondi jms), et vastata k&uuml;simusele, kas arvestades iga pindobjekti piires loendatud punktide arvu, eksisteerib v&otilde;rreldes nende naaberlinnaosadega statistiliselt k&otilde;rge v&otilde;i madala tasemega punkte.   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Määratle, kus saavad punktid olla</h2></div>
+        <hr/>
+        <div>
+            <p>Joonistage v&otilde;i sisestage kiht, mis m&auml;&auml;ratleb, kus on s&uuml;ndmused v&otilde;imalikud, et vastata k&uuml;simusele, kas aladel on olemas kohad, kus esineb ootamatult suurel v&otilde;i v&auml;hesel m&auml;&auml;ral punkte.   
+            </p>
+            <p>Pindobjektid, mida joonistate, v&otilde;i objektid kihis, mille m&auml;&auml;rate, annavad ettekujutuse, kus punktid v&otilde;iksid t&otilde;en&auml;oliselt esineda. Nende alade joonistamiseks kl&otilde;psake nuppu  <b>Joonista</b> ning seej&auml;rel kl&otilde;psake piirkonna kujundi loomiseks soovitud asukohta kaardil. T&auml;iendavate alade joonistamiseks kl&otilde;psake uuesti joonistamisnuppu, j&auml;tkamiseks kl&otilde;psake soovitud asukohta kaardil.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Jagamine:</h2></div>
+        <hr/>
+        <div>
+            <p>Vahel v&otilde;ite soovida anal&uuml;&uuml;sida mustreid, mis v&otilde;tavad arvesse alusjaotusi. Kui Teie punktid t&auml;histavad n&auml;iteks kuritegusid, t&auml;hendab kogurahvastiku alusel jagamine, et kuritegusid anal&uuml;&uuml;sitakse inimese kohta mitte nende &uuml;ldarvu j&auml;rgi.  Jagamise aluseks oleva atribuudi valimist nimetatakse sageli normimiseks.
+            </p>
+            <p> Kui teete valiku <i>Esri rahvastik</i>, rikastatakse iga pindobjekt rahvastikuarvu v&auml;&auml;rtustega, mida kasutatakse seej&auml;rel jagamise aluseks v&otilde;etava atribuudina.  Selle valiku puhul kasutatakse krediite.
+            </p>
+        </div>
+    </div>
+    <div id="permutations">
+        <div><h2>Optimeeri järgmise jaoks</h2></div>
+        <hr/>
+        <div>
+            <p>V&otilde;ite valida kiiruse v&otilde;i t&auml;psuse optimeerimise.  
+            </p>
+            <p>See t&ouml;&ouml;riist kasutab &uuml;mberpaigutamist, et m&auml;&auml;ratleda, kui palju erineb teie andmete ruumimuster juhuslikust ruumimustrist. &Uuml;mberpaigutuste arvu suurendamine suurendab t&auml;psust, aga ka t&ouml;&ouml;tlusaega.  
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Alistamisvalikud</h2></div>
+        <hr/>
+        <div>
+            <p>T&ouml;&ouml;riist leiab  <b>lahtri suuruse</b> optimaalse seade ja <b>vahemaa</b> vaikev&auml;&auml;rtused teie andmete karakteristikute p&otilde;hjal. Kui teil on oma anal&uuml;&uuml;si jaoks olemas kindel <b>lahtrisuurus</b> v&otilde;i <b>vahemaa</b>, saate nende v&auml;&auml;rtuste seadistamiseks kasutada <b>alistamisvalikuid</b>.
+            </p>
+            <p> <b>Alistamisvalikud</b> on kasulikud ka erinevate andmestike anal&uuml;&uuml;simisel, v&otilde;imaldades teil hoida <b>vahemaa</b> ja <b>lahtri suuruse</b> p&uuml;sivana mitmes andmestikus. Nii saate v&otilde;rrelda n&auml;iteks kahe erineva aasta tulemusi rasvunud inimeste ja diabeetikute arvu v&otilde;i isegi kuritegude arvu kohta.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Piksli suurus</h2></div>
+        <hr/>
+        <div>
+            <p>Ruudustiku lahtrite suurus, mida kasutatakse punktide loendamiseks nendes.  
+            </p>
+            <p>Punktide lugemisel kuusnurk-ruudustikus kasutatakse vahemaad kuusnurkade k&otilde;rgusena.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Vahemaa</h2></div>
+        <hr/>
+        <div>
+            <p>Igat objekti anal&uuml;&uuml;sitakse nende k&otilde;rvalobjektide kontekstis, mis asuvad teie m&auml;&auml;ratud vahemaa piires. T&ouml;&ouml;riist arvutab teie jaoks vaikevahemaa v&otilde;i te saate kasutada v&otilde;imalust seadistada teie anal&uuml;&uuml;si jaoks sobiva konkreetse vahemaa. 
+            </p>
+            <p>N&auml;iteks kui uurite kodust t&ouml;&ouml;le liikumise teekonna mustreid ja teate, et keskmine teekond t&ouml;&ouml;le on n&auml;iteks 15 km, v&otilde;iksite kasutada 15-kilomeetrist vahemaad.
+            </p>
+        </div>
+    </div>
+    <div id="outlierResultLayer">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sisestage kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile.  See kiht n&auml;itab statistiliselt olulisi suurte ja v&auml;ikeste v&auml;&auml;rtustega punktihulkade v&otilde;&otilde;rv&auml;&auml;rtusi. Kui tulemkiht on juba olemas, palutakse teil see &uuml;mber nimetada.
+            </p>
+            <p>Kasutades rippmen&uuml;&uuml;d  <b>Salvesta tulemused</b>, saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemused salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

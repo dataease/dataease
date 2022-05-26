@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/da/SummarizeCenterAndDispersion",{inputLayerLabel:"V\u00e6lg et lag, der skal beskrives",summaryTypes:"Oversigtstyper",centralFeature:"Centralt objekt",meanCenter:"Middel center",medianCenter:"Mediancenter",ellipse:"Ellipse",weightBy:"V\u00e6gt efter (valgfrit)",groupBy:"Grupp\u00e9r efter (valgfrit)",resultLayerName:"Navn p\u00e5 resultatlag",outputLayerName:"Beskriv distribution af ${layerName}",none:"Ingen",itemDescription:"Vektorlag genereret ud fra k\u00f8rsel af Summ\u00e9r center og spredning for ${layerName}. ",
+itemTags:"Analyseresultat, Summ\u00e9r center og spredning, ${layerName}",itemSnippet:"Vektorlag genereret ud fra k\u00f8rsel af Summ\u00e9r center og spredning"});

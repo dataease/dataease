@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Arvuta tihedus</h2><p/>
+        <h2><img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" alt="Arvuta tihedus"></h2>
+        <hr/>
+    <p>Tiheduse arvutamise t&ouml;&ouml;riist loob punkt- v&otilde;i joonobjektidest tiheduskaardi, hajutades m&otilde;ned n&auml;htused, mis on esitatud punktide v&otilde;i joonte atribuutidena &uuml;le kogu kaardi. Tulemuseks on alade kiht, mis on r&uuml;hmitatud tiheduse alusel.   
+
+    </p>
+    <p>Sisendpunkti puhul peaks iga punkt kujutama mingi s&uuml;ndmuse v&otilde;i juhtumi asukohta ja tulemkiht kujutab juhtumite arvu mingi ala kohta. Uue asukoha k&otilde;rgem tihedus t&auml;hendab, et selle asukoha l&auml;heduses on rohkem punkte. Sageli v&otilde;ib tulemkihti pidada tulevaste s&uuml;ndmuste riskipiirkonnaks. Kui sisendpunktid kujutavad n&auml;iteks v&auml;lgul&ouml;&ouml;kide asukohti, v&otilde;ib tulemkihti pidada tulevaste v&auml;lgul&ouml;&ouml;kide riskipiirkonnaks.
+    </p>
+    <p>Joone sisendi puhul kujutab joone tiheduspind iga asukoha l&auml;heduses oleva joone koguarvu. Arvutatud tihedus kujutab joone pikkust mingi ala kohta. Kui jooned kujutavad n&auml;iteks j&otilde;gesid, kujutab tulemkiht otsinguraadiusesse j&auml;&auml;vate j&otilde;gede kogupikkust. Seda tulemust saab kasutada selleks, et tuvastada kariloomade jaoks sobivaid alasid.
+    </p>
+    <p> Seda t&ouml;&ouml;riista saab kasutada ka j&auml;rgmistel eesm&auml;rkidel:
+        <ul>
+            <li>Kuritegevuse tihedusega seotud kaartide loomine, et aidata politseil planeerida ressursse k&otilde;rge kuritegevusega paikadesse.
+            </li>
+            <li>Maakonnas asuvate haiglate tiheduse arvutamine. Tulemkiht n&auml;itab alasid, kus haiglaid on palju ja/v&otilde;i v&auml;he ning seda teavet saab kasutada selleks, et otsustada kuhu uusi haiglaid ehitada.
+            </li>
+            <li>Metsatulekahjude varasemate asukohtade p&otilde;hjal nende alade tuvastamine, kus metsatulekahju oht on suur.
+            </li>
+            <li>Suurtest kiirteedest kaugel olevate kogukondade kindlakstegemine, et planeerida uute teede ehitust.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vali punkti- või joonekiht, mille põhjal tihedus arvutada</h2></div>
+        <hr/>
+        <div>
+            <p>Punkti- v&otilde;i joonekiht, mille p&otilde;hjal tihedust arvutatakse. 
+            </p>
+            <p>Lisaks kaardil asuvale kihile saate valida variandi  <b>Vali anal&uuml;&uuml;sikiht</b>, mille leiate ripploendi allosast. See variant avab galerii, mida saate sirvida ja kus saate erinevatest allikatest valida anal&uuml;&uuml;sil kasutamiseks andmestikke. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Kasuta kogust kirjeldavat välja</h2></div>
+        <hr/>
+        <div>
+            <p>Sisestage v&auml;li, mis aitab m&auml;&auml;rata iga asukoha juhtumite arvu. Kui Teie punktid kujutavad n&auml;iteks linnu, saate linna rahvaarvu kujutavat v&auml;lja kasutada arvutusv&auml;ljana ning saadav rahvastikutiheduse kiht arvutab suurema rahvaarvuga linnade rahvastikutiheduse.
+            </p>
+            <p> Vaikevaliku Puudub kasutamisel eeldatakse, et iga asukoht kujutab &uuml;hte arvestust.
+            </p>
+        </div>
+    </div>
+    <div id="radius">
+        <div><h2>Otsitav vahemaa</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rake tiheduse arvutamiseks punkt- v&otilde;i joonobjektide otsimise ulatus. Kui sisestate otsinguraadiuseks n&auml;iteks 10 000 meetrit, arvutatakse v&auml;ljundkihis oleva asukoha tihedus objektide p&otilde;hjal, mis asuvad asukohast kuni 10 000 meetri kaugusel. Sellise asukoha tihedus, millest 10 000 meetri raadiuses juhtumeid ei esinenud, on 0.     
+
+            </p>
+            <p>Kui otsingu ulatust ei m&auml;&auml;rata, arvutatakse see vaikimisi sisendobjektide asukohtade ja kogust kirjeldava v&auml;lja v&auml;&auml;rtuste p&otilde;hjal (kui arvestusv&auml;li on sisestatud)
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Lõika tulemus</h2></div>
+        <hr/>
+        <div>
+            <p>Joonistage v&otilde;i sisestage kiht, mis m&auml;&auml;rab ala, mille sees soovite tihedust arvutada. Kui arvutate n&auml;iteks j&auml;rves asuvate kalade tihedust, saate selles parameetris kasutada j&auml;rve piirajana ja v&auml;ljund joonistatakse siis vaid j&auml;rve piiridesse.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Rühmitamine</h2></div>
+        <hr/>
+        <div>
+            <p>Valige, kuidas tihedused aladeks liigitatakse.
+                <ul>
+                    <li>V&otilde;rdne intervall &ndash; alad luuakse nii, et iga ala tiheduse ulatus on v&otilde;rdne.
+                    </li>
+                    <li>Geomeetriline intervall &ndash; alad p&otilde;hinevad geomeetrilise jadaga klassi intervallidel. See meetod tagab, et iga klassi ulatuses on umbes sama palju v&auml;&auml;rtusi ning intervallide muutumine on &uuml;htlane.
+                    </li>
+                    <li>Loomulikud vahemikud &ndash; alade klassi intervallid p&otilde;hinevad andmete loomulikel r&uuml;hmitustel. Klassi vahemikud r&uuml;hmitavad k&otilde;ige paremini sarnaseid v&auml;&auml;rtusi ja maksimeerivad klassidevahelisi erinevusi. 
+                    </li>
+                    <li>Kvantiil &ndash; alad luuakse nii, et iga ala suurus on v&otilde;rdne. Kui tulemkihis on n&auml;iteks enam k&otilde;rge tihedusega v&auml;&auml;rtusi, luuakse rohkem k&otilde;rge tihedusega alasid.
+                    </li>
+                    <li>Standardh&auml;lve &ndash; alad luuakse prognoositava tiheduse standardh&auml;lbe p&otilde;hjal. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Klasside arv</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rab klasside arvu (prognoositavate v&auml;&auml;rtuste ulatuse) tulemkihis. Iga klass m&auml;&auml;ratleb alade piiri. Nende klasside v&auml;&auml;rtused m&auml;&auml;ratakse &uuml;laloleva parameetri 
+ <b>Liigita j&auml;rgmise j&auml;rgi</b> abil.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Väljundi pindalaühikud</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rake v&auml;ljundi &uuml;hik. Tihedus saadakse ala ja koguarvu jagamisel ning see parameeter m&auml;&auml;rab tihedusarvutuse ala &uuml;hiku.  
+
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>See on selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile.  Vaikenimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui samanimeline kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>Rippmen&uuml;&uuml;  <b>Salvesta tulemused</b> kaudu saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemus salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>门户分析环境设置</h2><p/>
+        <h2></h2>
+        <hr/>
+    <p>   Portal for ArcGIS 和  ArcGIS Online 中的分析环境设置。 </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="overwriteResult">
+        <div><h2>覆盖结果图层</h2></div>
+        <hr/>
+        <div>
+            
+            <p>指定是否覆盖现有图层。该项选中时，如果内容中已经存在同名的图层，则该图层将被覆盖。
+            </p>
+            <p>
+                <ul>
+                    <li>选中 - 如果内容中已经存在同名的图层，则该图层将被覆盖。输出将采用与输入相同的坐标系。
+                    </li>
+                    <li>未选中 - 如果所提供的结果图层名称已经存在，则会发生错误，且在执行工具之前必须对结果图层进行重命名。这是默认设置。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="closeAnalysisWidget">
+        <div><h2>在运行分析后关闭分析微件</h2></div>
+        <hr/>
+        <div>
+            <p>指定是否在工具处理过程中将分析对话框保持打开和启用状态。您可通过此设置修改分析参数，同时保证先前的分析作业持续运行。分析是一个迭代过程，将工具对话框保持在打开状态，可使您能够更改参数和重新运行分析。
+            </p>
+            <p>
+                <ul>
+                    <li>选中 - 分析工具对话框将关闭，且焦点将返回至内容表格。这是默认设置
+                    </li>
+                    <li>未选中 - 分析工具对话框将保持在打开和启用的状态。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="storeAnalysisResults">
+        <div><h2>将分析结果存储为托管要素图层</h2></div>
+        <hr/>
+        <div>
+            
+            <p>指定从分析中创建的结果图层是要素集合还是托管要素图层。
+            </p>
+            <p>
+                <ul>
+                    <li>选中 - 分析结果将创建一个托管要素图层，同时在您的内容中创建一个项目。这是默认设置。
+                    </li>
+                    <li>未选中 - 分析结果将创建要素集合。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputCoordinateSystem">
+        <div><h2>输出坐标系</h2></div>
+        <hr/>
+        <div>
+            <p>指定栅格分析结果图层的坐标系。
+            </p>
+            <p>
+                <ul>
+                    <li> <b>与输入相同</b> - 分析结果的坐标系将与输入坐标系相同。这是默认设置。
+                    </li>
+                    <li> <b>按照指定</b> - 您的分析结果将位于您选择的坐标系中。选中此选项后，单击地球按钮并从已知坐标系列表中进行选择，或在提供的框中添加空间参考 WKID。
+                    </li>
+                    <li> <b>图层
+&lt;名称&gt;</b> - 分析结果所在的坐标系将与您在 web 地图中选择的现有图层相同。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingCoordinateSystem">
+        <div><h2>处理坐标系</h2></div>
+        <hr/>
+        <div>
+            <p>指定在执行 GeoAnalytics 分析期间您所使用的坐标系。
+            </p>
+            <p>对于 GeoAnalytics，某些分析需要在投影坐标系中执行处理。任何实施数据分组或线性单位的工具均需要投影坐标系。
+            </p>
+            <p>
+                <ul>
+                    <li> <b>与输入相同</b> - 分析将采用与输入坐标系相同的坐标系进行处理。这是默认设置。
+                    </li>
+                    <li> <b>按照指定</b> - 您的分析将位于您选择的坐标系中。选中此选项后，单击地球按钮并从已知投影坐标系列表中进行选择，或在提供的框中添加空间参考 WKID。
+                    </li>
+                    <li> <b>图层
+&lt;名称&gt;</b> - 分析所在的坐标系将与您在 web 地图中选择的现有图层相同。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingExtent">
+        <div><h2>范围</h2></div>
+        <hr/>
+        <div>
+            <p>指定执行分析期间将使用的范围或边界。分析中将使用完全位于指定范围内或与该范围相交的所有输入要素。
+            </p>
+            <p>
+                <ul>
+                    <li> <b>默认</b> - 工具提供的范围。
+                    </li>
+                    <li> <b>按照指定</b> - 范围由您提供的坐标定义。
+                    </li>
+                    <li> <b>图层
+&lt;名称&gt;</b> - 用于处理分析的范围将与您在 web 地图中选择的现有图层的空间范围相同。 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="snapRaster">
+        <div><h2>捕捉栅格</h2></div>
+        <hr/>
+        <div>
+            <p>调整输出栅格图层的范围，使其与栅格分析中指定的 <b>捕捉栅格</b>图层的像元对齐方式相匹配。
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>像元大小</h2></div>
+        <hr/>
+        <div>
+            <p>指定用于在栅格分析中创建输出栅格图层的像元大小或分辨率。默认输出分辨率由输入栅格图层的最大像元大小决定。
+            </p>
+            <p>
+                <ul>
+                    <li> <b>输入最小值</b> - 使用所有输入图层中最小的像元大小。
+                    </li>
+                    <li> <b>输入最大值</b> - 使用所有输入图层中最大的像元大小。这是默认设置。
+                    </li>
+                    <li> <b>如指定</b> - 指定设置像元大小所需的数值。如果选中，则默认值为 1。
+                    </li>
+                    <li> <b>图层 &lt;名称&gt;</b> - 设置所选择栅格图层的像元大小。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="mask">
+        <div><h2>掩膜</h2></div>
+        <hr/>
+        <div>
+            <p>指定一个图层，用于在栅格分析中定义您感兴趣的区域。分析操作仅会涉及分析掩膜中的像元。
+            </p>
+            <ul>
+                <li>掩膜可以是栅格，也可以是要素图层。
+                </li>
+                <li>如果分析掩膜是栅格，则定义掩膜时将考虑所有具有值的像元。掩膜栅格中的 NoData 像元将视为位于掩膜之外，并且在分析结果图层中将为 NoData。
+                </li>
+                <li>如果分析掩膜是一个要素图层，则在执行时它将内部转换为栅格。因此，您需为分析设置恰当的 <b>像元大小</b>和 <b>捕捉栅格</b> 。
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>数据存储</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics 结果可以存储在  ArcGIS Data Store 中并作为要素图层在  Portal for ArcGIS 中显示，也可以存储在已配置的大数据文件共享中。 </p>
+            <p>当您将结果存储在  ArcGIS Data Store 中时，在大多数情况下，结果将存储在时空数据存储中。这是默认设置。下列内容说明了您可能需要将结果存储在关系数据存储中的原因： 
+                <ul>
+                    <li>要在门户到门户协作中应用您的结果
+                    </li>
+                    <li>要为您的结果开启同步功能
+                    </li>
+                </ul>
+                
+            </p>
+            <p>若您希望您的 GeoAnalytics 结果增加并希望利用时空大数据存储功能处理大量数据，则您不应使用关系数据存储。
+            </p>
+        </div>
+    </div>
+    <div id="parallelProcessingFactor">
+        <div><h2>并行处理因子</h2></div>
+        <hr/>
+        <div>
+            <p>跨多个栅格处理服务实例分配分析。
+            </p>
+            <p>使用支持 <b>并行处理因子</b>环境的工具可以控制可用于处理数据的栅格处理服务实例的数量。
+            </p>
+            <p>如果工具不支持 <b>处理器类型</b>，或者 <b>处理器类型</b>环境设置为 <b>CPU</b>，则 <b>并行处理因子</b>环境将控制栅格处理 (CPU) 服务实例。如果 <b>处理器类型</b>设置为 <b>GPU</b>，则 <b>并行处理因子</b>环境将控制栅格处理 GPU 实例的数量。
+            </p> 
+            <p>通过设置 <b>并行处理因子</b>，您可以向栅格分析影像服务器申请用于处理一个栅格分析任务的并行工作人员的数量。但是，如果并行进程的总数超过了栅格处理（CPU 或 GPU）服务实例的最大数量，则多余的并行进程将排队等待。
+            </p>
+            <p>如果未指定 <b>并行处理因子</b>（默认为未指定），工具将使用栅格处理服务实例最大数量的 80%。可以将整数或百分数指定为并行处理因子。
+            </p>
+        </div>
+    </div>
+    <div id="processorType">
+        <div><h2>处理器类型</h2></div>
+        <hr/>
+        <div>
+            <p>您可通过支持 <b>处理器类型</b>环境的工具来选择您希望用来处理数据的位置和方式。您可以使用服务器计算机 CPU 或 GPU 处理数据。如果 <b>处理器类型</b>环境为空，则工具将使用 CPU 处理数据。这是默认设置。
+            </p> 
+            <p>CPU 处理可以跨多个核和实例实现并行，并由 <b>并行处理因子</b>进行处理。
+            </p>
+            <p>GPU 在图形和影像处理方面非常有效，其高度并行的结构使其能够以重复的方式有效地处理大块数据。支持此环境的栅格分析工具可以跨多个栅格分析服务器计算机上的 GPU 实例来分配作业，并由 <b>并行处理因子</b>进行处理。
+            </p>
+            <p>
+                <ul>
+                    <li> <b>GPU</b> - 将使用图形处理器来处理数据。
+                    </li>
+                    <li> <b>CPU</b> - 将使用计算机的中央处理器来处理数据。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

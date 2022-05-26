@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>查找热点</h2><p/>
+        <h2><img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" alt="查找热点"></h2>
+        <hr/>
+    <p>查找热点工具可以确定数据在空间模式方面是否存在任何统计显著性的聚类。
+        <ul>
+            <li>各个点要素（犯罪事件、树木或交通事故）是否可进行聚类？ 您又是如何确定的？
+            </li>
+            <li>您是否确实发现了具有统计显著性的热点？或者说如果更改地图的符号化方式，地图会呈现出另一种结果吗？
+            </li>
+        </ul>
+        &ldquo;查找热点&rdquo;工具可针对这些问题给出令人信服的答案。
+    </p>
+    <p>即使是随机的空间模式也会展现出一定程度的聚类。此外，即使不存在模式，我们的眼睛和大脑也会出于本能进行查找。因此，很难辨别数据中的模式是正在研究的真实空间过程产生的结果还是仅为随机产生的结果。这就是研究人员和分析人员使用统计方法（如查找热点 (Getis-Ord Gi*)）量化空间模式的原因。在数据中找到具有统计显著性的聚类时，您会获得非常有价值的信息。了解聚类发生的地点与时间可对您观察到的模式的形成过程提供重要线索。例如，如果需要制定有效的预防手段、分配有限的警力、发起小区监督计划、授权深入的刑事调查或者识别潜在嫌疑人，则掌握相关小区持续高发的入室盗窃信息就十分重要。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>选择要计算热点的图层</h2></div>
+        <hr/>
+        <div>
+            <p>查找热点和冷点所使用的点图层。
+            </p>
+            <p>该分析使用图格，并且需要投影坐标系。您可以在 <b>分析环境</b>中设置 <b>处理坐标系</b>。如果您的处理坐标系未设置为投影坐标系，则 <b>运行分析</b>时系统将提示您进行设置 。
+            </p>
+            <p>除了从地图中选择图层外，还可以在下拉列表的底部选择 <b>选择分析图层</b>，以浏览至大数据文件共享数据集或要素图层中的内容。
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>查找高低聚类</h2></div>
+        <hr/>
+        <div>
+            
+            <p>此分析将回答以下问题：高值和低值在哪里存在空间聚类？
+            </p>
+            <p>如果数据是点，且您选择 <b>点计数</b>，则该工具将评估点要素的空间排列以回答如下问题：点在哪里出现异常聚类或扩散？
+            </p>
+            <p>如果选择了一个字段，则该工具将评估与各要素相关的值的空间排列来回答如下问题：高值和低值聚类在哪？
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>选择用于聚合的条柱大小</h2></div>
+        <hr/>
+        <div>
+            <p>用于生成分析输入点要使用的方形条柱的距离。
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>使用时间步长查找热点(可选)</h2></div>
+        <hr/>
+        <div>
+            <p>如果点图层上启用了时间且类型为时刻，则可以使用时间步长进行分析。
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>时间步长间隔</h2></div>
+        <hr/>
+        <div>
+            <p>用于生成时间步长的时间间隔。可将时间与输入数据的开始或结束时间对齐，或者与指定的参考时间对齐。
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>时间步长间隔</h2></div>
+        <hr/>
+        <div>
+            <p>用于生成时间步长的时间间隔。可将时间与输入数据的开始或结束时间对齐，或者与指定的参考时间对齐。
+            </p>
+        </div>
+    </div>
+    <div id="timeStepAlignment">
+        <div><h2>选择对齐时间步长的方法</h2></div>
+        <hr/>
+        <div>
+            <p>时间步长对齐方式。有三种方法可以对齐时间步长。
+                <ul>
+                    <li> <b>开始时间</b> - 时间步长在时间上与第一个要素对齐。
+                    </li>
+                    <li> <b>结束时间</b> - 时间步长在时间上与最后一个要素对齐。
+                    </li>
+                    <li> <b>参考时间</b> - 时间步长与指定时间对齐。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>用于对齐时间步长的参考时间</h2></div>
+        <hr/>
+        <div>
+            <p>用于对齐时间步长的日期和时间。
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>选择用于热点计算的邻域大小</h2></div>
+        <hr/>
+        <div>
+            <p>该距离用于确定计算热点的邻域。邻域应大于条柱大小，以确保每个条柱至少具有一个邻域。分析每个条柱并与邻近条柱进行比较。
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>这是预发行版本中的临时参数，用于设置处理空间参考。许多大数据工具都需要将投影坐标系用作处理的空间参考。默认情况下，该工具将使用输入坐标系，但是，如果输入坐标系为地理坐标系，则将无法使用。要设置投影坐标系，请输入 WKID。例如，要将  <b>Web Mercator</b> 输入为 <code>3857</code>。
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>选择要保存结果的 ArcGIS Data Store</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics 结果存储在数据存储中并显示为  Portal for ArcGIS 中的要素图层。大多数情况下，结果应存储在时空数据存储中（此为默认设置）。某些情况下，将结果存储在关系数据存储也是一个很好的选择。下列内容说明了您可能需要将结果存储在关系数据存储中的原因： 
+                <ul>
+                    <li>可在门户到门户协作中应用结果。
+                    </li>
+                    <li>可启用结果的同步功能。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>如果您希望您的 GeoAnalytics 结果增加并希望利用时空大数据存储功能处理大量数据，则您不应使用关系数据存储。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p> 要创建的图层的名称。如果您要写入 ArcGIS Data Store，则您的结果将保存在<b>我的内容</b>并添加到地图中。如果您要写入大数据文件共享，则您的结果将存储于大数据文件共享中，并添加到其清单。结果将不会添加到地图中。默认名称基于工具名称以及输入图层名称。如果该图层已存在，将无法使用该工具。
+            </p>
+            <p>此结果图层将显示具有统计显著性的聚类（高值和低值或点计数）。如果结果图层名称已存在，则系统会要求您重命名该图层。
+            </p>
+            <p>如果写入  ArcGIS Data Store（关系或时空大数据存储），可以使用<b>将结果保存在</b>下拉框指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

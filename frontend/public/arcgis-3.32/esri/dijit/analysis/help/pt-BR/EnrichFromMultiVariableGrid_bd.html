@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Enriquecer de Grade de Múltiplas Variáveis</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="Enriquecer de Grade de M&uacute;ltiplas Vari&aacute;veis"></h2>
+        <hr/>
+    <p>A ferramenta  Enriquecer de Grade de M&uacute;ltiplas Vari&aacute;veis associa de forma eficiente os atributos de uma grade de m&uacute;ltiplas vari&aacute;veis a uma camada de ponto.
+    </p>
+    <p>Uma grade de m&uacute;ltiplas vari&aacute;veis &eacute; qualquer camada criada com a ferramenta Construir Grade de M&uacute;ltiplas Vari&aacute;veis, que compila atributos de v&aacute;rias camadas em uma &uacute;nica grade de pol&iacute;gonos. Utilizar uma grade de m&uacute;ltiplas vari&aacute;veis para enriquecimento permite adicionar rapidamente uma cole&ccedil;&atilde;o grande e diversificada  de informa&ccedil;&otilde;es para apontar dados para utilizar em an&aacute;lise espacial adicional.
+    </p>
+    <p>Por exemplo, suponha que voc&ecirc; tenha obtido uma camada de novos eventos criminais que ocorreram no ano passado em toda a cidade. Voc&ecirc; deseja modelar as rela&ccedil;&otilde;es entre a frequ&ecirc;ncia do crime e uma variedade de fatores demogr&aacute;ficos, econ&ocirc;micos e geogr&aacute;ficos. Voc&ecirc; tem acesso aos dados que descrevem estes fatores, mas est&atilde;o armazenados em cinco camadas diferentes com diferentes tipos de geometria. Al&eacute;m disso, algumas camadas s&atilde;o armazenadas em um  compartilhamento do  arquivo de grandes dados  enquanto outros s&atilde;o armazenados como  servi&ccedil;os da fei&ccedil;&atilde;o . Criando uma grade de m&uacute;ltiplas vari&aacute;veis para armazenar estas informa&ccedil;&otilde;es e, em seguida, ligando a grade aos  eventos de crime com a ferramenta  Enriquecer de Grade de M&uacute;ltiplas Vari&aacute;veis ,  voc&ecirc; conseguir&aacute; unir eficientemente uma ampla variedade de atributos &agrave; sua camada de ponto ao executar somente duas ferramenta. Voc&ecirc; pode, em seguida, utilizar os atributos unidos como vari&aacute;veis explicativas e come&ccedil;ar a construir um modelo de frequ&ecirc;ncia do crime com a camada resultante.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>Escolher as feições de ponto para enriquecer</h2></div>
+        <hr/>
+        <div>
+            <p>As fei&ccedil;&otilde;es de ponto que ser&atilde;o enriquecidas pela grade de m&uacute;ltiplas vari&aacute;veis.
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista suspensa para procurar por seu conte&uacute;do para um conjunto de dados de compartilhamento do arquivo de grandes dados ou camada de fei&ccedil;&atilde;o.
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>Escolher a grade de múltiplas variáveis para enriquecer</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de grade de m&uacute;ltiplas vari&aacute;veis contendo atributos que ser&atilde;o unidos a fei&ccedil;&otilde;es do ponto de entrada. A camada deve ter sido criada utilizando a ferramenta Construir Grade de M&uacute;ltiplas Vari&aacute;veis e deve ser uma camada de fei&ccedil;&atilde;o hospedada. Camadas de grade de m&uacute;ltiplas vari&aacute;veis armazenadas em um  compartilhamento  do  arquivo de grandes dados  n&atilde;o s&atilde;o suportadas como entrada nesta ferramenta.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>Escolher as variáveis para adicionar</h2></div>
+        <hr/>
+        <div>
+            <p>Os atributos na camada de grade de m&uacute;ltiplas vari&aacute;veis que ser&atilde;o unidos aos pontos de entrada sempre que as fei&ccedil;&otilde;es de ponto cruzarem a grade.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p> O nome da camada que ser&aacute; criada.  Se voc&ecirc; estiver gravando em um ArcGIS Data Store, seus resultados ser&atilde;o salvos em  <b>Meu Conte&uacute;do</b> e adicionados no mapa. Se voc&ecirc; estiver gravando em um compartilhamento do arquivo de grandes dados, seus resultados ser&atilde;o armazenados compartilhamento do arquivo de grandes dados  e adicionados em seu   manifesto. N&atilde;o ser&atilde;o adicionados no mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se a camada j&aacute; existe, a ferramenta falhar&aacute;.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

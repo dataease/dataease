@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Ekstrakti raster</h2><p/>
+        <h2><img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" alt="Rastri ekstraktimise t&ouml;&ouml;riist (Portal)"></h2>
+        <hr/>
+    <p>Selle t&ouml;&ouml;riistaga saab ekstraktida piiri rastri nelinurkse alaga v&otilde;i ekraanil interaktiivselt vaba k&auml;ega markeeritud ulatusega. Saate ekstraktida parajasti kuvatava kaardiala ulatuses v&otilde;i pol&uuml;gooniga m&auml;&auml;ratletud uuringuala ulatuses.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valige ekstraktimiseks sisendandmed</h2></div>
+        <hr/>
+        <div>
+            <p>Ekstraktitav sisendkiht.
+            </p>
+        </div>
+    </div>
+    <div id="clippingGeometry">
+        <div><h2>Määrake kärpimise geomeetria</h2></div>
+        <hr/>
+        <div>
+            <p>Valige ulatuse t&uuml;&uuml;p kihi geomeetria k&auml;rpimiseks.
+
+                <ul>
+                    <li>Kasuta praegust ulatust &ndash; kihi k&auml;rpimiseks kasutatakse kaardi praegust ulatust. See on vaikimisi valik.
+                        
+
+                    </li>
+                    <li>Vali uuringu ala &ndash; saate valida, kas tulemuses n&auml;idatakse ala geomeetria ulatuse piires v&otilde;i v&auml;ljaspool geomeetria ulatust. Kui valite valiku  <b>Geomeetria sisse j&auml;&auml;vad andmed</b>, eemaldatakse ulatusest v&auml;lja j&auml;&auml;vad pildid. Kui valite valiku <b>Geomeetriast v&auml;ljapoole j&auml;&auml;vad andmed</b>, eemaldatakse ulatuse sisse j&auml;&auml;vad pildid. K&auml;rpimise geomeetria saab m&auml;&auml;ratleda ka joonistamise t&ouml;&ouml;riistaga.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

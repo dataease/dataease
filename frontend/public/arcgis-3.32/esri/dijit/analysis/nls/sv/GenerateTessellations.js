@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/sv/GenerateTessellations",{chooseShape:"V\u00e4lj form",defineExtent:"Definiera utbredning",defineBin:"Definiera klasstorlek genom att ange",area:"Omr\u00e5de",distance:"Avst\u00e5nd",resultLayerName:"Resultatlagrets namn",hexagon:"Hexagon",transverseHexagon:"Tv\u00e4rst\u00e4lld hexagon",square:"Fyrkant",triangle:"Triangel",diamond:"Diamant",sameAsDisplay:"Samma som visning",emptyBinSize:"Klasstorleken f\u00e5r inte vara tom",currentExtent:"aktuell utbredning",intersectExtent:"Beh\u00e5ll endast korsande tessellationer",
+outputLayerName:"Generera tessellationer p\u00e5 ${extentLayerName}",itemDescription:"Utbredning fr\u00e5n ${extentLayerName} anv\u00e4ndes.",itemTags:"Analysresultat, Generera tessellationer, ${extentLayerName}",itemSnippet:"Geoobjektlager genererat fr\u00e5n Generera tessellationer."});

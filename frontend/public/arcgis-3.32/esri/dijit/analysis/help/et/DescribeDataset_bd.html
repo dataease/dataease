@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Andmestiku kirjeldamine</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="Andmestiku kirjeldamise t&ouml;&ouml;voo skeem"></h2>
+        <hr/>
+    <p>Andmestiku kirjeldamise t&ouml;&ouml;riist annab teie andmestikust &uuml;ksikasjalikuma &uuml;levaate. Kasutage seda t&ouml;&ouml;riista enne suure andmehulga anal&uuml;&uuml;si tegemist, et m&auml;&auml;rata sisendandmete liik ja asukoht. Vaikimisi on tulemuseks JSON-string, mis toob v&auml;lja sisendkihi p&otilde;hilised deskriptorid ja tabeli iga v&auml;lja kokkuv&otilde;tliku statistikaga. 
+    </p>
+    <p>Valikuliselt v&otilde;ite andmete t&auml;psemaks kirjeldamiseks luua t&auml;iendavad v&auml;ljundobjektikihid. Valikuvariandid on n&auml;idiskiht v&otilde;i kihi ulatus. V&auml;ljundiks v&otilde;ite nendest valida kas &uuml;he v&otilde;i m&otilde;lemad.
+    </p>
+    <p>N&auml;iteks antakse teile suurandmete failiketas, mis sisaldab 15 andmestikku. Igas andmestikus on 10 miljonit pindobjekti, mis esindavad hooneid ja majasid riigi erinevates piirkondades. Teile antakse &uuml;lesanne anal&uuml;&uuml;sida piirkonda C, kuid te ei tea, milline andmestik sisaldab neid objekte. Selgitamaks v&auml;lja, millist andmestikku peate kasutama, k&auml;ivitage Andmestiku kirjeldamine ja valige kihi ulatuse loomine, et m&auml;&auml;rata, milline andmestik on teie uuritavas piirkonnas.
+    </p>
+    <p>&Uuml;he teise n&auml;itena kujutage ette, et teile on antud &uuml;lesanne teostada suure andmemahuga t&ouml;&ouml;voo anal&uuml;&uuml;s. Soovite t&ouml;&ouml;voogu proovida, kuid kogu andmestiku l&auml;bit&ouml;&ouml;tamine v&otilde;ib kesta tunde v&otilde;i p&auml;evi. T&auml;ieliku anal&uuml;&uuml;si ajal aja ja ressursside kasutamise asemel looge n&auml;idiskiht, et sellel t&otilde;husalt katsetada kogu oma t&ouml;&ouml;voogu.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valige kirjeldatav andmestik</h2></div>
+        <hr/>
+        <div>
+            <p>Kiht sisaldab punkte, jooni, pindu v&otilde;i tabeli kujul olevaid objekte, mida kirjeldatakse, millest tehakse kokkuv&otilde;te ja millest v&otilde;etakse proovi.
+            </p>
+            <p>Lisaks kihi valimisele kaardil saate valida ripploendi alumises servas  <b>Vali anal&uuml;&uuml;sikihte</b>, et otsida oma sisust suurandmete failiketta andmestikku v&otilde;i objektikihti.
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>Mõistke oma andmestikku, luues (valikuline)</h2></div>
+        <hr/>
+        <div>
+            <p>V&auml;ljastage t&auml;iendavad kirjeldavad kihid, et parandada oma arusaamist  suurandmetest. Saate valida kas mitte &uuml;hegi, &uuml;he v&otilde;i m&otilde;lema kihi v&auml;ljastamise vahel allj&auml;rgnevate kihtide hulgast:
+            </p>
+            <ul>
+                <li> <b>Kihi ulatus</b>&mdash; loob pinnaobjekti, mis v&auml;ljendab teie sisendobjektide v&otilde;i huvipakkuva ala ulatust.
+                </li>
+                <li> <b>N&auml;idiskiht</b>&mdash; loob alamhulga kihi, mis sisaldab m&auml;&auml;ratud hulgal sisendobjekte teie andmestikust v&otilde;i huvipakkuvast alast.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>Näidiskiht</h2></div>
+        <hr/>
+        <div>
+            <p>V&auml;ljastab kihi, mis sisaldab teie sisendkihti kuuluvate objektide alamhulka.  <b>N&auml;idiskihi</b> valimise korral saate m&auml;&auml;rata objektide arvu, mida soovite tagastada n&auml;idiskihis.  Vaikimisi saab v&auml;ljundkihis tagastada 100 n&auml;idisobjekti.
+            </p>
+            <p>V&auml;&auml;rtus peab olema suurem kui null. Kui m&auml;&auml;rate objektide &uuml;ldarvust suurema arvu, tagastatakse k&otilde;ik objektid.
+            </p>
+            <p>Kui valite suvandi  <b>Kasuta kaardi praegust ulatust</b>, siis sisaldab n&auml;idiskiht objekte, mis kuuluvad kaardi ulatusse.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Kihi ulatus</h2></div>
+        <hr/>
+        <div>
+            <p>V&auml;ljastage objektikiht, mis sisaldab &uuml;ht objekti, mis v&auml;ljendab sisendobjektide ulatust, valides nupu  <b>Kihi ulatus</b>. See nupp valitakse vaikimisi.
+            </p>
+            <p>Kui valite suvandi  <b>Kasuta kaardi praegust ulatust</b>, siis v&auml;ljendab kaardi ulatus kaardi n&auml;haolevat ulatust.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Loodavakihi nimi.  Kui kirjutate andmelattu ArcGIS Data Store, salvestatakse teie tulemused  <b>Minu sisus</b> ja lisatakse kaardile. Kui kirjutate suurandmete failikettale, salvestatakse teie andmed suurandmete failikettale  ja lisatakse  selle manifestifailile. Seda  ei lisata kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui see kiht on juba olemas, siis t&ouml;&ouml;tlemine nurjub.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

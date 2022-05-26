@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Otsi tsentroidi</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="Otsi tsentroide"></h2>
+        <hr/>
+    <p>See t&ouml;&ouml;vahend t&ouml;&ouml;tab multipunktide, joonte ja/v&otilde;i pindobjektide kihiga, et m&auml;&auml;rata iga objekti kirjeldav tsentroid.
+    </p>
+    <p>Kui ruut  <b>Kasuta praegust kaardi ulatust</b> on m&auml;rgitud, kasutatakse anal&uuml;&uuml;sil ainult neid sisendi multipunkte, jooni ja/v&otilde;i pindobjekte, mis on praegu kaardil n&auml;htavad. Kui see ruut pole m&auml;rgitud, kasutatakse anal&uuml;&uuml;si koostamisel k&otilde;iki sisendkihis olevaid objekte ka siis, kui neid pole praegu kaardil n&auml;ha.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vali kiht, mille objekte kasutatakse tsentroidide loomiseks</h2></div>
+        <hr/>
+        <div>
+            <p> Tsentroidide leidmiseks kasutatavad multipunktide, joonte v&otilde;i pindobjektide kihid.
+            </p>
+            <p>Lisaks kaardil asuvale kihile saate valida variandi  <b>Vali anal&uuml;&uuml;sikiht</b>, mille leiate ripploendi allosast. See variant avab galerii, mida saate sirvida ja kus saate erinevatest allikatest valida anal&uuml;&uuml;sil kasutamiseks andmestikke. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>Näita väljundi asukohti</h2></div>
+        <hr/>
+        <div>
+            <p> Kui m&auml;rgite ruudu <b>Tsentroidis</b> (vaikev&auml;&auml;rtus), tagastab v&auml;ljund iga sisendobjekti tsentroidi t&auml;pse asukoha. Tsentroidid asuvad j&auml;rgmistes kohtades.
+                <ul>
+                    <li>Multipunktidest objektid &ndash; v&auml;ljundtsentroid asub multipunkte sisaldava kihi k&otilde;igi punktide keskmistatud x ja y koordinaadil.
+                    </li>
+                    <li>Joonobjektid &ndash; v&auml;ljundtsentroid asub joonobjekti k&otilde;igi joonsegmentide keskpunktide kaalutud keskmisel x ja y koordinaadil. Kaal p&otilde;hineb segmendi pikkusel.
+                    </li>
+                    <li>Pindobjektid &ndash; v&auml;ljundtsentroid asub ala keskmes.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Kui m&auml;rgite ruudu  <b>sisendobjektide k&otilde;rval</b>, asuvad v&auml;ljundpunkti objektid iga sisendpunkti k&otilde;rval v&otilde;i sees. Sellest tulenevad punktobjektid kuvatakse j&auml;rgmiselt.
+                <ul>
+                    <li>Multipunktidest objektid &ndash; v&auml;ljundtsentroid kattub &uuml;he punktiga multipunktide grupist.
+                    </li>
+                    <li>Joonobjektid &ndash; v&auml;ljundtsentroid asub joonel.  Kurvilise joone korral paikneb v&auml;ljundtsentroid joone keskpunktis. 
+                    </li>
+                    <li>Pindobjektid &ndash; v&auml;ljundpunkt asub pindobjekti sees.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>See on selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile.  Vaikenimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui samanimeline kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>Rippmen&uuml;&uuml;  <b>Salvesta tulemused</b> kaudu saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemus salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

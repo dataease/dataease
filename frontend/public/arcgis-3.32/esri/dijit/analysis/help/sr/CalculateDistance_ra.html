@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Izračunaj rastojanje</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="Izračunaj rastojanje"></h2>
+        <hr/>
+    <p>Ova alatka izračunava Euklidsko rastojanje, smer i dodeljivanje iz jednog izvora ili skupa izvora.
+    </p>
+    <p>Primeri primene uključuju odgovore na pitanja kao &scaron;to su:
+
+        <ul>
+            <li>Koje je rastojanje do najbližeg grada?
+                
+
+            </li>
+            <li>Koje je rastojanje do najbližeg puta?
+                
+
+            </li>
+            <li>Koje je rastojanje do najbližeg izvora vode?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Ako je opcija  <b>Koristi trenutni obuhvat mape</b> izabrana, biće analizirani samo oni geoobjekti u ulaznom sloju koji su vidljivi unutar trenutnog obuhvata mape. Ako nije izabrana, analiziraće se svi geoobjekti u ulaznom sloju, čak i ako su izvan trenutnog prikaza obuhvata mape.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Odaberite raster lokacije geoobjekata da biste izračunali rastojanje do</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj koji defini&scaron;e izvore do kojih će rastojanje biti izračunato. Sloj može da bude servis snimka ili servis geoobjekata.
+            </p>
+            <p>Za servis snimka, ulazni tip može da bude ceo broj ili pokretni zarez.
+            </p>
+            <p>Za servis geoobjekata, unos može da bude tačka, linija ili poligon.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Maksimalno rastojanje za izračunavanje</h2></div>
+        <hr/>
+        <div>
+            <p>Maksimalno rastojanje koje će biti izračunato. Na primer, ako navedete vrednost od 10.000 metara, Euklidsko rastojanje će biti izračunato iz lokacije izvora do te vrednosti (rastojanja).
+            </p>
+            <p>Ako nijedna vrednost nije navedena, rastojanje će biti izračunato do definisanog obuhvata.
+            </p>
+            <p>Dostupne jedinice su kilometri, metri, milje i stope.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Veličina izlazne ćelije</h2></div>
+        <hr/>
+        <div>
+            <p>Veličina ćelije i jedinica za izlazne rastere.
+            </p>
+            <p>Jedinice mogu biti kilometri, metri, milje ili stope.
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>Naziv sloja sa rezultatima rastojanja</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će biti kreiran u  <b>Mom sadržaju</b> i dodat mapi. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako sloj već postoji, bićete upitani da unesete drugi naziv.
+            </p>
+            <p>Možete da navedete ime fascikle u  <b>Mom sadržaju</b> gde će rezultat biti sačuvan kori&scaron;ćenjem padajućeg polja <b>Sačuvaj rezultat u</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>Naziv sloja sa rezultatima smera</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će biti kreiran u  <b>Mom sadržaju</b>. Morate da unesete ime koje trenutno ne postoji u <b>Mom sadržaju</b>.
+            </p>
+            <p>Možete da navedete ime fascikle u  <b>Mom sadržaju</b> gde će rezultat biti sačuvan kori&scaron;ćenjem padajućeg polja <b>Sačuvaj rezultat u</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>Naziv sloja sa rezultatima dodele</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će biti kreiran u  <b>Mom sadržaju</b>. Morate da unesete ime koje trenutno ne postoji u <b>Mom sadržaju</b>.
+            </p>
+            <p>Možete da navedete ime fascikle u  <b>Mom sadržaju</b> gde će rezultat biti sačuvan kori&scaron;ćenjem padajućeg polja <b>Sačuvaj rezultat u</b>.
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>Odaberite polje dodeljivanja</h2></div>
+        <hr/>
+        <div>
+            <p>Polje na ulaznom sloju izvora koje sadrži vrednosti koje defini&scaron;u svaki izvor. Može da bude ceo broj ili polje niske skupa podataka izvora.
+            </p>
+            <p>Podrazumevano je  <i>Value</i>. Ako se koristi servis geoobjekata i polje <i>Value</i> nije dostupno, onda će prvi dostupan ceo broj ili olje niske biti kori&scaron;ćeno. Ako ne postoje validna polja, biće kori&scaron;ćeno ObjectID polje (na primer OID ili FID, u zavisnosti od tipa ulaznih geoobjekata).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

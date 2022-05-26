@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Izračunaj naklon</h2><p/>
+        <h2><img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" alt="Orodje za izračun naklona za Portal"></h2>
+        <hr/>
+    <p>To orodje ustvarja povr&scaron;ino, ki prikazuje naklon vhodnih vi&scaron;inskih podatkov. Naklon predstavlja stopnjo vi&scaron;inske spremembe za vsako celico digitalnega modela vi&scaron;in (DMV).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izberi vhodne podatke za izračun naklona</h2></div>
+        <hr/>
+        <div>
+            <p>Vi&scaron;inski sloj, iz katerega bo izračunan naklon.
+            </p>
+        </div>
+    </div>
+    <div id="zFactor">
+        <div><h2>Določi dejavnik povečave za višino terena</h2></div>
+        <hr/>
+        <div>
+            <p>Vnesite z-faktor.
+            </p>
+            <p>Z-faktor je faktor skaliranja, ki se uporablja za pretvarjanje vrednosti vi&scaron;in za dva namena:
+ 
+                <ul>
+                    <li>Za pretvarjanje vi&scaron;inskih enot (kot so metri ali čevlji) v vodoravne koordinatne enote sloja, ki so lahko čevlji, metri ali stopinje
+                        
+  
+                    </li>
+                    <li>Za dodajanje navpičnega povečevanja za vizualni učinek
+                        
+ 
+                    </li>
+                </ul>
+                
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                </td>
+                <td>
+                    <p>Iz čevljev
+                    </p>
+                </td>
+                <td>
+                    <p>Iz metrov
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Iz čevljev
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>0,3048
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>Iz metrov
+                    </p>
+                </td>
+                <td>
+                    <p>3,28084
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>Ime sloja, ki bo ustvarjen v odseku  <b>Moja vsebina</b> in dodan na karto. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, bo od vas zahtevano, da vnesete drugo ime.
+            </p>
+            <p>Lahko navedete ime mape v  <b>Moji vsebini</b>, kjer bo rezultat shranjen s pomočjo spustnega menija <b>Shrani rezultat v</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

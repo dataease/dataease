@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Izračunaj udaljenost</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="Izračunaj udaljenost"></h2>
+        <hr/>
+    <p>Ovaj alat izračunava euklidsku udaljenost, smjer i dodjelu iz jednog izvora ili skupa izvora.
+    </p>
+    <p>Primjeri primjena uključuju odgovaranje na sljedeća pitanja:
+
+        <ul>
+            <li>Kolika je udaljenost do najbližeg grada?
+                
+
+            </li>
+            <li>Kolika je udaljenost do najbliže ceste?
+                
+
+            </li>
+            <li>Kolika je udaljenost do najbližeg izvora vode?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Ako je označena opcija  <b>Upotrijebi trenutačni obuhvat karte</b>, analizirat će se samo geoobjekti u ulaznom sloju koji su vidljivi unutar trenutačnog obuhvata karte. Ako opcija nije označena, analizirat će se svi geoobjekti u ulaznom sloju, čak i ako se nalaze izvan trenutačnog prikaza obuhvata karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Izaberite raster sloja lokacija geoobjekata da biste izračunali udaljenost do</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj koji određuje izvore do kojih će se računati udaljenost. Sloj može biti usluga snimke ili usluga geoobjekata.
+            </p>
+            <p>Za uslugu snimke vrsta unosa može biti cijeli broj ili plutajuća točka.
+            </p>
+            <p>Za uslugu geoobjekta unos može biti točka, linija ili poligon.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Maksimalna udaljenost koju treba izračunati</h2></div>
+        <hr/>
+        <div>
+            <p>Izračun maksimalne udaljenosti. Na primjer, ako navedete vrijednost od 10000 metara, euklidska udaljenost izračunat će se od lokacije izvora do te vrijednosti (udaljenosti).
+            </p>
+            <p>Ako se ne unese vrijednost, udaljenost će se izračunati do definiranog obuhvata.
+            </p>
+            <p>Dostupne su jedinice kilometri, metri, milje i stope.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Veličina izlazne ćelije</h2></div>
+        <hr/>
+        <div>
+            <p>Veličina ćelije i jedinica za rezultate rastera.
+            </p>
+            <p>Jedinice mogu biti u kilometrima, metrima, miljama ili stopama.
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>Naziv sloja rezultata udaljenosti</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će se stvoriti u stavci  <b>Moj sadržaj</b> i dodati karti. Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako sloj već postoji, od vas će se zatražiti da unesete drugi naziv.
+            </p>
+            <p>Možete odrediti naziv mape u  <b>Mojem sadržaju</b> gdje će se rezultat spremiti pomoću padajućeg izbornika <b>Spremi rezultat u</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>Naziv sloja rezultata smjera</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će se stvoriti u stavci  <b>Moj sadržaj</b>. Morate navesti naziv koji već ne postoji u stavci <b>Moj sadržaj</b>.
+            </p>
+            <p>Možete odrediti naziv mape u  <b>Mojem sadržaju</b> gdje će se rezultat spremiti pomoću padajućeg izbornika <b>Spremi rezultat u</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>Naziv sloja rezultata dodjele</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će se stvoriti u stavci  <b>Moj sadržaj</b>. Morate navesti naziv koji već ne postoji u stavci <b>Moj sadržaj</b>.
+            </p>
+            <p>Možete odrediti naziv mape u  <b>Mojem sadržaju</b> gdje će se rezultat spremiti pomoću padajućeg izbornika <b>Spremi rezultat u</b>.
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>Izaberite sloj dodjele</h2></div>
+        <hr/>
+        <div>
+            <p>Polje u ulaznom sloju izvora koje nosi vrijednosti koje određuju pojedine izvore. Može biti cijeli broj ili polje teksta skupa podataka izvora.
+            </p>
+            <p>Zadana je postavka  <i>Value</i>. Ako upotrebljavate uslugu geoobjekta i polje <i>Value</i> nije dostupno, tada će se upotrijebiti prvi dostupni cijeli broj ili polje teksta. Ako nema valjanog polja, upotrijebit će se polje ID objekta (na primjer OID ili FID, ovisno o vrsti unosa geoobjekta).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

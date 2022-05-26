@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Popsat datovou sadu (Describe Dataset)</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="Diagram pracovn&iacute;ho postupu n&aacute;stroje Popsat datovou sadu"></h2>
+        <hr/>
+    <p>N&aacute;stroj Popsat datovou sadu poskytuje podrobněj&scaron;&iacute; n&aacute;hled do va&scaron;&iacute; datov&eacute; sady. Před spu&scaron;těn&iacute;m anal&yacute;zy na velk&eacute;m počtu dat použijte tento n&aacute;stroj pro určen&iacute;, jak&aacute; jsou vstupn&iacute; data a kde jsou um&iacute;stěna. Ve v&yacute;choz&iacute;m nastaven&iacute; budou v&yacute;sledkem popisovače kl&iacute;čov&eacute;ho ohraničen&iacute; řetězce JSON ve va&scaron;&iacute; vstupn&iacute; vrstvě a tabulka obsahuj&iacute;c&iacute; souhrnn&eacute; statistiky pro každ&eacute; pole. 
+    </p>
+    <p>Volitelně můžete vytvořit dal&scaron;&iacute; v&yacute;stupn&iacute; vrstvy prvků k dal&scaron;&iacute;mu pops&aacute;n&iacute; va&scaron;ich dat. Možnosti jsou vzorov&aacute; vrstva nebo vrstva rozsahu. Můžete vybrat v&yacute;stup jedn&eacute; nebo obou.
+    </p>
+    <p>Např&iacute;klad můžete dostat sd&iacute;len&yacute; soubor velk&yacute;ch dat obsahuj&iacute;c&iacute; 15 datov&yacute;ch sad. Každ&aacute; datov&aacute; sada m&aacute; 10 milionů plo&scaron;n&yacute;ch prvků představuj&iacute;c&iacute; budovy a domy např&iacute;č různ&yacute;mi regiony va&scaron;&iacute; země. M&aacute;te za &uacute;kol analyzovat region C, ale nev&iacute;te, kter&aacute; datov&aacute; sada obsahuje tyto prvky. Pro zji&scaron;těn&iacute;, kterou datovou sadu byste měli použ&iacute;t, spusťte n&aacute;stroj Popsat datovou sadu a vyberte vytvořit vrstvu rozsahu, abyste zjistili, kter&aacute; datov&aacute; sada lež&iacute; ve va&scaron;&iacute; z&aacute;jmov&eacute; oblasti.
+    </p>
+    <p>Jako druh&yacute; př&iacute;klad si představte, že m&aacute;te &uacute;kol prov&eacute;st pracovn&iacute; postup anal&yacute;zy na velk&eacute;m objemu dat. Chcete zkusit pracovn&iacute; postup, ale může to trvat hodiny nebo dny, protože m&aacute;te plnou datovou sadu. Nam&iacute;sto spotřebov&aacute;n&iacute; času a zdrojů na spu&scaron;těn&iacute; anal&yacute;zy nad v&scaron;emi daty, vytvoř&iacute;te vzorovou vrstvu pro &uacute;činn&eacute; otestov&aacute;n&iacute; cel&eacute;ho va&scaron;eho pracovn&iacute;ho postupu.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vyberte datovou sadu k popisu</h2></div>
+        <hr/>
+        <div>
+            <p>Vrstva obsahuj&iacute;c&iacute; bod, linii, plochu nebo tabulkov&eacute; prvky, kter&eacute; budou pops&aacute;ny, shrnuty a vzorkov&aacute;ny.
+            </p>
+            <p>Kromě v&yacute;běru vrstvy z&nbsp;mapy můžete tak&eacute; zvolit položku  <b>Zvolit vrstvu anal&yacute;zy</b> kter&aacute; se nach&aacute;z&iacute; v&nbsp;doln&iacute; č&aacute;sti rozbalovac&iacute; nab&iacute;dky, abyste ve sv&eacute;m obsahu mohli naj&iacute;t vrstvu prvků nebo datovou sadu sd&iacute;len&yacute;ch souborů velk&yacute;ch dat.
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>Porozumějte vaší datové sadě vytvořením (volitelné)</h2></div>
+        <hr/>
+        <div>
+            <p>V&yacute;stupn&iacute; dodatečn&eacute; popisn&eacute; vrstvy pro lep&scaron;&iacute; porozuměn&iacute; va&scaron;im velk&yacute;m datům. Můžete vybrat na v&yacute;stupu ž&aacute;dnou, jednu nebo obě z n&aacute;sleduj&iacute;c&iacute;ch vrstev:
+            </p>
+            <ul>
+                <li> <b>Vrstva rozsahu</b>&mdash;vytvoř&iacute; prvek plochy představuj&iacute;c&iacute; rozsah va&scaron;ich vstupn&iacute;ch prvků nebo z&aacute;jmovou oblast.
+                </li>
+                <li> <b>Vzorov&aacute; vrstva</b>&mdash;vytvoř&iacute; vrstvu podmnožiny obsahuj&iacute;c&iacute; zadan&yacute; počet vstupn&iacute;ch prvků z va&scaron;&iacute; datov&eacute; sady nebo z&aacute;jmov&eacute; oblasti.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>Vzorová vrstva</h2></div>
+        <hr/>
+        <div>
+            <p>V&yacute;stupem bude vrstva obsahuj&iacute;c&iacute; podmnožinu prvků z va&scaron;&iacute; vstupn&iacute; vrstvy. Pokud je vybr&aacute;na  <b>Vzorov&aacute; vrstva</b>, můžete zadat počet prvků, kter&eacute; chcete vr&aacute;tit na stejn&eacute; vrstvě. Ve v&yacute;choz&iacute;m nastaven&iacute; bude vr&aacute;ceno 100 vzorov&yacute;ch prvků na v&yacute;stupn&iacute; vrstvě.
+            </p>
+            <p>Hodnota mus&iacute; b&yacute;t vět&scaron;&iacute; než nula. Pokud zad&aacute;te počet vět&scaron;&iacute; než celkov&yacute; počet prvků, vr&aacute;t&iacute; se v&scaron;echny prvky.
+            </p>
+            <p>Pokud je vybr&aacute;no  <b>Použ&iacute;t aktu&aacute;ln&iacute; rozsah mapy</b>, potom vzorov&aacute; vrstva bude obsahovat prvky z rozsahu mapy.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Vrstva rozsahu</h2></div>
+        <hr/>
+        <div>
+            <p>V&yacute;stupem bude vrstva prvků obsahuj&iacute;c&iacute; jedin&yacute; prvek představuj&iacute;c&iacute; rozsah vstupn&iacute;ch prvků v&yacute;běrem tlač&iacute;tka  <b>Vrstva rozsahu</b> . Toto je vybr&aacute;no v&yacute;choz&iacute;m nastaven&iacute;m.
+            </p>
+            <p>Pokud je vybr&aacute;no  <b>Použ&iacute;t aktu&aacute;ln&iacute; rozsah mapy</b>, potom vrstva rozsahu bude představovat viditeln&yacute; rozsah mapy.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p> N&aacute;zev vytv&aacute;řen&eacute; vrstvy. Pokud zapisujete ArcGIS Data Store, va&scaron;e v&yacute;sledky budou uloženy v  <b>Můj obsah</b> a přid&aacute;ny na mapu. Pokud zapisujete sd&iacute;len&yacute; soubor velk&yacute;ch dat, va&scaron;e v&yacute;sledky budou uloženy ve sd&iacute;len&eacute;m souboru velk&yacute;ch dat a přid&aacute;ny do jejich manifestu.  Nebudou přid&aacute;ny na mapu. V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud vrstva již existuje, n&aacute;stroj selže.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

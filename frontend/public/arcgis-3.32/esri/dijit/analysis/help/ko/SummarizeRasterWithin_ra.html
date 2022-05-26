@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>다음 범위 내 래스터 요약(Summarize Raster Within)</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="다음 범위 내 래스터 요약 도구"></h2>
+        <hr/>
+    <p>이 도구는 첫 번째 입력 레이어에 의해 정의된 영역(구역)을 기반으로 래스터를 요약합니다.
+    </p>
+    <p>다음과 같은 몇 가지 적용 예가 있습니다.
+    </p>
+    <p>
+        <ul>
+            <li>유역 경계 레이어와 토지 이용 유형별 토지 이용 경계 레이어가 주어진 경우 각 유역에 대한 토지 이용 유형의 총 면적을 계산합니다.
+                
+
+            </li>
+            <li>도시 내 필지 레이어와 도시 경계 레이어가 주어진 경우 각 도시 경계 내의 공지에 대한 평균 값을 요약합니다.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p> <b>현재 맵 범위 사용</b>을 선택한 경우 현재 맵 범위 내에 표시된 입력 레이어 및 요약할 레이어의 피처만 분석되고,  이 옵션을 선택하지 않는 경우 현재 맵 범위를 벗어나는 피처까지 포함하여 입력 레이어와 요약할 레이어에 있는 피처가 전부 분석됩니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>정의된 경계 내의 래스터 레이어를 요약할 영역 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>영역이나 구역의 경계를 정의하는 레이어로, 요약될 레이어입니다.
+            </p>
+            <p>래스터나 피처 데이터가 레이어로 사용될 수 있습니다. 래스터의 경우 구역은 셀 값이 같은 입력의 모든 위치에 의해 정의됩니다. 영역은 인접하지 않아도 됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>경계를 정의할 필드 선택</h2></div>
+        <hr/>
+        <div>
+            <p>이 필드는 영역의 경계를 정의하는 데 사용될 레이어의 속성입니다.
+            </p>
+            <p>예를 들어 첫 번째 입력 레이어가 지역, 구역 및 각 단위의 필지 ID를 정의하는 속성을 사용하여 관리 단위 경계를 정의한다고 가정해 보겠습니다. 각 위치의 생물 다양성 색인을 정의하는 래스터 레이어도 있습니다. 선택한 필드를 사용하여 지방, 구역 또는 지역 수준에서의 평균 생물 다양성을 계산해볼 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>요약할 래스터 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>이 레이어의 래스터 셀은 포함되어 있는 영역(구역)별로 요약됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>계산할 통계 선택</h2></div>
+        <hr/>
+        <div>
+            <p>요약할 레이어를 선택하면, 필요한 경우 입력 영역 레이어 내에 있는 포인트, 라인 또는 영역의 수치 속성에 대한 통계를 계산할 수 있습니다.
+            </p>
+            <p>선택한 필드가 정수인 경우 사용 가능한 통계 유형은 평균(Average), 다수(Majority), 최대(Maximum), 중앙값(Median), 최소(Minimum), 소수(Minority), 범위(Range), 표준편차(Standard Deviation), 합(Sum), 다양(Variety)입니다.
+            </p>
+            <p>부동 소수점 필드인 경우에는 평균(Average), 최대(Maximum), 최소(Minimum), 범위(Range), 표준편차(Standard Deviation), 합(Sum)을 선택할 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>계산 내 누락 값 무시</h2></div>
+        <hr/>
+        <div>
+            <p>누락 값을 무시하도록 선택하면 요약될 레이어에 값이 있는 셀만 해당 영역의 결과 값을 확인하는 데 사용됩니다. 이 옵션을 선택하지 않으면 영역 내에 누락 값이 있을 경우 해당 구역의 모든 셀에 대해 통계 계산을 수행하기 위한 정보가 부족하여 해당 영역에 대한 결과에는 null (NoData) 값이 포함되는 것으로 간주됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에 생성되고 맵에 추가되는 레이어의 이름입니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어가 이미 있는 경우 다른 이름을 입력하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 상자를 사용하여 결과가 저장될 <b>내 콘텐츠</b>에서 폴더 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

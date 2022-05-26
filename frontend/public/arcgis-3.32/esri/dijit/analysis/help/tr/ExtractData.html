@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Verileri Ayıkla</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="Veri Ayıkla"></h2>
+        <hr/>
+    <p>Bu ara&ccedil;la belirli bir ilgi alanının verisini se&ccedil;ebilir ve indirebilirsiniz. Se&ccedil;tiğiniz katmanlar bir ZIP, CSV ya da KMZ dosyasına eklenir.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>Çıkartılacak Katmanlar</h2></div>
+        <hr/>
+        <div>
+            <p>Bunlar i&ccedil;indekiler tablonuzdaki katmanlardır ve detayları bunlardan &ccedil;ıkartabilirsiniz. İşaretli katmanlar &ccedil;ıkartılır ve sonu&ccedil;ta oluşturulan ZIP ya da CSV dosyasına dahil edilir.
+            </p>
+            <p>Bir katmanın &ccedil;ıkartılacak katmanlar listesinde g&ouml;r&uuml;nmesi i&ccedil;in, verinin size ait olması ya da veri sahibinin verinin dışa aktarılmasını etkinleştirmesi gerekir. Verinin sizin veriniz &uuml;zerine aktarılmasını etkinleştirmek i&ccedil;in: 
+                <ul>
+                    <li>Verinin &ouml;ge tanımını a&ccedil;ın.
+                    </li>
+                    <li> <b>Ayarlar</b> sekmesine tıklayın.
+                    </li>
+                    <li> <b>Verileri Dışa Aktarma</b> kısmına gidin.
+                    </li>
+                    <li> <b>Başkalarının farklı bi&ccedil;imlerde dışa aktarmasına izin ver</b> &ouml;ğesini işaretleyin.  Bitirdikten sonra <b>Kaydet</b> &ouml;ğesine tıklayın.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Analiz katmanınızda ek bulunuyorsa, bu eklerin yalnızca &ccedil;ıktı veri bi&ccedil;imi bir coğrafi veri tabanı dosyası ise ve  <b>Detayları kırp</b> &ouml;zelliğinin işareti kaldırılmışsa ayıklanacağını unutmayın.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>Çalışma alanı</h2></div>
+        <hr/>
+        <div>
+            <p>Hangi detayların ZIP ya da CSV &ccedil;ıktı dosyasına dahil edileceğini tanımlayan alan. Aşağıdakilerden se&ccedil;im yapabilirsiniz:
+                <ul>
+                    <li>Haritanızın ge&ccedil;erli g&ouml;r&uuml;n&uuml;r kapsamı ( <b>G&ouml;sterim ile Aynı</b>).
+                    </li>
+                    <li>İ&ccedil;indekiler tablonuzdaki katmanlardan biri. Se&ccedil;ilen katman nokta veya &ccedil;izgi detaylarıysa, katmanın kapsamı &ccedil;alışma alanı olarak kullanılır.
+                    </li>
+                    <li>&Ccedil;alışma alanını tanımlamak i&ccedil;in bir alan &ccedil;izin.
+                    </li>
+                </ul>
+                 T&uuml;m&uuml;yle harita kapsamı i&ccedil;inde yer alan t&uuml;m detaylar &ccedil;ıkartılacaktır. Harita kapsamı sınırını kesen ya da kesişen ancak t&uuml;m&uuml;yle kapsam i&ccedil;inde yer almayan detaylar i&ccedil;in iki se&ccedil;eneğiniz vardır:
+                <ul>
+                    <li> <b>Detayları se&ccedil;</b>&mdash;&Ccedil;alışma alanının sınırını kesen t&uuml;m detaylar &ccedil;ıkartılacaktır.
+                    </li>
+                    <li> <b>Detayları kırp</b>&mdash;Yalnızca &ccedil;alışma alanı i&ccedil;ine giren detay kısımları &ccedil;ıkartılacaktır.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>Çıktı veri formatı</h2></div>
+        <hr/>
+        <div>
+            <p>&Ccedil;ıkartılacak veri bi&ccedil;imi. &Ccedil;izgi ya da alan detayları CSV dosyalarına dışa aktarılırken, yalnızca mekansal olmayan &ouml;znitelikler &ccedil;ıkartılır. Nokta detayları dışa aktarılırken, hem mekansal hem de mekansal olmayan &ouml;znitelikler &ccedil;ıkartılır.  
+            </p>
+            <p>Ayıklanan Veriler Web Mercator 1984 projeksiyonunu kullanacak. CSV dosyaları i&ccedil;in  <i>Lat</i> ve <i>Long</i> alanları Web Mercator 1984'teki koordinatlarla verilere eklenecektir.
+            </p> 
+            <p>Aşağıdaki &ccedil;ıktı formatları desteklenir:
+                <ul>
+                    <li>Virg&uuml;lle ayrılmış değer (CSV)&mdash; <code>.csv</code> veya <code>.zip</code>
+                    </li>
+                    <li>Dosya tabanlı coğrafi veri tabanı&mdash; <code>.zip</code>
+                    </li>
+                    <li>Keyhole Markup Language (KML)&mdash; <code>.kmz</code> veya <code>.zip</code>
+                    </li>
+                    <li>Shapefile&mdash; <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Çıktı dosyası adı</h2></div>
+        <hr/>
+        <div>
+            <p>Bu,  <b>İ&ccedil;eriğim</b> b&ouml;l&uuml;m&uuml;ne eklenecek olan &ouml;ğenin adıdır. &Ouml;ge adı, se&ccedil;ilen <b>&Ccedil;ıktı veri bi&ccedil;imi</b>&rsquo;ni temel alır. &Ouml;ge zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır kutusunu kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,177 @@
+@import "ColumnViewCommon.less";
+
+.soria .dojoxCalendarColumnView.dojoxCalendarColumnViewRtl {
+	.dojoxCalendarScrollContainer {	
+		border-left: none;
+		border-right: none;
+	}
+	
+	.dojoxCalendarGrid {
+		left: 0;
+		right: @row-header-width;
+	}
+	
+	.dojoxCalendarGridTable td {
+		border-left: @outer-border;
+		border-right: none;
+	}
+	
+	.dojoxCalendarContainer {	
+		left: 0;
+		right: @row-header-width;
+	}
+	
+	.dojoxCalendarEventContainerColumn {
+		margin-right: 2px;
+		margin-left: 7px;
+	}
+	
+	.dojoxCalendarSubColumnBorder.subColumn {
+		border-right: none;		
+		border-left: @sub-column-border;
+	}
+	
+	.dojoxCalendarYearColumnHeader{
+		right: 0;
+		width: @row-header-width - 2;
+	}
+	
+	.dojoxCalendarColumnHeader {
+		left: 0;
+		right: @row-header-width;
+	}
+	
+	.dojoxCalendarColumnHeaderTable {
+		
+		td {	
+			border-right: none;
+			border-left: @inner-border;			
+		}
+		
+		td.last-child {
+			border-right: none;
+			border-left: @outer-border;	
+		}
+	}
+	
+	.dojoxCalendarSubColumnHeader {
+		right: @row-header-width;
+		left: 0;		
+	}
+	
+	.dojoxCalendarSubRowHeader {
+		left: auto;
+		right: 0;
+	}
+	
+	.dojoxCalendarSubColumnHeaderTable {	
+		border-left: @outer-border;
+		border-right: none;
+			
+		table.subColumn td {			
+			border-left: none;			
+			border-right: none;			
+		}
+	}
+	
+	.dojoxCalendarSubColumnHeaderTable td {
+		border-left: @inner-border;
+		border-right: none;			
+	}
+	
+	.dojoxCalendarSubColumnHeaderTable td.last-child {
+		border-left: @outer-border;
+		border-right: none;			
+	}
+		
+	.dojoxCalendarRowHeaderLabel{	
+		right: auto;		
+		left: 4px;
+	}
+	
+	.dojoxCalendarEvent .summary {
+		text-align: right;
+	}
+	
+	.dojoxCalendarEvent .startTime {
+		text-align: right;
+	}
+	
+	.dojoxCalendarEvent .endTime {
+		text-align: right;
+	}
+	
+	.dojoxCalendarVScrollBar { 	
+		margin-left: -1px;
+	}
+	
+	.dojoxCalendarMatrixViewRtl {
+	
+		.dojoxCalendarGrid {
+			right: @row-header-width;
+			left: 0;
+		}
+		
+		 .dojoxCalendarGridTable td {			
+			text-align: left;
+			border-bottom: @inner-border;
+			border-left: @inner-border;
+			border-right: none;
+		}
+		
+		 .dojoxCalendarGridTable td span{
+			padding-left: 2px;
+		}
+		
+		 .dojoxCalendarGridTable td.last-child	{
+			border-left: @outer-border;
+		}
+		
+		 .dojoxCalendarContainer {
+			right: @row-header-width;
+			left: 0;
+		}
+		
+		 .dojoxCalendarContainerTable td {
+			border-bottom: solid 1px transparent;
+			border-right: solid 1px transparent;
+			text-align: right;
+			vertical-align: top;		
+		}
+		
+		 .dojoxCalendarYearColumnHeader{
+			position: absolute;
+			right: 0;
+			left: auto;
+		}
+		
+		 .dojoxCalendarColumnHeader {
+			right: @row-header-width;
+			left: 0;
+		}
+		
+		.dojoxCalendarMatrixView .dojoxCalendarColumnHeaderTable td {	
+			border-left: @outer-border;
+			border-right: none;
+		}
+		
+		 .dojoxCalendarRowHeader {
+			right: 0;
+			left: auto;
+		}
+		
+		 .dojoxCalendarEvent .resizeStartHandle {
+			right: 0;
+		}
+		
+		 .dojoxCalendarEvent .resizeEndHandle {
+			left: 0;
+			right: auto;
+		}
+		
+		 .dojoxCalendarEvent.dojoxCalendarHorizontal .labels {
+			text-align: right;
+			right: 2px;
+		}
+	}
+}

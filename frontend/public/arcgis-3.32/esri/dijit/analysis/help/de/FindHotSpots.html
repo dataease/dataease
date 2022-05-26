@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Hot-Spots suchen</h2><p/>
+        <h2><img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" alt="Hot-Spots suchen"></h2>
+        <hr/>
+    <p> Das Werkzeug &quot;Hot Spots suchen&quot; ermittelt, ob die r&auml;umlichen Muster in den Daten eine statistisch signifikante Cluster-Bildung aufweisen.
+        <ul>
+            <li>Sind Ihre Punkte (Verbrechensf&auml;lle, B&auml;ume, Verkehrsunf&auml;lle) wirklich geclustert? Wie kann dies sichergestellt werden?
+            </li>
+            <li>Haben Sie wirklich einen statistisch signifikanten Hot-Spot (f&uuml;r Ausgaben, Kindersterblichkeit, durchweg hohe Pr&uuml;fungsergebnisse) gefunden oder lie&szlig;en sich andere Erkenntnisse aus der Karte ziehen, wenn die Art der Symbolisierung ge&auml;ndert w&uuml;rde?
+            </li>
+        </ul>
+        Mithilfe des Werkzeugs &quot;Hot-Spots suchen&quot; k&ouml;nnen Sie diese Fragen mit Sicherheit beantworten.
+    </p>
+    <p>Selbst zuf&auml;llige r&auml;umliche Muster weisen eine gewisse Cluster-Bildung auf. Zudem suchen unsere Augen und Gehirne naturgem&auml;&szlig; auch dann nach Mustern, wenn keine vorhanden sind. Demzufolge kann es schwierig sein, zu wissen, ob die Muster in den Daten das Ergebnis echter r&auml;umlicher Prozesse sind oder ob es sich lediglich um ein zuf&auml;lliges Ergebnis handelt. Aus diesem Grund verwenden Forscher und Analysten Methoden wie &quot;Hot-Spots suchen&quot; (Getis-Ord Gi*), um r&auml;umliche Muster zu quantifizieren. Wenn Sie eine statistisch signifikante Cluster-Bildung in Ihren Daten finden, verf&uuml;gen Sie &uuml;ber wertvolle Informationen. Zu wissen, wo und wann Cluster-Bildung auftritt, kann wichtige Aufschl&uuml;sse &uuml;ber die Prozesse geben, die die Muster f&ouml;rdern, die Sie sehen. Zu wissen, dass die Anzahl der Wohnungseinbr&uuml;che in bestimmten Nachbarschaften beispielsweise st&auml;ndig h&ouml;her ausf&auml;llt, kann eine wichtige Rolle spielen, wenn Sie effektive Pr&auml;ventionsstrategien entwerfen, begrenzte polizeiliche Ressourcen verteilen, Nachbarschafts&uuml;berwachungsprogramme initiieren, strafrechtliche Ermittlungen durchf&uuml;hren oder potenzielle Verd&auml;chtige identifizieren m&uuml;ssen.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Layer auswählen, für die Hot-Spots berechnet werden</h2></div>
+        <hr/>
+        <div>
+            <p>Der Punkt- oder Fl&auml;chen-Layer, zu dem Hot- und Cold-Spots gefunden werden. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Cluster mit hohen und niedrigen Werten suchen</h2></div>
+        <hr/>
+        <div>
+            <p>Diese Analyse beantwortet die folgende Frage: Wo bilden hohe und niedrige Werte r&auml;umliche Cluster?
+            </p>
+            <p>Wenn es sich bei Ihren Daten um Punkte handelt und Sie  <b>Punktzanzahl</b> ausw&auml;hlen, wertet dieses Werkzeug die r&auml;umliche Anordnung der Punkt-Features aus, um die folgende Frage zu beantworten: Wo werden Punkte unerwartet geclustert oder verteilt?
+            </p>
+            <p>Wenn Sie ein Feld ausw&auml;hlen, wird die r&auml;umliche Anordnung der mit jedem Feature verkn&uuml;pften Werte von diesem Werkzeug ausgewertet, um die folgende Frage zu beantworten: Wo bilden hohe und niedrige Werte Cluster?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Punkte zählen innerhalb</h2></div>
+        <hr/>
+        <div>
+            <p>In der Standardeinstellung werden Punkte in einem vom Werkzeug erstellten Netz basierend auf Ihren Punktdaten gez&auml;hlt. Alternativ k&ouml;nnen Sie entweder Punkte in einem Hexagongitternetz z&auml;hlen oder einen Fl&auml;chen-Layer bereitstellen (diese spiegeln in der Regel Bezirke f&uuml;r administrative Berichtserstellung wie Z&auml;hlbezirke, Stadtgrenzen oder Landkreise wider), um die folgende Frage zu beantworten: Sind angesichts der Anzahl von Punkten innerhalb eines Fl&auml;chen-Features Standorte mit statistisch signifikanter r&auml;umlicher Cluster-Bildung vorhanden, die hohe oder niedrige Punktzahlen aufweisen?   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Bereiche festlegen, in denen Punkte möglich sind</h2></div>
+        <hr/>
+        <div>
+            <p>Zeichnen oder stellen Sie einen Layer bereit, der definiert, wo Ereignisse m&ouml;glich sind, um die folgende Frage zu beantworten: Gibt es innerhalb der Fl&auml;chen Standorte mit unerwartet hohen oder niedrigen Punktkonzentrationen?   
+            </p>
+            <p>Die von Ihnen dargestellten Fl&auml;chen-Features bzw. in den Fl&auml;chen-Layern angegebenen Features sollten definieren, wo Punkte m&ouml;glicherweise auftreten k&ouml;nnten. Um diese Fl&auml;chen zu zeichnen, klicken Sie auf die  <b>Zeichenschaltfl&auml;che</b> und anschlie&szlig;end auf eine Position auf der Karte, um eine Fl&auml;che zu erstellen.  Um weitere Fl&auml;chen zu zeichnen, klicken Sie erneut auf die Zeichenschaltfl&auml;che und klicken Sie dann auf eine Position auf der Karte, um den Vorgang fortzusetzen.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Teilen durch</h2></div>
+        <hr/>
+        <div>
+            <p>In einigen Situationen empfiehlt es sich, Muster zu analysieren, die zugrunde liegende Verteilungen ber&uuml;cksichtigen. Wenn Ihre Punkte beispielsweise Verbrechen darstellen, f&uuml;hrt das Teilen durch die Gesamtbev&ouml;lkerung zu einer Analyse von Verbrechen pro Kopf statt zu einer groben Anzahl der Verbrechensf&auml;lle.  Die Auswahl eines Attributs, durch das geteilt werden soll, wird als Normalisierung bezeichnet.
+            </p>
+            <p>Durch Auswahl von  <i>Esri Population</i> wird jedes Fl&auml;chen-Feature mit Geodaten in Form von Bev&ouml;lkerungswerten angereichert, die anschlie&szlig;end als Attribut verwendet werden, durch das geteilt wird.  F&uuml;r diese Option werden Credits verbraucht.
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Optionen überschreiben</h2></div>
+        <hr/>
+        <div>
+            <p> Das Werkzeug sucht optimale Standardeinstellungen f&uuml;r <b>Zellengr&ouml;&szlig;e</b> und <b>Entfernungsband</b> basierend auf den Eigenschaften Ihrer Daten. Wenn Sie jedoch &uuml;ber eine bestimmte <b>Zellengr&ouml;&szlig;e</b> oder ein bestimmtes <b>Entfernungsband</b> verf&uuml;gen, die oder das bei Ihrer Analyse sinnvoll ist, k&ouml;nnen Sie <b>Optionen &uuml;berschreiben</b> verwenden, um diese Werte festzulegen.
+            </p>
+            <p> <b>Optionen zu &uuml;berschreiben</b> ist n&uuml;tzlich, wenn verschiedene Datasets analysiert werden, wodurch <b>Entfernungsband</b> und <b>Zellengr&ouml;&szlig;e</b> &uuml;ber mehrere Datasets hinweg konsistent gehalten werden k&ouml;nnen.  Dann k&ouml;nnen Sie die Ergebnisse entsprechend vergleichen, zum Beispiel Adipositas- und Diabetesraten oder sogar Kriminalit&auml;tsraten aus zwei verschiedenen Jahren.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Zellengröße</h2></div>
+        <hr/>
+        <div>
+            <p>Die Gr&ouml;&szlig;e der Gitterzellen, die zum Z&auml;hlen der Punkte darin verwendet werden.  
+            </p>
+            <p>Beim Verwenden eines Hexagongitters, um die Punkte darin zu z&auml;hlen, wird diese Entfernung als H&ouml;he der Hexagone verwendet.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Entfernungsband</h2></div>
+        <hr/>
+        <div>
+            <p>Jedes Feature wird im Kontext benachbarter Features analysiert, die sich innerhalb der Entfernung befinden, die Sie angeben.  Das Werkzeug berechnet eine Standardentfernung f&uuml;r Sie, oder Sie k&ouml;nnen diese Option nutzen, um eine bestimmte Entfernung festzulegen, die f&uuml;r Ihre Analyse Sinn ergibt. 
+            </p>
+            <p>Wenn Sie beispielsweise Pendelmuster untersuchen und wissen, dass die durchschnittliche Fahrtdauer zur Arbeit beispielsweise 15&nbsp;Kilometer betr&auml;gt, k&ouml;nnen Sie ein Entfernungsband von 15&nbsp;Kilometern f&uuml;r die Analyse verwenden.
+            </p>
+        </div>
+    </div>
+    <div id="hotSpotsResultLayer">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Geben Sie einen Namen f&uuml;r den Layer an, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird.  Dieser Ergebnis-Layer zeigt statistisch signifikante Cluster mit hohen und niedrigen Werten bzw. Punktzahlen an. Wenn der Name des Ergebnis-Layers bereits vorhanden ist, werden Sie aufgefordert, ihn umzubenennen.
+            </p>
+            <p>&Uuml;ber das Dropdown-Feld  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert werden soll.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

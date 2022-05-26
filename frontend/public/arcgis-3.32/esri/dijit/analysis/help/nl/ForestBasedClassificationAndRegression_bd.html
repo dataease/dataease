@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Classificatie en regressie op basis van bossen</h2><p/>
+        <h2><img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" alt="Workflowdiagram voor classificatie en regressie op basis van bossen"></h2>
+        <hr/>
+    <p>Cre&euml;ert modellen en genereert voorspellingen met behulp van een aanpassing van het willekeurigebosalgoritme van Leo Breiman, een gemonitorde machinaal lerenmethode. Voorspellingen kunnen worden uitgevoerd voor zowel categorische variabelen (classificatie) als continue variabelen (regressie). Verklarende variabelen zijn velden in de attributentabel van de trainingsobjecten. De tool kan worden uitgevoerd om een ​​model te genereren om de prestaties te beoordelen, of om een model te genereren en resultaten te voorspellen voor een andere dataset.
+    </p>
+    <p>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Analysetype</h2></div>
+        <hr/>
+        <div>
+            <p>Specificeert de bedieningsmodus van de tool. De tool kan worden gebruikt om een ​​model te trainen om alleen de prestaties te beoordelen, of om een ​​model te trainen en objecten te voorspellen. Voorspellingstypes zijn als volgt:
+                <ul>
+                    <li> <b>Een model trainen om modelprestaties te beoordelen</b>&mdash;Er wordt een model getraind en aangepast aan de invoergegevens. Gebruik deze optie om de nauwkeurigheid van uw model te beoordelen voordat u voorspellingen op een nieuwe dataset genereert. De uitvoer van deze optie is een feature service van uw specifieke trainingsgegevens, modeldiagnostiek en een optionele tabel van variabel belang.
+                    </li>
+                    <li> <b>Een model trainen en waarden voorspellen</b>&mdash; Voorspellingen of classificaties worden gegenereerd voor objecten. Er moeten verklarende variabelen beschikbaar zijn voor zowel de trainingsobjecten als de objecten die moeten worden voorspeld. De uitvoer van deze optie is een featureservice van uw voorspelde waarden, modeldiagnostiek en een optionele tabel van variabel belang.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="train">
+        <div><h2>Een model trainen om de prestaties van het model te beoordelen</h2></div>
+        <hr/>
+        <div>
+            <p>Gebruik deze modus als u een model wilt passen en de pasvorm wilt onderzoeken.
+            </p>
+            <p>Met deze keuze wordt het model getraind met behulp van een invoerlaag. Gebruik deze optie om de nauwkeurigheid van uw model te beoordelen voordat u voorspellingen op een nieuwe dataset genereert. Deze optie voert modeldiagnostiek uit in het berichtenvenster en past het model toe op uw trainingsgegevens.
+            </p>
+        </div>
+    </div>
+    <div id="trainAndPredict">
+        <div><h2>Een model trainen en waarden voorspellen</h2></div>
+        <hr/>
+        <div>
+            <p>Gebruik deze modus als u een model wilt passen en pas het model toe op de dataset om voorspellingen te genereren.
+            </p>
+            <p>Voorspellingen of classificaties worden gegenereerd voor objecten. De uitvoer van deze optie is een featureservice, modeldiagnostiek en een optionele tabel van variabel belang.
+            </p>
+        </div>
+    </div>
+    <div id="inFeatures">
+        <div><h2>Trainingslaag kiezen</h2></div>
+        <hr/>
+        <div>
+            <p>De objectlaag met de te voorspellen variabele en de velden die worden gebruikt om de voorspelling te genereren.
+            </p>
+            <p>Naast het kiezen van een laag van uw kaart, kunt u kiezen voor  <b>Analyselaag kiezen</b> onderaan de keuzelijst om in uw inhoud te zoeken naar een big data file share-dataset of objectlaag.
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Kies een laag om waarden voor te voorspellen</h2></div>
+        <hr/>
+        <div>
+            <p>Een objectlaag met locaties waar voorspellingen worden gedaan. Deze objectlaag moet ook verklarende variabelen bevatten die worden aangeboden als velden die overeenkomen met de variabelen die worden gebruikt in de trainingsobjecten.
+            </p>
+            <p>Naast het kiezen van een laag van uw kaart, kunt u kiezen voor  <b>Analyselaag kiezen</b> onderaan de keuzelijst om in uw inhoud te zoeken naar een big data file share-dataset of objectlaag.
+            </p>
+        </div>
+    </div>
+    <div id="variablePredict">
+        <div><h2>Het veld kiezen om te voorspellen</h2></div>
+        <hr/>
+        <div>
+            <p>Het veld van de trainingsobjecten met de waarden die moeten worden gebruikt om het model te trainen. Dit veld bevat bekende (trainings)waarden van de variabele die zal worden gebruikt om op onbekende locaties te voorspellen. Als waarden categorisch zijn (bijvoorbeeld Esdoorn, Den, Eik), schakelt u het selectievakje  <b>Categorisch</b> in.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Kies een of meer verklarende variabelen</h2></div>
+        <hr/>
+        <div>
+            <p>Een of meer velden die de verklarende variabelen (velden) vertegenwoordigen die helpen de waarde of categorie van de voorspelbare variabele te voorspellen. Gebruik het categorische selectievakje voor alle variabelen die klassen of categorie&euml;n vertegenwoordigen (zoals bodembedekking of aanwezigheid of afwezigheid). Specificeer de variabele als &ldquo;waar&rdquo; voor alles dat klassen of categorie&euml;n vertegenwoordigt zoals bodembedekking of aanwezigheid of afwezigheid en &ldquo;onwaar&rdquo; als de variabele continu is.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfTrees">
+        <div><h2>Aantal bomen</h2></div>
+        <hr/>
+        <div>
+            <p>Het aantal bomen dat in het model moet worden gemaakt. Meer bomen zullen over het algemeen resulteren in een meer accurate modelvoorspelling, maar het zal langer duren om het model te berekenen. Het standaard aantal bomen is 100.
+            </p>
+        </div>
+    </div>
+    <div id="minimumLeafSize">
+        <div><h2>Minimale bladgrootte</h2></div>
+        <hr/>
+        <div>
+            <p>Het minimale aantal waarnemingen dat vereist is om een ​​blad te behouden (dat is het eindknooppunt in een boom zonder verdere splitsingen). Het standaardminimum voor regressie is 5 en de standaard voor classificatie is 1. Voor zeer grote gegevens zal het verhogen van deze cijfers de looptijd van de tool verminderen.
+            </p>
+        </div>
+    </div>
+    <div id="maximumTreeDepth">
+        <div><h2>Maximale boomdiepte</h2></div>
+        <hr/>
+        <div>
+            <p>Het maximale aantal splitsingen dat in een boom wordt gemaakt. Als u een grote maximale diepte gebruikt, worden er meer splits gemaakt, waardoor de kans groter wordt dat het model te veel wordt aangepast. De standaardwaarde is gegevensgestuurd en is afhankelijk van het aantal gemaakte bomen en het aantal opgenomen variabelen.
+            </p>
+        </div>
+    </div>
+    <div id="sampleSize">
+        <div><h2>Gegevens beschikbaar per boom (%)</h2></div>
+        <hr/>
+        <div>
+            <p>Specificeert het percentage van de objecten in de trainingslaag die voor elke beslissingsboom wordt gebruikt. De standaardinstelling is 100 procent van de gegevens. Voorbeelden voor elke boom worden willekeurig genomen uit twee derde van de opgegeven gegevens.
+            </p>
+            <p>Elke beslissingsboom in het bos wordt gemaakt met een willekeurige steekproef of subset (ongeveer twee derde) van de beschikbare trainingsgegevens. Het gebruik van een lager percentage van de invoergegevens voor elke beslissingsboom verhoogt de snelheid van de tool voor zeer grote gegevensreeksen.
+            </p>
+        </div>
+    </div>
+    <div id="randomVariables">
+        <div><h2>Aantal willekeurig gesamplede variabelen</h2></div>
+        <hr/>
+        <div>
+            <p>Geeft het aantal verklarende variabelen aan die worden gebruikt om elke beslissingsboom te maken.
+            </p>
+            <p>Elk van de beslissingsbomen in het bos wordt gemaakt met behulp van een willekeurige subset van de opgegeven verklarende variabelen. Het verhogen van het aantal variabelen dat in elke beslissingsboom wordt gebruikt, vergroot de kans dat uw model te veel wordt aangepast, met name als er &eacute;&eacute;n of een paar dominante variabelen zijn. Een veel voorkomende praktijk is om de vierkantswortel van het totale aantal verklarende variabelen te gebruiken als de te voorspellen variabele numeriek is of het totale aantal verklarende variabelen door 3 te delen als de te voorspellen variabele categorisch is.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Kies hoe verklarende velden worden vergeleken</h2></div>
+        <hr/>
+        <div>
+            <p>Hoe de corresponderende variabelen in de trainingslaag overeenkomen met de variabelen in de voorspellingslaag. Alleen de variabelen die in de training worden gebruikt, worden in de tabel opgenomen.
+            </p>
+        </div>
+    </div>
+    <div id="percentageForValidation">
+        <div><h2>Aantal runs voor validatie</h2></div>
+        <hr/>
+        <div>
+            <p>Specificeert het percentage (tussen 0 procent en 50 procent) van objecten in de trainingslaag dat moet worden gereserveerd als de testdataset voor validatie. Het model zal worden getraind zonder deze willekeurige subset van gegevens, en de waargenomen waarden voor die objecten worden vergeleken met de voorspelde waarde. De standaardwaarde is 10 procent.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>Dit is de naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, wordt u gevraagd een nieuwe naam te geven.
+            </p>
+            <p>De geretourneerde resultaten zijn afhankelijk van het type analyse. Als u traint om de pasvorm van het model te beoordelen, bevatten de resultaten een laag trainingsgegevens die bij het model passen en resultaatinformatie die de pasvorm van het model beoordeelt. Als u traint en voorspelt, bevatten de resultaten een laag van de trainingsgegevens die bij het model passen, een laag met voorspelde resultaten en resultaatinformatie die de pasvorm van het model beoordeelt.
+            </p>
+            <p>Als u in de vervolgkeuzelijst  <b>Resultaat opslaan</b> gebruikt, kunt u de naam opgeven van een map in <b>Mijn Content</b> waarin het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

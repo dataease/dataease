@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Calcular Inclinação</h2><p/>
+        <h2><img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" alt="Ferramenta Calcular Inclina&ccedil;&atilde;o para o Portal"></h2>
+        <hr/>
+    <p>Esta ferramenta cria uma superf&iacute;cie que exibe a inclina&ccedil;&atilde;o dos dados de eleva&ccedil;&atilde;o introduzidos. Inclina&ccedil;&atilde;o representa a taxa de mudan&ccedil;a de eleva&ccedil;&atilde;o por cada c&eacute;lula de modelo digital de eleva&ccedil;&atilde;o (digital elevation model -DEM).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Selecionar dados de entrada para calcular inclinação</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de eleva&ccedil;&atilde;o a partir da qual a inclina&ccedil;&atilde;o ser&aacute; calculada.
+            </p>
+        </div>
+    </div>
+    <div id="zFactor">
+        <div><h2>Especificar fator de escala para elevação</h2></div>
+        <hr/>
+        <div>
+            <p>Introduza um fator z.
+            </p>
+            <p>O fator z &eacute; um fator de escala utilizado para converter os valores de eleva&ccedil;&atilde;o, com doi objetivos:
+ 
+                <ul>
+                    <li>Converter as unidades de eleva&ccedil;&atilde;o (tais como metros ou p&eacute;s) nas unidades de coordenadas horizontais da camada, que podem estar em p&eacute;s, metros ou graus.
+                        
+  
+                    </li>
+                    <li>Adicionar exagero certical para criar efeito visual
+                        
+ 
+                    </li>
+                </ul>
+                
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                </td>
+                <td>
+                    <p>De P&eacute;s
+                    </p>
+                </td>
+                <td>
+                    <p>De Metros
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>De P&eacute;s
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>0,3048
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>De Metros
+                    </p>
+                </td>
+                <td>
+                    <p>3,28084
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>O nome da camada que ser&aacute; criada em  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Se a camada j&aacute; existir, ser-lhe-&aacute; pedido que introduza outro nome.
+            </p>
+            <p>&Eacute; poss&iacute;vel especificar o nome de uma pasta em  <b>O Meu Conte&uacute;do</b>, onde o resultado ser&aacute; guardado utilizando a op&ccedil;&atilde;o <b>Guardar Resultado em</b> da caixa suspensa.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Rekonstruiraj sledi</h2><p/>
+        <h2><img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" alt="Rekonstruiraj sledi"></h2>
+        <hr/>
+    <p> To orodje deluje s slojem z omogočenim časom, s točkovnimi ali poligonskimi geoobjekti, ki predstavljajo <code>trenutek</code> v času. Najprej s pomočjo identifikatorja določi, kateri geoobjekti pripadajo sledi. Z uporabo časa na vsaki lokaciji so sledi naročene ena za drugo in preoblikovane v linije ali poligone, ki predstavljajo pot gibanja v času. Po želji se lahko ustvari obris okoli vhoda polja, kar bo ustvarilo poligon na vsaki lokaciji. Te obrisane točke ali vhodni poligoni so nato zaporedno združeni, da se ustvari sled kot poligon, pri čemer je &scaron;irina reprezentativna za želeni atribut. Pridobljene sledi imajo začetni in končni čas, kar časovno predstavlja prvi in zadnji geoobjekt v podani sledi. Ko so sledi ustvarjene, se statistike o vhodnih geoobjektih izračunajo in dodelijo izhodni sledi. Najosnovnej&scaron;a statistika je &scaron;tetje točk znotraj poligona, vendar lahko izračunate tudi druge statistike.
+    </p>
+    <p>Geoobjekti v časovno omogočenih slojih so lahko predstavljeni na enega od dveh načinov:
+        <ul>
+            <li>Trenutek &ndash; en sam trenutek v času
+            </li>
+            <li>Interval &ndash; začetni in končni čas
+            </li>
+        </ul>
+        
+    </p>
+    <p>Na primer, predpostavimo, da imate GPS-meritve orkanov vsakih 10 minut. Vsaka GPS-meritev beleži ime orkana, lokacijo, čas beleženja in hitrost vetra. S temi informacijami lahko ustvarite sledi za vsak orkan, in sicer z uporabo imena za identifikacijo sledi, saj bodo tako za vsak orkan ustvarjene sledi. Poleg tega lahko za vsak orkan izračunate statistike, kot so srednja vrednost, maksimalna in minimalna hitrost vetra ter &scaron;tetje meritev znotraj vsake sledi.
+    </p>
+    <p>Na isti način lahko ustvarite obris za svoje sledi na podlagi hitrosti vetra. To bo obrisalo vsako meritev glede na polje hitrosti vetra na tisti lokaciji in združilo obrisane poligone ter ustvarilo poligon, ki bo predstavljal pot sledi ter spremembe hitrosti vetra pri napredovanju orkana.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izberi geoobjekte za rekonstruiranje sledi iz</h2></div>
+        <hr/>
+        <div>
+            <p>Točka ali poligonski sloj, ki bo rekonstruiran v sledi. Vhodni sloj mora biti časovno omogočen z geoobjekti, ki prestavljajo trenutek v času. Če se uporablja obris, mora biti sloj v projiciranem koordinatnem sistemu ali mora biti procesni koordinatni sistem nastavljen na projiciran koordinatni sistem s pomočjo  <b>okolij analize</b>.
+            </p>
+            <p>Poleg izbire sloja s svoje karte lahko na dnu spustnega seznama izberete  <b>Izberi sloj za analizo</b>, da po svoji vsebini poi&scaron;čete delitev datotek velikih podatkov ali geoobjektni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Izberi enega ali več polj za opredelitev sledi</h2></div>
+        <hr/>
+        <div>
+            <p>Polja, ki predstavljajo identifikator sledi. 
+            </p>
+            <p>Na primer, pri rekonstruiranju sledi orkanov lahko uporabite ime orkana kot polje sledi.
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Izberi način, uporabljen za rekonstrukcijo sledi</h2></div>
+        <hr/>
+        <div>
+            <p>Metoda, ki se uporablja za spajanje sledi in uporabo obrisa (če je primerno).  <b>Planarna</b> metoda omogoča hitrej&scaron;i izračun rezultatov, vendar ne omogoča ovijanja sledi okoli mednarodne datumske meje in ne upo&scaron;teva resnične oblike Zemlje med izdelavo obrisa. <b>Geodetska</b> metoda omogoča ovijanje sledi okoli datumske meje, če je to potrebno, in omogoča uporabo geodetskega obrisa, ki upo&scaron;teva obliko Zemlje.
+            </p>
+        </div>
+    </div>
+    <div id="bufferField">
+        <div><h2>Ustvari izraz za obris vhodnih geoobjektov (izbirno)</h2></div>
+        <hr/>
+        <div>
+            <p>Enačba, ki se uporablja za izračun razdalje obrisa okoli vhodnih geoobjektov. Enačbo je mogoče ustvariti s pomočjo kalkulatorja obrisa, podprte pa so osnovne operacije, kot so se&scaron;tevanje, od&scaron;tevanje, množenje in deljenje. Vrednosti se izračunajo s pomočjo analize koordinatnega sistema. Če se uporablja obris, mora biti sloj v projiciranem koordinatnem sistemu ali mora biti procesni koordinatni sistem nastavljen na projiciran koordinatni sistem s pomočjo  <b>okolij analize</b>.
+            </p>
+            <p>Pri enačbi, kot je  <code>$feature.windspeed * 1000</code>, se uporablja obris, ki je 1000-krat pomnožen s poljem <i>windspeed</i>. V kalkulatorju obrisa lahko uporabite več kot eno polje.
+            </p>
+            <p> Navedete lahko tudi izraz, ki zaznava sledi. Na primer, izračunate lahko vsoto vrednosti polja <i>windspeed</i> za trenutni geoobjekt in pre&scaron;nja dva geoobjekta z enačbo, kot je <code>$track.field(windspeed).history(-3)</code>. Na vsaki lokaciji je vsota trenutne meritve <i>windspeed</i> in prej&scaron;njih dveh meritev izračunana in obrisana.
+            </p>
+        </div>
+    </div>
+    <div id="timeSplit">
+        <div><h2>Izberi čas za razdelitev sledi (izbirno)</h2></div>
+        <hr/>
+        <div>
+            <p>Čas, ki se uporablja za razdelitev sledi. Če imajo vhodne točke ali območja medsebojno dalj&scaron;e trajanje od časovne razdelitve, bodo razdeljene v različne sledi.
+            </p>
+            <p>Če navedete časovno razdelitev in razdelitev razdalje, bodo sledi razdeljene takrat, ko bo izpolnjen eden ali oba pogoja. 
+            </p>
+            <p>Predstavljajte si, da imate točkovne geoobjekte, ki predstavljajo lete letal, kjer je polje sledi ID letala. To letalo bi lahko naredilo več potovanj, ki bi bila predstavljena kot ena sled. Če veste, da med letoma obstaja 1-urni postanek, lahko uporabite  <code>1 uro</code> kot razdelitev sledi, vsak let pa bo razdeljen v lastno sled.
+            </p>
+        </div>
+    </div>
+    <div id="splitTracks">
+        <div><h2>Razdelitev sledi (izbirno)</h2></div>
+        <hr/>
+        <div>
+            <p>Sledi lahko razdelite na tri različne načine. Uporabite lahko kombinacijo nobene, vseh ali nekaterih metod razdelitve. 
+            </p>
+            <p>Razdelitve je mogoče narediti na naslednje načine:
+                <ul>
+                    <li> <b>Glede na razdaljo med vhodi</b> &ndash; Če imajo vhodne točke ali poligoni medsebojno večjo razdaljo od razdelitve razdalje, bodo razdeljeni v različne sledi. Če ste, na primer, določili razdaljo 10 kilometrov, bodo zaporedne točke, večje od 10 kilometrov, ločene sledi.
+                    </li>
+                    <li> <b>Glede na čas med vhodi</b> &ndash; Če imajo vhodne točke ali območja medsebojno dalj&scaron;e trajanje od časovne razdelitve, bodo razdeljeni v različne sledi. Na primer, predstavljajte si, da imate točkovne geoobjekte, ki predstavljajo lete letal, kjer je polje sledi ID-ja letala. To letalo bi lahko naredilo več potovanj, ki bi bila predstavljena kot ena sled. Če veste, da med letoma obstaja 1-urni postanek, lahko uporabite <code>1 uro</code> kot razdelitev sledi, vsak let pa bo razdeljen v lastno sled.
+                    </li>
+                    <li> <b>Ob določenih časovnih intervalih</b> &ndash; razdelitev z rednimi intervali, določenimi s časovnim intervalom in referenčnim časom. Če referenčnega časa ne navedete, bo uporabljen Jan 1, 1970. Na primer, če ste določili eno leto z referenčnim časom 2. februar 1990 ob 10.00, boste sledi razdelili na 2. februar 1990 ob 10.00 in 2. februar 1991 ob 10.00, kar se bo nadaljevalo z enoletnim intervalom.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Če navedete več možnosti za razdelitev, bodo sledi razdeljene takrat, ko bo izpolnjen eden ali več pogojev. 
+            </p>
+        </div>
+    </div>
+    <div id="distanceSplit">
+        <div><h2>Izberite razdaljo za razdelitev sledi po (izbirno)</h2></div>
+        <hr/>
+        <div>
+            <p>Razdalja, ki se uporablja za razdelitev sledi. Če imajo vhodne točke ali območja medsebojno večjo razdaljo od razdelitve razdalje, bodo razdeljene v različne sledi.
+            </p>
+            <p>Če navedete časovno razdelitev in razdelitev razdalje, bodo sledi razdeljene takrat, ko bo izpolnjen eden ali oba pogoja. 
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Dodaj statistiko (izbirno)</h2></div>
+        <hr/>
+        <div>
+            <p> Statistiko lahko izračunate na povzetih geoobjektih.Na &scaron;tevilskih poljih lahko izračunate naslednje:
+                <ul>
+                    <li>&Scaron;tetje &ndash; Izračuna &scaron;tevilo nepraznih vrednosti. Uporabljeno je lahko za  &scaron;tevilska ali besedilna polja. &Scaron;tetje za [null, 0, 2] je 2.
+                    </li>
+                    <li>Vsota &ndash; vsota &scaron;tevilskih vrednosti v polju. Vsota [null, null, 3] je 3.
+                    </li>
+                    <li>Srednja vrednost &ndash; srednja vrednost &scaron;tevilčnih vrednosti. Srednja vrednost za [0, 2, null] je 1.
+                    </li>
+                    <li>Minimum &ndash; minimalna vrednost &scaron;tevilskega polja. Minimum za [0, 2, null] je 0. 
+                    </li>
+                    <li>Maksimum &ndash; maksimalna vrednost &scaron;tevilskega polja. Maksimalna vrednost za [0, 2, null] je 2.
+                    </li>
+                    <li>Razpon &ndash; razpon &scaron;tevilskega polja. Izračuna se tako, da se minimalne vrednosti od&scaron;tejejo od maksimalne vrednosti. Razpon za [0, null, 1] je 1. Razpon za [null, 4] je 0.
+                    </li>
+                    <li>Varianca &ndash; varianca &scaron;tevilskega polja v sledi. Varianca za [1] je brez vrednosti. Varianca za [null, 1,0,1,1] je 0,25.
+                    </li>
+                    <li>Standardni odklon &ndash; standardni odklon &scaron;tevilskega polja. Standardni odklon za [1] je brez vrednosti. Standardni odklon [brez vrednosti, 1,0,1,1] je 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Na &scaron;tevilskih polji lahko izračunate naslednje:
+                <ul>
+                    <li>&Scaron;tetje &ndash; &scaron;tevilo nizov, ki imajo neničelno vrednost.
+                    </li>
+                    <li>Kateri koli &ndash; ta statistika je naključni vzorec besedilne vrednosti v navedenem polju.
+                    </li>
+                </ul>
+                Vsa statistika bo izračunana na neničelnih vrednostih. Sloj z rezultati bo vseboval nova polja za vsako izračunano statistiko. Z izbiro atributov in statistik je mogoče dodati katerokoli statistiko. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Izberite ArcGIS Data Store za shranjevanje rezultatov v</h2></div>
+        <hr/>
+        <div>
+            <p>Rezultati GeoAnalytics so shranjeni v shrambo podatkov in prikazani kot geoobjektni sloj v  Portal for ArcGIS. V večini primerov je treba rezultate shraniti v prostorsko-časovno shrambo podatkov, kar je privzeto. V nekaterih primerih je dobra možnost hramba podatkov v relacijskih shrambi podatkov. V nadaljevanju so navedeni razlogi, zakaj bi morda želeli shraniti rezultate v relacijsko shrambo podatkov: 
+                <ul>
+                    <li>Rezultate lahko uporabite za sodelovanjeprekportala.
+                    </li>
+                    <li>Pri rezultatih lahkoomogočite možnosti sinhronizacije.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Relacijske shrambe podatkov ne smete uporabljati, če pričakujete, da se bodo va&scaron;i rezultati GeoAnalytics povečali in želite izkoristiti možnosti velike prostorsko-časovne shrambe podatkov za obdelavo velikih količin podatkov.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p> To je ime sloja, ki bo ustvarjen. Če zapisujete v ArcGIS Data Store, bodo va&scaron;i rezultati shranjeni v  <b>Moji vsebini</b> in dodani na karto. Če zapisujete v delitev datotek velikih podatkov, bodo va&scaron;i rezultati shranjeni v delitev datotek velikih podatkov in dodani v njen manifest. Ne bodo dodani v skupino. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, orodje ne bo uspe&scaron;no.
+            </p>
+            <p>Ko zapisujete v  ArcGIS Data Store (relacijsko ali prostorsko-časovno shrambo velikih podatkov) s pomočjo spustnega menija  <b>Shrani rezultat v</b>, lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

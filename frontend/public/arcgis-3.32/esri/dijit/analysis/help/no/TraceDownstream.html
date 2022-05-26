@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Spor nedstrøms</h2><p/>
+        <h2><img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" alt="Spor nedstr&oslash;ms"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet finner l&oslash;pet, eller str&oslash;mningslinjen, i nedstr&oslash;ms retning fra punktene i inndatalaget.
+    </p>
+    <p>La oss for eksempel si du har punktgeoobjekter som representerer forurensningskilder, og du vil finne ut hvilke deler av studieomr&aring;det forurensningen vil forflytte seg til. Du kan bruke verkt&oslash;yet Spor nedstr&oslash;ms til &aring; finne hvilket l&oslash;p forurensningen vil ta. Sporingen kan ogs&aring; deles inn i individuelle linjesegmenter ved at du angir avstandsverdi og enheter. Linjen som returneres kan v&aelig;re den totale lengden p&aring; str&oslash;mningslinjen, en angitt maksiumslengde for sporingen eller den kan v&aelig;re begrenset til et omr&aring;de, for eksempel studieomr&aring;det. N&aring;r den den totale lengden p&aring; str&oslash;mningslinjen returneres, vil den i mange tilfeller g&aring; fra kilden og helt ut til havet.
+    </p>
+    <p>Resultatet er en linje som representerer nedstr&oslash;mslinjen. Hvis det er angitt en avstand for  <b>Split the trace into line segments</b>, deles sporingslinjen i flere linjer, der hver linje har angitt lengde. Hvis for eksempel inndatapunktene representerer et forurensningsutslipp og elven utslippet flyter inn i, beveger seg 1 km i timen, eller 24 km for dagen, vil du kanskje dele elven inn i segmenter p&aring; 24 km. Ved &aring; dele sporingslinjen inn i intervaller p&aring; 24 km kan du se om lag hvor langt utslippet forflytter seg hver dag. Linjen gjengis i graderte farger basert p&aring; avstand og merkes med avstanden fra begynnelsen p&aring; sporingen.
+    </p>
+    <p>Den resulterende sporingen vil ha alle attributtene for inndatapunktene i tillegg til tilleggsattributter 
+        <ul>
+            <li> <i>PointID</i> &ndash;&nbsp;Inneholder ID-verdien for inndatapunktet.
+                
+
+            </li>
+            <li> <i>LengthKm</i> &ndash;&nbsp;Inneholder lengden i kilometer for hele sporingslinjen.
+                
+
+            </li>
+            <li> <i>Description</i> og <i>DataResolution</i> &ndash;&nbsp;Inneholder informasjon om de hydrologiske dataene som ble brukt til &aring; beregne sporingslinjen.
+                
+
+            </li>
+            <li> <i>FromDistance</i> og <i>ToDistance</i> &ndash;&nbsp;Inneholder fra- og til-avstanden for hvert linjesegment. Disse attributtene skrives hvis <b>Del opp sporet i linjesegmenter</b> brukes.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Hvis det er merket av for  <b>Bruk gjeldende kartutstrekning</b>, er det kun punktgeoobjektene i inndatalaget som vises i gjeldende kartutstrekning, som analyseres. Hvis det ikke er merket av for dette alternativet, brukes alle geoobjektene i inndatalaget, selv om de befinner seg utenfor gjeldende kartutstrekning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Punktgeoobjekter som brukes som startlokasjoner for hver nedstrømslinje</h2></div>
+        <hr/>
+        <div>
+            <p>Punktgeoobjektene som brukes som startlokasjon for nedstr&oslash;mslinjer. Resultatet inneholder en linje for hvert inndatapunkt.
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> som du finner nederst i rullegardinlisten. Dette alternativet &aring;pner et galleri der du kan bla til og velge datasett fra ulike kilder som du vil bruke i analysen. 
+            </p>
+        </div>
+    </div>
+    <div id="SplitDistance">
+        <div><h2>Del opp sporet i linjesegmenter</h2></div>
+        <hr/>
+        <div>
+            <p>Sporingslinjen deles i flere linjer der hver linje har angitt lengde. Hvis for eksempel inndatapunktene representerer et forurensningsutslipp og elven utslippet flyter inn i, beveger seg 1 km i timen, eller 24 km for dagen, vil du kanskje dele elven inn i segmenter p&aring; 24 km. Ved &aring; dele sporingslinjen inn i intervaller p&aring; 24 km kan du se om lag hvor langt utslippet forflytter seg hver dag. Linjen gjengis i graderte farger basert p&aring; avstand og merkes med avstanden fra begynnelsen p&aring; sporingen. Den resulterende sporingen vil ha flere linjesegmenter, hvert med feltene  <i>FromDistance</i> og <i>ToDistance</i>.
+            </p>
+        </div>
+    </div>
+    <div id="MaxDistance">
+        <div><h2>Maksimum avstand på sporingen</h2></div>
+        <hr/>
+        <div>
+            <p>Bestemmer den totale lengden p&aring; linjen som returneres. Hvis du angir polygoner for &aring; begrense sporingen, blir resultatet begrenset til polygonen, uavhengig av avstanden du angir her.
+            </p>
+        </div>
+    </div>
+    <div id="ClipArea">
+        <div><h2>Klipp ut udata til</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan enten tegne eller angi et lag med omr&aring;det der du vil at sporingen skal stoppe. Hvis du for eksempel vil at sporingsresultatet skal v&aelig;re innenfor studieomr&aring;det, for eksempel fylket, bruker du fylket som inndata, slik at sporingen stanser ved fylkesgrensen.
+            </p>
+        </div>
+    </div>
+    <div id="OutputTrace">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis lagnavnet finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Bruk rullegardinmenyen  <b>Lagre resultat i</b> til &aring; angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatene skal lagres i.
+            </p>
+            <p> Det brukes ikke credits n&aring;r du kj&oslash;rer dette verkt&oslash;yet.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

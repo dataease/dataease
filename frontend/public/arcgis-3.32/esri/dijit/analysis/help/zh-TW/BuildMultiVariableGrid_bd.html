@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>建立多變數網格</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="附加資料工作流程圖"></h2>
+        <hr/>
+    <p>建立多變數網格工具使用點、線或多邊形圖徵的一或多個圖層。此工具會產生方形或六角形容器的網格，並根據每個輸入圖層的鄰域分析來計算每個容器的值。這些值可能包含下列變數： 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>與最近圖徵的距離</b> - 每一個容器至最近圖徵的距離
+            </li>
+            <li> <b>最近圖徵的屬性</b> - 最接近每個容器之圖徵的欄位值
+            </li>
+            <li> <b>鄰近圖徵的摘要</b> - 每個容器距離內的所有圖徵的指定統計資料
+            </li>
+            <li> <b>相交圖徵的摘要</b> - 與每個容器相交的所有圖徵的指定統計資料
+            </li>
+        </ul>
+        
+    </p>
+    <p>只會在結果圖層中包含您指定的變數。這些變數可協助您瞭解資料的鄰域分析和分佈情況。導出的結果可開始協助您回答以下的類似問題：
+        <ul>
+            <li>考量多個公共交通基礎設施圖層，城市的哪些部分是公共運輸最不容易到達的地區？
+            </li>
+            <li>考量水路的圖層（如湖泊和河流），最接近美國各地的水體名稱為何？
+            </li>
+            <li>考量家庭收入圖層，美國哪個地區周圍 50 英里內有最大的收入差距？
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>選擇將用來建立多變數網格的容器類型</h2></div>
+        <hr/>
+        <div>
+             
+            <p>將用來建立多變數網格的容器類型和大小。對於 <b>方形</b>選項，指定的數字和單位可決定方形的高度和長度。對於 <b>六角形</b>選項，指定的數字和單位可決定平行邊之間的距離。
+            </p>
+            <p>此分析使用容器，並且需要使用投影座標系統。您可以在 <b>分析環境</b>中設定 <b>處理座標系統</b>。若未將處理座標系統設為投影座標系統，系統會在您 <b>執行分析</b> 時提醒您設定它。
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>選擇網格中要包含的輸入圖層和變數</h2></div>
+        <hr/>
+        <div>
+            <p>按一下新增按鈕 ( <b>+</b>) 以開啟 <b>新增變數</b>視窗，並將圖層新增至您的分析。在 <b>新增變數</b>視窗中，選擇輸入圖層並配置要為該輸入圖層計算的變數。
+            </p>
+            <p>選擇和配置要計算的變數後，工具視窗將列出此圖層及任何其他選擇的圖層。按一下任何圖層的編輯按鈕以開啟 <b>新增變數</b>視窗，並查看為該圖層配置的所有變數。為要移除的任何圖層按一下刪除按鈕，從分析中移除該圖層及所有相關的變數。
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>新增變數</h2></div>
+        <hr/>
+        <div>
+            <p>此視窗可讓您選擇輸入圖層，及配置要為該輸入圖層計算的變數。若要開始執行，請使用 <b>選擇輸入圖層</b>下拉式功能表來選擇要新增至分析的點、多邊形或線圖層。
+            </p>
+            <p>除了從地圖選擇圖層外，您也可以選擇下拉式清單底部的 <b>選擇分析圖層</b>，以瀏覽到大數據檔案分享資料集或圖徵圖層的內容。
+            </p>
+            <p>選擇輸入圖層後，按一下 <b>新增變數</b>按鈕來開啟新變數以進行編輯。您必須為每個變數提供唯一的名稱。這將是在結果圖層的屬性表中建立的欄位名稱。
+            </p>
+            <p>使用下拉式功能表來選擇要新增的變數類型。每一種變數類型必須配置唯一的參數集，且所有參數都是必要的。
+            </p>
+            <p>為所選圖層新增所有需要的變數後，按一下 <b>新增</b>按鈕以儲存變數。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p> 將建立之圖層的名稱。若是寫入到 ArcGIS Data Store，您的結果將儲存於<b>我的內容</b>並新增至地圖中。若是寫入到大數據檔案分享，您的結果將儲存於大數據檔案分享並新增至其資訊清單中。不會將它新增到地圖。預設名稱參照工具名稱以及輸入圖層名稱。如果圖層已存在，工具將失敗。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式方塊寫入到 ArcGIS Data Store（關聯式或大型的時空資料儲存庫）時，可以在<b>我的內容</b>中指定將儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Yhdistä lähtöpisteet määränpäihin</h2><p/>
+        <h2><img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" alt="Yhdist&auml; l&auml;ht&ouml;pisteet m&auml;&auml;r&auml;np&auml;ihin"></h2>
+        <hr/>
+    <p>Yhdist&auml; l&auml;ht&ouml;pisteet m&auml;&auml;r&auml;np&auml;ihin -ty&ouml;kalu mittaa pisteparien v&auml;lisen et&auml;isyyden tai matkustusajan. 	Ty&ouml;kalu voi raportoida et&auml;isyydet suoraan, et&auml;isyydet matkustustavan, kuten k&auml;velyn tai ajamisen, perusteella tai matkojen kestot matkustustavan perusteella. T&auml;m&auml;n ty&ouml;kalun avulla voit tehd&auml; seuraavat toimet:
+    </p>
+    <p>
+        <ul>
+            <li>Laske ty&ouml;matkalaisten kulkema kokonaiset&auml;isyys tai -aika ty&ouml;paikan ja kodin v&auml;lill&auml;.
+            </li>
+            <li>Mittaa, miten kaukaa asiakkaat matkustavat asioidakseen liikkeess&auml;si. N&auml;iden tietojen avulla voit m&auml;&auml;ritt&auml;&auml; markkinasi laajuuden erityisesti silloin, kun haluat kohdentaa mainoskampanjoita tai valita uusia liikepaikkoja.
+            </li>
+            <li>Laske kuljetuskaluston odotettu kilometrim&auml;&auml;r&auml;. Raportoi sen j&auml;lkeen ajokilometrit osavaltioittain tai muun alueen perusteella suorittamalla Yhteenveto alueella -ty&ouml;kalu.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Voit m&auml;&auml;ritt&auml;&auml; l&auml;ht&ouml;- ja p&auml;&auml;tepisteet, ja ty&ouml;kalu palauttaa karttatason, joka sis&auml;lt&auml;&auml; reittiviivat sek&auml; l&auml;ht&ouml;- ja p&auml;&auml;tepisteiden v&auml;liset mittaukset. 
+    </p>
+    <p>Jos vaihtoehto  <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b> on valittuna, analyysi k&auml;ytt&auml;&auml; vain nykyisess&auml; karttalaajuudessa n&auml;kyviss&auml; olevia kohteita. Jos toimintoa ei ole valittu, huomioon otetaan kaikki l&auml;ht&ouml;karttatason kohteet &ndash; my&ouml;s kohteet, jotka ovat nykyisen karttalaajuuden ulkopuolella.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="originsLayer">
+        <div><h2>Valitse pistekarttataso, joka esittää alkupisteiden sijainnit</h2></div>
+        <hr/>
+        <div>
+            <p>Valitse pistekarttataso, joka esitt&auml;&auml; alkupistett&auml; tai alkupisteit&auml;. Ty&ouml;kalu tukee jopa  5 000 l&auml;ht&ouml;pistett&auml; ja  5 000 m&auml;&auml;r&auml;np&auml;&auml;t&auml;. </p>
+            <p>Jos valitset karttatason, jossa on t&auml;sm&auml;lleen yksi alkupiste, se yhdistet&auml;&auml;n kaikkiin m&auml;&auml;r&auml;np&auml;ihin.
+            </p>
+            <p>Kartasta valittavan karttatason lis&auml;ksi voit valita alareunan avattavasta luettelosta  <b>Valitse analyysikarttataso</b> -vaihtoehdon. T&auml;m&auml; vaihtoehto avaa gallerian, jossa voit selata ja valita aineistoryhmi&auml; erilaisista l&auml;hteist&auml; ja k&auml;ytt&auml;&auml; niit&auml; analyysissa. 
+            </p>
+        </div>
+    </div>
+    <div id="destinationsLayer">
+        <div><h2>Valitse kohdekarttataso</h2></div>
+        <hr/>
+        <div>
+            <p>Valitse taso, joka edustaa m&auml;&auml;r&auml;np&auml;it&auml;, joihin l&auml;ht&ouml;pisteet yhdistet&auml;&auml;n. Ty&ouml;kalu tukee jopa  5 000 l&auml;ht&ouml;pistett&auml; ja  5 000 m&auml;&auml;r&auml;np&auml;&auml;t&auml;. </p>
+            <p>Jos valitset karttatason, jossa on t&auml;sm&auml;lleen yksi m&auml;&auml;r&auml;np&auml;&auml;, kaikki l&auml;ht&ouml;pisteet yhdistet&auml;&auml;n kyseiseen m&auml;&auml;r&auml;np&auml;&auml;h&auml;n. 
+            </p>
+            <p>Jos l&auml;ht&ouml;pisteit&auml; on yksi ja m&auml;&auml;r&auml;np&auml;it&auml; on useita, ty&ouml;kalu yhdist&auml;&auml; l&auml;ht&ouml;pisteen jokaiseen m&auml;&auml;r&auml;np&auml;&auml;h&auml;n.
+            </p>
+            <p>Kartasta valittavan karttatason lis&auml;ksi voit valita alareunan avattavasta luettelosta  <b>Valitse analyysikarttataso</b> -vaihtoehdon. T&auml;m&auml; vaihtoehto avaa gallerian, jossa voit selata ja valita aineistoryhmi&auml; erilaisista l&auml;hteist&auml; ja k&auml;ytt&auml;&auml; niit&auml; analyysissa. 
+            </p>
+            <p> Jos l&auml;ht&ouml;pisteit&auml; ja m&auml;&auml;r&auml;np&auml;it&auml; on useita, tarvitset kaksi l&auml;ht&ouml;piste-m&auml;&auml;r&auml;np&auml;&auml;-pareja kuvaavaa kentt&auml;&auml;: <b>l&auml;ht&ouml;pisteiden tunnuskent&auml;n</b> ja <b>m&auml;&auml;r&auml;np&auml;iden vastaavan tunnuskent&auml;n</b>. Ty&ouml;kalu yhdist&auml; l&auml;ht&ouml;piste-m&auml;&auml;r&auml;np&auml;&auml;-parit analyysin aikana. Kuvittele esimerkiksi, ett&auml; sinulla on kaksi l&auml;ht&ouml;pistett&auml;, joiden tunnuskenttien arvot ovat <code>Rosie</code> ja <code>Harold</code>, ja kaksi m&auml;&auml;r&auml;np&auml;&auml;t&auml;, joiden tunnukset ovat samat. <code>Rosie</code>-l&auml;ht&ouml;piste yhdistet&auml;&auml;n <code>Rosie</code>-m&auml;&auml;r&auml;np&auml;&auml;h&auml;n ja <code>Harold</code>-l&auml;ht&ouml;piste yhdistet&auml;&auml;n <code>Harold</code>-m&auml;&auml;r&auml;np&auml;&auml;h&auml;n. Muuta yhdist&auml;mist&auml; tai muita mittauksia ei tehd&auml;.
+            </p>
+            <p>Jos l&auml;ht&ouml;pisteit&auml; ja m&auml;&auml;r&auml;np&auml;it&auml; on yht&auml; monta, tunnusarvojen on oltava yksil&ouml;llisi&auml; kussakin karttatasossa. Esimerkiksi m&auml;&auml;r&auml;np&auml;&auml;karttatasossa ei voi olla kahta  <code>Rosie</code>-arvoa. Parien muodostus edellytt&auml;&auml;, ett&auml; l&auml;ht&ouml;piste- ja m&auml;&auml;r&auml;np&auml;&auml;karttatasojen arvot vastaavat toisiaan t&auml;sm&auml;lleen. <code>Harold</code>-l&auml;ht&ouml;pistett&auml; ei voida yhdist&auml;&auml; v&auml;&auml;rin kirjoitettuun <code>Harodl</code>-m&auml;&auml;r&auml;np&auml;&auml;h&auml;n. 
+            </p>
+            <p>Ty&ouml;kalu tukee my&ouml;s kunkin l&auml;ht&ouml;pisteen yhdist&auml;mist&auml; useampaan kuin yhteen m&auml;&auml;r&auml;np&auml;&auml;h&auml;n tai kunkin m&auml;&auml;r&auml;np&auml;&auml;n yhdist&auml;mist&auml; useampaan kuin yhteen l&auml;ht&ouml;pisteeseen. N&auml;iss&auml; tapauksissa on kuitenkin oltava kaksi kentt&auml;&auml;, jotka kuvaavat l&auml;ht&ouml;piste-m&auml;&auml;r&auml;np&auml;&auml;-pareja. Kuitenkin vain toisessa karttatasoista (joko l&auml;ht&ouml;piste- tai m&auml;&auml;r&auml;np&auml;&auml;karttatasossa) on oltava yksil&ouml;lliset tunnusarvot.
+            </p>
+        </div>
+    </div>
+    <div id="measurementType">
+        <div><h2>Mitta</h2></div>
+        <hr/>
+        <div>
+            
+            <p>M&auml;&auml;rit&auml;, yhdistet&auml;&auml;nk&ouml; l&auml;ht&ouml;pisteet m&auml;&auml;r&auml;np&auml;ihin suoran et&auml;isyyden vai matkustustavan perusteella. Tuloksena syntyv&auml;t reitit kulkevat teit&auml; tai kevyen liikenteen v&auml;yli&auml; pitkin ja noudattavat asianmukaisia s&auml;&auml;nt&ouml;j&auml;, kuten yksisuuntaisia katuja ja auto- ja rekkaliikenteen k&auml;&auml;ntymisrajoituksia. Organisaatiosi p&auml;&auml;k&auml;ytt&auml;j&auml; m&auml;&auml;ritt&auml;&auml; k&auml;ytett&auml;viss&auml; olevat matkustustavat.  
+            </p>
+            <p>Kun valitset  <b>ajoajan</b>, <b>ajoajan maaseudulla</b> tai <b>rekkaliikenteen ajan</b>, voit valita eri vaihtoehdoista, miten ajoaika mitataan.
+                <ul>
+                    <li>
+                        <p>Poista valinta  <b>K&auml;yt&auml; liikennett&auml;</b>, kun haluat etsi&auml; nopeimmat reitit vakionopeuksien perusteella.
+                        </p>
+                        <p>T&auml;m&auml;n toiminnon avulla voit k&auml;ytt&auml;&auml; yleist&auml; ajoaikamittausta sen mittauksen sijasta, joka laskee ajoajan l&auml;ht&ouml;ajan ja muuttuvien liikenneolosuhteiden mukaan.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Valitse  <b>K&auml;yt&auml; liikennett&auml;</b>, jos haluat hakea nopeimmat reitit tietyn l&auml;ht&ouml;ajan ja vaihtelevien liikenneolosuhteiden perusteella. Kun valitset lis&auml;ksi vaihtoehdon <b>Reaaliaikaiset liikennetiedot</b>, l&auml;ht&ouml;aika l&auml;ht&ouml;pisteist&auml; on nykyinen aika, ja todelliset sek&auml; ennustetut liikennenopeudet perustuvat anturi- ja sy&ouml;tetietoihin. Ennustetut liikennenopeudet lasketaan todellisten liikennenopeuksien, toteutuneiden nopeuksien sek&auml; olosuhteiden kuten s&auml;&auml;n perusteella. Liikennenopeusennusteet ulottuvat 12 tunnin p&auml;&auml;h&auml;n, joten l&auml;ht&ouml;aikaa voi siirt&auml;&auml; korkeintaan  12 tuntia eteenp&auml;in. </p>
+                        <p>N&auml;iden liikenneasetusten avulla voi selvitt&auml;&auml; ajoajat, jos l&auml;ht&ouml; tapahtuu nyt heti, tunnin kuluttua jne.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Kun  <b>K&auml;yt&auml; liikennett&auml;</b> ja <b>Tyypillisiin olosuhteisiin perustuva liikenne</b> tiettyn&auml; p&auml;iv&auml;n&auml; ja aikana ovat valittuina, ty&ouml;kalu etsii nopeimmat reitit perustuen historiallisiin nopeuden keskiarvoihin viiden minuutin intervalleissa normaalin viikon aikana. Tulokset sis&auml;lt&auml;v&auml;t liikenteen, mutta niist&auml; on poistettu nykyisten liikenneolosuhteiden vaikutus, mik&auml; voi vaihdella merkitt&auml;v&auml;sti.
+                        </p>
+                        <p>Liikenteen historia-asetusten avulla voi kysy&auml; esimerkiksi &quot;Kuinka kauan yleens&auml; kest&auml;isi saavuttaa m&auml;&auml;r&auml;np&auml;&auml;t, kun l&auml;hden liikkeelle kello 11.30 keskiviikkona?&quot;
+                        </p>
+                        <p>Asettamasi aika on sen alueen aikavy&ouml;hykkeen aika, jossa l&auml;ht&ouml;pisteet sijaitsevat. Jos l&auml;ht&ouml;aika on esimerkiksi klo 8 ja l&auml;ht&ouml;pisteit&auml; on kaksi, toinen New Yorkissa ja toinen Los Angelesissa, reittien luomiseen k&auml;ytet&auml;&auml;n USA:n it&auml;rannikon aikavy&ouml;hykkeen (Eastern Time) l&auml;ht&ouml;aikaa klo 8 ja vastaavasti Tyynenmeren aikavy&ouml;hykkeen (Pacific Time) l&auml;ht&ouml;aikaa klo 8.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Huomaa, ett&auml; kun auto liikkuu l&auml;ht&ouml;pisteest&auml; poisp&auml;in, aika kuluu ja liikenneolosuhteet muuttuvat. Yhdist&auml; l&auml;ht&ouml;pisteet m&auml;&auml;r&auml;np&auml;ihin -ty&ouml;kalu ottaa n&auml;m&auml; vaihtelut huomioon, kun valitset vaihtoehdon  <b>K&auml;yt&auml; liikennett&auml;</b>. Kaikki alueet eiv&auml;t kuitenkaan tue liikennett&auml;. Napsauta ty&ouml;kalun <b>Katso saatavuus</b> -linkki&auml;, jotta n&auml;et, onko se saatavilla tarkastelualueellasi.
+            </p>
+            <p> <b>Rekkaliikenteen aika</b> voi k&auml;ytt&auml;&auml; dynaamisia matkanopeuksia liikenteen perusteella, mutta vain lakim&auml;&auml;r&auml;iseen rekkaliikenteen nopeusrajoitukseen asti. Jos kadun dynaaminen nopeus on 65 kilometri&auml; tunnissa reaaliaikaisen liikenteen perusteella mutta kadun rekkaliikenteen nopeusrajoitus on 55 kilometri&auml; tunnissa, laskelma k&auml;ytt&auml;&auml; kyseisell&auml; kadulla 55 kilometrin tuntinopeutta.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Valitse esteiden karttatasot</h2></div>
+        <hr/>
+        <div>
+            <p> V&auml;hint&auml;&auml;n yksi kohde, joka toimii tilap&auml;isen&auml; rajoitteena (esteen&auml;) liikuttaessa taustalla olevilla kaduilla. Voit m&auml;&auml;ritt&auml;&auml; esteet k&auml;ytt&auml;m&auml;ll&auml; piste-, viiva- tai aluekohteita.
+            </p>
+            <p>Piste-este voi mallintaa kaatunutta puuta, onnettomuutta, katkennutta s&auml;hk&ouml;linjaa tai mit&auml; tahansa, joka katkaisee liikenteen tietyss&auml; kohdassa kadulla. Liikkuminen on sallittu kadulla, mutta ei esteen kohdalla. Voit m&auml;&auml;ritt&auml;&auml; enint&auml;&auml;n 250 piste-esteen&auml; toimivaa kohdetta.
+            </p>
+            <p>Viivaeste est&auml;&auml; liikkumisen miss&auml; tahansa kohdassa, jossa este riste&auml;&auml; katujen kanssa. Esimerkiksi paraatia tai mielenosoitusta, joka est&auml;&auml; liikenteen usealla katuosuudella, voidaan mallintaa viivaesteell&auml;. Jos kaikkien viivaesteiden leikkaamien katukohteiden m&auml;&auml;r&auml; on yli 500, ty&ouml;kalu palauttaa virheen.
+            </p>
+            <p>Alue-este est&auml;&auml; liikkumisen miss&auml; tahansa kohdassa, jossa alue riste&auml;&auml; katujen kanssa. T&auml;m&auml;ntyyppist&auml; estett&auml; voi k&auml;ytt&auml;&auml; esimerkiksi sellaisten katuverkoston kattavien tulvien mallintamiseen, jotka tekev&auml;t liikkumisen kaduilla mahdottomaksi. Jos kaikkien alue-esteiden leikkaamien katukohteiden m&auml;&auml;r&auml; on yli 2 000, ty&ouml;kalu palauttaa virheen.
+            </p>
+        </div>
+    </div>
+    <div id="routeShape">
+        <div><h2>Reitin muoto</h2></div>
+        <hr/>
+        <div>
+            <p>Valitse sen reitin muoto, joka yhdist&auml;&auml; kunkin l&auml;ht&ouml;pisteen sen m&auml;&auml;r&auml;np&auml;&auml;h&auml;n seuraavaa matkustustapaa k&auml;ytett&auml;ess&auml;:
+            </p>
+            <ul>
+                <li> <b>Kulje katuja pitkin</b> &ndash; muoto perustuu taustalla olevaan katuverkostoon. T&auml;m&auml; vaihtoehto on paras, kun haluat luoda reitit l&auml;ht&ouml;pisteiden ja m&auml;&auml;r&auml;np&auml;iden v&auml;lille.
+                </li>
+                <li> <b>Suora viiva</b> &ndash; muoto on suora viiva, joka yhdist&auml;&auml; l&auml;ht&ouml;piste-m&auml;&auml;r&auml;np&auml;&auml;-parin. T&auml;m&auml; vaihtoehto on paras, kun haluat luoda k&auml;sitekarttoja tai tavoitelinjoja (esimerkiksi sen esitt&auml;miseen, miss&auml; kaupoissa asiakkaat k&auml;yv&auml;t).
+                </li>
+            </ul>
+            
+            <p>Paras reitti l&auml;ht&ouml;pisteen ja sit&auml; vastaavan m&auml;&auml;r&auml;np&auml;&auml;n v&auml;lill&auml; lasketaan aina matkustustavan perusteella valitusta reitin muodosta riippumatta.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen kohdekarttatason nimi, joka luodaan  <b>Oma sis&auml;lt&ouml;</b> -kohtaan ja lis&auml;t&auml;&auml;n karttaan. Jos kohdekarttataso on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi. Kohdekarttataso sis&auml;lt&auml;&auml; karttatason kullekin seuraavista: reitit, m&auml;&auml;ritt&auml;m&auml;tt&ouml;m&auml;t alkupisteet ja m&auml;&auml;ritt&auml;m&auml;tt&ouml;m&auml;t m&auml;&auml;r&auml;np&auml;&auml;t, kun joitakin alkupisteit&auml; ei voi yhdist&auml;&auml; m&auml;&auml;r&auml;np&auml;ihin.
+            </p>
+            <p>Jos valitset  <b>Sis&auml;llyt&auml; reittikarttatasot</b> -vaihtoehdon, kukin tulosten reitti tallennetaan my&ouml;s reittikarttatasona. Reittikarttataso sis&auml;lt&auml;&auml; kaikki tietyn reitin tiedot, kuten reittiin m&auml;&auml;ritetyt pys&auml;hdykset sek&auml; matkustussuunnat. Reittikarttatasojen luonnista on hy&ouml;ty&auml;, jos haluat jakaa yksitt&auml;iset reitit organisaatiosi muiden j&auml;senten kanssa tai muokata reittej&auml; k&auml;ytt&auml;m&auml;ll&auml; kartankatseluohjelman <b>Reittiohjeet</b>-painiketta. Reittikarttatasot k&auml;ytt&auml;v&auml;t kohdekarttatasolle m&auml;&auml;ritetty&auml; nime&auml; etuliitteen&auml; ja reitin nime&auml;, joka on luotu analyysin aikana. N&auml;in saadaan aikaan yksil&ouml;llinen nimi kullekin reittikarttatasolle.
+            </p>
+            <p>Reittikarttatasoja voi luoda enint&auml;&auml;n  1 000. Jos tulos sis&auml;lt&auml;&auml; yli  1 000 reitti&auml; ja  <b>Sis&auml;llyt&auml; reittikarttatasot</b> on valittu, ty&ouml;kalu luo vain tulosaineiston kohdepalvelun.
+            </p>
+            <p>Avattavan  <b>Tallenna tulos kohteeseen</b> -valikon avulla voit m&auml;&auml;ritt&auml;&auml; sen <b>Oma sis&auml;lt&ouml;</b> -kansion nimen, johon kohdekarttataso ja reittikarttatasot (jos sellaiset luodaan) tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

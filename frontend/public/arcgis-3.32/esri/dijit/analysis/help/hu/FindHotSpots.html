@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Hot spotok keresése</h2><p/>
+        <h2><img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" alt="Hot spotok keres&eacute;se"></h2>
+        <hr/>
+    <p> A Hot spotok keres&eacute;se eszk&ouml;zzel meghat&aacute;rozhat&oacute;, hogy l&eacute;tezik-e statisztikailag szignifik&aacute;ns klaszterez&eacute;s az adatok t&eacute;rbeli mint&aacute;zat&aacute;ban.
+        <ul>
+            <li>Val&oacute;ban klaszterezettek a kiv&aacute;lasztott pontok (bűnt&eacute;nyek, f&aacute;k, k&ouml;zleked&eacute;si balesetek)?  Hogyan tudhatja biztosan?
+            </li>
+            <li>Val&oacute;ban statisztikailag szignifik&aacute;ns hot spotra bukkant (kiad&aacute;sok, gyermekhaland&oacute;s&aacute;g, k&ouml;vetkezetesen magas vizsgapontsz&aacute;mok), vagy m&aacute;st sugallna a t&eacute;rk&eacute;p, ha megv&aacute;ltoztatn&aacute; a jelk&eacute;pez&eacute;s m&oacute;dj&aacute;t?
+            </li>
+        </ul>
+        A Hot spotok keres&eacute;se eszk&ouml;z seg&iacute;t megb&iacute;zhat&oacute; v&aacute;laszt tal&aacute;lni az ilyen k&eacute;rd&eacute;sekre.
+    </p>
+    <p>M&eacute;g a v&eacute;letlenszerű t&eacute;rbeli mint&aacute;k is mutatnak bizonyos fok&uacute; klaszterezetts&eacute;get.  Ezenk&iacute;v&uuml;l szem&uuml;nk &eacute;s agyunk term&eacute;szetes m&oacute;don mint&aacute;zatokat kezd keresni, ott is, ahol nem l&eacute;teznek ilyenek.  Ebből ad&oacute;d&oacute;an neh&eacute;z meg&iacute;t&eacute;lni, hogy az adatok mint&aacute;zata val&oacute;ban műk&ouml;dő t&eacute;rbeli folyamatok, vagy puszt&aacute;n egy v&eacute;letlenszerű v&aacute;laszt&aacute;s eredm&eacute;nyei.  A kutat&oacute;k &eacute;s elemzők emiatt a Hot spotok keres&eacute;se eszk&ouml;zh&ouml;z hasonl&oacute; statisztikai m&oacute;dszereket (Getis-Ord Gi*) haszn&aacute;lj&aacute;k a t&eacute;rbeli mint&aacute;zatok mennyis&eacute;gi meghat&aacute;roz&aacute;s&aacute;ra.  Az adatok k&ouml;z&ouml;tt tal&aacute;lt, statisztikailag szignifik&aacute;ns klaszterek &eacute;rt&eacute;kes inform&aacute;ci&oacute;t k&eacute;pviselnek.  A klaszterek előfordul&aacute;s&aacute;nak helye &eacute;s ideje a l&aacute;that&oacute; mint&aacute;zatokat előid&eacute;ző folyamatokkal kapcsolatos, fontos inform&aacute;ci&oacute; az elemz&eacute;sek sor&aacute;n.  L&eacute;nyeges inform&aacute;ci&oacute; annak ismerete , hogy a lak&aacute;sbet&ouml;r&eacute;sek sz&aacute;ma p&eacute;ld&aacute;ul egy adott k&ouml;rny&eacute;ken k&ouml;vetkezetesen magasabb: ekkor hat&eacute;kony megelőz&eacute;si strat&eacute;gi&aacute;kat kell kidolgozni, korl&aacute;tozott rendőri erőforr&aacute;sokat kell beosztani, lakoss&aacute;gi figyelőszolg&aacute;latot kell megszervezni, bűncselekm&eacute;nyek m&eacute;lyrehat&oacute; nyomoz&aacute;s&aacute;t kell enged&eacute;lyezni, vagy potenci&aacute;lis gyan&uacute;s&iacute;tottakat kell azonos&iacute;tani.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>A réteg kiválasztása, amelynek hot spot-jait ki szeretné számítani</h2></div>
+        <hr/>
+        <div>
+            <p>A pont vagy ter&uuml;let r&eacute;teg, amelyeknek hot spotjait &eacute;s cold spotjait (&bdquo;meleg&rdquo; &eacute;s &bdquo;hideg&rdquo; pontjait) az eszk&ouml;z megtal&aacute;lja. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Magas és alacsony értékek klasztereinek keresése</h2></div>
+        <hr/>
+        <div>
+            <p>Ez az elemz&eacute;s arra a k&eacute;rd&eacute;sre ad v&aacute;laszt, hogy: Hol tal&aacute;lhat&oacute;k a magas &eacute;s alacsony &eacute;rt&eacute;kek t&eacute;rbeli klaszterei?
+            </p>
+            <p>Ha pont adatok eset&eacute;n a  <b>Pontok sz&aacute;ma</b> lehetős&eacute;get v&aacute;lasztja, az eszk&ouml;z a pontszerű vektor elemek t&eacute;rbeli elrendez&eacute;s&eacute;nek &eacute;rt&eacute;kel&eacute;s&eacute;vel v&aacute;laszol a k&eacute;rd&eacute;sre: Hol csoportosulnak nem v&aacute;rt m&oacute;don illetve helyezkednek el sz&eacute;tsz&oacute;rtan az adatok?
+            </p>
+            <p>Ha kiv&aacute;laszt egy mezőt, az eszk&ouml;z az egyes vektoros elemekhez t&aacute;rs&iacute;tott &eacute;rt&eacute;kek t&eacute;rbeli elrendez&eacute;s&eacute;t &eacute;rt&eacute;kelve v&aacute;laszol a k&ouml;vetkező k&eacute;rd&eacute;sre: Hol tal&aacute;lhat&oacute;k magas &eacute;s alacsony &eacute;rt&eacute;kklaszterek?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Pontok számlálása ezen belül</h2></div>
+        <hr/>
+        <div>
+            <p>Alap&eacute;rtelmez&eacute;s szerint az eszk&ouml;z a pontadatok alapj&aacute;n l&eacute;trehozott fishnet h&aacute;l&oacute;n bel&uuml;li pontokat sz&aacute;ml&aacute;lja. Tov&aacute;bbi lehetős&eacute;gk&eacute;nt v&aacute;laszthatja egy hatsz&ouml;gletű r&aacute;cson bel&uuml;li pontok sz&aacute;ml&aacute;l&aacute;s&aacute;t vagy ter&uuml;let r&eacute;teg megad&aacute;s&aacute;t (ezek jellemzően k&ouml;zigazgat&aacute;si egys&eacute;gek, p&eacute;ld&aacute;ul sz&aacute;ml&aacute;l&oacute;k&ouml;rzetek, telep&uuml;l&eacute;si hat&aacute;rok vagy megy&eacute;k lesznek), v&aacute;laszt keresve arra a k&eacute;rd&eacute;sre, hogy az egyes ter&uuml;let vektoros elemeken bel&uuml;l megsz&aacute;ml&aacute;lt pontok sz&aacute;m&aacute;t tekintve vannak-e olyan helyek, amelyeken statisztikailag szignifik&aacute;ns a magas vagy alacsony pontsz&aacute;mok t&eacute;rbeli klaszterez&eacute;se?   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Pontok lehetséges helyének meghatározása</h2></div>
+        <hr/>
+        <div>
+            <p>Rajzoljon vagy adjon meg egy a balesetek lehets&eacute;ges hely&eacute;t meghat&aacute;roz&oacute; r&eacute;teget, v&aacute;laszt keresve arra a k&eacute;rd&eacute;sre, hogy: Vannak-e a ter&uuml;leteken bel&uuml;l olyan helyek, ahol v&aacute;ratlanul magas vagy alacsony a pontok koncentr&aacute;ci&oacute;ja?   
+            </p>
+            <p>A megrajzolt ter&uuml;let vektoros elemek vagy a megadott ter&uuml;let r&eacute;tegen bel&uuml;li vektoros elemek hat&aacute;rozz&aacute;k meg a pontok lehets&eacute;ges előfordul&aacute;s&aacute;nak hely&eacute;t.  A ter&uuml;letek megrajzol&aacute;s&aacute;hoz kattintson a  <b>Rajzol&aacute;s</b> gombra, &eacute;s a t&eacute;rk&eacute;pen egy helyre kattintva hozzon l&eacute;tre egy ter&uuml;let alakzatot.  Tov&aacute;bbi ter&uuml;letek rajzol&aacute;s&aacute;hoz kattintson &uacute;jra a Rajzol&aacute;s gombra, majd a folytat&aacute;shoz kattintson egy helyre t&eacute;rk&eacute;pen.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Osztás ezzel</h2></div>
+        <hr/>
+        <div>
+            <p>Esetenk&eacute;nt előfordulhat, hogy m&ouml;g&ouml;ttes eloszl&aacute;sokat figyelembe vevő mint&aacute;kat k&iacute;v&aacute;n elemezni. Ha p&eacute;ld&aacute;ul a pontok bűnt&eacute;nyeknek felelnek meg, akkor a teljes n&eacute;pess&eacute;gen alapul&oacute; oszt&aacute;s az egy főre eső bűnt&eacute;nyeket adn&aacute; eredm&eacute;ny&uuml;l puszt&aacute;n a bűnt&eacute;nyek sz&aacute;ma helyett.  Egy attrib&uacute;tum oszt&aacute;s alapjak&eacute;nt t&ouml;rt&eacute;nő kiv&aacute;laszt&aacute;s&aacute;t gyakran normaliz&aacute;l&aacute;snak nevezik.
+            </p>
+            <p> <i>Esri Population</i> kiv&aacute;laszt&aacute;s&aacute;val a polygonok n&eacute;pess&eacute;gadatokkal bőv&iacute;thetők, amelyek ezut&aacute;n az oszt&aacute;s alapj&aacute;ul szolg&aacute;l&oacute; attrib&uacute;tumk&eacute;nt haszn&aacute;lhat&oacute;k.  Ez az opci&oacute; krediteket haszn&aacute;l.
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Felülírási opciók</h2></div>
+        <hr/>
+        <div>
+            <p> Az eszk&ouml;z megkeresi a <b>Cellam&eacute;ret</b> &eacute;s a <b>T&aacute;vols&aacute;gs&aacute;v</b> optim&aacute;lis be&aacute;ll&iacute;t&aacute;sait az adatok jellemzői alapj&aacute;n. Ha azonban egy bizonyos <b>Cellam&eacute;ret</b> vagy <b>T&aacute;vols&aacute;gs&aacute;v</b> c&eacute;lszerű az elemz&eacute;shez, akkor a <b>Fel&uuml;l&iacute;r&aacute;si opci&oacute;k</b> is haszn&aacute;lhat&oacute;k az &eacute;rt&eacute;kek be&aacute;ll&iacute;t&aacute;s&aacute;ra.
+            </p>
+            <p>A  <b>Fel&uuml;l&iacute;r&aacute;si opci&oacute;k</b> hasznosak k&uuml;l&ouml;nb&ouml;ző adathalmazok elemz&eacute;sekor is; seg&iacute;ts&eacute;g&uuml;kkel a <b>T&aacute;vols&aacute;gs&aacute;v</b> &eacute;s a <b>Cellam&eacute;ret</b> t&ouml;bb adathalmazban is k&ouml;vetkezetesen tarthat&oacute;.  Ezut&aacute;n pontosan &ouml;sszehasonl&iacute;thatja az eredm&eacute;nyeket (p&eacute;ld&aacute;ul az elh&iacute;zotts&aacute;g &eacute;s a cukorbetegs&eacute;g, vagy ak&aacute;r k&eacute;t k&uuml;l&ouml;nb&ouml;ző &eacute;v bűn&ouml;z&eacute;s&eacute;nek ar&aacute;ny&aacute;t).
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Cellaméret</h2></div>
+        <hr/>
+        <div>
+            <p>Az eszk&ouml;z a r&aacute;csh&aacute;l&oacute; cell&aacute;inak m&eacute;ret&eacute;t haszn&aacute;lja a cell&aacute;kban tal&aacute;lhat&oacute; pontok sz&aacute;ml&aacute;l&aacute;s&aacute;hoz.  
+            </p>
+            <p>Ha hatsz&ouml;g alak&uacute; h&aacute;l&oacute;zatot haszn&aacute;l a benne tal&aacute;lhat&oacute; pontok sz&aacute;ml&aacute;l&aacute;s&aacute;hoz, akkor ez a t&aacute;vols&aacute;g a hatsz&ouml;g magass&aacute;ga lesz.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Távolságsáv</h2></div>
+        <hr/>
+        <div>
+            <p>Az eszk&ouml;z az egyes vektoros elemeket a szomsz&eacute;dos vektoros elemekkel &ouml;sszef&uuml;gg&eacute;sben elemzi, a megadott t&aacute;vols&aacute;gon bel&uuml;l.  Az eszk&ouml;z kisz&aacute;m&iacute;t egy alap&eacute;rtelmezett t&aacute;vols&aacute;got, vagy az opci&oacute; haszn&aacute;lat&aacute;val is be&aacute;ll&iacute;that egy bizonyos, az elemz&eacute;shez c&eacute;lszerű t&aacute;vols&aacute;got. 
+            </p>
+            <p>Ha p&eacute;ld&aacute;ul ing&aacute;z&aacute;si mint&aacute;zatokat k&iacute;v&aacute;n elemezni, &eacute;s tudja, hogy a munk&aacute;ba vezető &uacute;t p&eacute;ld&aacute;ul &aacute;tlagosan 15 m&eacute;rf&ouml;ld, akkor c&eacute;lszerű lehet 15 m&eacute;rf&ouml;ldes t&aacute;vols&aacute;gs&aacute;vot haszn&aacute;lnia az elemz&eacute;shez.
+            </p>
+        </div>
+    </div>
+    <div id="hotSpotsResultLayer">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>Adja meg a  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott vektoros r&eacute;teg nev&eacute;t.  Az eredm&eacute;ny r&eacute;teg megjelen&iacute;ti a magas &eacute;s alacsony &eacute;rt&eacute;kek vagy pontsz&aacute;mok statisztikailag szignifik&aacute;ns klasztereit. Ha az eredm&eacute;ny r&eacute;teg neve m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy nevezze &aacute;t.
+            </p>
+            <p>Az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő mezőben megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

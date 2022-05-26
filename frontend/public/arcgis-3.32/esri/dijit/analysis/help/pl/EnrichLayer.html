@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Wzbogać warstwę</h2><p/>
+        <h2><img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" alt="Wzbogać warstwę"></h2>
+        <hr/>
+    <p>Narzędzie służy do wzbogacania danych poprzez pozyskanie informacji konsumenckich, dotyczących ludności, miejsc i&nbsp;działalności gospodarczej związanych z&nbsp;lokalizacją danych oraz umożliwia uzyskiwanie odpowiedzi na nowe pytania dotyczące lokalizacji, kt&oacute;rych nie można otrzymać na podstawie samych map. Przykład: Jakiego rodzaju ludność mieszka w&nbsp;danym miejscu? Co ludzie na danym obszarze lubią robić? Jakie są ich zwyczaje i&nbsp;styl życia? Jakiego rodzaju działalność jest prowadzona na tym obszarze?
+    </p>
+    <p>Wynik będzie stanowić nową warstwę zawierającą wszystkie informacje demograficzne i geograficzne dla danych zbior&oacute;w danych. Nowe informacje są dodawane jako pola w&nbsp;tabeli.
+    </p>
+    <p>Jeśli opcja  <b>Użyj bieżącego zasięgu mapy</b> jest zaznaczona, wzbogacone zostaną tylko obiekty w&nbsp;warstwie wejściowej widoczne w&nbsp;bieżącym zasięgu mapy. Jeśli opcja ta nie jest zaznaczona, wszystkie obiekty w warstwie wejściowej zostaną wzbogacone, nawet jeśli znajdują się one poza bieżącym zasięgiem mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Wybierz warstwę, która zostanie wzbogacona nowymi danymi</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwy punktowe, liniowe lub powierzchniowe, kt&oacute;re zostaną wzbogacone nowymi danymi opisowymi. 
+            </p>
+            <p>Poza wybraniem warstwy na mapie można wybrać opcję  <b>Wybierz warstwę analizy</b> dostępną w dolnej części menu rozwijanego. Wybranie tej opcji spowoduje otwarcie galerii, w kt&oacute;rej można wyszukać i wybrać zestawy danych pochodzące z r&oacute;żnych źr&oacute;deł w celu użycia ich podczas przeprowadzania analiz. 
+            </p>
+        </div>
+    </div>
+    <div id="DataCollection">
+        <div><h2>Zmienne wzbogacania</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Kliknij opcję  <b>Wybierz zmienne</b>, aby otworzyć okno <b>Przeglądarka danych</b>. <b>Przeglądarka danych</b> ułatwia dokonywanie selekcji zmiennych wzbogacania zar&oacute;wno pojedynczo, jak i&nbsp;w&nbsp;zbiorach.
+            </p>
+            <p>Na podstawie danych automatycznie wybierany jest region. Jeżeli dane dotyczą wielu kraj&oacute;w, możliwe jest ustawienie innego regionu. 
+            </p>
+            <p>Zmienne wzbogacania zostały zgromadzone w&nbsp;zbiory, aby ułatwić uzyskiwanie do nich dostępu. Po wybraniu przez użytkownika zbioru danych, w&nbsp;przeglądarce wyświetlonych zostaje kilka najczęściej stosowanych zmiennych wzbogacania dla tego zbioru. W&nbsp;sekcji  <b>Kontynuuj przeglądanie</b> widoczne są r&oacute;wnież kategorie dostępne w&nbsp;ramach zbioru. W&nbsp;każdej z&nbsp;kategorii można wybrać całą podkategorię lub wyświetlić zawartość danej podkategorii i&nbsp;dokonać selekcji pojedynczych zmiennych wzbogacania. Można r&oacute;wnież skorzystać z&nbsp;pola wyszukiwania, aby odnaleźć określoną zmienną w&nbsp;danej kategorii.
+            </p>
+            <p>Po wybraniu zmiennych do uwzględnienia w&nbsp;procesie wzbogacania zostają one dodane do koszyka znajdującego się w&nbsp;rogu okna  <b>Przeglądarka danych</b>. Użyj&nbsp;koszyka, aby śledzić liczbę wybranych zmiennych.
+            </p>
+            <p>Każda wybrana zmienna zostanie dodana jako pole do warstwy wynikowej.
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Zdefiniuj obszary do wzbogacenia danych</h2></div>
+        <hr/>
+        <div>
+            <p>Zdefiniuj obszar wok&oacute;ł punkt&oacute;w lub linii wejściowych, kt&oacute;re zostaną wzbogacone poprzez użycie odległości w&nbsp;linii prostej lub wybranego trybu podr&oacute;żowania. W przypadku odległości w linii prostej wprowadź wartość wynoszącą maksymalnie 1000 mil (1609 kilometr&oacute;w). Tryb&oacute;w podr&oacute;żowania można używać tylko wtedy, gdy warstwa wejściowa zawiera punkty. Dostępne tryby podr&oacute;żowania są określane przez administratora instytucji. Podczas korzystania z&nbsp;jednego z&nbsp;tryb&oacute;w podr&oacute;żowania pomiary wykonywane są wzdłuż dr&oacute;g i&nbsp;pasaży oraz respektują one obowiązujące zasady, takie jak drogi jednokierunkowe, skręty w&nbsp;niedozwolonych miejscach i&nbsp;inne. Po wybraniu trybu i&nbsp;mierzonej wielkości należy wpisać maksymalny czas trwania lub odległość: 5 w&nbsp;godzinach (300 w&nbsp;minutach) lub 300 w&nbsp;milach (482,8 w&nbsp;kilometrach).
+            </p>
+            <p>Jeśli pole wyboru  <b>Zwr&oacute;ć wynik jako obszary graniczne</b> jest zaznaczone, wynik zostanie zwr&oacute;cony w formie obiekt&oacute;w powierzchniowych zdefiniowanych przez powyższe wartości czasu lub odległości.  W przeciwnym razie wynik zostanie zwr&oacute;cony w postaci obiekt&oacute;w punktowych.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to nazwa warstwy, kt&oacute;ra zostanie utworzona w zakładce  <b>Moje zasoby</b> i zostanie dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli ta nazwa warstwy już istnieje, wyświetlona zostanie prośba o podanie innej nazwy.
+            </p>
+            <p>Używając menu rozwijanego  <b>Zapisz wynik w</b>, można wskazać nazwę folderu na stronie <b>Moje zasoby</b>, w kt&oacute;rym zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

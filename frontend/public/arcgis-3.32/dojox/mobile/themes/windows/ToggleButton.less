@@ -1,0 +1,49 @@
+@import "variables.less";
+@import "../common/ToggleButton.less";
+
+.mblToggleButton {
+	&:before {
+		content: '';
+		position: absolute;
+		width: 30px;
+		height: 30px;
+		top: 0px;
+		border: 2px solid @win-foreground-color;
+	}
+
+	&:active:not([disabled]):before {
+		background-color: @win-accent-color;
+	}
+
+	&:after {
+		position: absolute;
+		content: "";
+		.mblToggleButtonChecked-after-styles;
+		border-style: none solid solid none;
+		.transform(rotate(45deg) skew(10deg));
+		.transform-origin(50% 50%);
+	}
+}
+
+.mblToggleButtonChecked,
+.mblToggleButtonSelected[aria-pressed='true'] {
+	&:before {
+		background-color: @win-foreground-color;
+	}
+
+	&:after {
+		border-color: @win-bg-color !important;
+	}
+}
+
+.mblToggleButton[disabled] {
+	&:before {
+		border-color: @win-disabled-color;
+	}
+
+	&.mblToggleButtonChecked{
+		&:before {
+			background-color: @win-disabled-color;
+		}
+	}
+}

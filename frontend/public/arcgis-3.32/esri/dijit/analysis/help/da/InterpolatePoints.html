@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpolér punkter</h2><p/>
+        <h2><img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" alt="Interpol&eacute;r punkter"></h2>
+        <hr/>
+    <p>   Interpoleringsv&aelig;rkt&oslash;jet giver dig mulighed for at forudsige v&aelig;rdier p&aring; nye steder baseret p&aring; m&aring;linger fra en samling af punkter. V&aelig;rkt&oslash;jet tager punktdata med v&aelig;rdier for hvert punkt og returnerer omr&aring;der klassificeret vha. forudsagte v&aelig;rdier. For eksempel
+        <ul>
+            <li>Et distrikt, hvor luftkvaliteten er et problem, har sensorer til m&aring;ling af forureningsniveauer. Interpol\&eacute;r punkter kan anvendes til at forudsige forureningsniveauer p&aring; steder, som ikke har sensorer, f.eks. steder med befolkninger i farezonen &ndash; skoler eller hospitaler.
+            </li>
+            <li>Du kan forudsige metalkoncentrationer i afgr&oslash;der p&aring; basis af stikpr&oslash;ver taget fra individuelle planter.
+            </li>
+            <li>Du kan forudsige ern&aelig;ringsniveauer i jord (nitrogen, fosfor, potassium osv.) og andre indikatorer (f.eks. elektrisk ledeevne), s&aring; deres relation til udbyttet kan studeres, og der kan doseres pr&aelig;cise m&aelig;ngder g&oslash;dning forskellige steder p&aring; marken.
+
+            </li>
+            <li>Meteorologiske form&aring;l omfatter forudsigelse af temperaturer, nedb&oslash;r og tilknyttede variabler, f.eks. syreregn. 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vælg det punktlag, der indeholder steder med kendte værdier</h2></div>
+        <hr/>
+        <div>
+            <p>Det punktlag, der skal bruges som grundlag for interpolering.  
+
+            </p>
+            <p>Ud over at v&aelig;lge et lag fra dit kort kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten. Denne indstilling &aring;bner et galleri, hvor du kan gennemse og v&aelig;lge datas&aelig;t fra forskellige kilder, som du kan bruge i din analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Vælg felt, der skal interpoleres</h2></div>
+        <hr/>
+        <div>
+            <p>V&aelig;lg et felt, der indeholder v&aelig;rdierne, som du vil interpolere.  
+            </p>
+        </div>
+    </div>
+    <div id="interpolateOption">
+        <div><h2>Optimér for</h2></div>
+        <hr/>
+        <div>
+            <p>Angiv, hvad du foretr&aelig;kker: hastighed kontra pr&aelig;cision. Mere pr&aelig;cise forudsigelser tager l&aelig;ngere tid at beregne.
+            </p> 
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Output forudsigelsesfejl</h2></div>
+        <hr/>
+        <div>
+            <p> Markeres denne, oprettes der et lag med standardfejl i interpoleringsforudsigelserne. Navnet p&aring; outputlaget bliver navnet p&aring; resultatlaget med &quot;Errors&quot; bagefter.
+            </p>
+            <p>Standardfejl er nyttige, fordi de giver oplysninger om de forudsagte v&aelig;rdiers p&aring;lidelighed. En enkel tommelfingerregel er, at den sande v&aelig;rdi falder inden for to standardfejl i den forudsagte v&aelig;rdi 95 % af tiden. Lad os antage, at en ny placering f&aring;r en forudsagt v&aelig;rdi p&aring; 50 med en standardfejl p&aring; 5. Det betyder, at v&aelig;rkt&oslash;jets bedste g&aelig;t er, at den sande v&aelig;rdi p&aring; stedet er 50, men den kan nemt v&aelig;re helt nede p&aring; 40 eller helt oppe p&aring; 60. For at beregne dette interval af rimelige v&aelig;rdier skal standardfejlen ganges med 2, og denne v&aelig;rdi skal l&aelig;gges til den forudsagte v&aelig;rdi for at f&aring; den &oslash;vre ende af intervallet og tr&aelig;kkes fra den forudsagte v&aelig;rdi for at f&aring; den nedre del af intervallet.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Klassificér efter</h2></div>
+        <hr/>
+        <div>
+            <p>V&aelig;lg, hvordan forudsagte v&aelig;rdier skal klassificeres i omr&aring;der.
+                <ul>
+                    <li>Geometrisk interval &ndash; Omr&aring;derne baseres p&aring; klasseintervaller, som har en geometrisk serie. Denne metode sikrer, at hvert klasseinterval har omtrent det samme antal v&aelig;rdier inden for hver klasse, og at skiftet mellem intervaller er ens.
+                    </li>
+                    <li>Samme interval &ndash; Omr&aring;derne beregnes, s&aring; intervallet af forudsagte v&aelig;rdier er det samme for hvert omr&aring;de.
+                    </li>
+                    <li>Lige omr&aring;de &ndash; Omr&aring;der oprettes, s&aring; de enkelte omr&aring;der bliver lige store. Hvis dataene f.eks. har flere h&oslash;je end lave v&aelig;rdier, oprettes der flere omr&aring;der til store t&aelig;theder.
+                    </li>
+                    <li>Manuel &ndash; Med denne indstilling er det muligt at definere sit eget interval af v&aelig;rdier til omr&aring;der. Disse v&aelig;rdier angives i parameteren   <b>Klasseskillev&aelig;rider</b> nedenfor.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Antal klasser</h2></div>
+        <hr/>
+        <div>
+            <p>Angiver antallet af klasser (interval af forudsagte v&aelig;rdier) i resultatlaget. Hver klasse definerer gr&aelig;nsen for omr&aring;der. V&aelig;rdierne for disse klasser bestemmes af parameteren  <b>Klassific&eacute;r efter</b> ovenfor.
+            </p>
+        </div>
+    </div>
+    <div id="classBreaks">
+        <div><h2>Klasseskilleværdier</h2></div>
+        <hr/>
+        <div>
+            <p>Angiv de &oslash;nskede klasseskillev&aelig;rdier adskilt af mellemrum. Angiv f.eks.  <code>1,5 3 7</code>, hvis du &oslash;nsker adskillelse ved v&aelig;rdierne 1,5, 3 og 7. Disse v&aelig;rdier angiver den &oslash;vre gr&aelig;nse for hver klasse, s&aring; antallet af klasser bliver lig med antallet af indtastede v&aelig;rdier. Der oprettes ingen omr&aring;der til placeringer med forudsagte v&aelig;rdier over den st&oslash;rst angivne skillev&aelig;rdi. Du skal angive mindst to v&aelig;rdier og h&oslash;jst 32.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Klip output til</h2></div>
+        <hr/>
+        <div>
+            <p>Tegn eller angiv et lag, der angiver omr&aring;det, hvor du &oslash;nsker, at resultatet skal tegnes. Hvis du f.eks. interpolerer m&aring;linger af forurening af en s&oslash;, kan du bruge s&oslash;ens gr&aelig;nse i denne parameter, s&aring; bliver outputtet kun tegnet inden for s&oslash;ens gr&aelig;nse.
+            </p>
+        </div>
+    </div>
+    <div id="predictAtPointLayer">
+        <div><h2>Forudsig på disse placeringer</h2></div>
+        <hr/>
+        <div>
+            <p>Tegn eller angiv et lag, der angiver punktplaceringer, for at beregne forudsigelsesv&aelig;rdier. P&aring; den m&aring;de kan du f&aring; forudsigelser p&aring; bestemte steder af interesse. Hvis inputlaget f.eks. repr&aelig;senterer m&aring;linger af forureningsniveauer, kan du bruge denne parameter til at forudsige forureningsniveauer p&aring; steder med store befolkninger i farezonen, f.eks. skoler eller hospitaler. Derefter kan du bruge disse oplysninger til at give anbefalinger til sundhedsmyndighederne p&aring; s&aring;danne steder.
+            </p>
+            <p>Hvis det leveres, vil dette v&aelig;rkt&oslash;j give et punktlag som output med forudsigelser p&aring; bestemte steder. Navnet p&aring; outputlaget bliver navnet p&aring; resultatlaget med &quot;Points&quot; bagefter.  
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; det lag, som oprettes i  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis lagnavnet allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Ved hj&aelig;lp af rullemenuen  <b>Gem resultat</b> kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet skal gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Beskriv dataset</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="Arbetsfl&ouml;desschema f&ouml;r Beskriv dataset"></h2>
+        <hr/>
+    <p>Verktyget Beskriv dataset ger en mer detaljerad inblick i ditt dataset. Innan du k&ouml;r en analys p&aring; stora m&auml;ngder data, b&ouml;r du anv&auml;nda det h&auml;r verktyget f&ouml;r att best&auml;mma vad dina indata &auml;r och var de finns. Standardresultatet blir en JSON-str&auml;ng som sammanfattar nyckelbeskrivningar f&ouml;r ditt indatalager och en tabell som preciserar summeringsstatistiken f&ouml;r varje f&auml;lt. 
+    </p>
+    <p>Alternativt kan du skapa ytterligare utdatageoobjektlager f&ouml;r att beskriva dina data. Du kan v&auml;lja mellan ett exempellager och ett utbredningslager. Du kan v&auml;lja att mata ut det ena eller b&aring;da.
+    </p>
+    <p>L&aring;t s&auml;ga att du till exempel f&aring;r en fildelning med big data som inneh&aring;ller 15 dataset. Varje dataset har 10 miljoner omr&aring;desgeoobjekt som representerar byggnader och hus i olika regioner i landet. Du f&aring;r i uppgift att analysera region C, men du vet inte vilket dataset som inneh&aring;ller dessa geoobjekt. F&ouml;r att ta reda p&aring; vilket dataset du ska anv&auml;nda k&ouml;r du Beskriv dataset och v&auml;ljer att skapa ett utbredningslager f&ouml;r att unders&ouml;ka vilket dataset som finns i din unders&ouml;kningsregion.
+    </p>
+    <p>F&ouml;rest&auml;ll dig nu, som ett annat exempel, att du f&aring;r i uppgift att genomf&ouml;ra ett analysarbetsfl&ouml;de p&aring; en stor datavolym. Du vill prova arbetsfl&ouml;det men det kan ta timmar eller dagar med ditt fullst&auml;ndiga dataset. S&aring; i st&auml;llet f&ouml;r att l&auml;gga tid och resurser p&aring; att k&ouml;ra en fullst&auml;ndig analys, skapar du ett exempellager som du effektivt kan testa hela arbetsfl&ouml;det p&aring;.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Välj dataset att beskriva</h2></div>
+        <hr/>
+        <div>
+            <p>Lagret som inneh&aring;ller punkt-, linje-, area- eller tabellgeoobjekt som kommer att beskrivas, sammanfattas och samplas.
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager fr&aring;n kartan kan du v&auml;lja  <b>V&auml;lj analyslager</b> l&auml;ngst ned i listrutan f&ouml;r att bl&auml;ddra till ditt inneh&aring;ll efter ett big data-fildelningsdataset eller geoobjektlager.
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>Förstå ditt dataset genom att skapa ett (valfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Mata ut ytterligare beskrivande lager f&ouml;r att &ouml;ka din f&ouml;rst&aring;else av dina big data. Du kan v&auml;lja att mata ut noll, ett eller b&aring;da f&ouml;ljande lager:
+            </p>
+            <ul>
+                <li> <b>Utbredningslager</b> &ndash; skapar ett omr&aring;desgeoobjekt som representerar utbredningen av dina indatageoobjekt eller ditt intresseomr&aring;de.
+                </li>
+                <li> <b>Exempellager</b> &ndash; skapar ett delm&auml;ngdslager som inneh&aring;ller en specificerad m&auml;ngd indatageoobjekt inifr&aring;n ditt dataset eller intresseomr&aring;de.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>Exempellager</h2></div>
+        <hr/>
+        <div>
+            <p>Mata ut ett lager som inneh&aring;ller en delm&auml;ngd geoobjekt fr&aring;n ditt indatalager. Om du v&auml;ljer  <b>exempellager</b> kan du ange antalet geoobjekt som du vill returnera i exempellagret.  Som standard returneras 100 exempel i utdatalagret.
+            </p>
+            <p>V&auml;rdet m&aring;ste vara st&ouml;rre &auml;n noll. Om du anger en h&ouml;gre siffra &auml;n det totala antalet geoobjekt returneras alla geoobjekt.
+            </p>
+            <p>Om du v&auml;ljer  <b>Anv&auml;nd aktuell kartutbredning</b> kommer exempellagret att inneh&aring;lla geoobjekt inom kartans utbredning.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Utbredningslager</h2></div>
+        <hr/>
+        <div>
+            <p>Mata ut ett geoobjektlager som inneh&aring;ller ett enda geoobjekt, som representerar utbredningen av indatageoobjekt, genom att v&auml;lja knappen  <b>Utbredningslager</b>. Detta v&auml;ljs som standard.
+            </p>
+            <p>Om du v&auml;ljer  <b>Anv&auml;nd aktuell kartutbredning</b> kommer utbredningslagret att representera kartans synliga utbredning.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p> Namnet p&aring; lagret som ska skapas.  Om du skriver till en ArcGIS Data Store, sparas dina resultat i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Om du skriver till en big data-fildelning, lagras dina resultat i big data-fildelningen och l&auml;ggs till i dess manifest. Det l&auml;ggs inte till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns misslyckas verktyget.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

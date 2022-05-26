@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>포인트 보간(Interpolate Points)</h2><p/>
+        <h2><img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" alt="포인트 보간 도구"></h2>
+        <hr/>
+    <p>이 도구를 이용하면 포인트 컬렉션의 측정값을 기반으로 새 위치에서의 값을 예측할 수 있습니다. 이 도구는 각 포인트에서 값이 있는 포인트 데이터를 가져가 예측 값의 래스터를 반환합니다.
+    </p>
+    <p>이 도구의 기타 이용 사례:
+
+        <ul>
+            <li>공기질 관리 구역에는 오염 수준을 측정하는 센서가 있습니다.    포인트 보간은 학교나 병원 내의 오염 위험도가 높은 곳과 같이 센서가 없는 위치에서 오염 수준을 예측하는 데 사용할 수 있습니다.
+                
+
+            </li>
+            <li>각 식물에서 채취한 샘플을 기반으로 한 농작물의 중금속 농도를 예측합니다.
+                
+
+            </li>
+            <li>토양 양분 수준(질소, 인, 칼륨 등) 및 기타 지표(전기 전도성)를 예측하여 이들과 농작물을 수확량과의 관계를 연구하고 농장의 각 위치에 정확한 양의 비료를 사용할 수 있도록 합니다.
+                
+
+            </li>
+            <li>기상 응용프로그램에는 온도, 강우량 및 관련 변수(산성비 등)의 예측이 포함됩니다.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointFeatures">
+        <div><h2>알려진 값이 있는 위치가 포함된 포인트 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>값이 측정된 포인트를 포함하는 포인트 레이어입니다.
+            </p>
+        </div>
+    </div>
+    <div id="interpolateField">
+        <div><h2>보간할 필드 선택</h2></div>
+        <hr/>
+        <div>
+            <p>보간할 값을 포함하고 있는 필드를 선택합니다. 필드는 반드시 숫자이어야 합니다
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>최적화</h2></div>
+        <hr/>
+        <div>
+            <p>속도 및 정확성에 대해 우선 순위를 설정합니다.
+            </p>
+            <p>더 정확하게 예측할수록 계산하는 데 오랜 시간이 걸립니다. 이 매개변수는 계산 속도, 결과 정확도 또는 두 항목의 균형을 최적화하기 위해 보간 포인트의 다른 여러 매개변수의 기본값을 변경합니다. 기본 설정에 따라 도구가 균형에 맞게 최적화합니다.
+            </p>
+        </div>
+    </div>
+    <div id="transformData">
+        <div><h2>데이터를 일반 배포로 변환</h2></div>
+        <hr/>
+        <div>
+            <p>데이터를 일반 배포로 변환할지 여부를 선택합니다.
+            </p>
+            <p>보간은 일반(벨 모양) 배포를 따르는 데이터에 가장 정확합니다. 데이터가 일반 배포로 표시되지 않는 경우 변환을 수행해야 합니다.
+            </p>
+        </div>
+    </div>
+    <div id="sizeOfLocalModels">
+        <div><h2>로컬 모델의 크기</h2></div>
+        <hr/>
+        <div>
+            <p>보간 포인트는 최종 예측 맵을 생성하도록 함께 혼합된 로컬 보간 모델을 구축하여 적용됩니다. 이 매개변수는 각 로컬 모델에 포함될 포인트 수를 제어합니다. 더 작은 값은 보다 로컬인 결과를 만들며 작은 배율의 효과를 나타낼 수 있지만 계산에 다소 불확실성이 생길 수 있습니다. 더 큰 값은 더욱 안정적이지만 일부 로컬 효과가 누락될 수 있습니다.
+            </p>
+            <p>값은 30 ~ 500이지만 일반적인 값은 50 ~ 200입니다.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfNeighbors">
+        <div><h2>네이버 개수</h2></div>
+        <hr/>
+        <div>
+            <p>예측은 인접 포인트를 기반으로 계산됩니다. 이 매개변수는 계산에 사용될 포인트 수를 제어합니다. 더 큰 수의 네이버를 사용하면 일반적으로 더욱 정확한 결과가 생성되지만 계산 결과에 시간이 더 소요됩니다.
+            </p>
+            <p>이 값은 1 ~ 64이지만 일반적인 값은 5 ~ 15입니다.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>결과 셀 크기</h2></div>
+        <hr/>
+        <div>
+            <p>결과 래스터의 셀 크기와 단위입니다.
+            </p>
+            <p>사용할 수 있는 단위는 피트(ft), 마일(mile), 미터(m), 킬로미터(km)입니다.
+            </p>
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>결과 예측 오류</h2></div>
+        <hr/>
+        <div>
+            <p>예측된 값에 대한 표준 오류의 래스터를 생성할지 여부를 선택합니다.
+            </p>
+            <p>표준 오류는 예측 값의 신뢰도에 관한 정보를 제공하므로 유용합니다. 일반적으로 실제 값은 95%의 확률로 예측 값의 2가지 표준 오류 이내에 속하게 됩니다. 예를 들어 새 위치에서 5의 표준 오류가 있는 예측 값 50이 있다고 가정해 보겠습니다. 즉, 이 도구는 해당 위치의 실제 값이 50이지만 40으로 내려가거나 60으로 올라갈 수도 있다고 추측합니다. 이 범위의 합리적인 값을 계산하려면 표준 오류에 2를 곱하고, 이 값을 예측 값에 더하여 범위의 상한값을 구하고, 예측 값에서 이 값을 빼서 범위의 하한값을 구합니다.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에 생성되고 맵에 추가되는 레이어의 이름입니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어가 이미 있는 경우 다른 이름을 입력하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 상자를 사용하여 결과가 저장될 <b>내 콘텐츠</b>에서 폴더 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

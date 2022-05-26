@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Vektoros elemek összekapcsolása</h2><p/>
+        <h2><img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" alt="Vektoros elemek &ouml;sszekapcsol&aacute;sa"></h2>
+        <hr/>
+    <p>A Vektoros elemek &ouml;sszekapcsol&aacute;sa k&eacute;t r&eacute;teget haszn&aacute;l, &eacute;s t&eacute;rbeli vagy attrib&uacute;tumok k&ouml;z&ouml;tti &ouml;sszef&uuml;gg&eacute;sek alapj&aacute;n &ouml;sszekapcsolja az egyik vektoros elem attrib&uacute;tumait egy m&aacute;sik&eacute;val. Az eszk&ouml;z meghat&aacute;rozza az &ouml;sszes bemenő vektoros elemet, amely teljes&iacute;ti a megadott &ouml;sszekapcsol&aacute;si felt&eacute;teleket, &eacute;s az &ouml;sszekapcsolt r&eacute;teget a c&eacute;lr&eacute;teghez fűzi. 
+    </p>
+    <p>A Vektoros elemek &ouml;sszekapcsol&aacute;sa alkalmazhat&oacute; pontokra, vonalakra, ter&uuml;letekre &eacute;s t&aacute;bl&aacute;kra. A t&eacute;rbeli &ouml;sszekapcsol&aacute;shoz az adatoknak geometri&aacute;val kell rendelkezni&uuml;k. 
+    </p>
+    <p>Az  <b>Aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;s</b> bejel&ouml;l&eacute;s&eacute;vel a program csak az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen l&aacute;that&oacute; vektoros elemeket elemzi.  Ha nincs bejel&ouml;lve, az elemz&eacute;s mag&aacute;ban foglal minden vektoros elemet a c&eacute;lr&eacute;tegen &eacute;s az &ouml;sszekapcsolt r&eacute;tegen egyar&aacute;nt, akkor is, ha k&iacute;v&uuml;l esnek az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Célréteg kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>A c&eacute;lr&eacute;teg, amelynek t&aacute;bl&aacute;j&aacute;hoz az eszk&ouml;z hozz&aacute;fűzi az &ouml;sszekapcsolt r&eacute;teg attrib&uacute;tumait.
+            </p>
+            <p>A t&eacute;rk&eacute;p egy r&eacute;teg&eacute;nek kiv&aacute;laszt&aacute;sa mellett v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n tal&aacute;lhat&oacute;  <b>Elemz&eacute;si r&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is. Ennek a lehetős&eacute;gnek a v&aacute;laszt&aacute;sakor egy gal&eacute;ria ny&iacute;lik meg, amelyben k&uuml;l&ouml;nb&ouml;ző forr&aacute;sokb&oacute;l sz&aacute;rmaz&oacute; adathalmazok k&ouml;z&uuml;l v&aacute;logathat, &eacute;s ezeket felhaszn&aacute;lhatja az elemz&eacute;s&eacute;ben. 
+            </p> 
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>A célréteggel összekapcsolni kívánt réteg kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>Az &ouml;sszekapcsolt r&eacute;teg az attrib&uacute;tumokkal, amelyeket az eszk&ouml;z hozz&aacute;fűz a c&eacute;lr&eacute;teghez.
+            </p>
+            <p>A t&eacute;rk&eacute;p egy r&eacute;teg&eacute;nek kiv&aacute;laszt&aacute;sa mellett v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n tal&aacute;lhat&oacute;  <b>Elemz&eacute;si r&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is. Ennek a lehetős&eacute;gnek a v&aacute;laszt&aacute;sakor egy gal&eacute;ria ny&iacute;lik meg, amelyben k&uuml;l&ouml;nb&ouml;ző forr&aacute;sokb&oacute;l sz&aacute;rmaz&oacute; adathalmazok k&ouml;z&uuml;l v&aacute;logathat, &eacute;s ezeket felhaszn&aacute;lhatja az elemz&eacute;s&eacute;ben. 
+            </p>
+        </div>
+    </div>
+    <div id="joinType">
+        <div><h2>Összekapcsolandó típus(ok) kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>Alkalmazhat t&eacute;rbeli &ouml;sszekapcsol&aacute;st, attrib&uacute;tum-&ouml;sszekapcsol&aacute;st vagy a kettő kombin&aacute;ci&oacute;j&aacute;t. 
+                <ul>
+                    <li> <b>T&eacute;rbeli</b> &ndash; a megadott t&eacute;rbeli kapcsolatot haszn&aacute;lja a vektorelemek &ouml;sszekapcsol&aacute;s&aacute;hoz. Ehhez mindk&eacute;t r&eacute;tegnek geometri&aacute;val kell rendelkeznie.
+                    </li>
+                    <li> <b>Attrib&uacute;tum</b> &ndash; egyenlő mezők alapj&aacute;n &ouml;sszekapcsolja a vektoros elemeket.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Térbeli kapcsolat kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>A t&eacute;rbeli kapcsolat, amely meghat&aacute;rozza, hogy a vektoros elemek &ouml;sszekapcsol&oacute;dnak-e. Az el&eacute;rhető kapcsolatok a bemenő vektoros elemk&eacute;nt haszn&aacute;lt geometria t&iacute;pus&aacute;t&oacute;l (pont, vonal, ter&uuml;letek) f&uuml;ggenek. Az el&eacute;rhető kapcsolatok az al&aacute;bbiakat foglalj&aacute;k magukban:
+                <ul>
+                    <li> <b>Azonos</b> &ndash; a c&eacute;l r&eacute;teg vektoros elemeit p&aacute;ros&iacute;tja, ha azok azonosak az &ouml;sszekapcsolt r&eacute;teg vektoros elemeivel.
+                    </li>
+                    <li> <b>Metsző</b> &ndash; a c&eacute;l r&eacute;teg vektoros elemeit p&aacute;ros&iacute;tja, ha azok metszik az &ouml;sszekapcsolt r&eacute;teg vektoros elemeit.
+                    </li>
+                    <li> <b>Teljes m&eacute;rt&eacute;kben tartalmazza</b> &ndash; a vektoros elemeket p&aacute;ros&iacute;tja, ha a c&eacute;l r&eacute;teg vektoros elemei teljes m&eacute;rt&eacute;kben tartalmazz&aacute;k az &ouml;sszekapcsolt r&eacute;teg vektoros elemeit.
+                    </li>
+                    <li> <b>Hat&aacute;r&aacute;n bel&uuml;l van</b> &ndash; a vektoros elemeket p&aacute;ros&iacute;tja, ha a c&eacute;l r&eacute;teg vektoros elemei teljes m&eacute;rt&eacute;kben az &ouml;sszekapcsolt r&eacute;teg vektoros elemeinek hat&aacute;r&aacute;n bel&uuml;l vannak.
+                    </li>
+                    <li> <b>Megadott t&aacute;vols&aacute;gon bel&uuml;l</b> &ndash; a c&eacute;l r&eacute;teg vektoros elemeit p&aacute;ros&iacute;tja, ha a megadott t&aacute;vols&aacute;gon bel&uuml;l vannak az &ouml;sszekapcsolt r&eacute;teg vektoros elemeitől
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>Attribútum-összekapcsolás</h2></div>
+        <hr/>
+        <div>
+            <p>Az attrib&uacute;tumkapcsolat, amely meghat&aacute;rozza, hogy a vektoros elemek &ouml;sszekapcsol&oacute;dnak-e. Azok a vektoros elemek, amelyeket az eszk&ouml;z p&aacute;ros&iacute;t, ha az &ouml;sszekapcsolt r&eacute;teg mező&eacute;rt&eacute;kei egyenlőek a c&eacute;l r&eacute;teg mező&eacute;rt&eacute;keivel. 
+            </p>
+            <p>Vegy&uuml;nk p&eacute;ld&aacute;ul lakc&iacute;meket (bele&eacute;rtve egy  <i>ZIP</i> mezőt) tartalmaz&oacute; megyei f&ouml;ldrajzi r&eacute;teget &eacute;s egy ir&aacute;ny&iacute;t&oacute;sz&aacute;m alapj&aacute;n eg&eacute;szs&eacute;g&uuml;gyi demogr&aacute;fiai adatokat (bele&eacute;rtve egy <i>HEALTHZIP</i> mezőt tartalmaz&oacute;, t&aacute;bl&aacute;zatos adathalmazt). Az eg&eacute;szs&eacute;g&uuml;gyi adathalmazt &ouml;sszekapcsolhatja a lak&oacute;hely adatokkal a <i>ZIP</i> &eacute;s a <i>HEALTHZIP</i> mező p&aacute;ros&iacute;t&aacute;s&aacute;val, ami egy lak&oacute;hely r&eacute;teget ad eredm&eacute;ny&uuml;l a megfelelő eg&eacute;szs&eacute;g&uuml;gyi adatokkal.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Összekapcsolási művelet kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>Meghat&aacute;rozza a c&eacute;l- &eacute;s az &ouml;sszekapcsolt r&eacute;teg k&ouml;z&ouml;tti &ouml;sszekapcsol&aacute;s kezel&eacute;s&eacute;t, ha az &ouml;sszekapcsolt r&eacute;teg t&ouml;bb vektoros eleme kapcsol&oacute;dik azonos m&oacute;don a c&eacute;l r&eacute;teghez. Az al&aacute;bbi k&eacute;t &ouml;sszekapcsol&aacute;si művelet k&ouml;z&uuml;l v&aacute;laszthat:
+                <ul>
+                    <li> <b>Egy az egyhez &ouml;sszekapcsol&aacute;s</b> &ndash; ez az opci&oacute; a c&eacute;lr&eacute;tegbeli vektoros elemeket kapcsolja &ouml;ssze az &ouml;sszekapcsolt r&eacute;teg egyetlen vektoros elem&eacute;vel. A vektoros elemek &ouml;sszekapcsol&aacute;s&aacute;nak m&oacute;dj&aacute;t a <b>Statisztika hozz&aacute;ad&aacute;sa</b> param&eacute;ter vagy a <b>Megtartand&oacute; rekord meghat&aacute;roz&aacute;sa</b> param&eacute;ter hat&aacute;rozza meg. A <b>Statisztika hozz&aacute;ad&aacute;sa</b> param&eacute;ter haszn&aacute;lata eset&eacute;n a rendszer valamennyi &ouml;sszekapcsolt vektoros elemet a c&eacute;lr&eacute;teg egyes vektoros elemeihez &ouml;sszes&iacute;ti. Az &ouml;sszekapcsolt vektoros elemek sz&aacute;m&aacute;nak hozz&aacute;ad&aacute;sa alap&eacute;rtelmez&eacute;s szerint megt&ouml;rt&eacute;nik.
+A <b>Megtartand&oacute; rekord meghat&aacute;roz&aacute;sa</b>
+ param&eacute;ter haszn&aacute;lata eset&eacute;n v&aacute;laszthat, hogy vagy az első egyező rekordot tartja meg (alap&eacute;rtelmezett be&aacute;ll&iacute;t&aacute;s) vagy pedig valamilyen kifejez&eacute;s alapj&aacute;n tartja meg az egyező rekordot. A kifejez&eacute;s haszn&aacute;lhat numerikus mezőt
+(opci&oacute;k&eacute;nt a legnagyobb vagy legkisebb rekordot) vagy d&aacute;tummezőt (opci&oacute;k&eacute;nt a legfrissebbet vagy legr&eacute;gebbit).
+                    </li>
+                    <li> <b>Egy a sokhoz &ouml;sszekapcsol&aacute;s</b> &ndash; ez az opci&oacute; az &ouml;sszekapcsolt r&eacute;teg &ouml;sszes egyező vektoros elem&eacute;t &ouml;sszekapcsolja a c&eacute;l r&eacute;teggel.  Az eredm&eacute;ny r&eacute;teg a c&eacute;l vektoros elem t&ouml;bb bejegyz&eacute;s&eacute;t fogja tartalmazni.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Tegy&uuml;k fel p&eacute;ld&aacute;ul, hogy &eacute;lelmiszer&uuml;zleteket k&iacute;v&aacute;n keresni egy termelői piact&oacute;l 5 kilom&eacute;ter t&aacute;vols&aacute;gban.   Ebben az esetben az &ouml;sszekapcsolt r&eacute;teg egyetlen vektoros eleme a termelői piacnak felel meg, a kapcsol&oacute;d&oacute; vektoros elemek pedig a helyi &eacute;lelmiszer&uuml;zleteknek, amelyek olyan attrib&uacute;tumokkal rendelkeznek, mint az &eacute;ves teljes &aacute;rbev&eacute;tel. A  <b>Vektorelemek &ouml;sszekapcsol&aacute;sa</b> eszk&ouml;z haszn&aacute;lat&aacute;val meg&aacute;llap&iacute;thatja, hogy &ouml;t &eacute;lelmiszer&uuml;zlet felel meg a krit&eacute;riumoknak. <b>Egy a sokhoz &ouml;sszekapcsol&aacute;s</b> &ouml;sszekapcsol&aacute;si művelet megad&aacute;s&aacute;val az eredm&eacute;ny &ouml;t vektoros elemet fog tartalmazni, ahol az egyes sorok a termelői piacnak &eacute;s egy &eacute;lelmiszer-&aacute;ruh&aacute;znak felelnek meg. <b>Egy az egyhez &ouml;sszekapcsol&aacute;s</b> kapcsolat megad&aacute;s&aacute;val &eacute;s statisztikai sz&aacute;m&iacute;t&aacute;s kiv&aacute;laszt&aacute;s&aacute;val az eredm&eacute;ny egy vektoros elem lesz, amely a termelői piacot &eacute;s az &eacute;lelmiszer-&aacute;ruh&aacute;zak &ouml;sszes&iacute;tett adatait tartalmazza, mint p&eacute;ld&aacute;ul a darabsz&aacute;m (5) &eacute;s a t&ouml;bbi v&aacute;laszthat&oacute; statisztikai adat, mint p&eacute;ld&aacute;ul az &eacute;ves &aacute;rbev&eacute;tel &ouml;sszege.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Statisztika hozzáadása (opcionális)</h2></div>
+        <hr/>
+        <div>
+            <p>Az  <b>Egy az egyhez &ouml;sszekapcsol&aacute;s</b> opci&oacute; kiv&aacute;laszt&aacute;s&aacute;val numerikus mezők eset&eacute;n &ouml;sszes&iacute;t&eacute;st &eacute;s statisztikai sz&aacute;m&iacute;t&aacute;sokat v&eacute;gezhet az &ouml;sszekapcsolt vektoros elemekkel.   Az eszk&ouml;z alap&eacute;rtelmez&eacute;s szerint kisz&aacute;m&iacute;tja az egyező &ouml;sszekapcsolt vektoros elemek sz&aacute;m&aacute;t, &eacute;s hozz&aacute;adja az eredm&eacute;ny r&eacute;teghez.  Ha &uacute;gy d&ouml;nt, hogy nem ad hozz&aacute; tov&aacute;bbi statisztikai sz&aacute;m&iacute;t&aacute;sokat, akkor az eszk&ouml;z az &ouml;sszekapcsolt r&eacute;teg első egyező vektoros elem&eacute;t &ouml;sszekapcsolja a c&eacute;lr&eacute;teg első egyező vektoros elem&eacute;vel.   Kisz&aacute;m&iacute;thatja az al&aacute;bbiak valamelyik&eacute;t (ak&aacute;r t&ouml;bbet is):
+            </p>
+            <ul>
+                <li>&Ouml;sszeg
+                </li>
+                <li>Minimum
+                </li>
+                <li>Maximum
+                </li>
+                <li>K&ouml;zepes
+                </li>
+                <li>Sz&oacute;r&aacute;s
+                </li>
+            </ul>
+            
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Eredményréteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve.  Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő men&uuml;ben megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+    <div id="isView">
+        <div><h2>Eredmények létrehozása központilag tárolt vektoros réteg nézetként</h2></div>
+        <hr/>
+        <div>
+            <p> Az eredm&eacute;nyek k&ouml;zpontilag t&aacute;rolt vektoros r&eacute;teg n&eacute;zetk&eacute;nt val&oacute; l&eacute;trehoz&aacute;sa lehetőv&eacute; teszi az adatok naprak&eacute;szen tart&aacute;s&aacute;t a forr&aacute;sadatok v&aacute;ltoz&aacute;s&aacute;nak megfelelően.  Az &ouml;sszekapcsol&aacute;sokat tartalmaz&oacute; k&ouml;zpontilag t&aacute;rolt vektoros r&eacute;teg n&eacute;zetek csak olvashat&oacute;k lesznek, valamint elemz&eacute;s&uuml;k &eacute;s t&aacute;rol&aacute;suk nem ker&uuml;l kreditekbe.
+            </p>
+            <p>Az elemz&eacute;si eredm&eacute;nyekből t&aacute;rolt vektoroselem-r&eacute;teg n&eacute;zetet hozhat l&eacute;tre, ha valamennyi al&aacute;bbi felt&eacute;tel teljes&uuml;l:
+                <ul>
+                    <li>&Ouml;n a tulajdonosa mindk&eacute;t r&eacute;tegnek.
+                    </li>
+                    <li>Mindk&eacute;t r&eacute;teg t&aacute;rolt vektoroselem-r&eacute;teg.
+                    </li>
+                    <li>Attrib&uacute;tumalap&uacute; &ouml;sszekapcsol&aacute;st v&eacute;gez.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

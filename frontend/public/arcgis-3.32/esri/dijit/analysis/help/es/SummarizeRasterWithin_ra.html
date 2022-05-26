@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Resumir ráster dentro de</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="Herramienta Resumir r&aacute;ster dentro de"></h2>
+        <hr/>
+    <p>Esta herramienta resume un r&aacute;ster basado en &aacute;reas (zonas) definidas por la primera capa de entrada.
+    </p>
+    <p>A continuaci&oacute;n se indican algunas aplicaciones de ejemplo:
+    </p>
+    <p>
+        <ul>
+            <li>Dada una capa de l&iacute;mites de cuencas hidrogr&aacute;ficas y una capa de l&iacute;mites de uso del suelo, calcule la superficie total del tipo de uso del suelo para cada cuenca hidrogr&aacute;fica.
+                
+
+            </li>
+            <li>Dada una capa de parcelas de un condado y una capa de l&iacute;mites de ciudades, resuma el valor medio de las parcelas vac&iacute;as en cada l&iacute;mite de ciudad.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si se ha activado  <b>Usar la extensi&oacute;n del mapa actual</b>, solo se analizar&aacute;n las entidades de la capa de entrada y la capa que se va a resumir que est&eacute;n visibles en la extensi&oacute;n de mapa actual.  Si la opci&oacute;n est&aacute; desactivada, se analizar&aacute;n todas las entidades de la capa de entrada y de la capa que se va a resumir, aunque est&eacute;n fuera de la extensi&oacute;n de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Elija una capa de área para resumir una capa ráster en los límites definidos</h2></div>
+        <hr/>
+        <div>
+            <p>La capa que define los l&iacute;mites de las &aacute;reas, o zonas, que se van a resumir.
+            </p>
+            <p>La capa puede ser un r&aacute;ster o datos de entidad. Para los r&aacute;steres, las zonas se definen mediante todas las ubicaciones de la entrada que tienen el mismo valor de celda. No es necesario que las &aacute;reas sean contiguas.
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>Elija un campo para definir los límites</h2></div>
+        <hr/>
+        <div>
+            <p>Este es el atributo de la capa que se utilizar&aacute; para definir los l&iacute;mites de las &aacute;reas.
+            </p>
+            <p>Por ejemplo, supongamos que la primera capa de entrada define los l&iacute;mites de la unidad de gesti&oacute;n, con atributos que definen la regi&oacute;n, el distrito y el ID de parcela de cada unidad. Tambi&eacute;n tiene una capa r&aacute;ster que define el &iacute;ndice de biodiversidad para cada ubicaci&oacute;n. Con el campo seleccionado, puede decidir calcular la biodiversidad media en el nivel local, de distrito o regional.
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>Elija una capa ráster para resumir</h2></div>
+        <hr/>
+        <div>
+            <p>Las celdas r&aacute;ster de esta capa se resumir&aacute;n por las &aacute;reas (zonas) en las que queden dentro.
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>Elija una estadística para calcular</h2></div>
+        <hr/>
+        <div>
+            <p>Una vez que haya elegido una capa para resumir, podr&aacute; calcular estad&iacute;sticas sobre cualquier atributo num&eacute;rico de los puntos, l&iacute;neas o &aacute;reas dentro de la capa de &aacute;rea de entrada.
+            </p>
+            <p>Los tipos de estad&iacute;sticas que est&aacute;n disponibles cuando el campo seleccionado es un entero son: Media, Mayor&iacute;a, M&aacute;ximo, Mediana, M&iacute;nimo, Minor&iacute;a, Rango, Desviaci&oacute;n est&aacute;ndar, Suma y Variedad.
+            </p>
+            <p>Si el campo es de punto flotante, las opciones son: Valor medio, M&aacute;ximo, M&iacute;nimo, Rango, Desviaci&oacute;n est&aacute;ndar y Suma.
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>Ignorar valores que faltan en cálculo</h2></div>
+        <hr/>
+        <div>
+            <p>Si opta por ignorar los valores que faltan, solo se utilizar&aacute;n para determinar el valor de salida de dicha &aacute;rea las celdas que tengan un valor en la capa que se va a resumir. En caso contrario, si faltan valores en alg&uacute;n lugar del &aacute;rea, se considerar&aacute; que no hay suficiente informaci&oacute;n para realizar c&aacute;lculos estad&iacute;sticos para todas las celdas de esa zona y esa &aacute;rea recibir&aacute; un valor nulo (NoData) en la salida.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>El nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y que se agregar&aacute; al mapa. El nombre predeterminado se basa en el nombre de la herramienta y en el nombre de la capa de entrada. Si la capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Puede especificar el nombre de una carpeta de  <b>Mi contenido</b> en la que se guardar&aacute; el resultado con el cuadro desplegable <b>Guardar el resultado en</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

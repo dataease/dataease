@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Združi sloje</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Združi sloje"></h2>
+        <hr/>
+    <p>To orodje združuje dva geoobjektna sloja za ustvarjanje enega izhodnega sloja. Sloji, ki bodo združeni, morajo imeti enak tip geometrije in tip časa. Lahko nadzirate, kako so polja iz vhodnih slojev spojena in kopirana. Na primer:
+        <ul>
+            <li>Imam tri sloje za Anglijo, Wales in &Scaron;kotsko in želim samo en sloj za Veliko Britanijo. 
+            </li>
+            <li>Imam 2 slojev in vsak vsebuje parcelne informacije za sosednja mestna območja. Želim jih spojiti v enojen sloj in ohraniti samo polja, ki imajo enako ime in tip v 2 vhodnih slojih.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izberi sloj</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj s tabličnimi, točkovnimi, linijskimi ali poligonskimi geoobjekti, v katerega bo združen drugi geoobjektni sloj. Vsa polja iz tega sloja bodo vključena v sloj z rezultati.
+            </p>
+        </div>
+    </div>
+    <div id="mergeLayer">
+        <div><h2>Izberi sloj za združevanje</h2></div>
+        <hr/>
+        <div>
+            <p>Geoobjektni sloj, ki bo združen z vhodnim slojem. Sloj, ki bo združen, mora imeti enak tip geometrije in tip časa kot vhodni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="mergingAttributes">
+        <div><h2>Spremeni združevalna polja</h2></div>
+        <hr/>
+        <div>
+            <p>Privzeto bodo vsa polja iz obeh vhodnih slojev vključena v izhodni sloj. Z naslednjimi možnostmi lahko določite, kako bodo polja iz sloja za združevanje vključena v izhodni sloj:
+                <ul>
+                    <li> <b>Preimenuj</b> &ndash; Polje bo preimenovano v izhodnem sloju.
+                    </li>
+                    <li> <b>Odstrani</b> &ndash; Polje bo odstranjeno iz izhodnega sloja.
+                    </li>
+                    <li> <b>Ujemanje</b> &ndash; Imena polj so enaka. Vrednosti polja združevalnega sloja bodo kopirane v ujemajoče izhodno polje.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Če oba sloja vsebujeta polje z identičnim imenom in tipom podatkov, bo vsebina obeh polj združena v eno polje s tem imenom. To ne velja za polja, pri katerih je uporabljeno  <b>Ujemanje</b> v parametru <b>Spremeni združevalna polja</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p> To je ime sloja, ki bo ustvarjen. Če zapisujete v ArcGIS Data Store, bodo va&scaron;i rezultati shranjeni v  <b>Moji vsebini</b> in dodani na karto. Če zapisujete v delitev datotek velikih podatkov, bodo va&scaron;i rezultati shranjeni v delitev datotek velikih podatkov in dodani v njen manifest. Ne bodo dodani v skupino. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, orodje ne bo uspe&scaron;no.
+            </p>
+            <p>Ko zapisujete v  ArcGIS Data Store (relacijsko ali prostorsko-časovno shrambo velikih podatkov) s pomočjo spustnega menija  <b>Shrani rezultat v</b>, lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

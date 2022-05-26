@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Buat Daerah Aliran Air</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="Buat Batas Air"></h2>
+        <hr/>
+    <p>Alat ini menentukan batas air, atau area penghasil hulu, untuk setiap titik di layer input Anda. 
+    </p>
+    <p>Contohnya, layer ini mungkin merupakan layer yang berisi toko terbaik Anda atau desa yang paling parah terserang penyakit. Karena sumber kontaminasinya pasti di suatu tempat pada hulu batas air titik tersebut, Anda akan menggunakan alat ini untuk menentukan watershed yang mengandung sumber pengkontaminasi.
+    </p>
+    <p>Lokasi titik masukan Anda adalah penting. Jika itu tidak ditentukan dengan tepat pada garis drainase, hasil batas air-nya mungkin sangat kecil dan tidak bermanfaat untuk analisis Anda.   <b>Cari jarak ke drainase terdekat</b> dapat digunakan untuk menyesuaikan lokasi titik input Anda sehingga itu tepat berada di garis batas air untuk menemukan batas air yang mengalir ke titik yang berlokasi di titik drainase.  Lokasi yang disesuaikan digunakan untuk mencari aliran sungai yang ditulis ke output lapisan&mdash;Anda poin masukan yang tidak dimodifikasi.
+    </p>
+    <p>Hasilnya adalah sekelompok layer yang mengandung dua layer: batas air dan titik yang disesuaikan digunakan untuk menghitung batas air.     
+    </p>
+    <p>Batas air hasilnya akan memiliki seluruh atribut dari titik input Anda juga atribut tambahan ini:     
+        <ul>
+            <li> <i>PourPtID</i>&mdash;Berisi nilai ID dari titik input
+            </li>
+            <li> <i>Area Square Kilometers</i>&mdash;Berisi area dalam kilometer persegi pada batas air hulu
+            </li>
+            <li> <i>Description</i> dan <i>DataResolution</i>&mdash;Berisi informasi terkait dengan data hidrologi yang digunakan untuk menghitung pelacakan
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jika  <b>Gunakan jangkauan peta saat ini</b> dicentang, hanya fitur pada cakupan peta saat ini yang akan digunakan untuk menghitung batas air.  Jika tidak dicentang, seluruh fitur pada layer input akan dihilangkan, meskipun berada di luar cakupan peta saat ini.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Fitur titik yang digunakan untuk menghitung batas air</h2></div>
+        <hr/>
+        <div>
+            <p>Batas air (area yang berkontribusi hulu) akan dihitung untuk setiap titik.  
+            </p>
+            <p>Selain memilih sebuah layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> yang terdapat di bagian paling bawah daftar drop-down. Opsi ini membuka galeri di mana Anda dapat menelusuri dan memilih set data dari berbagai sumber untuk digunakan dalam analisis Anda. 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>Cari jarak ke drainase terdekat</h2></div>
+        <hr/>
+        <div>
+            <p>Jika titik input Anda berlokasi jauh dari garis drainase, batas air hasilnya kemungkinan akan sangat kecil dan tidak begitu bermanfaat untuk analisis, misalnya menentukan sumber hulu dari kontaminasi.  Pada sebagian besar kasus, Anda ingin titik input langsung ke garis drainase setempat untuk menemukan batas air yang mengalir ke titik yang berlokasi pada garis drainase.  Untuk menemukan garis drainase terdekat, tentukan jarak pencarian.  Jika Anda tidak menentukan jarak pencarian, alat akan menghitung dan menggunakan jarak pencarian konservatif.  
+            </p>
+            <p>Untuk menggunakan lokasi pasti titik input Anda, tentukan jarak pencarian yaitu nol.  
+            </p>
+            <p>Untuk tujuan analisis, garis drainase telah dihitung sebelumnya oleh Esri menggunakan model hidrologi standar.  Jika tidak ada garis drainase pada jarak pencarian, lokasi yang mengandung akumulasi aliran tertinggi dalam jarak pencarian digunakan.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Ini adalah nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta.  Nama default ditetapkan berdasarkan nama layer input. Jika nama layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Dengan menggunakan  <b>Simpan hasil di</b> menu drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> sebagai tempat penyimpanan hasil.
+            </p>
+            <p> Menjalankan alat ini tidak memakan kredit.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

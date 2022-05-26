@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Udtræk raster</h2><p/>
+        <h2><img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" alt="Udtr&aelig;k raster-v&aelig;rkt&oslash;j til Portal"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j kan klippe rasterdata ud til en gr&aelig;nse, enten til et rektangul&aelig;rt omr&aring;de eller en form, som du definerer interaktivt p&aring; sk&aelig;rmen. Du kan klippe til udstr&aelig;kningen af det omr&aring;de, som du f&aring;r vist p&aring; dit kort lige nu, eller til det unders&oslash;gelsesomr&aring;de, der defineres af en polygon.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vælg inputdata til udtrækning</h2></div>
+        <hr/>
+        <div>
+            <p>Det inputlag, de skal klippes.
+            </p>
+        </div>
+    </div>
+    <div id="clippingGeometry">
+        <div><h2>Angiv klip-geometri</h2></div>
+        <hr/>
+        <div>
+            <p>V&aelig;lg den udstr&aelig;kningstype, der skal bruges, n&aring;r lagets geometri skal klippes:
+
+                <ul>
+                    <li>Anvend aktuel udstr&aelig;kning &ndash; Den aktuelle kortudstr&aelig;kning vil blive brugt til at klippe det resulterende lag ud. Dette er standardv&aelig;rdien.
+                        
+
+                    </li>
+                    <li>V&aelig;lg unders&oslash;gelsesomr&aring;de &ndash; G&oslash;r det muligt at v&aelig;lge, om resultatet skal vise omr&aring;det inden for geometriudstr&aelig;kningen eller uden for geometriudstr&aelig;kningen. Hvis du v&aelig;lger indstillingen  <b>Data inden i geometrien</b>, fjernes billeder, der er placeret uden for udstr&aelig;kningen. Hvis du v&aelig;lger indstillingen <b>Data uden for geometrien</b>, fjernes billeder, der er placeret inden for udstr&aelig;kningen. Du kan ogs&aring; definere en klip-geometri ved hj&aelig;lp af tegnev&aelig;rkt&oslash;jet.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; det lag, som oprettes under  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Du kan angive navnet p&aring; en mappe i  <b>Mit indhold</b>, hvor resultatet bliver gemt ved at benytte rullelisten <b>Gem resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

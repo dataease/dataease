@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Pronađi najbliže</h2><p/>
+        <h2><img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" alt="Pronađi najbliže"></h2>
+        <hr/>
+    <p>Ovaj će alat pronaći najbliže geoobjekte i izvijestiti te rangirati udaljenost do najbližih geoobjekata. Da biste saznali &scaron;to je najbliže, alat može mjeriti na temelju udaljenosti zračne linije ili odabranog načina putovanja. Postoje opcije za ograničavanje broja najbližih geoobjekata za pretraživanje ili raspona pretraživanja u kojem će se tražiti. Rezultati ovog alata mogu vam pomoći odgovoriti na sljedeće vrste pitanja:
+        <ul>
+            <li>Koji je najbliži park odavde?
+            </li>
+            <li>Do koje bolnice mogu doći u najkraćem vremenu vožnje? Koliko bi dugo trajalo putovanje u utorak u 17:30 h za vrijeme gužve?
+            </li>
+            <li>Koje su cestovne udaljenosti između ovih većih gradova?
+            </li>
+            <li>Koji od ovih pacijenata stanuje unutar dvije milje od ovih kemijskih postrojenja?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Pronađi najbliže vraća sloj koji sadrži najbliže geoobjekte i linijski sloj koji povezuje početne lokacije s najbližim lokacijama. Linijski sloj sadrži informacije o početnim i najbližim lokacijama te udaljenosti među njima.
+    </p>
+    <p>Ako je označena opcija  <b>Upotrijebi trenutačni obuhvat karte</b>, samo će se geoobjekti koji su vidljivi unutar trenutačnog obuhvata karte uzeti u obzir kao početni i potencijalni najbliži geoobjekti. Ako opcija nije označena, svi geoobjekti u ulaznom sloju uzet će se u obzir, čak i ako se nalaze izvan trenutačnog obuhvata karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Navedite početne lokacije</h2></div>
+        <hr/>
+        <div>
+            <p>Pronađite najbliže mjeri od geoobjekata u sloju koji ovdje odredite (početne lokacije) do lokacija koje odredite u sljedećem parametru. Alat podržava do  5 000 geoobjekata u svakom sloju. 
+            </p>
+        </div>
+    </div>
+    <div id="NearbyLocationsLayer">
+        <div><h2>Pronađi najbliže lokacije u</h2></div>
+        <hr/>
+        <div>
+            <p>Pronađite najbliže mjeri od svakog geoobjekta u prvom sloju do lokacija u ovom sloju. Alat podržava do  5 000 lokacija u svakom sloju. </p>
+            <p>Osim odabira sloja iz karte, možete odabrati opciju  <b>Izaberi sloj za analizu</b> koja se nalazi na dnu popisa padajućeg izbornika. Ova opcija otvara galeriju u kojoj možete pretraživati i odabrati skupove podataka iz raznih izvora te ih koristiti u svojoj analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Izmjeri</h2></div>
+        <hr/>
+        <div>
+            <p>Izaberite hoćete li pronaći najbliže lokacije na temelju udaljenosti zračne linije ili odabranog načina putovanja. Načini putovanja omogućeni su samo kada ulazni sloj sadrži točke. Dostupne načine putovanja određuje administrator va&scaron;e organizacije. Prilikom upotrebe jednog od načina putovanja, mjerenja se rade uz ceste ili staze i po&scaron;tuju primjenjiva pravila, kao &scaron;to su jednosmjerne ulice, zabranjena skretanja itd.
+            </p>
+            <p>Prilikom mjerenja između linija ili povr&scaron;ina, pronalazi se udaljenost od ili do najbliže točke uz liniju ili granicu povr&scaron;ine. 
+            </p> 
+            <p>Kada odaberete  <b>vrijeme vožnje</b>, <b>vrijeme vožnje ruralnim područjem</b> ili <b>vrijeme vožnje kamionom</b>, možete izmjeriti vrijeme vožnje.
+                <ul>
+                    <li>
+                        <p>Odznačite opciju  <b>Upotrijebi promet</b> kako biste prona&scaron;li najbliže geoobjekte na temelju statičkih brzina putovanja, kao &scaron;to su ograničenja brzine, a ne na temelju promjenjivih brzina koje su uzrokovane promjenjivim prometnim uvjetima.
+                        </p>
+                        <p>Ovo je opcija koju možete odabrati ako želite znati &scaron;to je općenito najbliže, no ne nužno najbliže s obzirom na prometne uvjete za određeno vrijeme i dan.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Označite opciju  <b>Upotrijebi promet</b> kako biste prona&scaron;li najbliže geoobjekte na temelju zadanog početnog vremena i promjenjivih prometnih uvjeta. Ako odaberete i opciju <b>Promet uživo</b>, vrijeme polaska od početnih lokacija postavlja se na trenutačno vrijeme, a trenutačne i predviđene brzine prometa referencirane su od senzora i sadržaja kako bi se utvrdilo koji su geoobjekti najbliži. Predviđene brzine prometa računaju se referenciranjem brzina prometa uživo, prija&scaron;njih brzina i trenutačnih događaja kao &scaron;to je vrijeme. Brzine prometa predviđaju se za 12 sati unaprijed pa možete pomaknuti klizač za postavljanje vremena polaska unaprijed do 12 sati.
+                        </p>
+                        <p>Upotrijebite ove postavke za promet uživo da biste saznali do kojih se geoobjekata može doći u najkraćem mogućem vremenu ako odete sada, ako odete za jedan sat itd.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Ako označite opciju  <b>Upotrijebi promet</b> i izaberete opciju <b>Promet na temelju tipičnih uvjeta za</b> dan i vrijeme, alat pronalazi najbliže geoobjekte na temelju prosjeka prija&scaron;njih brzina u intervalima od pet minuta kroz uobičajeni tjedan. Rezultati uključuju promet, no isključuju utjecaj trenutačnih prometnih uvjeta i događaja koji se mogu znatno razlikovati od norme.
+                        </p>
+                        <p>Možete upotrijebiti postavke za povijest prometa da biste pitali, primjerice, &bdquo;Do kojih se geoobjekata može najbrže doći kada se odlazi od početnih geoobjekata u 11:30 ujutro u srijedu?&rdquo; 
+                        </p>
+                        <p>Vrijeme koje postavite referira se na vremensku zonu u kojoj se nalaze početni geoobjekti. Stoga, ako postavite vrijeme na 8:00 ujutro i imate dva početna geoobjekta, jedan u New York Cityju i jedan u Los Angelesu, najbliže lokacije pronaći će se s pretpostavkom vremena polaska od 8:00 ujutro. Istočno vrijeme i 8:00 ujutro. Pacifičko vrijeme.
+                        </p>
+                    </li>
+                </ul>
+                Imajte na umu da kako vozilo vozi dalje od točke, vrijeme prolazi i mijenjaju se prometni uvjeti. Ovaj alat uzima u obzir ove varijacije kada označite <b>Upotrijebi promet</b>. Međutim, ne podržavaju sve regije promet. Kliknite na poveznicu <b>Vidi dostupnost</b> na alatu da biste saznali nudi li se u va&scaron;em radnom području. 
+            </p>
+            <p> <b>Vrijeme vožnje kamionom</b> može upotrijebiti dinamične brzine putovanja na temelju prometa, ali samo do zakonskog ograničenja brzine kamiona. Na primjer, ako je dinamična brzina za ulicu na temelju prometa uživo 65 milja na sat, ali je brzina kamiona za tu ulicu 55 milja na sat, u izračunu će se upotrijebiti 55 milja na sat za tu ulicu.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Odaberite slojeve ograničenja</h2></div>
+        <hr/>
+        <div>
+            <p> Jedan ili vi&scaron;e geoobjekata koji funkcioniraju kao privremena ograničenja (barijere) kad se krećete odgovarajućim ulicama. Možete navesti ograničenja upotrebom točkastih, linijskih ili poligonalnih geoobjekata.
+            </p>
+            <p>Točkasto ograničenje može predstavljati sru&scaron;eno stablo, nesreću, sru&scaron;eni dalekovod ili bilo &scaron;to &scaron;to u potpunosti blokira promet na određenom mjestu u ulici. Kretanje je dopu&scaron;teno po ulici, ali ne kroz ograničenje. Možete navesti do 250 geoobjekata koji će funkcionirati kao točkasta ograničenja.
+            </p>
+            <p>Linijsko ograničenje sprječava kretanje svugdje gdje ograničenje presijeca ulice. Na primjer, povorka ili prosvjed koji zaustavljaju promet kroz nekoliko dijelova ulica mogu se modelirati pomoću linijskog ograničenja. Ako broj geoobjekata na ulici koji presijecaju linijska ograničenja prema&scaron;uje 500, alat će javiti da je do&scaron;lo do pogre&scaron;ke.
+            </p>
+            <p>Poligonsko ograničenje sprječava kretanje svugdje gdje poligon presijeca ulice. Ova vrsta ograničenja može se upotrijebiti za modeliranje poplavljenih područja ulične mreže gdje kretanje cestom nije moguće. Ako broj geoobjekata na ulici koji presijecaju poligonska ograničenja prema&scaron;uje 2000, alat će javiti da je do&scaron;lo do pogre&scaron;ke.
+            </p>
+        </div>
+    </div>
+    <div id="Cutoffs">
+        <div><h2>Za svaku lokaciju u ulaznom sloju</h2></div>
+        <hr/>
+        <div>
+            <p>Imate dvije opcije za ograničavanje pretraživanja najbližih lokacija. Jedna je opcija ograničavanje maksimalnog broja najbližih lokacija koje možete pronaći po početnoj lokaciji. Možete pronaći jednu najbližu parku, dvije najbliže itd. Druga je opcija postavljanje maksimalne udaljenosti za pretraživanje ili vremena vožnje.
+            </p>
+            <p>Ako odznačite opcije, maksimalan broj najbližih lokacija koje možete pronaći jest 100 (ograničenje alata), a maksimalni raspon pretraživanja nije ograničen.
+            </p>
+            <p>Vrijeme obrade ovisi o broju početnih lokacija, broju obližnjih lokacija i maksimalnom rasponu pretraživanja. Potrebno je vi&scaron;e vremena za obradu kada se radi o vi&scaron;e lokacija ili većim rasponima pretraživanja.
+            </p>
+            <p>Imajte na umu da kada se postavi ograničenje na rasponu pretraživanja, moguće je da alat neće pronaći najbliže lokacije unutar tog raspona ili da će pronaći manje lokacija od maksimalnog broja najbližih lokacija koji odredite.
+            </p>
+        </div>
+    </div>
+    <div id="OutputNearestLocationsLayer">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja geoobjekta koji će se stvoriti u dijelu  <b>Moj sadržaj</b> i dodati karti. Ako sloj geoobjekata već postoji, od vas će se tražiti da unesete drugi naziv. Sloj geoobjekata sadržavat će dva sloja: jedan koji predstavlja najbliže lokacije i drugi koji predstavlja linije koje povezuju ulazne lokacije s najbližima.
+            </p>
+            <p>Ako odaberete  <b>Uključi slojeve rute</b>, svaka ruta iz rezultata također se sprema kao sloj rute. Sloj rute uključuje sve informacije za određenu rutu poput stajali&scaron;ta dodijeljenih ruti kao i upute za vožnju. Stvaranje slojeva rute korisno je ako želite podijeliti pojedinačne rute s drugim članovima va&scaron;e organizacije ili dodatno izmijeniti rute uz pomoć opcije <b>Upute za vožnju</b> u pregledniku karte. Slojevi rute upotrebljavaju naziv namijenjen sloju geoobjekta kao prefiks i naziv generiran kao dio analize koji se dodaje da bi se stvorio jedinstveni naziv za svaki sloj rute.
+            </p>
+            <p>Maksimalni broj slojeva rute koji se može stvoriti je  1.000. Ako rezultat sadrži vi&scaron;e od  1.000 ruta i označeno je  <b>Uključi slojeve rute</b>, alat će stvoriti samo izlaznu uslugu geoobjekata.
+            </p>
+            <p>Upotrebom padajućeg izbornika  <b>Spremi rezultat u</b> možete odrediti naziv mape u dijelu <b>Moj sadržaj</b> gdje će se spremiti sloj geoobjekata i slojevi rute ako se stvore.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

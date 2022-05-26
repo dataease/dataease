@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Sulanda piirajad</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Sulanda piirajad"></h2>
+        <hr/>
+    <p>Kattuvuses olevad v&otilde;i &uuml;hist piiri v&otilde;i atribuudiv&auml;&auml;rtust omavad alad liidetakse &uuml;heks alaks.
+    </p>
+    <p>Te saate kontrollida, kas piirajad &uuml;hendatakse m&auml;&auml;ratud v&auml;lja alusel. Situatsioonis, kus Teil on kasutada n&auml;iteks maakondade kiht, milles iga maakond omab  <pre>State_Name</pre> atribuuti, saate te piiride &uuml;leminekud sulatada, kasutades selleks <pre>State_Name</pre> atribuuti. K&uuml;lgnevad maakonnad &uuml;hendatakse kokku juhul, kui neil on sama <pre>State_Name</pre>v&auml;&auml;rtus. L&otilde;pptulemusena tekib maakonnapiiride kiht.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vali alakiht, mille piirid sulandatakse</h2></div>
+        <hr/>
+        <div>
+            <p>Kiht, mis sisaldab sulatatavaid pindobjekte. 
+            </p>
+            <p>Lisaks kihi valimisele kaardil saate valida ripploendi alumises servas  <b>Vali anal&uuml;&uuml;sikihte</b>, et otsida oma sisust suurandmete failiketta andmestikku v&otilde;i objektikihti.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveFields">
+        <div><h2>Vali sulandamise meetod</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rab v&auml;ljade sulandamiseks kasutatava meetodi.
+            </p>
+            <p>Pindobjektide &uuml;hendamisel on v&otilde;imalik valida kahe meetodi vahel:
+                <ul>
+                    <li> <b>Alad, mis on &uuml;lekattes v&otilde;i k&uuml;lgnevad</b> &ndash; kaks v&otilde;i enam ala, mille piirid kattuvad, liidetakse &uuml;heks alaks. Lisaks sellele alad, mis on omavahel k&uuml;lgnevad ehk mis omavad &uuml;hist piiri, liidetakse samuti &uuml;heks tervikalaks.
+                    </li>
+                    <li> <b>Sama v&auml;lja v&auml;&auml;rtust omavad alad</b> &ndash; kaks v&otilde;i enam ala liidetakse &uuml;heks alaks juhul, kui neil on sama v&auml;lja v&auml;&auml;rtus.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Loo mitmeosalisi objekte</h2></div>
+        <hr/>
+        <div>
+            <p>Mitmeosaline objekt on paiga v&otilde;i n&auml;htuse kujutis, mis koosneb rohkem kui &uuml;hest osast, kuid on kirjeldatud &uuml;he objektina, sest see viitab &uuml;hele atribuutide komplektile. Eesti maakondade kihis v&otilde;iksime n&auml;iteks Saare maakonda k&auml;sitleda mitmeosalise objektina, sest selle erinevad geomeetrilised osad on klassifitseeritud &uuml;htse maakonnana.
+            </p>
+            <p> <b>Loo mitmeosalised objektid</b> pakub kaht valikut:
+                <ul>
+                    <li>t&otilde;ene (m&auml;rgitud): v&auml;ljundi teenus v&otilde;ib sisaldada mitmeosalisi objekte;
+                    </li>
+                    <li>v&auml;&auml;r (m&auml;rkimata): v&auml;ljundi teenus sisaldab ainult &uuml;heosalisi objekte ja iga osa jaoks luuakse eraldiseisev &uuml;ksikobjekt. See on vaikimisi valik.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Lisa statistika (valikuline)</h2></div>
+        <hr/>
+        <div>
+            <p>P&auml;rast alade kokku&uuml;hendamist saate t&auml;hendust omava statistika saamiseks summeerida ka nende atribuutide v&auml;&auml;rtused. Kui n&auml;iteks sulandate maakondade piirid kokku atribuudi  <pre>State_Name</pre> alusel ja igal maakonnal on v&auml;li <i>Population</i> , saate arvutada ka v&auml;lja <pre>Population</pre> summa maakonna jaoks.
+            </p>
+            <p> Saate arvutada summeeritud objektide statistika. Saateallj&auml;rgnevad v&auml;&auml;rtused numbriv&auml;ljadel:
+                <ul>
+                    <li>Koguarv &ndash; arvutatakse v&auml;&auml;rtuste, mis pole nullv&auml;&auml;rtused, hulk. See funktsioon on kasutatav numbriv&auml;ljade v&otilde;i stringide korral. V&auml;&auml;rtuste [null, 0 ja 2] koguarv on 2.
+                    </li>
+                    <li>Summa &ndash; v&auml;ljal olevate arvv&auml;&auml;rtuste summa. V&auml;&auml;rtuste [null, null ja 3] summa on 3.
+                    </li>
+                    <li>Keskmine &ndash; arvv&auml;&auml;rtuste keskmine. V&auml;&auml;rtuste [0; 2 ja null] keskmine on 1.
+                    </li>
+                    <li>Miinimum &ndash; numbriv&auml;lja miinimumv&auml;&auml;rtus. V&auml;&auml;rtuste [0; 2 ja null] miinimum on 0. 
+                    </li>
+                    <li>Maksimum &ndash; numbriv&auml;lja maksimumv&auml;&auml;rtus. V&auml;&auml;rtuste [0; 2 ja null] maksimum on 2.
+                    </li>
+                    <li>Vahemik &ndash; numbriv&auml;lja vahemik. Selle arvutamiseks lahutatakse maksimumv&auml;&auml;rtusest miinimumv&auml;&auml;rtus. V&auml;&auml;rtuste [0, null ja 1] vahemik on 1. V&auml;&auml;rtuste [null ja 4] vahemik on 0.
+                    </li>
+                    <li>Dispersioon &ndash; raja numbriv&auml;lja dispersioon. V&auml;&auml;rtuse [1] dispersiooni on null. V&auml;&auml;rtuste [null, 1,0,1,1] dispersioon on 0,25.
+                    </li>
+                    <li>Standardh&auml;lve &ndash; numbriv&auml;lja standardh&auml;lve. V&auml;&auml;rtuse [1] standardh&auml;lve on null. V&auml;&auml;rtuste [null, 1,0,1,1] standardh&auml;lve on 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Saate arvutadaallj&auml;rgnevad v&auml;&auml;rtused tekstiv&auml;ljadel:
+                <ul>
+                    <li>Koguarv &ndash; stringide, mis pole nullv&auml;&auml;rtused, hulk.
+                    </li>
+                    <li>M&otilde;ni &ndash; see statistik on juhuslik valim tekstistringi v&auml;&auml;rtusest vastaval v&auml;ljal.
+                    </li>
+                </ul>
+                K&otilde;ik statistikud arvutatakse v&auml;&auml;rtustega, mis ei ole nullv&auml;&auml;rtus. Tulemkiht sisaldab uut v&auml;lja iga arvutatud statistiku kohta. Soovitud statistika lisamiseks valige uus atribuut ja statistik. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Loodavakihi nimi.  Kui kirjutate andmelattu ArcGIS Data Store, salvestatakse teie tulemused  <b>Minu sisus</b> ja lisatakse kaardile. Kui kirjutate suurandmete failikettale, salvestatakse teie andmed suurandmete failikettale  ja lisatakse  selle manifestifailile. Seda  ei lisata kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui see kiht on juba olemas, siis t&ouml;&ouml;tlemine nurjub.
+            </p>
+            <p>Kui salvestate admelattu   ArcGIS Data Store (relatsioonilisse v&otilde;i ajalisruumilisse andmelattu), kasutades rippmen&uuml;&uuml;d  <b>Salvesta tulemused</b>, saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemused salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

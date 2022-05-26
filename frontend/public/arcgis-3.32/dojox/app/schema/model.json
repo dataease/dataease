@@ -1,0 +1,11 @@
+{
+	"description":"An applications model declaration", 
+	"type": "object",
+	"properties":{
+		"type": {
+			"type": "string",
+			"description": "Model Instance Type (Class)"
+		}
+	},
+	"additionalProperties": true
+}

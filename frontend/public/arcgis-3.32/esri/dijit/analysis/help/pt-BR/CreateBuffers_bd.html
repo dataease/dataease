@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Criar Buffers</h2><p/>
+        <h2><img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" alt="Criar Buffers"></h2>
+        <hr/>
+    <p>O buffer &eacute; uma &aacute;rea que cobre uma determinada dist&acirc;ncia a partir de uma fei&ccedil;&atilde;o de ponto, linha ou &aacute;rea. 
+    </p>
+    <p>Os buffers s&atilde;o normalmente utilizados para criar &aacute;reas que podem ser tamb&eacute;m analisadas utilizando outras ferramentas. Por exemplo, se a pergunta for Quais edif&iacute;cios est&atilde;o dentro de 1 milha da escola?, a resposta poder&aacute; ser encontrada ao criar um buffer de 1 milha em torno da escola e sobrepor o buffer com a camada contendo as &aacute;reas de cobertura dos edif&iacute;cios. O resultado final &eacute; uma camada destes edif&iacute;cios dentro de 1 milha da escola.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Escolher camada para aplicar o buffer</h2></div>
+        <hr/>
+        <div>
+            <p>As fei&ccedil;&otilde;es de ponto, linha ou &aacute;rea a serem geradas com o buffer. As camadas de entrada devem estar em um sistema de coordenadas planas ou a refer&ecirc;ncia espacial de processamento deve ser definida para um sistema de coordenadas planas utilizando os  <b>Ambientes de An&aacute;lise</b>.
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista suspensa para procurar por seu conte&uacute;do para um conjunto de dados de compartilhamento do arquivo de grandes dados ou camada de fei&ccedil;&atilde;o.
+            </p>
+        </div>
+    </div>
+    <div id="bufferType">
+        <div><h2>Selecione o tipo de buffer para aplicar</h2></div>
+        <hr/>
+        <div>
+            <p>H&aacute; tr&ecirc;s maneiras que voc&ecirc; pode especificar o tamanho do buffer para suas fei&ccedil;&otilde;es de entrada: 
+                <ul>
+                    <li>Especificar uma dist&acirc;ncia que &eacute; aplicada para todas as fei&ccedil;&otilde;es.
+                    </li>
+                    <li>Especificar um campo na camada de entrada que cont&eacute;m o valor de dist&acirc;ncia. Voc&ecirc; pode utilizar um campo de string ou um campo num&eacute;rico. Se uma unidade linear n&atilde;o estiver definida, as unidades da refer&ecirc;ncia espacial ser&atilde;o utilizadas. Se voc&ecirc; estiver utilizando um sistema de coordenadas geogr&aacute;ficas, o campo sem unidade ser&aacute; assumido como sendo metros. 
+                    </li>
+                    <li>Construir uma express&atilde;o com m&uacute;ltiplos campos e operadores matem&aacute;ticos. Por exemplo, para gerar buffer por 10 vezes o valor de um campo denominado  <i>wind_speed</i> adicione a express&atilde;o <i>$feature[&quot;wind_speed&quot;] x 10</i>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Selecione o método de buffer</h2></div>
+        <hr/>
+        <div>
+            <p>Voc&ecirc; pode escolher para utilizar o m&eacute;todo  <b>Planar</b> ou <b>Geod&eacute;sico</b>. O m&eacute;todo <b>Planar</b> pode ser mais r&aacute;pido e &eacute; apropriado para an&aacute;lise local em dados projetados. O m&eacute;todo <b>Geod&eacute;sico</b> &eacute; apropriado para grandes &aacute;reas e qualquer sistema de coordenadas geogr&aacute;ficas.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveOption">
+        <div><h2>Selecione o tipo de método para dissolver</h2></div>
+        <hr/>
+        <div>
+            <p>Op&ccedil;&otilde;es para especificar o m&eacute;todo dissolver.   Se o m&eacute;todo dissolver for escolhido, voc&ecirc; receber&aacute; a op&ccedil;&atilde;o de criar &aacute;reas de parte &uacute;nica ou de m&uacute;ltiplas partes e voc&ecirc; poder&aacute; calcular a estat&iacute;stica baseado em campos fornecidos.
+                <ul>
+                    <li> <b>Todos</b>&mdash;Todas as fei&ccedil;&otilde;es ser&atilde;o dissolvidas. Se fei&ccedil;&otilde;es de m&uacute;ltiplas partes forem permitidas, todas as fei&ccedil;&otilde;es ser&atilde;o dissolvidas em uma &uacute;nica fei&ccedil;&atilde;o. Se m&uacute;ltiplas partes n&atilde;o forem permitidas, as fei&ccedil;&otilde;es que estiverem adjacentes ou sobrepondo ser&atilde;o dissolvidas.
+                    </li>
+                    <li> <b>Campos</b>&mdash;As fei&ccedil;&otilde;es que compartilham o mesmo campo especificado ou combina&ccedil;&atilde;o de campo especificado ser&atilde;o dissolvidas. Se fei&ccedil;&otilde;es de m&uacute;ltiplas partes forem permitidas, todas as fei&ccedil;&otilde;es com o mesmo campo ser&atilde;o dissolvidas em uma &uacute;nica fei&ccedil;&atilde;o. Se m&uacute;ltiplas partes n&atilde;o forem permitidas, as fei&ccedil;&otilde;es que s&atilde;o adjacentes ou sobrepondo com o mesmo valor de campo ser&atilde;o dissolvidas.
+                    </li>
+                    <li> <b>Nenhum</b>&mdash;Nenhuma fei&ccedil;&atilde;o ser&aacute; dissolvida.  Este &eacute; o padr&atilde;o.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Permitir feições de múltiplas partes</h2></div>
+        <hr/>
+        <div>
+            <p>Op&ccedil;&atilde;o para especificar se o seu resultado consistir&aacute; em fei&ccedil;&otilde;es de &uacute;nica parte ou de m&uacute;ltiplas partes. 
+
+            </p>
+            <p>
+                <ul>
+                    <li>Marcado&mdash;Os resultados da sua an&aacute;lise estar&atilde;o contidos em fei&ccedil;&otilde;es de m&uacute;ltiplas partes.   
+                    </li>
+                    <li>Desmarcado&mdash;Os resultados da sua an&aacute;lise estar&atilde;o contidos em fei&ccedil;&otilde;es de parte &uacute;nica. Este &eacute; o padr&atilde;o.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Adicionar estatísticas (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p> Voc&ecirc; pode calcular as estat&iacute;stica em fei&ccedil;&otilde;es que s&atilde;o resumidas.
+Voc&ecirc; pode calcular o seguinte em campos num&eacute;ricos:
+                <ul>
+                    <li>Contagem&mdash;Calcula o n&uacute;mero de valores diferentes de nulo.
+Pode ser utilizado em campos num&eacute;ricos ou strings. 'A contagem de [null, 0, 2] &eacute; 2.
+                    </li>
+                    <li>Soma&mdash;A soma de valores num&eacute;ricos em um campo. A soma de [null, null, 3] &eacute; 3.
+                    </li>
+                    <li>M&eacute;dia&mdash;A m&eacute;dia de valores num&eacute;ricos. A m&eacute;dia de [0, 2, null] &eacute; 1.
+                    </li>
+                    <li>M&iacute;n&mdash;O valor m&iacute;nimo de um campo num&eacute;rico. O m&iacute;nimo de [0, 2, null] &eacute; 0. 
+                    </li>
+                    <li>M&aacute;x&mdash;O valor m&aacute;ximo de um campo num&eacute;rico. O valor m&aacute;ximo de [0, 2, null] &eacute; 2.
+                    </li>
+                    <li>Alcance&mdash;O alcance de um campo num&eacute;rico. Isto &eacute; calculado como os valores m&iacute;nimos subtra&iacute;dos do valor m&aacute;ximo. O alcance de [0, null, 1] &eacute; 1. O alcance de [null, 4] &eacute; 0.
+                    </li>
+                    <li>Vari&acirc;ncia&mdash;A vari&acirc;ncia de um campo num&eacute;rico em um caminho. A vari&acirc;ncia de [1] &eacute; nula. A vari&acirc;ncia de [null, 1,0,1,1] &eacute; 0,25.
+                    </li>
+                    <li>Desvio padr&atilde;o&mdash;O desvio padr&atilde;o de um campo num&eacute;rico. O desvio padr&atilde;o de [1] &eacute; nulo. O desvio padr&atilde;o de [nulo, 1,0,1,1] &eacute; 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Voc&ecirc; pode calcular o seguinte em campos de strings:
+                <ul>
+                    <li>Contagem&mdash;O n&uacute;mero de strings diferente de nulo.
+                    </li>
+                    <li>Qualquer&mdash;Esta estat&iacute;stica &eacute; uma amostra aleat&oacute;ria de um valor de string no campo especificado.
+                    </li>
+                </ul>
+                Todas as estat&iacute;sticas s&atilde;o calculadas em valores n&atilde;o nulos. A camada resultante conter&aacute; um novo atributo para cada estat&iacute;stica calculada. Qualquer n&uacute;mero de estat&iacute;stica pode ser adicionado ao escolher um atributo e estat&iacute;stica. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Escolher um ArcGIS Data Store para salvar os resultados</h2></div>
+        <hr/>
+        <div>
+            <p>Os resultados do GeoAnalytic s&atilde;o armazenados em um armazenamento de dados e expostos como uma camada de fei&ccedil;&atilde;o no  Portal for ArcGIS. Na maioria dos casos, os resultados devem ser armazenados no armazenamento de dados de espa&ccedil;o-tempo e este &eacute; o padr&atilde;o. Em alguns casos, salvar resultados no armazenamento de dados relacional &eacute; uma boa op&ccedil;&atilde;o. Abaixo est&atilde;o as raz&otilde;es pelas quais voc&ecirc; talvez queira armazenar resultados em  um armazenamento de dados relacional: 
+                <ul>
+                    <li>Voc&ecirc; pode  utilizar os resultados no portal-para-colabora&ccedil;&atilde;o do portal.
+                    </li>
+                    <li>Voc&ecirc; pode habilitar os recursos de sincroniza&ccedil;&atilde;o com seus resultados.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Voc&ecirc; n&atilde;o deve utilizar um armazenamento de dados relacional se voc&ecirc; espera que os resultados do GeoAnalytics aumentem e deseja aproveitar os recursos do armazenamento de grandes dados de espa&ccedil;o-tempo para lidar com grandes quantidades de dados.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p> O nome da camada que ser&aacute; criada.  Se voc&ecirc; estiver gravando em um ArcGIS Data Store, seus resultados ser&atilde;o salvos em  <b>Meu Conte&uacute;do</b> e adicionados no mapa. Se voc&ecirc; estiver gravando em um compartilhamento do arquivo de grandes dados, seus resultados ser&atilde;o armazenados compartilhamento do arquivo de grandes dados  e adicionados em seu   manifesto. N&atilde;o ser&atilde;o adicionados no mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se a camada j&aacute; existe, a ferramenta falhar&aacute;.
+            </p>
+            <p>Ao gravar no  ArcGIS Data Store  (armazenamento de grandes dados de espa&ccedil;o-tempo ou relacional) utilizando a caixa suspensa  <b>Salvar resultados em</b> , voc&ecirc; pode especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

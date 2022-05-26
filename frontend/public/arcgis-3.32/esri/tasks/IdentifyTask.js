@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/tasks/IdentifyTask","dojo/_base/declare dojo/_base/lang dojo/_base/array dojo/has ../kernel ../request ../geometry/normalizeUtils ./Task ./IdentifyResult".split(" "),function(a,e,g,k,l,m,n,p,q){a=a(p,{declaredClass:"esri.tasks.IdentifyTask",_eventMap:{complete:["results"]},constructor:function(d,a){this._url.path+="/identify";this._handler=e.hitch(this,this._handler);this.gdbVersion=a&&a.gdbVersion;this.registerConnectEvents()},__msigns:[{n:"execute",c:3,a:[{i:0,p:["geometry"]}],e:2}],
+_handler:function(a,e,f,b,c){try{var d=[];g.forEach(a.results,function(a,b){d[b]=new q(a)});this._successHandler([d],"onComplete",f,c)}catch(h){this._errorHandler(h,b,c)}},execute:function(a,g,f,b){var c=b.assembly;a=this._encode(e.mixin({},this._url.query,{f:"json"},a.toJson(c&&c[0])));var d=this._handler,h=this._errorHandler;this.gdbVersion&&(a.gdbVersion=this.gdbVersion);return m({url:this._url.path,content:a,callbackParamName:"callback",load:function(a,c){d(a,c,g,f,b.dfd)},error:function(a){h(a,
+f,b.dfd)}})},onComplete:function(){}});n._createWrappers(a);k("extend-esri")&&e.setObject("tasks.IdentifyTask",a,l);return a});

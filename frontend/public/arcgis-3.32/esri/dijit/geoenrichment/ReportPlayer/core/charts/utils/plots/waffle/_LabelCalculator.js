@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/charts/utils/plots/waffle/_LabelCalculator",["../labelsRendering/LabelsUtil"],function(d){return{getValueLabelInfo:function(b,a,c){var f=a.series.waffleValueFont||a.series.dataLabelsFont,e;e=a.series.waffleValueFontColorFromConditionalStyling?b.fill:a.series.waffleValueFontColor||a.series.dataLabelsColor;var g=a.series.waffleValueFontSize||(c.isSingle?50:13);b=d.getSimpleLabelInfo({text:void 0!==c.progress?b.tooltip.formatFunc(b.tooltip.value*c.progress):
+b.tooltip.valueLabel,font:f,fontSize:g,fontColor:e,textDecoration:a.series.waffleValueTextDecoration});b.isValue=!0;return b},getPointLabelInfo:function(b,a,c){b=d.getSimpleLabelInfo({text:b.tooltip.label,font:a.series.waffleLabelFont||a.series.dataLabelsFont,fontSize:a.series.waffleLabelFontSize||(c.isSingle?30:13),fontColor:a.series.waffleLabelFontColorFromConditionalStyling?b.fill:a.series.waffleLabelFontColor||a.series.dataLabelsColor,textDecoration:a.series.waffleLabelTextDecoration});b.isLabel=
+!0;return b}}});

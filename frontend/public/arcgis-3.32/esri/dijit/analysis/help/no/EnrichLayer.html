@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Berik Lag</h2><p/>
+        <h2><img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" alt="Berik lag"></h2>
+        <hr/>
+    <p>Med dette verkt&oslash;yet beriker du dataene dine ved &aring; innhente fakta om personer, steder og virksomheter som befinner seg rundt datalokasjonene, og du kan i tillegg f&aring; svar p&aring; sp&oslash;rsm&aring;l om lokasjonene som du ikke kan f&aring; svar p&aring; med kart alene. For eksempel: Hva slags mennesker bor her? Hva liker menneskene i dette omr&aring;det &aring; gj&oslash;re? Hvilke vaner og hvilken livsstil har de? Hvilken type virksomheter finnes i dette omr&aring;det?
+    </p>
+    <p>Resultatet blir et nytt lag som inneholder all demografisk og geografisk informasjon fra gitte datasamlinger. Den nye informasjonen legges til som felter i tabellen.
+    </p>
+    <p>Hvis det er merket av for  <b>Bruk gjeldende kartutstrekning</b>, er det kun geoobjektene i inndatalaget som vises i gjeldende kartutstrekning, som berikes. Hvis det ikke er merket av for dette alternativet, berikes alle geoobjektene i inndatalaget, selv om de befinner seg utenfor gjeldende kartutstrekning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Velg lag som skal berikes med nye data</h2></div>
+        <hr/>
+        <div>
+            <p>Punkt-, linje- eller omr&aring;delaget som skal berikes med nye attributtdata. 
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> som du finner nederst i rullegardinlisten. Dette alternativet &aring;pner et galleri der du kan bla til og velge datasett fra ulike kilder som du vil bruke i analysen. 
+            </p>
+        </div>
+    </div>
+    <div id="DataCollection">
+        <div><h2>Variabler for berikelse</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Klikk p&aring;  <b>Velg variabler</b> for &aring; &aring;pne <b>Datautforskeren</b>. <b>Datautforskeren</b> hjelper deg med &aring; finne og velge variabler for berikelse enkeltvis eller i samlinger.
+            </p>
+            <p>En region blir valgt automatisk p&aring; bakgrunn av dine data. Du kan velge en annen region hvis dataene dekker mer enn ett land. 
+            </p>
+            <p>Variablene for berikelse er organisert i datainnsamlinger for &aring; gi enkel tilgang. N&aring;r du velger en datasamling, viser nettleseren noen av de mest popul&aelig;re variablene for berikelse i den samlingen. Under  <b>Fortsett &aring; bla gjennom</b> vises ogs&aring; kategoriene innenfor samlingen. Innen hver kategori kan du velge hele underkategorier eller g&aring; ned til en underkategori og velge individuelle variabler for berikelse. Du kan ogs&aring; bruke s&oslash;keboksen til &aring; finne en bestemt variabel i en kategori.
+            </p>
+            <p>N&aring;r du velger variabler du vil ta med for berikelse, legges de til i handlekurven i hj&oslash;rnet av  <b>Datautforskeren</b>. Bruk denne handlekurven til &aring; holde oversikten over antallet variabler du har valgt.
+            </p>
+            <p>Hver valgte variabel blir lagt til som et felt i resultatlaget.
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Definer områdene som skal berikes</h2></div>
+        <hr/>
+        <div>
+            <p>Definer omr&aring;det rundt inndatapunktene eller -linjene du vil berike med data, ved &aring; bruke enten en luftlinjeavstand eller en valgt reisem&aring;te. Angi en verdi opptil 1 609 kilometer (1 000 miles) for en luflinjeavstand. Du kan kun bruke reisem&aring;ter n&aring;r inndatalaget inneholder punkter. Tilgjengelige reisem&aring;ter defineres av administratoren i organisasjonen. N&aring;r du bruker en av reisem&aring;tene, foretas m&aring;lingene langs veier og gangstier, og det tas hensyn til gjeldende regler, for eksempel enveiskj&oslash;rte gater og steder der det ikke er lov &aring; snu. N&aring;r du har valgt m&aring;te og m&aring;ling, skriver du inn en varighet p&aring; opptil 5 timer (300 minutter) eller en avstand p&aring; opptil  482,8 kilometer (300 miles).
+            </p>
+            <p>Hvis det er merket av for alternativet  <b>Returner resultat som avgrensningsomr&aring;der</b>, vil resultatet som returneres, v&aelig;re omr&aring;degeoobjekter som definert av verdiene for tid eller avstand ovenfor. Hvis ikke er resultatet som returneres, punktgeoobjekter.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis lagnavnet finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Bruk rullegardinmenyen  <b>Lagre resultat i</b> til &aring; angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatene skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Visk ut grenser</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Visk ut grenser"></h2>
+        <hr/>
+    <p>Omr&aring;der som overlapper eller har en felles grense, sl&aring;s sammen til et enkelt omr&aring;de.    
+    </p>
+    <p>Du kan kontrollere hvilke grenser som sl&aring;s sammen, ved &aring; angi et felt. Hvis du for eksempel har et lag med fylker og hvert fylke har et  <i>State_Name</i>-attributt, kan du viske ut grensene ved hjelp av <i>State_Name</i>-attributtet.  Fylker som ligger inntil hverandre, sl&aring;s sammen hvis de har samme verdi for <i>State_Name</i>. Sluttresultatet blir et lag med delstatsgrenser.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Velg områdelaget du vil viske ut grenser i</h2></div>
+        <hr/>
+        <div>
+            <p>Laget som inneholder omr&aring;degeoobjekter som skal vises ut. 
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> som du finner nederst i rullegardinlisten. Dette alternativet &aring;pner et galleri der du kan bla til og velge datasett fra ulike kilder som du vil bruke i analysen. 
+            </p>
+        </div>
+    </div>
+    <div id="DissolveFields">
+        <div><h2>Velg oppløsningsmetode</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan sl&aring; sammen omr&aring;degeoobjekter p&aring; to m&aring;ter:
+                <ul>
+                    <li> <b>Omr&aring;der som overlapper eller er tilst&oslash;tende</b> &ndash; To eller flere omr&aring;der som har overlappende grenser, sl&aring;s sammen til ett omr&aring;de. I tillegg blir omr&aring;der som ligger inntil hverandre (det vil si at de har felles grense), sl&aring;tt sammen til ett omr&aring;de.
+                    </li>
+                    <li> <b>Omr&aring;der med samme feltverdi</b> &ndash; Omr&aring;der som overlapper hverandre eller har felles grense, sl&aring;s sammen til ett omr&aring;de hvis de har samme feltverdi.
+                        <p>Hvis du for eksempel har et lag med fylker og hvert fylke har et  <i>State_Name</i>-felt, kan du viske ut grensen ved hjelp av <i>State_Name</i>-feltet.  Fylker som ligger inntil hverandre, sl&aring;s sammen hvis de har samme verdi for <i>State_Name</i>. Sluttresultatet blir et lag med delstatsgrenser.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Hvis det er merket av for  <b>Bruk gjeldende kartutstrekning</b>, er det kun geoobjektene i inndatalagets gjeldende kartutstrekning som l&oslash;ses opp. Hvis det ikke er merket av for dette alternativet, l&oslash;ses alle geoobjektene i inndatalaget opp, selv om de befinner seg utenfor gjeldende kartutstrekning.
+            </p>
+        </div>
+    </div>
+    <div id="multiPartFeatures">
+        <div><h2>Opprett geoobjekter med flere deler</h2></div>
+        <hr/>
+        <div>
+            <p>I ArcGIS en digital visning av et sted eller en ting som har mer enn &eacute;n del, men er definert som ett geoobjekt fordi det henviser til ett sett med attributter. I et lag med stater kan for eksempel staten Hawaii betraktes som et geoobjekt med flere deler fordi dens separate geometriske deler er klassifisert som en enkelt stat. Den boolske parameteren har to alternativer:
+                <ul>
+                    <li>Sant (avmerket): utdatatjeneste kan inneholde geoobjekter med flere deler.
+                    </li>
+                    <li>Usant (ikke avmerket): utdatatjenesten inneholder kun geoobjekter med &eacute;n del, og det opprettes individuelle geoobjekter for hver del.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Legg til statistikk</h2></div>
+        <hr/>
+        <div>
+            <p>N&aring;r omr&aring;der sl&aring;s sammen, kan du summere attributtene for omr&aring;dene. Hvis du for eksempel visker ut grensen mellom fylker basert p&aring;  <i>State_Name</i>-feltet og hvert fylke har et <i>Population</i>-felt, kan du beregne totalen for <i>Population</i> for staten.
+            </p>
+            <p>F&oslash;lgende statistikktyper er tilgjengelige:
+            </p>
+            <ul>
+                <li> <b>Sum</b> &ndash; Legger sammen totalverdien for det angitte feltet.
+                    
+
+                </li>
+                <li> <b>Gjennomsnitt</b> &ndash; Regner ut gjennomsnittet for det angitte feltet.
+                    
+
+                </li>
+                <li> <b>Minimum</b> &ndash; Finner den miste verdien for alle forekomster av det angitte feltet.
+                    
+
+                </li>
+                <li> <b>Maksimum</b> &ndash; Finner den st&oslash;rste verdien for alle forekomster av det angitte feltet.
+                    
+
+                </li>
+                <li> <b>Standard Avvik</b> &ndash; Finner standardavviket i verdiene for det angitte feltet.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis lagnavnet finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Bruk rullegardinmenyen  <b>Lagre resultat i</b> til &aring; angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatene skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Find Dwell Locations</h2><p/>
+        <h2><img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" alt="Find Dwell Locations"></h2>
+        <hr/>
+    <p>This tool works with a time-enabled layer of
+point features that are  <code>instant</code> in time.   It first
+determines which features belong to a track using an identifier. Using the time at each location, the tracks are ordered sequentially and the tool searches these paths of movement over time. Depending on the output type chosen, the resulting features can be time-enabled points (instant time type) or areas (interval time type) that represent locations where tracked objects travelled less than the specified distance within the specified duration of time. When the dwells are discovered, statistics about the included features are calculated and assigned to the output track. The
+most basic statistic is the count  of points within
+the dwell location, but other statistics can be calculated  as well.
+    </p>
+    <p>Features in time-enabled layers can be represented in one of two ways:
+        <ul>
+            <li>Instant&mdash;A single moment in time
+            </li>
+            <li>Interval&mdash;A start and end time
+            </li>
+        </ul>
+        
+    </p>
+    <p>For example, suppose you work for the Department of Transportation and have collected GPS readings for major highways. Each GPS record contains a unique vehicle ID, the time, location, and speed. Using the unique vehicle ID to define individual tracks, search for vehicles that have not moved more than 100 meters in at least 15 minutes to uncover troublesome areas in the road network. Additionally, you could calculate statistics such as the mean speed of the vehicles within the dwell location.
+    </p>
+    <p>ADD HERE
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choose the layer to find dwells from</h2></div>
+        <hr/>
+        <div>
+            <p>The point layer that will be summarized into dwells. The input layer must be time-enabled with features that represent an instant in time, as well as have one or more fields that can be used to identify tracks.
+            </p>
+            <p>בנוסף לבחירת שכבה מהמפה שלך, באפשרותך לבחור באפשרות  <b>בחר שכבת ניתוח</b> בתחתית הרשימה הנפתחת כדי לדפדף לתכנים שלך עבור סט נתוני שיתוף קובץ Big Data או שכבת ישויות. באפשרותך אופציונלית להחיל מסנן על שכבת הקלט או להחיל בחירה על שכבות מתארחות שנוספו למפה שלך. מסננים ובחירות מוחלים רק עבור ניתוח. 
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Select one or more fields to identify tracks</h2></div>
+        <hr/>
+        <div>
+            <p>Fields that represent the track identifier.
+You can use one field or multiple fields to represent unique values of tracks.
+            </p>
+            <p>As an example, if you were finding idle locations for hurricanes, you could use the hurricane name as the track field.
+            </p>
+        </div>
+    </div>
+    <div id="distanceMethod">
+        <div><h2>Choose the method to calculate distance</h2></div>
+        <hr/>
+        <div>
+            <p>Method used to calculate the dwell distance within tracks. The  <b>Planar</b> method may calculate the results more quickly but will not wrap tracks around the  international dateline or account for the actual shape of the earth when buffering. The <b>Geodesic</b> method will wrap tracks around the date line if required and apply a geodesic buffer to account for the shape of the earth.
+            </p>
+        </div>
+    </div>
+    <div id="distanceTolerance">
+        <div><h2>Define the spatial search distance</h2></div>
+        <hr/>
+        <div>
+            <p>The dwell distance tolerance is the maximum distance between points to be considered in a single dwell location.
+            </p>
+            <p>For example, if you are finding dwells where traffic has not moved more than 20 meters within a certain time, the distance tolerance would be 20 meters.
+            </p>
+            <p>Use the parameter  <b>Define the temporal search range</b> to specify the time.
+            </p>
+        </div>
+    </div>
+    <div id="distanceToleranceUnit">
+        <div><h2>Split tracks (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>The unit of the distance tolerance.
+            </p>
+        </div>
+    </div>
+    <div id="timeTolerance">
+        <div><h2>Define the temporal search range</h2></div>
+        <hr/>
+        <div>
+            <p>The dwell time tolerance is the minimum time duration of a dwell to be considered in a single dwell location.
+            </p>
+            <p>For example, if you want to know where traffic hasn't moved a certain distance within an hour, the time tolerance would be 1 hour.
+            </p>
+            <p>Use the parameter  <b>Define the spatial search range</b> to specify the distance.
+            </p>
+        </div>
+    </div>
+    <div id="timeToleranceUnit">
+        <div><h2>Select a distance to split tracks by (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>The unit of the time tolerance.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Add statistics (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>באפשרותך לחשב נתונים סטטיסטיים בישויות שסוכמו. באפשרותך לחשב את הערכים הבאים בשדות מספריים: 
+                <ul>
+                    <li>ספירה - מחשב את מספר הערכים שאינם null. ניתן להשתמש בחישוב זה על שדות מספריים או מחרוזות. הספירה של [null&rlm;, 0, 2] היא 2.
+                    </li>
+                    <li>סכימה - הסכימה של ערכים מספריים בשדה. הסכימה של [null&rlm;, null&rlm;, 3] היא 3.
+                    </li>
+                    <li>ממוצע - הממוצע של ערכים מספריים. הממוצע של [0&rlm;, 2, null] הוא 1.
+                    </li>
+                    <li>מינימום - ערך המינימום של שדה מספרי. המינימום של [0&rlm;, 2, null] הוא 0. 
+                    </li>
+                    <li>מקסימום - ערך המקסימום של שדה מספרי. המקסימום של [0&rlm;, 2, null] הוא 2.
+                    </li>
+                    <li>טווח - הטווח של שדה מספרי. ערך זה מחושב על ידי חיסור ערכי המינימום מערך המקסימום. הטווח של [0&rlm;, null, 1] הוא 1. הטווח של [null&rlm;, 4] הוא 0.
+                    </li>
+                    <li>שונות - השונות של שדה מספרי במסלול. השונות של [1] היא null. השונות של [null&rlm;, 1&rlm;,0&rlm;,1&rlm;,1] היא 0.25.
+                    </li>
+                    <li>סטיית תקן - סטיית התקן של של שדה מספרי. סטיית התקן של [1] היא null. סטיית התקן של [null&rlm;, 1&rlm;,0&rlm;,1&rlm;,1] היא 0.5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>באפשרותך לחשב את הערכים הבאים בשדות מחרוזות:
+                <ul>
+                    <li>ספירה - מחשב את מספר המחרוזות שאינן null.
+                    </li>
+                    <li>כלשהו - נתון סטטיסטי זה הוא דגימה אקראית של ערך מחרוזת בשדה שצוין.
+                    </li>
+                </ul>
+                כל הנתונים הסטטיסטיים יחושבו על ערכי שאינם null. שכבת התוצאה תכיל שדה חדש עבור כל נתון סטטיסטי שחושב. ניתן להוסיף כל מספר של נתונים סטטיסטיים על ידי בחירת מאפיין ונתון סטטיסטי. 
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Output dwell locations as</h2></div>
+        <hr/>
+        <div>
+            <p>Determines which features are returned and the format. Four types are available: 
+                <ul>
+                    <li> <b>Mean Centers</b>&mdash;A point representing the centroid of each discovered dwell location. Attributes will be summarized. This is the default.
+                         
+                    </li>
+                    <li> <b>Convex Hulls</b>&mdash;Polygons representing the convex hull of each dwell group. Attributes will be summarized.
+                         
+                    </li>
+                    <li> <b>Dwell Features</b>&mdash;All of the input point features and attributes determined to belong to a dwell are returned.
+                         
+                    </li>
+                    <li> <b>All Features</b>&mdash;All of the input point features and attributes are returned.
+                         
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Choose an ArcGIS Data Store to save results to</h2></div>
+        <hr/>
+        <div>
+            <p>תוצאות GeoAnalytics מאוחסנות במאגר נתונים ונחשפות כשכבת ישויות ב- Portal for ArcGIS. במרבית המקרים, יש לאחסן את התוצאות במאגר נתונים מרחבי-זמני, וזוהי ברירת המחדל. במקרים מסוימים, שמירת התוצאות במאגר נתונים יחסי היא אפשרות טובה. להלן הסיבות שבגינן ייתכן שתרצה לאחסן תוצאות במאגר נתונים יחסי: 
+                <ul>
+                    <li>תוכל להשתמש בתוצאות בשיתוף פעולה של פורטל-לפורטל.
+                    </li>
+                    <li>תוכל לאפשר יכולות סנכרון עם התוצאות שלך.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>אין להשתמש במאגר נתונים יחסיים אם אתה צופה שתוצאות GeoAnalytics יגדלו וברצונך לנצל את יכולות מאגר הנתונים המרחבי-זמני של Big Data כדי לטפל בכמויות גדולות של נתונים.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p> השם של השכבה שתיווצר.  אם אתה כותב ל- ArcGIS Data Store, התוצאות שלך יישמרו ב-<b>התוכן שלי</b> ויתווספו למפה. אם אתה כותב לקובץ שיתוף Big Data, התוצאות שלך יאוחסנו בקובץ השיתוף של Big Data ויתווספו למניפסט שלו. הם לא יתווספו למפה. שם ברירת המחדל מבוסס על שם הכלי ושם שכבת הקלט. אם השכבה כבר קיימת, הכלי ייכשל.
+            </p>
+            <p>בעת כתיב ל- ArcGIS Data Store (מאגר נתונים יחסים או מרחבי-זמני של Big Data) בעזרת התיבה הנפתחת  <b>שמור תוצאה ב</b>, באפשרותך לציין את שם התיקייה ב- <b>התוכן שלי</b> שבה התוצאה תישמר.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

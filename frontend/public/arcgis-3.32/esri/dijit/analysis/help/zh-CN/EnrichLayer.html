@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>丰富图层</h2><p/>
+        <h2><img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" alt="丰富图层"></h2>
+        <hr/>
+    <p>此工具通过获取您的数据位置周边的人口、场所及商业信息来丰富您的数据，进而可以回答仅根据地图无法回答的新位置问题。例如，当地居住的是哪一类人？ 该地区的人有什么喜好？ 他们的习惯和生活方式是什么？ 该地区有何种商业形式？
+    </p>
+    <p>结果为一个新图层，其中包含给定数据集的所有人口统计信息和地理信息。此新信息将作为字段添加到表中。
+    </p>
+    <p>如果选中 <b>使用当前地图范围</b>，则仅丰富当前地图范围中可见的输入图层中的要素。如果未选中，则将丰富输入图层中的所有要素，包括超出当前地图范围的要素。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>选择要使用新数据来丰富的图层</h2></div>
+        <hr/>
+        <div>
+            <p>将使用新属性数据进行丰富的点图层、线图层或面图层。
+            </p>
+            <p>除了从地图选择图层，您也可以选择下拉列表底部的 <b>选择分析图层</b>。此选项将打开一个库，您可以在其中浏览并选择各种来源的数据集以用于分析。 
+            </p>
+        </div>
+    </div>
+    <div id="DataCollection">
+        <div><h2>丰富变量</h2></div>
+        <hr/>
+        <div>
+            
+            <p>单击 <b>选择变量</b>打开 <b>数据浏览器</b>。 <b>数据浏览器</b>可用于单独或按集合查找以及选择丰富变量。
+            </p>
+            <p>可自动根据数据选择区域。数据覆盖多个国家或地区时，您可以选择不同地区。
+            </p>
+            <p>为便于访问，丰富变量以数据集合的形式进行组织。选择数据集合时，浏览器会显示几个此集合中最常见的丰富变量。在 <b>继续浏览</b>下还会显示集合中的类别。在每个类别中，可以选择所有子类别，也可以展开某个子类别单独选择丰富变量。您还可以在类别中使用搜索框来查找特定变量。
+            </p>
+            <p>选择完要用于丰富的变量后，这些变量会添加到 <b>数据浏览器</b>角落的购物车中。利用购物车可以跟踪已选变量的数量。
+            </p>
+            <p>每个已选变量将添加为结果图层中的一个字段。
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>定义要丰富的区域</h2></div>
+        <hr/>
+        <div>
+            <p>定义将使用直线距离或所选出行模式进行丰富的输入点或线周围的区域。对于直线距离，请输入不超过 1000 英里（1609 千米）的值。仅当您的输入图层包含点时才能使用出行模式。可用的出行模式由您的组织管理员决定。使用某一出行模式时，将沿着道路或人行道进行测量，并且支持适用的规则，例如单行道和违章转弯等。选择完模式和测量项后，输入不超过 5 小时（300 分钟）的时长或不超过 300 英里（482.8 千米）的距离。
+            </p>
+            <p>如果选中了 <b>作为边界区域返回结果</b>，则返回的结果将为由以上时间或距离值定义的区域要素。如果未选中，则返回的结果为点要素。
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该图层名称已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>使用 <b>将结果保存在</b>下拉菜单，可以指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

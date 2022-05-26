@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Rasti karštuosius taškus</h2><p/>
+        <h2><img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" alt="Rasti kar&scaron;tuosius ta&scaron;kus"></h2>
+        <hr/>
+    <p>Kar&scaron;tųjų ta&scaron;kų paie&scaron;kos įrankis nustatys, ar galimas statisti&scaron;kai reik&scaron;mingas jūsų duomenų grupavimas pagal erdvinį požymį. 
+        <ul>
+            <li>Ar jūsų ta&scaron;kai (nusikaltimai, medžiai, avarijos) yra pasiskirstę sankaupomis?  Kaip galite įsitikinti?
+            </li>
+            <li>Ar i&scaron; tikrųjų aptikote statisti&scaron;kai reik&scaron;mingą kar&scaron;tąjį ta&scaron;ką, ar pakeistas žemėlapio atvaizdavimas suteiktų papildomos informacijos?
+            </li>
+        </ul>
+        Rasti kar&scaron;tuosius ta&scaron;kus patikimai atsako į &scaron;iuos klausimus.
+    </p>
+    <p>Net ir atsitiktiniai rei&scaron;kiniai pasiskirsto nežymiomis sankaupomis.  Be to, mūsų rega natūraliai bando atpažinti pasikartojimus ar dėsningumus net ten, kur jų nėra. Taigi, gali būti pakankamai sudėtinga nustatyti, ar duomenų elementai yra pasiskirstę atsitiktinai, ar vis dėlto galima aptikti tam tikrus vidinius dėsningumus. &Scaron;tai kodėl tyrinėtojai naudoja tokius analizės metodus kaip Rasti kar&scaron;tuosius ta&scaron;kus (Getis-Ord Gi*), kad galėtų apskaičiuoti pasiskirstymo dėsningumus.  Statisti&scaron;kai reik&scaron;mingų sankaupų nustatymas leidžia gauti labai vertingos informacijos. Žinant, kur ir kada susidaro duomenų elementų sankaupos, galima kurti prielaidas apie procesus, lemiančius tokį i&scaron;sidėstymą. Žinant, kad vagystės i&scaron; butų dažniau įvyksta tam tikruose rajonuose, galima kurti efektyvesnes prevencijos programas, paskirstyti policijos i&scaron;teklius, stebėti ir nustatyti potencialius įtariamuosius.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Pasirinkite sluoksnį, kurio karštuosius taškus norite apskaičiuoti</h2></div>
+        <hr/>
+        <div>
+            <p>Ta&scaron;kų sluoksnis, kuriame bus ie&scaron;koma kar&scaron;tųjų ir &scaron;altųjų ta&scaron;kų.
+            </p>
+            <p>&Scaron;i analizė naudoja zonas ir reikalauja projekcinės koordinačių sistemos. Galite nustatyti  <b>Apdorojamą koordinačių sistemą</b> <b>analizės aplinkose</b>. Jei jūsų apdorojama koordinačių sistema nenustatyta kaip projekcinė koordinačių sistema, būsite paraginti nustatyti ją, kai <b>vykdysite analizę</b> .
+            </p>
+            <p>Galite ne tik nurodyti sluoksnį i&scaron; žemėlapio, bet ir apačioje pasirinkti  <b>Pasirinkti analizės sluoksnį</b>, kad galėtumėte turinyje ie&scaron;koti didelių duomenų rinkinio arba elemento sluoksnio.
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Rasti didelių ir mažų reikšmių sankaupas</h2></div>
+        <hr/>
+        <div>
+            
+            <p>&Scaron;i analizė parodo, kur yra didelių ir mažų reik&scaron;mių sankaupos.
+            </p>
+            <p>Jei jūsų duomenys yra ta&scaron;kai ir jūs pasirinksite parinktį  <b>Skaičiuoti ta&scaron;kus</b>, &scaron;is įrankis įvertins erdvinį ta&scaron;kinių elementų i&scaron;sidėstymą tam, kad atsakytų į klausimą, kuriose vietose ta&scaron;kai i&scaron;sidėstę sankaupomis, o kur ne.
+            </p>
+            <p>Jei pasirinksite lauką, &scaron;is įrankis įvertins reik&scaron;mių, susijusių su kiekvienu elementu, erdvinį i&scaron;sidėstymą, kad atsakytų į klausimą, kur yra didelių ir mažų reik&scaron;mių sankaupos.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Pasirinkti daugiakampio dydį agregavimui</h2></div>
+        <hr/>
+        <div>
+            <p>Atstumas, naudojamas kvadrato formos daugiakampiams sugeneruoti, kurie bus naudojami analizuojant jūsų įvesties ta&scaron;kus.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Rasti karštuosius taškus naudojant laiko etapus (neprivaloma)</h2></div>
+        <hr/>
+        <div>
+            <p>Jei ta&scaron;kų sluoksnyje yra įgalintas laikas ir jo tipas yra &bdquo;I&scaron;kart&ldquo;, galite analizuoti naudodami laiko žingsnius.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Laiko etapo intervalas</h2></div>
+        <hr/>
+        <div>
+            <p>Laiko intervalas, naudojamas generuojant laiko žingsnius. Laiką galima sujungti su įvesties duomenų pradžios arba pabaigos laiku arba su nurodytu laiku.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Laiko etapo intervalas</h2></div>
+        <hr/>
+        <div>
+            <p>Laiko intervalas, naudojamas generuojant laiko žingsnius. Laiką galima sujungti su įvesties duomenų pradžios arba pabaigos laiku arba su nurodytu laiku.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStepAlignment">
+        <div><h2>Pasirinkite, kaip sujungti laiko žingsnius</h2></div>
+        <hr/>
+        <div>
+            <p>Kaip bus sujungti laiko žingsniai. Laiko žingsnius galima sujungti &scaron;iais trimis būdais:
+                <ul>
+                    <li> <b>Pradžios laikas</b> &ndash; laiko žingsniai sujungti su pirmuoju laiko elementu.
+                    </li>
+                    <li> <b>Pabaigos laikas</b> &ndash; laiko žingsniai sujungti su paskutiniuoju laiko elementu.
+                    </li>
+                    <li> <b>Nurodytas laikas</b> &ndash; laiko žingsniai sujungti su nurodytu laiku.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Nurodytas laikas, pagal kurį sujungiami laiko žingsniai</h2></div>
+        <hr/>
+        <div>
+            <p>Data ir laikas, naudojami laiko žingsniams sujungti.
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Pasirinkti karštųjų taškų skaičiavimo teritorijos dydį</h2></div>
+        <hr/>
+        <div>
+            <p>Atstumas, naudojamas nustatyti kaimyninę teritoriją, kurioje bus apskaičiuojami kar&scaron;tieji ta&scaron;kai. Kad kiekvienas daugiakampis turėtų bent vieną kaimyninę teritoriją, kaimyninė teritorija turi būti didesnė negu daugiakampis. Kiekvienas daugiakampis analizuojamas ir lyginamas su kaimyniniais daugiakampiais.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>Erdvinė nuoroda (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Tai yra laikinas parametras, naudojamas iki i&scaron;leidimo, kad būtų galima nustatyti apdorojimo erdvinę informaciją. Daugeliui didelių duomenų įrankių reikia naudoti projekcinę koordinačių sistemą kaip apdorojimo erdvinę informaciją. Pagal numatytuosius nustatymus įrankis naudos įvesties koordinačių sistemą, tačiau neveiks, jei tai bus geodrafinė koordinačių sistema. Norėdami nustatyti projekcinę koordinačių sistemą, įveskite WKID. Pavyzdžiui,  <b>Web Mercator</b> reik&scaron;mė būtų nurodyta <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Pasirinkite ArcGIS Data Store, kad įrašytumėte rezultatus į</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics rezultatai yra saugomi ArcGIS duomenų saugykloje ir rodomi  Portal for ArcGIS kaip elementų sluoksnis. Daugeliu atvejų rezultatai turi būti saugomi erdvinių-laiko duomenų saugykloje, ir tai yra numatytasis nustatymas. Kai kuriais atvejais, galima rezultatus įra&scaron;yti į releacinę duomenų saugyklą. Toliau pateikiame priežastis, kodėl reikėtų rezultatus įra&scaron;yti į releacinių duomenų saugyklą: 
+                <ul>
+                    <li>Galite rezultatus naudoti dviejų portalų bendradarbiavime.
+                    </li>
+                    <li>Galite įjungti savo rezultatų sinchronizavimą.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Nenaudokite releacinių duomenų saugyklos, jei jūsų GeoAnalytics rezultatų turėtų padaugėti, ir apdorojant didelius duomenų kiekius reikės pasinaudoti erdvės ir laiko didelių duomenų saugyklos galimybėmis.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p> Pavadinimas sluoksnio, kuris bus sukurtas. Jei įra&scaron;ote į ArcGIS Data Store, jūsų rezultatai bus įra&scaron;yti į  <b>Turinį</b> ir įtraukti į žemėlapį. Jei įra&scaron;ote į didelių duomenų failo bendrinimą, jūsų rezultatai bus saugomi didelių duomenų failo bendrinime ir pridedami į jo deklaraciją. Jie nebus įtraukti į žemėlapį. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau yra, įrankis neveiks.
+            </p>
+            <p>Gautame sluoksnyje matysite statisti&scaron;kai reik&scaron;mingas dideles ir mažas reik&scaron;mių sankaupas ar ta&scaron;kų skaičius. Jei toks sluoksnio pavadinimas jau egzistuoja, turėsite jį pakeisti.
+            </p>
+            <p>Kai ra&scaron;ote į   ArcGIS Data Store  (releacinių arba erdvėlaikinių didelių duomenų saugyklą) naudodami i&scaron;&scaron;okantįjį meniu  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

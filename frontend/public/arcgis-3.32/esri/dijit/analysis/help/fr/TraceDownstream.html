@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Parcours aval</h2><p/>
+        <h2><img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" alt="Parcours aval"></h2>
+        <hr/>
+    <p>Cet outil d&eacute;termine le parcours, ou chemins des flux, vers l'aval &agrave; partir des points de votre couche en entr&eacute;e.
+    </p>
+    <p>Supposons par exemple que vous ayez des entit&eacute;s ponctuelles repr&eacute;sentant des sources de pollution de l&rsquo;eau et que vous d&eacute;terminez l&rsquo;endroit dans votre zone d&rsquo;&eacute;tude o&ugrave; la pollution s&rsquo;&eacute;coulera. L&rsquo;outil Parcours aval permet d&rsquo;identifier la chemin que suivra la pollution. Ce parcours peut &eacute;galement &ecirc;tre divis&eacute; en segments de ligne individuels en sp&eacute;cifiant une valeur et des unit&eacute;s de distance. La ligne retourn&eacute;e peut correspondre &agrave; la longueur totale du chemin de flux, &agrave; une longueur de parcours maximale sp&eacute;cifi&eacute;e ou &agrave; des entit&eacute;s d&eacute;coup&eacute;es selon une surface telle que votre zone d&rsquo;&eacute;tude. Dans de nombreux cas, si la longueur totale du parcours est retourn&eacute;e, ce sera de la source jusqu'&agrave; l'oc&eacute;an.
+    </p>
+    <p>Le r&eacute;sultat est une ligne repr&eacute;sentant le parcours aval. Si une distance est sp&eacute;cifi&eacute;e pour  <b>diviser le parcours en segments de ligne (Split the trace into line segments)</b>, la ligne du parcours sera divis&eacute;e en plusieurs lignes, chacune ayant la longueur sp&eacute;cifi&eacute;e. Par exemple, si votre point en entr&eacute;e repr&eacute;sente une pollution et que la rivi&egrave;re dans laquelle elle se d&eacute;verse se d&eacute;place &agrave; une vitesse de 900&nbsp;m&egrave;tres par heure, soit 25&nbsp;km par jour, vous pouvez diviser la rivi&egrave;re en segments de 25&nbsp;kilom&egrave;tres. Le fait de diviser le parcours en intervalles de 25&nbsp;km montre la progression quotidienne de la pollution. La ligne sera symbolis&eacute;e par des couleurs d&eacute;grad&eacute;es selon la distance et elle sera &eacute;tiquet&eacute;e avec la distance depuis le d&eacute;but du parcours.
+    </p>
+    <p>Le parcours r&eacute;sultant aura tous les attributs de vos points en entr&eacute;e ainsi que des attributs suppl&eacute;mentaires. 
+        <ul>
+            <li> <i>PointID</i>: contient la valeur d&rsquo;ID provenant du point en entr&eacute;e.
+                
+
+            </li>
+            <li> <i>LengthKm</i>&nbsp;: contient la longueur en kilom&egrave;tres &agrave; partir du parcours aval total.
+                
+
+            </li>
+            <li> <i>Description</i> et <i>DataResolution</i>&nbsp;: contiennent des informations appartenant aux donn&eacute;es hydrologiques utilis&eacute;es pour calculer le parcours.
+                
+
+            </li>
+            <li> <i>FromDistance</i> et <i>ToDistance</i>&nbsp;: contiennent la distance de d&eacute;but et de fin de chaque segment de ligne. Ces attributs sont &eacute;crits si <b>Diviser le parcours en segments de ligne</b> est utilis&eacute;e.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si l&rsquo;option  <b>Use current map extent (Utiliser l&rsquo;&eacute;tendue courante de la carte)</b> est s&eacute;lectionn&eacute;e, seules les entit&eacute;s ponctuelles de la couche en entr&eacute;e visibles au sein de l&rsquo;&eacute;tendue courante de la carte seront analys&eacute;es. Si l'option n'est pas s&eacute;lectionn&eacute;e, toutes les entit&eacute;s qui se trouvent dans la couche en entr&eacute;e seront utilis&eacute;es, m&ecirc;me si elles se trouvent en dehors de l'&eacute;tendue courante de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Entités ponctuelles à utiliser pour les emplacements de départ de chaque parcours en aval</h2></div>
+        <hr/>
+        <div>
+            <p>Entit&eacute;s ponctuelles &agrave; utiliser pour l&rsquo;emplacement de d&eacute;part du parcours en aval. La sortie contiendra une ligne pour chaque point en entr&eacute;e.
+            </p>
+            <p>Outre le choix d&rsquo;une couche dans votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante. Cette option ouvre une biblioth&egrave;que qui vous permet de s&eacute;lectionner des jeux de donn&eacute;es de diff&eacute;rentes sources pour les utiliser dans votre analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="SplitDistance">
+        <div><h2>Fractionner le parcours en segments de ligne</h2></div>
+        <hr/>
+        <div>
+            <p>La ligne du parcours sera divis&eacute;e en plusieurs lignes, chaque ligne &eacute;tant de la longueur sp&eacute;cifi&eacute;e. Par exemple, si votre point en entr&eacute;e repr&eacute;sente une pollution et que la rivi&egrave;re dans laquelle elle se d&eacute;verse se d&eacute;place &agrave; une vitesse de 900&nbsp;m&egrave;tres par heure, soit 25&nbsp;km par jour, vous pouvez diviser la rivi&egrave;re en segments de 25&nbsp;kilom&egrave;tres. Le fait de diviser le parcours en intervalles de 25&nbsp;km montre la progression quotidienne de la pollution. La ligne sera symbolis&eacute;e par un d&eacute;grad&eacute; de couleurs selon la distance et sera &eacute;tiquet&eacute;e avec la distance depuis le d&eacute;but du parcours. Le parcours obtenu comptera plusieurs segments de ligne, chacun poss&eacute;dant des champs  <i>FromDistance</i> et <i>ToDistance</i>.
+            </p>
+        </div>
+    </div>
+    <div id="MaxDistance">
+        <div><h2>Distance maximum du parcours</h2></div>
+        <hr/>
+        <div>
+            <p>D&eacute;termine la longueur totale de la ligne qui sera retourn&eacute;e. Si vous fournissez des entit&eacute;s surfaciques pour tronquer le parcours, le r&eacute;sultat sera tronqu&eacute; &agrave; l'entit&eacute; surfacique, quelle que soit la distance que vous saisissez ici.
+            </p>
+        </div>
+    </div>
+    <div id="ClipArea">
+        <div><h2>Découper la sortie sur</h2></div>
+        <hr/>
+        <div>
+            <p>Tracez ou fournissez une couche de la zone dans laquelle vous souhaitez d&eacute;couper le parcours. Par exemple, si vous voulez que le r&eacute;sultat du parcours se trouve dans votre zone d'&eacute;tude, par exemple, un d&eacute;partement, utilisez votre entit&eacute; de d&eacute;partement comme entr&eacute;e pour que le parcours s'arr&ecirc;te &agrave; sa limite.
+            </p>
+        </div>
+    </div>
+    <div id="OutputTrace">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit du nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte.  Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si le nom de la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Le menu d&eacute;roulant  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b> permet de sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> dans lequel sera enregistr&eacute; le r&eacute;sultat.
+            </p>
+            <p> L&rsquo;ex&eacute;cution de cet outil n&rsquo;entra&icirc;ne aucune consommation de cr&eacute;dits.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

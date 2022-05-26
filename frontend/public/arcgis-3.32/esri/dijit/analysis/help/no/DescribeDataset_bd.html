@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Beskriv datasett</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="Diagram over arbeidsflyten i Beskriv datasett"></h2>
+        <hr/>
+    <p>Beskriv datasett-verkt&oslash;yet gir et mer detaljert innblikk i datasettet. Bruk dette verkt&oslash;yet til &aring; bestemme hva og hvor inndataene er, f&oslash;r du kj&oslash;rer analyse av store mengder data. Resultatet blir som standard en JSON-streng som viser de viktigste deskriptorene i inndatalaget, og en tabell som gir en statistisk oversikt over hvert felt. 
+    </p>
+    <p>Du kan eventuelt velge &aring; opprette flere geoobjektlag som utdata for &aring; beskrive dataene ytterligere. Alternativene er et eksempellag eller et utstrekningslag. Du kan velge det ene eller begge som utdata.
+    </p>
+    <p>Tenk deg at du mottar stordata som inneholder 15&nbsp;datasett som ligger p&aring; et fildelingsomr&aring;de. Hvert datasett har 10 millioner polygoner som representerer bygninger og boliger i forskjellige regioner av landet. Din oppgave er &aring; analysere region C, men du vet ikke hvilket datasett som inneholder disse geoobjektene. For &aring; finne ut hvilket datasett du skal bruke, kj&oslash;rer du Beskriv datasett og oppretter et utstrekningslag for &aring; unders&oslash;ke hvilket datasett som ligger innenfor regionen du skal unders&oslash;ke.
+    </p>
+    <p>Som et annet eksempel kan du tenke deg at du har f&aring;tt i oppdrag &aring; gjennomf&oslash;re en analysearbeidsflyt p&aring; et stort datavolum. Du har lyst til &aring; pr&oslash;ve arbeidsflyten, men det kan ta timer eller dager med det fullstendige datasettet. I stedet for &aring; bruke tid og ressurser p&aring; &aring; kj&oslash;re hele analysen, kan du opprette et eksempellag du kan teste den fullstendige arbeidsflyten p&aring;.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Velg datasett som skal beskrives</h2></div>
+        <hr/>
+        <div>
+            <p>Laget med punkt-, linje-, polygon- eller tabul&aelig;re geoobjekter som blir beskrevet, sammenfattet og brukt som eksempel.
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> nederst i rullegardinlisten, for &aring; bla gjennom innholdet p&aring; et fildelingsomr&aring;de for stordata eller et geoobjektlag.
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>Forstå datasettet ved å opprette et (valgfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Opprett flere beskrivende lag for &aring; bedre forst&aring;elsen av stordataene. Du kan velge &aring; opprette null, ett av eller begge f&oslash;lgende lag:
+            </p>
+            <ul>
+                <li> <b>Utstrekningslag</b> &ndash;&nbsp;oppretter en polygon som representerer utstrekningen av inndatageoobjektene eller interesseomr&aring;det.
+                </li>
+                <li> <b>Eksempellag</b> &ndash;&nbsp;oppretter et lag som er en delmengde med en spesifisert mengde geoobjekter fra datasettet eller interesseomr&aring;det som inndata.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>Eksempellag</h2></div>
+        <hr/>
+        <div>
+            <p>Opprett et lag som inneholder en delmengde av geoobjekter fra inndatalaget. Hvis du velger  <b>Eksempellag</b>, kan du angi antallet geoobjekter du vil at eksempellaget skal inneholde. Utdatalaget inneholder som standard 100 eksempelgeoobjekter.
+            </p>
+            <p>Verdien m&aring; v&aelig;re st&oslash;rre enn null. Hvis du angir et tall som er st&oslash;rre enn det totale antallet geoobjekter, blir samtlige geoobjekter tatt med.
+            </p>
+            <p>Hvis du velger  <b>Bruk gjeldende kartutstrekning</b>, vil eksempellaget inneholde geoobjekter fra hele kartutstrekningen.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Utstrekningslag</h2></div>
+        <hr/>
+        <div>
+            <p>Opprett en polygon som inneholder ett enkelt geoobjekt som representerer utstrekningen av inndatageoobjektene, ved &aring; velge knappen  <b>Utstrekningslag</b>. Den velges som standard.
+            </p>
+            <p>Hvis du velger  <b>Bruk gjeldende kartutstrekning</b>, vil utstrekningslaget representere den synlige kartutstrekningen.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; laget som opprettes. Hvis du skriver til en ArcGIS Data Store, blir resultatene dine lagret i  <b>Mitt innhold</b> og lagt til kartet. Hvis du skriver til et fildelingsomr&aring;de for stordata, blir resultatene lagret i fildelingsomr&aring;det for stordata og lagt til dets innholdsoversikt. De blir ikke lagt til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget allerede eksisterer, vil verkt&oslash;yet mislykkes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

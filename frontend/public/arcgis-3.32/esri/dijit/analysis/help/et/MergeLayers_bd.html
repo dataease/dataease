@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Ühenda kihid</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="&Uuml;henda kihid"></h2>
+        <hr/>
+    <p>See t&ouml;&ouml;riist &uuml;hendab kaks objektikihti, et luua &uuml;ksainus v&auml;ljundkiht.    &Uuml;hendatavatel lihtidel peab olema sama geomeetriat&uuml;&uuml;p ja kellaajat&uuml;&uuml;p. Teil kui kasutajal on v&otilde;imalik m&auml;&auml;rata, kuidas erinevad kihid omavahel &uuml;hendatakse. N&auml;ited.
+        <ul>
+            <li>Teil on kasutada kolm kihti Saare, Hiiu ja L&auml;&auml;ne maakondade kohta ning Te soovite nende alusel luua &uuml;hte terviklikku kihti L&auml;&auml;ne-Eesti maakondadest. 
+            </li>
+            <li>Teil on 2 kihti ning iga kiht sisaldab infot omavahel k&uuml;lgnevate elamurajoonide katastri&uuml;ksuste kohta. Soovite k&otilde;ik need &uuml;hendada &uuml;heks kihiks, j&auml;ttes tulemusse alles vaid v&auml;ljad, kus kahel sisendkihil on sama nimi ja t&uuml;&uuml;p.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vali kiht</h2></div>
+        <hr/>
+        <div>
+            <p>Kiht sisaldab punkte, jooni, pindu v&otilde;i tabeli kujul olevaid objekte, millega &uuml;hendatakse teine objektikiht. Tulemuskihti kaasatakse selle kihi k&otilde;ik v&auml;ljad.
+            </p>
+        </div>
+    </div>
+    <div id="mergeLayer">
+        <div><h2>Vali ühendatav kiht</h2></div>
+        <hr/>
+        <div>
+            <p>Objektikiht, mis &uuml;hendatakse sisendkihiga. &Uuml;hendataval kihil peab olema samasugune geomeetriat&uuml;&uuml;p ja kellaajat&uuml;&uuml;p nagu sisendkihil.
+            </p>
+        </div>
+    </div>
+    <div id="mergingAttributes">
+        <div><h2>Muuda ühendatavaid välju</h2></div>
+        <hr/>
+        <div>
+            <p>Vaikimisi kantakse m&otilde;lemas sisendkihis olevad v&auml;ljad v&auml;ljundisse &uuml;le. Saate valida, kuidas &uuml;hendatava kihi v&auml;ljad kaasatakse v&auml;ljundisse. Selleks on allj&auml;rgnevad variandid:
+                <ul>
+                    <li> <b>Nimeta &uuml;mber</b> &ndash; v&auml;lja nimi muudetakse v&auml;ljundi jaoks &uuml;mber.
+                    </li>
+                    <li> <b>Eemalda</b> &ndash; v&auml;lja nimi eemaldatakse v&auml;ljundist.
+                    </li>
+                    <li> <b>Sobita</b> &ndash; v&auml;lja nimed muudetakse samav&auml;&auml;rseks.  Kihi v&auml;lja v&auml;&auml;rtused kopeeritakse &uuml;hendamise eesm&auml;rgil vastavasse tulemi v&auml;lja sisusse.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Kui m&otilde;lemad kihid sisaldavad identse nime ja andmet&uuml;&uuml;biga v&auml;lja, &uuml;hendatakse m&otilde;lema v&auml;lja sisu &uuml;heks samanimeliseks v&auml;ljaks. See ei kehti selliste v&auml;ljade korral, kus parameetris  <b>Muuda &uuml;hendatavaid v&auml;lju</b> on kasutusel v&auml;&auml;rtus <b>Sobita</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Loodavakihi nimi.  Kui kirjutate andmelattu ArcGIS Data Store, salvestatakse teie tulemused  <b>Minu sisus</b> ja lisatakse kaardile. Kui kirjutate suurandmete failikettale, salvestatakse teie andmed suurandmete failikettale  ja lisatakse  selle manifestifailile. Seda  ei lisata kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui see kiht on juba olemas, siis t&ouml;&ouml;tlemine nurjub.
+            </p>
+            <p>Kui salvestate admelattu   ArcGIS Data Store (relatsioonilisse v&otilde;i ajalisruumilisse andmelattu), kasutades rippmen&uuml;&uuml;d  <b>Salvesta tulemused</b>, saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemused salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

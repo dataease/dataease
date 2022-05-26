@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Berik fra multivariabelt rutenett</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="Berik fra multivariabelt rutenett"></h2>
+        <hr/>
+    <p>Verkt&oslash;yet  Berik fra multivariabelt rutenett f&oslash;yer effektivt attributter fra et multivariabelt rutenett til et punktlag.
+    </p>
+    <p>Et multivariabelt rutenett er et lag opprettet ved hjelp av verkt&oslash;yet Opprett multivariabelt rutenett, som samler attributter fra flere lag i et enkelt rutenett av polygoner. Ved &aring; bruke et multivariabelt rutenett til berikelse kan du raskt legge til store og mangfoldige samlinger av informasjon til punktdata for bruk i videre romlige analyser.
+    </p>
+    <p>Tenk deg for eksempel at du har innhentet et lag med nye lovbrudd som er beg&aring;tt i en by i l&oslash;pet av det siste &aring;ret. Du vil lage en modell for forholdet mellom hyppigheten av lovbrudd og et utvalg demografiske, &oslash;konomiske og geografiske faktorer. Du har tilgang til data som beskriver disse faktorene, med de er lagret i fem forskjellige lag med forskjellige typer geometri. I tillegg er noen av lagene lagret p&aring; en stor data fil delingstjeneste, mens andre er lagret som  geoobjekt tjenester. Ved &aring; opprette et multivariabelt rutenett for lagring av denne informasjonen og deretter f&oslash;ye rutenettet til disse lovbruddene ved hjelp av  Berik fra multivariabelt rutenett-verkt&oslash;yet, kan du effektivt f&oslash;ye til en rekke attributter i punktlaget ved bare to kj&oslash;ringer av verkt&oslash;yet. Du kan deretter bruke de tilf&oslash;yde attributtene som forklaringsvariabler og begynne &aring; bygge en modell for hyppighet av lovbrudd ved hjelp av det resulterende laget.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>Velg punktgeoobjektene som skal berikes</h2></div>
+        <hr/>
+        <div>
+            <p>Punktgeoobjektene som blir beriket av det multivariable rutenettet.
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> nederst i rullegardinlisten, for &aring; bla gjennom innholdet p&aring; et fildelingsomr&aring;de for stordata eller et geoobjektlag.
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>Velg det multivariable rutenettet du vil berike fra</h2></div>
+        <hr/>
+        <div>
+            <p>Det multivariable rutenettlaget inneholder attributter som blir f&oslash;yd til inndatapunktgeoobjektene. Laget m&aring; v&aelig;re opprettet ved hjelp av Opprett multivariabelt rutenett, og m&aring; v&aelig;re et hosted geoobjektlag. Multivariable rutenettlag lagret i en stor data fil delingstjeneste, st&oslash;ttes ikke som inndata for dette verkt&oslash;yet.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>Velg variablene du vil legge til</h2></div>
+        <hr/>
+        <div>
+            <p>Attributtene i det multivariable rutenettlaget som blir f&oslash;yd til inndatapunktgeoobjektene n&aring;r punktgeoobjektene krysser rutenettet.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; laget som opprettes. Hvis du skriver til en ArcGIS Data Store, blir resultatene dine lagret i  <b>Mitt innhold</b> og lagt til kartet. Hvis du skriver til et fildelingsomr&aring;de for stordata, blir resultatene lagret i fildelingsomr&aring;det for stordata og lagt til dets innholdsoversikt. De blir ikke lagt til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget allerede eksisterer, vil verkt&oslash;yet mislykkes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

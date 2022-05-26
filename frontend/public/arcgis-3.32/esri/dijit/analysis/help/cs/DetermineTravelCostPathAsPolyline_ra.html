@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Stanovit cestovní náklady tras jako polylinii (Determine Travel Cost Path As Polyline)</h2><p/>
+        <h2><img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" alt="Obr&aacute;zek n&aacute;stroje Stanovit cestovn&iacute; n&aacute;klady tras jako polylinii"></h2>
+        <hr/>
+    <p>Tento n&aacute;stroj vypoč&iacute;t&aacute; polyliniovou trasu s nejniž&scaron;&iacute;mi n&aacute;klady mezi zdroji a zn&aacute;m&yacute;mi destinacemi.
+    </p>
+    <p>Mezi př&iacute;klady použit&iacute; patř&iacute;:
+        <ul>
+            <li>Nalezen&iacute; nejlep&scaron;&iacute; trasy pro novou silnici v r&aacute;mci stavebn&iacute;ch n&aacute;kladů.
+                
+
+            </li>
+            <li>Identifikace trasy z několika př&iacute;městsk&yacute;ch lokac&iacute; (zdrojů) do nejbliž&scaron;&iacute;ho n&aacute;kupn&iacute;ho centra (c&iacute;l).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Pokud je za&scaron;krtnuto pole  <b>Použ&iacute;t rozsah aktu&aacute;ln&iacute; mapy</b>, budou analyzov&aacute;ny pouze lokace ve vstupn&iacute;ch vrstv&aacute;ch, kter&eacute; jsou viditeln&eacute; v rozsahu aktu&aacute;ln&iacute; mapy. Pokud pole za&scaron;krtnuto nen&iacute;, budou analyzov&aacute;ny v&scaron;echny lokace v obou vstupn&iacute;ch vrstv&aacute;ch, včetně těch, kter&eacute; se nach&aacute;zej&iacute; mimo aktu&aacute;ln&iacute; rozsah mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Zvolte vrstvu rastru nebo zdroje prvku, ze které se určí trasa</h2></div>
+        <hr/>
+        <div>
+            <p>Image služba nebo feature služba, kter&aacute; identifikuje buňky, ze kter&yacute;ch je určena cesta s nejmen&scaron;&iacute;mi n&aacute;klady do nejm&eacute;ně n&aacute;kladn&eacute;ho c&iacute;le.
+            </p>
+            <p>Pokud je vstupem image služba, vstup se skl&aacute;d&aacute; z buněk, kter&eacute; maj&iacute; platn&eacute; hodnoty (nula je platn&aacute; hodnota), a zb&yacute;vaj&iacute;c&iacute;m buňk&aacute;m mus&iacute; b&yacute;t přiřazeno NoData.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Zvolte rastrovou vrstvu cestovních nákladů.</h2></div>
+        <hr/>
+        <div>
+            <p>Rastr definuj&iacute;c&iacute; impedanci nebo n&aacute;klady pro posun v polohopise přes každou buňku.
+            </p>
+            <p>Hodnota v každ&eacute;m um&iacute;stěn&iacute; buňky představuje vzd&aacute;lenost v jednotkov&yacute;ch n&aacute;kladech pro posun přes buňku. Hodnota v každ&eacute;m um&iacute;stěn&iacute; buňky je vyn&aacute;sobena rozli&scaron;en&iacute;m buňky zat&iacute;mco kompenzuje diagon&aacute;ln&iacute; pohyb pro z&iacute;sk&aacute;n&iacute; celkov&yacute;ch n&aacute;kladů přechodu přes buňku.
+            </p>
+            <p>Hodnoty rastru n&aacute;kladů mohou b&yacute;t cel&eacute; č&iacute;slo nebo desetinn&eacute; č&iacute;slo, ale nesm&iacute; b&yacute;t z&aacute;porn&eacute; nebo nulov&eacute; (nemůžete m&iacute;t z&aacute;porn&eacute; nebo nulov&eacute; n&aacute;klady).
+            </p>
+        </div>
+    </div>
+    <div id="inputDestinationRasterOrFeatures">
+        <div><h2>Vstupní rastr destinací nebo prvky</h2></div>
+        <hr/>
+        <div>
+            <p>Vstup, kter&yacute; definuje c&iacute;le tak&eacute; pro v&yacute;počet vzd&aacute;lenosti. Tato vrstva může b&yacute;t rastr nebo prvek.
+            </p>
+            <p>Pokud je vstupem image služba, vstup se skl&aacute;d&aacute; z buněk, kter&eacute; maj&iacute; platn&eacute; hodnoty (nula je platn&aacute; hodnota), a zb&yacute;vaj&iacute;c&iacute;m buňk&aacute;m mus&iacute; b&yacute;t přiřazeno NoData.
+            </p>
+        </div>
+    </div>
+    <div id="outputPolylineName">
+        <div><h2>Název výsledné polyliniové vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>N&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; se do mapy. V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud vrstva již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>Můžete zadat n&aacute;zev složky v  <b>Můj obsah</b>, kde bude v&yacute;sledek uložen pomoc&iacute; rozbalovac&iacute;ho seznamu <b>Uložit v&yacute;sledek do</b> .
+            </p>
+        </div>
+    </div>
+    <div id="pathType">
+        <div><h2>Zvolte typ tras, které se mají určit</h2></div>
+        <hr/>
+        <div>
+            <p>Definuje způsob, jak&yacute;m budou hodnoty a z&oacute;ny ve vstupn&iacute;ch datech o destinaci interpretov&aacute;ny ve v&yacute;počtech cesty n&aacute;kladů.
+            </p>
+            <ul>
+                <li>Nejlep&scaron;&iacute; jednoduch&eacute; &ndash; pro v&scaron;echny buňky nebo lokace ve vstupn&iacute;ch datech c&iacute;le se urč&iacute; nejm&eacute;ně n&aacute;kladn&aacute; trasa z lokace s minimem nejm&eacute;ně n&aacute;kladn&yacute;ch tras to zdrojov&eacute; lokace. Toto je v&yacute;choz&iacute; hodnota
+                    
+
+                </li>
+                <li>Do každ&eacute; buňky &ndash; pro každou buňku nebo lokaci s platn&yacute;mi hodnotami ve vstupn&iacute;ch datech c&iacute;le se urč&iacute; nejm&eacute;ně n&aacute;kladn&aacute; trasa a ulož&iacute; se do v&yacute;stupn&iacute; služby prvků. Pomoc&iacute; t&eacute;to volby se každ&aacute; buňka vstupn&iacute;ch dat c&iacute;le bere samostatně a pro každou se urč&iacute; nejm&eacute;ně n&aacute;kladn&aacute; trasa z buňky.
+                    
+
+                </li>
+                <li>Do každ&eacute; z&oacute;ny &ndash; pro každou z&oacute;nu ve vstupn&iacute;ch datech c&iacute;le se urč&iacute; nejm&eacute;ně n&aacute;kladn&aacute; trasa a ulož&iacute; se do v&yacute;stupn&iacute; služby prvků. Pomoc&iacute; t&eacute;to volby nejm&eacute;ně n&aacute;kladn&aacute; trasa pro každou z&oacute;nu zač&iacute;n&aacute; v buňce nebo lokaci s nejkrat&scaron;&iacute; vzd&aacute;lenost&iacute; v&aacute;žen&yacute;ch n&aacute;kladů v z&oacute;ně.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
+</html>

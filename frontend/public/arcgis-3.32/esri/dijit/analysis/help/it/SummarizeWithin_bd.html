@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Riepiloga Entro</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Riepiloga Entro"></h2>
+        <hr/>
+    <p>Questo strumento consente di trovare feature (e porzioni di feature) che si trovano entro i confini di aree nel primo layer di input.  
+        <ul>
+            <li>Dati un layer di confini spartiacque ed un layer di confini di utilizzo del suolo, &egrave; possibile calcolare la superficie totale in acri del tipo di utilizzo del suolo per ogni spartiacque. 
+            </li>
+            <li>Dati un layer di lotti di una regione ed un layer di confini di citt&agrave;, &egrave; possibile riepilogare il valore medio di lotti non occupati entro ciascun confine di citt&agrave;.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Se l'opzione  <b>Usa estensione mappa corrente</b> &egrave; selezionata, vengono analizzate solo quelle feature nel layer di input e nel layer da riepilogare visibili all'interno dell'estensione mappa corrente.  Se &egrave; deselezionata, vengono analizzate tutte le feature presenti nel layer di input e nel layer da riepilogare, anche se esterne all'estensione di mappa corrente.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Scegli layer areale per riepilogare altre feature entro i suoi confini</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer di area che verr&agrave; utilizzato per riepilogare le feature che rientrano nei suoi confini. &Egrave; possibile scegliere di riepilogare all'interno di un layer di poligono fornito o all'interno di contenitori quadrati o esagonali generati quando lo strumento &egrave; in esecuzione.  Quando si generano i contenitori, nel caso di  <b>Quadrato</b>, il numero e le unit&agrave; specificate determinano l'altezza e la lunghezza del quadrato. Nel caso di <b>Esagono</b>, il numero e le unit&agrave; specificate determinano la distanza tra i lati paralleli.
+            </p>
+            <p>L'analisi tramite l'utilizzo di contenitori  <b>Quadrato</b> o <b>Esagono</b> richiede un sistema di coordinate proiettato. &Egrave; possibile impostare il <b>Sistema di coordinate di elaborazione</b> negli <b>Ambienti di analisi</b>. Se il sistema di coordinate di elaborazione non &egrave; impostato su un sistema di coordinate proiettate, verr&agrave; chiesto di impostarlo quando si <b>Esegue l'analisi</b> .
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> alla base dell'elenco a discesa per cercare un dataset di condivisione file Big Data o un feature layer.
+            </p>
+        </div>
+    </div>
+    <div id="summaryLayer">
+        <div><h2>Scegliere il layer per il riepilogo</h2></div>
+        <hr/>
+        <div>
+            <p>Verranno riepilogate le feature di questo layer che si trovano entro i confini di feature presenti nel layer di input o nei contenitori specificati sopra. 
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> alla base dell'elenco a discesa per cercare un dataset di condivisione file Big Data o un feature layer.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Scegliere una distanza per generare contenitori e in cui eseguire l'aggregazione</h2></div>
+        <hr/>
+        <div>
+            <p>La distanza utilizzata per generare contenitori.  
+            </p>
+            <p>&Egrave; necessario impostare la  <b>Dimensione contenitore</b> per i contenitori o un <b>Layer di area</b>.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Aggrega usando periodi di tempo (facoltativo)</h2></div>
+        <hr/>
+        <div>
+            <p>Se il layer di punti di input &egrave; abilitato per variazioni temporali ed &egrave; di tipo istante, &egrave; possibile eseguire l'analisi utilizzando incrementi di tempo. Sono disponibili tre parametri da impostare quando si utilizza il tempo:
+                <ul>
+                    <li> <b>Intervallo del passaggio temporale</b>
+                    </li>
+                    <li> <b>Frequenza di ripetizione del passaggio temporale</b>
+                    </li>
+                    <li> <b>Tempo a cui allineare i passaggi temporali</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ad esempio, si supponga di avere dati che rappresentano un anno e che si desidera eseguire un'analisi utilizzando incrementi settimanali. Impostare  <b>Intervallo del passaggio temporale</b> su <code>1 settimana</code>. 
+            </p>
+            <p>Ad esempio, si supponga di avere dati che rappresentano un anno e che si desidera eseguire un'analisi utilizzando la prima settimana del mese. Impostare  <b>Intervallo del passaggio temporale</b> su <code>1 settimana</code>, <b>Frequenza di ripetizione del passaggio temporale</b> su <code>1 mese</code> e <b>Tempo a cui allineare i passaggi temporali</b> su <code>1 gennaio alle ore 12.00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Intervallo di tempo in cui eseguire l'aggregazione</h2></div>
+        <hr/>
+        <div>
+            <p>Intervallo di tempo utilizzato per la generazione di passaggi temporali.  <b>Intervallo del passaggio temporale</b> pu&ograve; essere utilizzato da solo o con i parametri <b>Frequenza di ripetizione del passaggio temporale</b> o <b>Tempo a cui allineare i passaggi temporali</b>.
+            </p>
+            <p>Ad esempio, si supponga di desiderare di creare passaggi temporali che hanno luogo tutti i luned&igrave; dalle 9 alle 10. Impostare  <b>Intervallo del passaggio temporale</b> su <code>1 ora</code>, <b>Frequenza di ripetizione del passaggio temporale</b> su <code>1 settimana</code> e <b>Tempo a cui allineare i passaggi temporali</b> su <code>luned&igrave; ore 9</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Passaggio temporale in cui eseguire l'aggregazione</h2></div>
+        <hr/>
+        <div>
+            <p> Il passaggio utilizzato per calcolare un passaggio temporale. <b>Frequenza di ripetizione del passaggio temporale</b>  pu&ograve; essere utilizzata da sola, o con <b>Intervallo del passaggio temporale</b>, con <b>Ora di riferimento</b> o con <b>Intervallo del passaggio temporale</b> e <b>Tempo a cui allineare i passaggi temporali</b>.
+            </p>
+            <p> Ad esempio, si supponga di desiderare di creare passaggi temporali che hanno luogo tutti i luned&igrave; dalle 9 alle 10. Impostare <b>Intervallo del passaggio temporale</b> su <code>1 ora</code>, <b>Frequenza di ripetizione del passaggio temporale</b> su <code>1 settimana</code> e <b>Tempo a cui allineare i passaggi temporali</b> su <code>luned&igrave; ore 9</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Tempo di riferimento utilizzato per allineare il periodo di tempo</h2></div>
+        <hr/>
+        <div>
+            <p>La data e l'ora utilizzate per allineare il periodo di tempo. Gli incrementi di tempo inizieranno e continueranno a ritroso da questo momento. Se non &egrave; stata selezionata un'ora di riferimento, gli incrementi di tempo si allineeranno al 1 gennaio 1970. 
+            </p>
+            <p> Ad esempio, si supponga di desiderare di creare passaggi temporali che hanno luogo tutti i luned&igrave; dalle 9 alle 10. Impostare <b>Intervallo del passaggio temporale</b> su <code>1 ora</code>, <b>Frequenza di ripetizione del passaggio temporale</b> su <code>1 settimana</code> e <b>Tempo a cui allineare i passaggi temporali</b> su <code>luned&igrave; ore 9</code>.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Aggiungi statistiche (facoltativo)</h2></div>
+        <hr/>
+        <div>
+            <p> &Egrave; possibile calcolare le statistiche su feature riepilogate. Su campi numerici &egrave; possibile calcolare quanto segue:
+                <ul>
+                    <li>Conteggio: calcola il numero di valori nonnull. Pu&ograve; essere utilizzato su campi o stringhe numeriche. Il conteggio di [null, 0, 2] &egrave; 2.
+                    </li>
+                    <li>Somma: la somma dei valori numerici in un campo. La somma di [null, null, 3] &egrave; 3.
+                    </li>
+                    <li>Media: la media di valori numerici. La media di [0, 2, null] &egrave; 1.
+                    </li>
+                    <li>Min: il valore minimo di un campo numerico. Il minimo di [0, 2, null] &egrave; 0. 
+                    </li>
+                    <li>Max: il valore massimo di un campo numerico. Il valore massimo di [0, 2, null] &egrave; 2.
+                    </li>
+                    <li>Intervallo: l'intervallo di un campo numerico. Questo viene calcolato come i valori minimi sottratti dal valore massimo. L'intervallo di [0, null, 1] &egrave; 1. L'intervallo di [null, 4] &egrave; 0.
+                    </li>
+                    <li>Varianza: la varianza di un campo numerico in una traccia. La varianza di [1] is null. La varianza di [null, 1,0,1,1] &egrave; 0,25.
+                    </li>
+                    <li>Deviazione standard: la deviazione standard di un campo numerico. La deviazione standard di [1] &egrave; null. La deviazione standard di [null, 1,0,1,1] &egrave; 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Su campi stringa &egrave; possibile calcolare quanto segue:
+                <ul>
+                    <li>Conteggio: il numero di stringhe nonnull.
+                    </li>
+                    <li>Qualsiasi: questa statistica &egrave; un esempio casuale di un valore stringa nel campo specificato.
+                    </li>
+                </ul>
+                Tutte le statistiche vengono calcolate su valori non null. Il layer risultante includer&agrave; un nuovo campo per ogni statistica calcolata. &Egrave; possibile aggiungere un numero qualsiasi di statistiche scegliendo un attributo e una statistica. 
+            </p>
+            <p>Oltre a queste statistiche, verranno calcolate le statistiche proporzionali su tutti i campi numerici:
+                <ul>
+                    <li>Conteggio: il conteggio di ciascun campo moltiplicato per la proporzione del layer riepilogativo all'interno dei poligoni. 
+                    </li>
+                    <li>Somma: la somma ponderata dei valori in ciascun campo. Se viene applicato il peso &egrave; la proporzione del layer riepilogativo all'interno dei poligoni.
+                    </li>
+                    <li>Media: la media ponderata dei valori in ciascun campo. Se viene applicato il peso &egrave; la proporzione del layer riepilogativo all'interno dei poligoni.
+                    </li>
+                    <li>Minimo: valori ponderati minimi in ciascun campo. Se viene applicato il peso &egrave; la proporzione del layer riepilogativo all'interno dei poligoni.
+                    </li>
+                    <li>Massimo: valori ponderati massimi in ciascun campo. Se viene applicato il peso &egrave; la proporzione del layer riepilogativo all'interno dei poligoni.
+                    </li>
+                    <li>Intervallo: la differenza tra i valori ponderati massimi e minimi.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>In base ai tipi di feature che si stanno riepilogando, verranno calcolati il numero totale di punti nelle vicinanze, la lunghezza totale delle linee o l'area totale.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Scegli il campo in base a cui raggruppare</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; un attributo delle feature di tipo  <b>Riepiloga</b> utilizzabile per calcolare separatamente le statistiche di ciascun valore di attributo univoco. Ad esempio, si supponga che il primo layer di input contenga confini di citt&agrave; e che le feature di riepilogo corrispondano a lotti.  Uno degli attributi dei lotti &egrave; <i>Status</i> e contiene due valori: NON OCCUPATO e OCCUPATO. Per calcolare l'area totale dei lotti occupati e non occupati entro i confini delle citt&agrave;, utilizzare <i>Status</i> come gruppo per attributo. Le statistiche relative a ciascun gruppo, nonch&eacute; il conteggio delle feature incluse in ogni confine di area, verranno visualizzate nel popup del layer dei risultati.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Aggiungi minoranza, maggioranza</h2></div>
+        <hr/>
+        <div>
+            <p>Questa casella di controllo &egrave; abilitata quando si seleziona un campo in base a cui raggruppare. Se si desidera trovare i valori di attributo che in ciascun gruppo costituiscono la minoranza (meno dominanti) o la maggioranza (pi&ugrave; dominanti) in ogni confine del primo layer di input, selezionare  <b>Aggiungi minoranza, maggioranza</b>.   Quando si seleziona <b>Aggiungi minoranza, maggioranza</b>, vengono aggiunti due nuovi campi al layer dei risultati.   Se si seleziona anche <b>Aggiungi percentuali</b>, vengono aggiunti altri due campi, al layer dei risultati, che contengono le percentuali relative ai valori degli attributi di minoranza e maggioranza all'interno di ciascun gruppo.
+            </p>
+            <ul>
+                <li>Se si intende riepilogare punti, i valori di minoranza e maggioranza vengono calcolati sulla base del numero di punti in ogni area di confine nel layer areale di input.  
+                </li>
+                <li>Se si intende riepilogare linee, i valori di minoranza e maggioranza vengono calcolati sulla base della lunghezza delle linee in ogni area di confine nel layer areale di input.  
+                </li>
+                <li>Se si intende riepilogare aree, i valori di minoranza e maggioranza vengono calcolati sulla base delle aree in ogni area di confine nel layer areale di input.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Aggiungi percentuali</h2></div>
+        <hr/>
+        <div>
+            <p>Questa casella di controllo &egrave; abilitata quando si seleziona un campo in base a cui raggruppare. Selezionare  <b>Aggiungi percentuali</b> se si desidera trovare la percentuale di ogni valore di attributo in ogni gruppo. Un nuovo campo viene aggiunto alla tabella dei risultati contenente le percentuali di ogni valore di attributo in ogni gruppo. Se si seleziona anche <b>Aggiungi minoranza, maggioranza</b>, al layer dei risultati vengono aggiunti altri due campi contenenti le percentuali relative ai valori degli attributi di minoranza e maggioranza all'interno di ciascun gruppo.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Scegliere il Data Store</h2></div>
+        <hr/>
+        <div>
+            <p>I risultati di GeoAnalytics sono memorizzati in un data store ed esposti come un feature layer in  Portal for ArcGIS. Nella maggior parte dei casi, i risultati devono essere memorizzati nello Spatiotemporal Data Store e questa &egrave; l'impostazione predefinita. In alcuni casi,, il salvataggio dei risultati nel Data Store relazionale &egrave; un'ottima opzione. Di seguito sono memorizzate le ragioni per memorizzare i risultati nel Data Store relazionale: 
+                <ul>
+                    <li>&Egrave; possibile utilizzare i risultati in una collaborazione tra portali.
+                    </li>
+                    <li>&Egrave; possibile abilitare funzionalit&agrave; di sincronizzazione con i risultati.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Non utilizzare il Data Store relazionale se si prevede un incremento dei risultati GeoAnalytics ed &egrave; necessario sfruttare le funzionalit&agrave; dello Spatiotemporal Big Data Store per gestire grandi quantit&agrave; di dati.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p> Il nome del layer che verr&agrave; creato.  Se si scrive su un ArcGIS Data Store, i risultati saranno salvati in  <b>I miei contenuti</b> e aggiunti alla mappa. Se si scrive su una condivisione file Big Data, i risultati saranno memorizzati nella condivisione file Big Data e aggiunti al suo Manifest. Non saranno aggiunti alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, lo strumento non verr&agrave; eseguito.
+            </p>
+            <p>Quando si scrive su  ArcGIS Data Store (data store relazionale o Spatiotemporal Big Data Store) usando la casella a discesa  <b>Salva risultato in</b>, &egrave; possibile specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,3 @@
+//>>built
+define("xstyle/ext/scrollbar",function(){function d(){var b={w:15,h:15},a=document.createElement("div");a.style.cssText="width:100px;height:100px;overflow:scroll;bottom:100%;right:100%;position:absolute;visibility:hidden;";document.body.appendChild(a);try{b={w:a.offsetWidth-Math.max(a.clientWidth,a.scrollWidth),h:a.offsetHeight-Math.max(a.clientHeight,a.scrollHeight)},document.body.removeChild(a)}catch(f){}return b}function c(){var b=d(),b={w:b.w+"px",h:b.h+"px"};c=function(){return b};return b}var e=
+/-cssx-scrollbar-(width|height)/;return{onValue:function(b,a,d){return b.replace(e,function(b,a){return"width"==a?c().w:c().h})}}});

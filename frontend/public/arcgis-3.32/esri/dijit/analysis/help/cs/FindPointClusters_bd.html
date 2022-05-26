@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Najít shluky bodů (Find Point Clusters)</h2><p/>
+        <h2><img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" alt="Naj&iacute;t shluky bodů"></h2>
+        <hr/>
+    <p>N&aacute;stroj  Naj&iacute;t shluky bodů vyhled&aacute; shluky bodov&yacute;ch prvků v r&aacute;mci okoln&iacute;ho &scaron;umu na z&aacute;kladě jejich prostorov&eacute;ho rozdělen&iacute;.
+    </p>
+    <p>Nevl&aacute;dn&iacute; organizace zkoum&aacute; určitou nemoc přen&aacute;&scaron;enou &scaron;kůdci. M&aacute; datovou sadu bodů představuj&iacute;c&iacute; dom&aacute;cnosti v z&aacute;jmov&eacute; oblasti, z nichž jsou někter&eacute; infikovan&eacute; a někter&eacute; ne. Použit&iacute;m n&aacute;stroje  Naj&iacute;t shluky bodů může analytik určit shluky infikovan&yacute;ch dom&aacute;cnost&iacute; a přesně tak určit oblast, kde se začne s l&eacute;čbou a likvidac&iacute; &scaron;kůdců.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vybrat vrstvu, u které budou nalezeny shluky</h2></div>
+        <hr/>
+        <div>
+            <p>Vrstva bodů, ve kter&eacute; budou nalezeny shluky. Vrstvy mus&iacute; b&yacute;t v rovinn&eacute;m souřadnicov&eacute;m syst&eacute;mu nebo souřadnicov&yacute; syst&eacute;m zpracov&aacute;n&iacute; mus&iacute; b&yacute;t nastaven na rovinn&yacute; souřadnicov&yacute; syst&eacute;m použ&iacute;vaj&iacute;c&iacute;  <b>Prostřed&iacute; anal&yacute;zy</b>.
+            </p>
+            <p>Kromě v&yacute;běru vrstvy z&nbsp;mapy můžete tak&eacute; zvolit položku  <b>Zvolit vrstvu anal&yacute;zy</b> kter&aacute; se nach&aacute;z&iacute; v&nbsp;doln&iacute; č&aacute;sti rozbalovac&iacute; nab&iacute;dky, abyste ve sv&eacute;m obsahu mohli naj&iacute;t vrstvu prvků nebo datovou sadu sd&iacute;len&yacute;ch souborů velk&yacute;ch dat.
+            </p>
+        </div>
+    </div>
+    <div id="clusterMethod">
+        <div><h2>Zvolte metodu shlukování, která bude použita</h2></div>
+        <hr/>
+        <div>
+            <p>Metoda shlukov&aacute;n&iacute;, kter&aacute; bude použita pro rozli&scaron;en&iacute; shluků bodov&yacute;ch prvků od okoln&iacute;ho &scaron;umu. Můžete zvolit použ&iacute;t definovanou vzd&aacute;lenost nebo automatick&yacute; shlukovac&iacute; algoritmus.
+            </p>
+            <p>Definovan&yacute; povrch (DBSCAN) použ&iacute;v&aacute; zadan&yacute; rozsah vyhled&aacute;v&aacute;n&iacute; pro oddělen&iacute; hust&yacute;ch shluků od řid&scaron;&iacute;ho hluku. Definovan&aacute; vzd&aacute;lenost (DBSCAN) je rychlej&scaron;&iacute;, ale je použiteln&aacute; pouze s velmi jasn&yacute;m rozsahem vyhled&aacute;v&aacute;n&iacute;, pomoc&iacute; kter&eacute;ho se dobře definuj&iacute; v&scaron;echny př&iacute;tomn&eacute; shluky. Definovan&aacute; vzd&aacute;lenost (DBSCAN) nalezne shluky s podobnou hustotou.
+            </p>
+            <p>Automatick&eacute; &uacute;pravy (HDBSCAN) nevyžaduj&iacute; zad&aacute;n&iacute; rozsahu vyhled&aacute;v&aacute;n&iacute;, ale tato metoda zabere v&iacute;ce času. Automatick&eacute; &uacute;pravy (HDBSCAN) naleznou shluky bodů s podobnou definovanou vzd&aacute;lenost&iacute; (DBSCAN), ale použ&iacute;vaj&iacute; různ&eacute; rozsahy hled&aacute;n&iacute; umožňuj&iacute;c&iacute; shluky s různ&yacute;mi hustotami. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Minimální počet bodů, který se má považovat za shluk</h2></div>
+        <hr/>
+        <div>
+            <p>Tento parametr se použ&iacute;v&aacute; různě v z&aacute;vislosti na zvolen&eacute; shlukovac&iacute; metodě:
+            </p>
+            <p>
+                <ul>
+                    <li>Definovan&aacute; vzd&aacute;lenost (DBSCAN)&mdash;zad&aacute; počet prvků, kter&eacute; mus&iacute; b&yacute;t nalezeny v určit&eacute; vzd&aacute;lenosti bodu, od kter&eacute; bod zač&iacute;n&aacute; tvořit shluk. Vzd&aacute;lenost je definovan&aacute; parametrem  <b>Omezit rozsah vyhled&aacute;v&aacute;n&iacute; na</b>.
+                    </li>
+                    <li>Automatick&eacute; &uacute;pravy (HDBSCAN)&mdash;zadaj&iacute; počet prvků vedle každ&eacute;ho bodu (včetně samotn&eacute;ho bodu), kter&eacute; budou zv&aacute;ženy při odhadu hustoty. Tento počet je tak&eacute; minim&aacute;ln&iacute; velikost shluku povolen&aacute; při extrahov&aacute;n&iacute; shluků.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Omezit rozsah vyhledávání na</h2></div>
+        <hr/>
+        <div>
+            <p>Pokud použ&iacute;v&aacute;te definovanou vzd&aacute;lenost (DBSCAN), tento parametr je vzd&aacute;lenost, ve kter&eacute;  <b>Minim&aacute;ln&iacute; počet bodů považovan&yacute; za shluk</b> mus&iacute; b&yacute;t nalezen. Tento parametr se nepouž&iacute;v&aacute; při volbě automatick&eacute; &uacute;pravy (HDBSCAN) jako shlukovac&iacute; metody.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p> N&aacute;zev vytv&aacute;řen&eacute; vrstvy. Pokud zapisujete ArcGIS Data Store, va&scaron;e v&yacute;sledky budou uloženy v  <b>Můj obsah</b> a přid&aacute;ny na mapu. Pokud zapisujete sd&iacute;len&yacute; soubor velk&yacute;ch dat, va&scaron;e v&yacute;sledky budou uloženy ve sd&iacute;len&eacute;m souboru velk&yacute;ch dat a přid&aacute;ny do jejich manifestu.  Nebudou přid&aacute;ny na mapu. V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud vrstva již existuje, n&aacute;stroj selže.
+            </p>
+            <p>Když zapisujete do   ArcGIS Data Store  (datov&eacute; &uacute;loži&scaron;tě relačn&iacute;ch a časoprostorov&yacute;ch velk&yacute;ch dat) pomoc&iacute; rozbalovac&iacute;ho seznamu  <b>Uložit v&yacute;sledek do</b> , můžete zadat n&aacute;zev složky v <b>Můj obsah</b>, kde budou v&yacute;sledky uloženy.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

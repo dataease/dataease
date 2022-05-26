@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/utils/htmlToSvg/supportClasses/dom-style",["dojo/dom-style"],function(d){function g(a,b,c){b=b.toLowerCase();if("auto"===c){if("height"===b)return a.offsetHeight;if("width"===b)return a.offsetWidth}if("fontweight"===b)switch(String(c)){case "700":return"bold";default:return"normal"}b in f||(f[b]=h.test(b));return f[b]?d.toPixelValue(a,c):c}var c={},k=/^-webkit-/;c.get=function(a,b){var c=a.__computedStyle||d.getComputedStyle(a);if("string"===typeof b)a=g(a,b,c[b]||
+a.style[b]);else{for(var e in b)b[e]=g(a,e,c[e]||a.style[e]);a=b}return"string"===typeof a?a.replace(k,""):a};c.cacheComputedStyle=function(a){if(a)return a.__computedStyle=d.getComputedStyle(a)};c.setComputedStyleCache=function(a,b){a&&(a.__computedStyle=b)};c.clearCache=function(a){a&&delete a.__computedStyle};var f={left:!0,top:!0},h=/margin|padding|width|height|max|min|offset/;c.set=d.set;c.toPixelValue=d.toPixelValue;c.getComputedStyle=d.getComputedStyle;return c});

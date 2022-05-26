@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Hot-Spots suchen</h2><p/>
+        <h2><img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" alt="Hot-Spots suchen"></h2>
+        <hr/>
+    <p>Das Werkzeug &quot;Hot-Spots suchen&quot; ermittelt, ob die r&auml;umlichen Muster in den Daten eine statistisch signifikante Cluster-Bildung aufweisen. 
+        <ul>
+            <li>Sind Ihre Punkte (Verbrechensf&auml;lle, B&auml;ume oder Verkehrsunf&auml;lle) wirklich geclustert?  Wie kann dies sichergestellt werden?
+            </li>
+            <li>Haben Sie wirklich einen statistisch signifikanten Hot-Spot gefunden oder lie&szlig;en sich andere Erkenntnisse aus der Karte ziehen, wenn die Art der Symbolisierung ge&auml;ndert w&uuml;rde?
+            </li>
+        </ul>
+        Mithilfe des Werkzeugs &quot;Hot-Spots suchen&quot; k&ouml;nnen Sie diese Fragen mit Sicherheit beantworten.
+    </p>
+    <p>Selbst zuf&auml;llige r&auml;umliche Muster weisen eine gewisse Cluster-Bildung auf. Zudem suchen unsere Augen und Gehirne naturgem&auml;&szlig; auch dann nach Mustern, wenn keine vorhanden sind. Demzufolge kann es schwierig sein, zu wissen, ob die Muster in den Daten das Ergebnis echter r&auml;umlicher Prozesse sind oder ob es sich lediglich um ein zuf&auml;lliges Ergebnis handelt. Aus diesem Grund verwenden Forscher und Analysten Methoden wie &quot;Hot-Spots suchen&quot; (Getis-Ord Gi*), um r&auml;umliche Muster zu quantifizieren. Wenn Sie eine statistisch signifikante Cluster-Bildung in Ihren Daten finden, verf&uuml;gen Sie &uuml;ber wertvolle Informationen. Zu wissen, wo und wann Cluster-Bildung auftritt, kann wichtige Aufschl&uuml;sse &uuml;ber die Prozesse geben, die die Muster f&ouml;rdern, die Sie sehen. Zu wissen, dass die Anzahl der Wohnungseinbr&uuml;che in bestimmten Nachbarschaften beispielsweise st&auml;ndig h&ouml;her ausf&auml;llt, kann eine wichtige Rolle spielen, wenn Sie effektive Pr&auml;ventionsstrategien entwerfen, knappe Polizeikr&auml;fte verteilen, Nachbarschafts&uuml;berwachungsprogramme initiieren, strafrechtliche Ermittlungen durchf&uuml;hren oder potenzielle Verd&auml;chtige identifizieren m&uuml;ssen.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Layer auswählen, für die Hot-Spots berechnet werden</h2></div>
+        <hr/>
+        <div>
+            <p>Der Punkt-Layer, zu dem Hot- und Cold-Spots gefunden werden.
+            </p>
+            <p>Diese Analyse verwendet Abschnitte und erfordert ein projiziertes Koordinatensystem. Sie k&ouml;nnen das  <b>Verarbeitungskoordinatensystem</b> in <b>Analyseumgebungen</b> festlegen. Wenn das Verarbeitungskoordinatensystem nicht auf ein projiziertes Koordinatensystem festgelegt ist, werden Sie aufgefordert, es festzulegen, wenn Sie die <b>Analyse ausf&uuml;hren</b> .
+            </p>
+            <p>Sie k&ouml;nnen nicht nur einen Layer aus der Karte ausw&auml;hlen, sondern auch unten in der Dropdown-Liste die Option  <b>Analyse-Layer ausw&auml;hlen</b> ausw&auml;hlen, um zu Ihren Inhalten f&uuml;r ein Big-Data-Dateifreigabe-Dataset bzw. -Feature-Layer zu navigieren.
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Cluster mit hohen und niedrigen Werten suchen</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Diese Analyse beantwortet die folgende Frage: Wo bilden hohe und niedrige Werte r&auml;umliche Cluster?
+            </p>
+            <p>Wenn es sich bei Ihren Daten um Punkte handelt und Sie  <b>Punktanzahl</b> ausw&auml;hlen, wertet dieses Werkzeug die r&auml;umliche Anordnung der Punkt-Features aus, um die folgende Frage zu beantworten: Wo werden Punkte unerwartet geclustert oder verteilt?
+            </p>
+            <p>Wenn Sie ein Feld ausw&auml;hlen, wird die r&auml;umliche Anordnung der mit jedem Feature verkn&uuml;pften Werte von diesem Werkzeug ausgewertet, um die folgende Frage zu beantworten: Wo bilden hohe und niedrige Werte Cluster?
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Die Abschnittsgröße zur Aggregation auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Die zum Erstellen des Quadratabschnitts verwendete Entfernung wird zum Analysieren der Eingabepunkte verwendet.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Hot-Spots mithilfe von Zeitschritten suchen (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>Wenn Zeiteigenschaften f&uuml;r den Punkt-Layer aktiviert und vom Typ &quot;Sofort&quot; sind, kann die Analyse mittels Zeitschritten durchgef&uuml;hrt werden.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Zeitschrittintervall</h2></div>
+        <hr/>
+        <div>
+            <p>Zeitintervall f&uuml;r die Erzeugung von Zeitschritten. Zeit kann auf die Start- oder Endzeit der Eingabedaten oder auf eine festgelegte Bezugszeit ausgerichtet werden.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Zeitschrittintervall</h2></div>
+        <hr/>
+        <div>
+            <p>Zeitintervall f&uuml;r die Erzeugung von Zeitschritten. Zeit kann auf die Start- oder Endzeit der Eingabedaten oder auf eine festgelegte Bezugszeit ausgerichtet werden.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStepAlignment">
+        <div><h2>Ausrichtung von Zeitschritten auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Vorgehensweise beim Ausrichten der Zeitschritte. Zeitschritte lassen sich auf drei Arten ausrichten:
+                <ul>
+                    <li> <b>Startzeit</b>: Zeitschritte werden am ersten zeitbezogenen Feature ausgerichtet.
+                    </li>
+                    <li> <b>Endzeit</b>: Zeitschritte werden am letzten zeitbezogenen Feature ausgerichtet.
+                    </li>
+                    <li> <b>Bezugszeit</b>: Zeitschritte werden an einer vorgegebenen Zeit ausgerichtet.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Bezugszeit zum Ausrichten von Zeitschritten</h2></div>
+        <hr/>
+        <div>
+            <p>Das Datum und die Uhrzeit zum Ausrichten der Zeitschritte.
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Die Nachbarschaftsgröße für Hot-Spot-Berechnungen auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Die Entfernung, mit deren Hilfe die Nachbarschaft f&uuml;r Hot-Spot-Berechnungen ermittelt wird. Die Nachbarschaft sollte gr&ouml;&szlig;er sein als die Abschnittsgr&ouml;&szlig;e, um sicherzustellen, dass jeder Abschnitt mindestens einen Nachbarn aufweist. Jeder Abschnitt wird analysiert und mit den benachbarten Abschnitten verglichen.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (WKID)</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist ein tempor&auml;rer Parameter f&uuml;r die Vorabversion zum Festlegen des Raumbezugs f&uuml;r die Verarbeitung. Viele Big-Data-Werkzeuge erfordern die Verwendung eines projizierten Koordinatensystems als Raumbezug f&uuml;r die Verarbeitung. Das Werkzeug verwendet standardm&auml;&szlig;ig das Eingabe-Koordinatensystem, kann jedoch nicht ausgef&uuml;hrt werden, wenn es sich um ein geographisches Koordinatensystem handelt. Geben Sie zum Festlegen eines projizierten Koordinatensystems die WKID ein. Die Eingabe f&uuml;r  <b>Web Mercator</b> ist beispielsweise <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Einen ArcGIS Data Store zum Speichern der Ergebnisse auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-Ergebnisse werden in einem Data Store gespeichert und als Feature-Layer in  Portal for ArcGIS dargestellt. In den meisten F&auml;llen sollten Ergebnisse im Data Store vom Typ &quot;spatiotemporal&quot; gespeichert werden, was gleichzeitig die Standardeinstellung ist. Manchmal empfiehlt es sich auch, Ergebnisse im Data Store vom Typ &quot;relational&quot; zu speichern. Die folgenden Gr&uuml;nde sprechen daf&uuml;r, die Ergebnisse im Data Store vom Typ &quot;relational&quot; zu speichern: 
+                <ul>
+                    <li>Sie k&ouml;nnen die Ergebnisse in portal&uuml;bergreifender Zusammenarbeit verwenden.
+                    </li>
+                    <li>Sie sind in der Lage, Synchronisierungsfunktionen mit Ihren Ergebnissen zu aktivieren.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Der Einsatz des Data Stores vom Typ &quot;relational&quot; wird nicht empfohlen, wenn abzusehen ist, dass Ihre GeoAnalytics-Ergebnisse weiter zunehmen. Nutzen Sie in diesem Fall die Funktionen des Big Data Store vom Typ &quot;spatiotemporal&quot; zur Verwaltung von gro&szlig;en Datenmengen.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p> Der Name des Layers, der erstellt wird.  Wenn Sie in einen ArcGIS Data Store schreiben, werden Ihre Ergebnisse in  <b>Eigene Inhalte</b> gespeichert und der Karte hinzugef&uuml;gt. Wenn Sie in eine Big-Data-Dateifreigabe schreiben, werden Ihre Ergebnisse in der Big-Data-Dateifreigabe gespeichert und  ihrem Manifest hinzugef&uuml;gt. Sie werden nicht der Karte hinzugef&uuml;gt. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, kann das Werkzeug nicht ausgef&uuml;hrt werden.
+            </p>
+            <p>Dieser Ergebnis-Layer zeigt statistisch signifikante Cluster mit hohen und niedrigen Werten bzw. Punktzahlen an. Wenn der Name des Ergebnis-Layers bereits vorhanden ist, werden Sie aufgefordert, ihn umzubenennen.
+            </p>
+            <p>Wenn Sie &uuml;ber das Dropdown-Feld  <b>Ergebnis speichern in</b> in ArcGIS Data Store (Big Data Store vom Typ &quot;relational&quot; oder &quot;spatiotemporal&quot;) schreiben, k&ouml;nnen Sie den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert wird.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

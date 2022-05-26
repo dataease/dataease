@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>다중 변수 격자 생성</h2><p/>
+        <h2><img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" alt="데이터 추가 워크플로 다이어그램"></h2>
+        <hr/>
+    <p>다중 변수 격자 생성 도구는 하나 이상의 포인트, 라인 또는 폴리곤 피처 레이어를 사용합니다. 이 도구는 사각형 또는 육각형 그룹의 격자를 생성하고 각 입력 레이어의 근접성을 기반으로 각 그룹에 대한 값을 계산합니다. 해당 값에는 다음 변수가 포함될 수 있습니다. 
+
+    </p>
+    <p>
+        <ul>
+            <li> <b>가장 가까운 피처까지의 거리</b> - 각 그룹에서 가장 가까운 피처까지의 거리
+            </li>
+            <li> <b>가장 가까운 피처의 속성</b> - 각 그룹에 가장 가까운 피처의 필드 값
+            </li>
+            <li> <b>주변 요약</b> - 각 그룹의 거리 내에 있는 모든 피처의 지정된 통계
+            </li>
+            <li> <b>교차 요약</b> - 각 그룹과 교차하는 모든 피처의 지정된 통계
+            </li>
+        </ul>
+        
+    </p>
+    <p>지정한 변수만 이 결과 레이어에 포함됩니다. 해당 변수를 통해 데이터의 근접성과 분포를 이해할 수 있습니다. 결과를 활용하면 다음과 같은 질문에 대한 대답을 시작할 수 있습니다.
+        <ul>
+            <li>대중교통 인프라의 다중 레이어가 주어진 경우, 대중교통으로 가장 접근하기 어려운 도시는 어디일까요?
+            </li>
+            <li>호수와 강 같은 수로의 레이어가 주어진 경우, 미국 각 지역에서 가장 가까운 수역의 이름은 무엇일까요?
+            </li>
+            <li>가구 소득의 레이어가 주어진 경우, 미국에서 주변 50마일의 소득 변동이 가장 큰 곳은 어디일까요?
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>다중 변수 격자를 생성하는 데 사용되는 그룹의 유형 선택</h2></div>
+        <hr/>
+        <div>
+             
+            <p>다중 변수 격자를 생성하는 데 사용되는 그룹의 크기 및 유형입니다.  <b>정사각형</b> 옵션의 경우, 지정된 숫자와 단위에 따라 정사각형의 높이와 너비가 결정됩니다. <b>육각형</b> 옵션의 경우, 지정된 수 및 단위가 평행 측면 간 거리를 결정합니다.
+            </p>
+            <p>이 분석은 그룹을 사용하며 투영 좌표체계가 필요합니다.  <b>분석 환경</b>의 <b>처리 좌표체계</b>를 설정할 수 있습니다. 처리 좌표계가 투영 좌표계로 설정되지 않은 경우에 <b>분석을 실행</b> 하면 투영 좌표계로 설정하라는 메시지가 나타납니다.
+            </p>
+        </div>
+    </div>
+    <div id="variableCalculations">
+        <div><h2>격자에 포함할 입력 레이어 및 변수 선택</h2></div>
+        <hr/>
+        <div>
+            <p>추가 버튼( <b>+</b>)을 클릭하여 <b>변수 추가</b> 창을 열고 분석에 레이어를 추가합니다. <b>변수 추가</b> 창에서 입력 레이어를 선택하고 해당 입력 레이어에 대해 계산할 변수를 구성합니다.
+            </p>
+            <p>계산하려는 변수를 선택하고 구성하면 선택한 다른 레이어와 함께 도구 창에 레이어가 나열됩니다. 레이어 중 하나의 편집 버튼을 클릭하여  <b>변수 추가</b> 창을 열고 해당 레이어에 대해 구성된 모든 변수를 확인합니다. 레이어 중 하나의 삭제 버튼을 클릭하여 분석에서 해당 레이어 및 모든 관련 변수를 제거합니다.
+            </p>
+        </div>
+    </div>
+    <div id="addVariablesWindow">
+        <div><h2>변수 추가</h2></div>
+        <hr/>
+        <div>
+            <p>이 창에서 입력 레이어를 선택하고 해당 입력 레이어에 대해 계산할 변수를 구성할 수 있습니다. 시작하려면  <b>입력 레이어 선택</b> 드롭다운 메뉴를 사용하여 분석에 추가할 포인트, 폴리곤 또는 라인 레이어를 선택합니다.
+            </p>
+            <p>맵에서 레이어를 선택하는 것 이외에, 드롭다운 목록의 하단에 있는  <b>Analysis Layer 선택</b>을 선택하여 빅데이터 파일 공유 데이터셋 또는 피처 레이어의 콘텐츠를 찾아볼 수 있습니다.
+            </p>
+            <p>입력 레이어를 선택했으면  <b>변수 추가</b> 버튼을 클릭하여 편집할 새로운 변수를 엽니다. 각 변수에 고유한 이름을 입력해야 합니다. 결과 레이어의 속성 테이블에 생성된 필드의 이름입니다.
+            </p>
+            <p>드롭다운 메뉴를 사용하여 추가할 변수의 유형을 선택합니다. 각 변수 유형은 고유한 매개변수 집합으로 구성되어야 하며 모든 매개변수가 있어야 합니다.
+            </p>
+            <p>선택한 레이어에 필요한 모든 변수를 추가했으면  <b>추가</b> 버튼을 클릭하여 변수를 저장합니다.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> 생성될 레이어의 이름입니다. ArcGIS Data Store에 작성하는 경우  결과는  <b>내 콘텐츠</b>에 저장되고 맵에 추가됩니다. 빅데이터 파일 공유에 작성하는 경우  결과는 빅데이터 파일 공유에 저장되고 해당 매니페스트에 추가됩니다. 이러한 결과는 맵에 추가되지 않습니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어가 이미 있으면 도구를 사용할 수 없습니다.
+            </p>
+            <p> ArcGIS Data Store(관계형 또는 시공간 빅데이터 저장소)에 작성하는 경우  <b>결과 저장:</b> 드롭다운 상자를 사용하여 <b>내 콘텐츠</b>에서 결과를 저장할 폴더의 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

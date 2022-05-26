@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Forest-baseret klassifikation og regression</h2><p/>
+        <h2><img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" alt="Workflow-diagram for Forest-baseret klassifikation og regression "></h2>
+        <hr/>
+    <p>Opretter  modeller og genererer prognoser ved hj&aelig;lp af en tilpasning af Leo Breiman's random forest-algoritme, som er en overv&aring;get maskinl&aelig;ringsmetode. Forudsigelser kan udf&oslash;res b&aring;de for kategoriske variabler (klassifikation) og kontinuerlige variabler (regression). Forklarende variabler er felter i attributtabellen for tr&aelig;ningsobjekterne. V&aelig;rkt&oslash;jet kan k&oslash;res for at generere en model til vurdering af ydeevne eller for at generere en model og forudsige resultater til andre datas&aelig;t.
+    </p>
+    <p>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Analysetype</h2></div>
+        <hr/>
+        <div>
+            <p>Angiver v&aelig;rkt&oslash;jets funktionsm&aring;de. V&aelig;rkt&oslash;jet kan k&oslash;res for at tr&aelig;ne en model til kun at vurdere ydeevne eller for at tr&aelig;ne en model og forudsige objekter. Der findes f&oslash;lgende typer forudsigelser:
+                <ul>
+                    <li> <b>Tr&aelig;ne en model til vurdering af model-ydeevne</b> &ndash; En model bliver tr&aelig;net og tilpasset inputdata. Brug denne indstilling til at vurdere n&oslash;jagtigheden af ​​din model, f&oslash;r du genererer forudsigelser p&aring; et nyt datas&aelig;t. Output fra denne indstilling bliver en featuretjeneste af de tilpassede tr&aelig;ningsdata, modeldiagnostik samt en valgfri tabel over variablernes betydning.
+                    </li>
+                    <li> <b>Tr&aelig;n en model og forudsig v&aelig;rdier</b> &ndash; Forudsigelser eller klassifikationer genereres for objekter. Forklarende variabler skal v&aelig;re til r&aring;dighed for b&aring;de tr&aelig;ningsobjekterne og de objekter, der skal forudsiges. Output fra denne indstilling bliver en featuretjeneste af de forudsagte v&aelig;rdier, modeldiagnostik samt en valgfri tabel over variablernes betydning.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="train">
+        <div><h2>Træn en model for at vurdere model-ydelse</h2></div>
+        <hr/>
+        <div>
+            <p>Brug denne tilstand, hvis du vil tilpasse en model og unders&oslash;ge tilpasningen.
+            </p>
+            <p>Med denne indstilling bliver modellen tr&aelig;net ved hj&aelig;lp af et inputlag. Brug denne indstilling til at vurdere n&oslash;jagtigheden af ​​din model, f&oslash;r du genererer forudsigelser p&aring; et nyt datas&aelig;t. Denne indstilling viser modeldiagnostik i meddelelsesvinduet og anvender modellen p&aring; dine tr&aelig;ningsdata.
+            </p>
+        </div>
+    </div>
+    <div id="trainAndPredict">
+        <div><h2>Træn en model, og forudsig værdier</h2></div>
+        <hr/>
+        <div>
+            <p>Brug denne tilstand, hvis du vil tilpasse en model og anvende modellen p&aring; datas&aelig;ttet for at generere forudsigelser.
+            </p>
+            <p>Der genereres forudsigelser eller klassifikationer for objekter. Output ved denne indstilling er en featuretjeneste, modeldiagnostik samt en valgfri tabel over variablernes betydning.
+            </p>
+        </div>
+    </div>
+    <div id="inFeatures">
+        <div><h2>Vælg træningslag</h2></div>
+        <hr/>
+        <div>
+            <p>Vektorlaget, der indeholder den variabel, som skal forudsiges, og de felter, der skal bruges til at generere forudsigelsen.
+            </p>
+            <p>Udover at du kan v&aelig;lge et lag i dit kort, kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten for at g&aring; til dit indhold til et big data-fildelingsdatas&aelig;t eller -vektorlag.
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Vælg et lag, der skal forudsiges værdier for</h2></div>
+        <hr/>
+        <div>
+            <p>Et vektorlag, der repr&aelig;senterer steder, hvor der vil blive udf&oslash;rt forudsigelser. Dette vektorlag skal ogs&aring; indeholde eventuelle forklarende variabler, der er angivet som felter, som svarer til dem, der anvendes fra tr&aelig;ningsobjekterne.
+            </p>
+            <p>Udover at du kan v&aelig;lge et lag i dit kort, kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten for at g&aring; til dit indhold til et big data-fildelingsdatas&aelig;t eller -vektorlag.
+            </p>
+        </div>
+    </div>
+    <div id="variablePredict">
+        <div><h2>Vælg det felt, der skal forudsiges</h2></div>
+        <hr/>
+        <div>
+            <p>Feltet fra tr&aelig;ningsobjekterne indeholder de v&aelig;rdier, der skal bruges til tr&aelig;ning af modellen. Dette felt indeholder kendte (tr&aelig;nings-) v&aelig;rdier af den variabel, der bliver brugt til at forudsige p&aring; ukendte steder. Hvis v&aelig;rdierne er kategoriske (f.eks. Ahorn, Fyr, Eg), skal du markere afkrydsningsfeltet  <b>Kategorisk</b>.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Vælg en eller flere forklarende variabler</h2></div>
+        <hr/>
+        <div>
+            <p>Et eller flere felter, der repr&aelig;senterer de forklarende variabler (felter), som hj&aelig;lper med at forudsige v&aelig;rdien eller kategorien af ​​variablen, der skal forudsiges. Brug det kategoriske afkrydsningsfelt for eventuelle variabler, der repr&aelig;senterer klasser eller kategorier (f.eks. overflademateriale eller tilstedev&aelig;relse eller frav&aelig;r). Angiv variablen som sand for alle, der repr&aelig;senterer klasser eller kategorier som overflademateriale eller tilstedev&aelig;relse eller frav&aelig;r, og falsk, hvis variablen er kontinuerlig.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfTrees">
+        <div><h2>Antal træer</h2></div>
+        <hr/>
+        <div>
+            <p>Antallet af tr&aelig;er, der skal oprettes i modellen. Flere tr&aelig;er giver generelt i en mere pr&aelig;cis modelforudsigelse, men det vil tage l&aelig;ngere tid at beregne modellen. Antallet af ​​tr&aelig;er er som standard 100.
+            </p>
+        </div>
+    </div>
+    <div id="minimumLeafSize">
+        <div><h2>Mindste bladstørrelse</h2></div>
+        <hr/>
+        <div>
+            <p>Det mindste antal observationer, der kr&aelig;ves for at holde et blad (det er terminalknuden p&aring; et tr&aelig; uden yderligere delinger). Minimumet for regression er som standard 5, og standarden for klassificering er 1. For meget store datam&aelig;ngder vil en for&oslash;gelse af ​​disse tal reducere v&aelig;rkt&oslash;jets k&oslash;rselstid.
+            </p>
+        </div>
+    </div>
+    <div id="maximumTreeDepth">
+        <div><h2>Maksimal trædybde</h2></div>
+        <hr/>
+        <div>
+            <p>Det maksimale antal delinger, der vil blive lavet ned ad et tr&aelig;. Hvis du benytter en stor maksimaldybde, oprettes der flere splittelser, hvilket kan &oslash;ge risikoen for overfitting af modellen. Standarden er datadrevet og afh&aelig;nger af antallet af tr&aelig;er, der oprettes, og antallet af variabler, der er inkluderet.
+            </p>
+        </div>
+    </div>
+    <div id="sampleSize">
+        <div><h2>Tilgængelige data pr. træ (%)</h2></div>
+        <hr/>
+        <div>
+            <p>Angiver procentdelen af ​​objekterne i tr&aelig;ningslaget, der anvendes til hvert beslutningstr&aelig;. Standard er 100 procent af dataene. Pr&oslash;ver for hvert tr&aelig; udtages tilf&aelig;ldigt fra to tredjedele af de angivne data.
+            </p>
+            <p>Hvert beslutningstr&aelig; i skoven er oprettet ved hj&aelig;lp af en tilf&aelig;ldigt eksempel eller undergruppe (ca. to tredjedele) af de tilg&aelig;ngelige tr&aelig;ningsdata. Ved at bruge en lavere procentdel af indtastningsdataene for hvert beslutningstr&aelig; &oslash;ges v&aelig;rkt&oslash;jets hastighed ved meget store datas&aelig;t.
+            </p>
+        </div>
+    </div>
+    <div id="randomVariables">
+        <div><h2>Antal vilkårligt udtagne variabler</h2></div>
+        <hr/>
+        <div>
+            <p>Angiver antallet af forklarende variabler, der bruges til at oprette hvert beslutningstr&aelig;.
+            </p>
+            <p>Hvert af beslutningstr&aelig;erne i skoven er oprettet ved hj&aelig;lp af en tilf&aelig;ldig undergruppe af de angivne forklarende variabler. En for&oslash;gelse af antallet af variabler, der anvendes i hvert beslutningstr&aelig;, vil &oslash;ge risikoen for for overfitting af modellen, is&aelig;r hvis der er et eller nogle f&aring; dominerende variabler. En almindelig fremgangsm&aring;de er at bruge kvadratroden af ​​det samlede antal forklarende variabler, hvis den variabel, der skal forudsiges, er numerisk, eller dividere det samlede antal forklarende variabler med 3, hvis den variabel, der skal forudsiges, er kategorisk.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Vælg, hvordan forklarende felter skal matches</h2></div>
+        <hr/>
+        <div>
+            <p>Hvordan de tilsvarende variabler i tr&aelig;ningslaget matcher variablerne i forudsigelseslaget. Kun de variabler, der anvendes i tr&aelig;ning, medtages i tabellen.
+            </p>
+        </div>
+    </div>
+    <div id="percentageForValidation">
+        <div><h2>Antal kørsler med henblik på validering</h2></div>
+        <hr/>
+        <div>
+            <p>Angiver procentdelen (mellem 0 procent og 50 procent) af objekter i tr&aelig;ningslaget, der skal reserveres som testdatas&aelig;t til validering. Modellen bliver tr&aelig;net uden denne tilf&aelig;ldige delm&aelig;ngde af data, og de observerede v&aelig;rdier for disse objekter bliver sammenlignet med den forudsagte v&aelig;rdi. Standard er 10 procent.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; det lag, som oprettes i  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>De returnerede resultater afh&aelig;nger af typen af ​​analyse. Hvis du tr&aelig;ner for at vurdere modeltilpasning, vil resultaterne indeholde et lag af tr&aelig;ningsdata, der passer til modellen og resultatoplysninger, der vurderer modeltilpasningen. Hvis du tr&aelig;ner og forudsiger, vil resultaterne indeholde et lag af tr&aelig;ningsdataene, der passer til modellen, et lag af forudsagte resultater og resultatoplysninger, der vurderer modeltilpasningen.
+            </p>
+            <p>Ved hj&aelig;lp af rullelisten  <b>Gem resultat i</b> kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet skal gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

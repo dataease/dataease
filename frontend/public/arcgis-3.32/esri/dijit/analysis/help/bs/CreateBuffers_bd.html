@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Izradi pojaseve</h2><p/>
+        <h2><img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" alt="Izradi pojaseve"></h2>
+        <hr/>
+    <p>Pojas je poligon koji pokriva danu udaljenost od točke, linije ili poligonalnog geoobjekta. 
+    </p>
+    <p>Pojasi se obično upotrebljavaju za stvaranje područja koja se mogu dodatno analizirati s pomoću ostalih alata. Na primjer, ako pitanje glasi: &bdquo;Koje se zgrade nalaze unutar 1 milje od &scaron;kole?&rdquo;, odgovor se može pronaći stvaranjem pojasa od 1 milje oko &scaron;kole i preklapanja pojasa sa slojem koji sadrži tlocrte zgrada. Zavr&scaron;ni rezultat je sloj zgrada koje se nalaze unutar 1 milje od &scaron;kole.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Odaberite sloj na koji se primijenjuje pojas</h2></div>
+        <hr/>
+        <div>
+            <p>Točka, linija ili poligonalni geoobjekt za stvaranje pojasa. Ulazni slojevi moraju biti u predviđenom koordinatnom sustavu ili prostorna referenca koja se obrađuje mora biti postavljena u predviđenom koordinatnom sustavu pomoću  <b>Okruženja za analizu</b>.
+            </p>
+            <p>Osim odabira sloja s va&scaron;e karte, možete odabrati  <b>Izaberi sloj za analizu</b> na dnu padajućeg popisa za pretraživanje va&scaron;ih sadržaja za skup podataka za dijeljenje datoteka velikih podataka ili sloj geoobjekta.
+            </p>
+        </div>
+    </div>
+    <div id="bufferType">
+        <div><h2>Odaberite vrstu pojasa koju želite primijeniti</h2></div>
+        <hr/>
+        <div>
+            <p>Tri su načina na koje možete odrediti veličinu pojasa za svoje ulazne geoobjekte: 
+                <ul>
+                    <li>Odredite udaljenost koja se odnosi na sve geoobjekte.
+                    </li>
+                    <li>Odredite polje na ulaznom sloju koje sadrži vrijednost udaljenosti. Možete upotrijebiti tekstualno ili brojčano polje. Ako se ne odredi linearna jedinica, koristit će se jedinice prostorne reference. Ako koristite geografski koordinatni sustav, za polje bez jedinice pretpostavit će se da su metri. 
+                    </li>
+                    <li>Izradite izraz s vi&scaron;estrukim poljima i matematičkim radnjama. Primjerice, za izradu pojasa do 10 puta vrijednosti polja naziva  <i>wind_speed</i> dodajte izraz <i>$feature[&quot;wind_speed&quot;] x 10</i>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Odaberite metodu izrade pojasa</h2></div>
+        <hr/>
+        <div>
+            <p>Možete odabrati  <b>Planarnu</b> ili <b>Geodetsku</b> metodu. <b>Planarna</b> metoda može biti brža i prikladna je za lokalnu analizu projiciranih podataka. <b>Geodetska</b> metoda prikladna je za velika područja i bilo koji geografski koordinatni sustav.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveOption">
+        <div><h2>Odaberite vrstu metode spajanja</h2></div>
+        <hr/>
+        <div>
+            <p>Opcije za određivanje metode spajanja. Ako se odabere metoda spajanja, dobit ćete mogućnost stvaranja područja od jednog ili vi&scaron;e dijelova i moći ćete računati statistiku na temelju pruženih polja.
+                <ul>
+                    <li> <b>Sve</b> &ndash; spojit će se svi geoobjekti. Ako se omoguće geoobjekti od vi&scaron;e dijelova, svi će se geoobjekti spojiti u jedan geoobjekt. Ako se ne omogući vi&scaron;e dijelova, spojit će se susjedni ili preklapajući geoobjekti.
+                    </li>
+                    <li> <b>Polja</b> &ndash; spojit će se geoobjekti koji dijele isto naznačeno polje ili kombinaciju naznačenih polja. Ako se omoguće geoobjekti od vi&scaron;e dijelova, svi geoobjekti s istim poljem spojit će se u jedan geoobjekt. Ako se ne omogući vi&scaron;e dijelova, spojit će se susjedni ili preklapajući geoobjekti s istom vrijednosti polja.
+                    </li>
+                    <li> <b>Ni&scaron;ta </b> &ndash; geoobjekti se neće spojiti. To je zadano.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Omogući geoobjekte od više dijelova</h2></div>
+        <hr/>
+        <div>
+            <p>Opcija za određivanje hoće li se va&scaron; rezultat sastojati od geoobjekata od jednog ili vi&scaron;e dijelova. 
+
+            </p>
+            <p>
+                <ul>
+                    <li>Označeno &ndash; rezultati va&scaron;e analize sadržavat će geoobjekte od vi&scaron;e dijelova.   
+                    </li>
+                    <li>Neoznačeno &ndash; rezultati va&scaron;e analize sadržavat će geoobjekte od jednog dijela. To je zadano.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Dodaj statistike (neobavezno)</h2></div>
+        <hr/>
+        <div>
+            <p> Možete izračunati statistiku za geoobjekte koji su sažeti. Možete izračunati sljedeće u brojčanim poljima:
+                <ul>
+                    <li>Ukupni broj &ndash; izračunava broj vrijednosti koje imaju neku vrijednost. Može se upotrebljavati na brojčanim poljima ili u tekstu. Ukupni broj od [nema vrijednosti, 0, 2] je 2.
+                    </li>
+                    <li>Zbroj &ndash; zbroj brojčanih vrijednosti u polju. Zbroj od [nema vrijednosti, nema vrijednosti, 3] je 3.
+                    </li>
+                    <li>Srednja vrijednost &ndash; srednja vrijednost brojčanih vrijednosti. Srednja vrijednost od [0, 2, nema vrijednosti] je 1.
+                    </li>
+                    <li>Min. &ndash; minimalna vrijednost brojčanog polja. Minimum od [0, 2, nema vrijednosti] je 0. 
+                    </li>
+                    <li>Maks. &ndash; maksimalna vrijednost brojčanog polja. Maksimalna vrijednost od [0, 2, nema vrijednosti] je 2.
+                    </li>
+                    <li>Raspon &ndash; raspon brojčanog polja. Izračunava se oduzimanjem minimalnih vrijednosti od maksimalnih vrijednosti. Raspon od [0, nema vrijednosti, 1] je 1. Raspon od [nema vrijednosti, 4] je 0.
+                    </li>
+                    <li>Varijanca &ndash; varijanca brojčanog polja u tragu. Varijanca od [1] nema vrijednosti. Varijanca od [nema vrijednosti, 1,0,1,1] je 0,25.
+                    </li>
+                    <li>Standardna devijacija &ndash; standardna devijacija brojčanog polja. Standardna devijacija od [1] nema vrijednosti. Standardna devijacija od [nema vrijednosti, 1,0,1,1] je 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Možete izračunati sljedeće u poljima teksta:
+                <ul>
+                    <li>Ukupni broj &ndash; broj vrijednosti koje imaju neku vrijednost.
+                    </li>
+                    <li>Bilo koje &ndash; ova je statistika nasumični uzorak vrijednosti teksta u određenom polju.
+                    </li>
+                </ul>
+                Sve se statistike računaju za vrijednosti koje nisu nula. Sloj rezultata sadržavat će novo polje za svaki izračun statistike. Može se dodati bilo koliko statistika odabirom atributa i statistike. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Odaberite ArcGIS Data Store kao mjesto za spremanje rezultata</h2></div>
+        <hr/>
+        <div>
+            <p>Rezultati geoanalitika pohranjuju se u spremnik podataka i otkriveni su kao sloj geoobjekata u  Portal for ArcGIS. U većini slučajeva rezultate bi trebalo pohraniti u spremniku prostorno-vremenskih podataka i to je zadana postavka. U nekim je slučajevima, spremanje rezultata u spremnik relacijskih podataka dobra opcija. Razlozi za&scaron;to biste htjeli pohraniti rezultate u spremnik relacijskih podataka navedeni su u nastavku: 
+                <ul>
+                    <li>Možete upotrijebiti rezultate u suradnji portal-do-portala.
+                    </li>
+                    <li>Možete omogućiti mogućnosti sinkronizacije rezultata.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ne biste trebali upotrebljavati spremnik relacijskih podataka ako očekujete da će se va&scaron;i geoanalitički podaci povećati i trebate iskoristiti mogućnosti spremnika prostorno-vremenskih podataka za rukovanje velikim količinama podataka.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja rezultata</h2></div>
+        <hr/>
+        <div>
+            <p> Naziv sloja koji će se stvoriti. Ako pi&scaron;ete na ArcGIS Data Store, va&scaron;i će se rezultati spremiti u  <b>Mojem sadržaju</b> i dodati karti. Ako pi&scaron;ete na dijeljenje datoteka velikih podataka, va&scaron;i će se rezultati pohraniti u dijeljenje datoteka velikih podataka i dodati u manifest. Neće se dodati karti. Zadani naziv temelji se na nazivu alata i nazivu sloja unosa. Ako sloj već postoji, alat neće biti uspje&scaron;an.
+            </p>
+            <p>Kada pi&scaron;ete na  ArcGIS Data Store (relacijski ili prostorno-vremenski spremnik velikih podataka), upotrebom padajućeg izbornika  <b>Spremi rezultat u</b> možete odrediti naziv mape u dijelu <b>Moj sadržaj</b> gdje će se spremiti rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

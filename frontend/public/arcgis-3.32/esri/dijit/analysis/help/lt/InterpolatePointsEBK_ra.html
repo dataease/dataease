@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpoliuoti taškus</h2><p/>
+        <h2><img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" alt="Įrankis Interpoliuoti ta&scaron;kus"></h2>
+        <hr/>
+    <p>&Scaron;is įrankis leidžia prognozuoti reik&scaron;mes naujose vietose, remiantis esamais ta&scaron;kų rinkinio matavimais. &Scaron;is įrankis naudoja ta&scaron;kinius duomenis su reik&scaron;mėmis kiekviename ta&scaron;ke ir pateikia prognozuojamų reik&scaron;mių rastrą.
+    </p>
+    <p>Kiti &scaron;io įrankio naudojimo atvejai:
+
+        <ul>
+            <li>Oro kokybės valdymo apylinkėje yra sensorių, matuojančių užter&scaron;tumo lygį. Ta&scaron;kų interpoliavimo įrankį galima naudoti užter&scaron;tumo lygiui prognozuoti vietose, neturinčiose sensorių, pvz., vietose, kuriose kyla pavojus gyventojams &ndash; mokyklose arba ligoninėse.
+                
+
+            </li>
+            <li>Sunkiųjų metalų koncentracijos pasėliuose prognozė, atsižvelgiant į atskirų augalų mėginius.
+                
+
+            </li>
+            <li>Dirvožemio trą&scaron;ų lygio (azoto, fosforo, kalio ir t. t.) ir kitų indikatorių (pvz., elektros laidumo) prognozė, siekiant i&scaron;tirti jų ry&scaron;į su pasėlių derliumi ir nustatyti tikslius kiekvienos lauko vietos trą&scaron;ų kiekius.
+                
+
+            </li>
+            <li>Taikymas meteorologijoje apima temperatūros, kritulių ir susijusių kintamųjų (pvz., rūg&scaron;taus lietaus) prognozes.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointFeatures">
+        <div><h2>Pasirinkite taškinį sluoksnį, kuriame yra vietos su žinomomis reikšmėmis</h2></div>
+        <hr/>
+        <div>
+            <p>Ta&scaron;kinis sluoksnis, kurį sudaro ta&scaron;kai su i&scaron;matuotomis reik&scaron;mėmis.
+            </p>
+        </div>
+    </div>
+    <div id="interpolateField">
+        <div><h2>Pasirinkite lauką interpoliavimui</h2></div>
+        <hr/>
+        <div>
+            <p>Pasirinkite lauką, kurio reik&scaron;mes norite interpoliuoti. Laukas turi būti skaitinis.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimizuoti</h2></div>
+        <hr/>
+        <div>
+            <p>Pasirinkite, kam teikti pirmenybę: greičiui ar tikslumui.
+            </p>
+            <p>Apskaičiuoti tikslesnę prognozę užtrunka ilgiau. &Scaron;is parametras keičia interpoliuotų ta&scaron;kų kelių kitų parametrų numatytąsias reik&scaron;mes, kad būtų optimizuojamas skaičiavimo greitis, rezultatų tikslumas ar jų derinys. Numatyta, kad įrankis optimizuos pusiausvyrą.
+            </p>
+        </div>
+    </div>
+    <div id="transformData">
+        <div><h2>Pakeisti duomenis į įprastą paskirstymą</h2></div>
+        <hr/>
+        <div>
+            <p>Pasirinkite, ar duomenys bus transformuojami į normalų paskirstymą.
+            </p>
+            <p>Interpoliavimas tiksliausiai taikomas duomenims, pasižymintiems normaliu (varpo formos) paskirstymu. Jeigu duomenys nėra pateikiami kaip normaliai paskirstyti, būtina atlikti transformavimą.
+            </p>
+        </div>
+    </div>
+    <div id="sizeOfLocalModels">
+        <div><h2>Vietinių modelių dydis</h2></div>
+        <hr/>
+        <div>
+            <p>Ta&scaron;kų interpoliavimas veikia kuriant vietinius interpoliavimo modelius, kurie yra sumai&scaron;omi, kad būtų sukurtas galutinis tikimybių žemėlapis. &Scaron;is parametras valdo, kiek ta&scaron;kų sudarys kiekvieną vietinį modelį. Dėl mažesnių reik&scaron;mių rezultatai taps labiau vietiniais ir gali parodyti mažo mastelio poveikį, tačiau dėl to gali pasireik&scaron;ti skaičiavimo nestabilumų. Didesnės reik&scaron;mės bus stabilesnės, tačiau gali nebūti tam tikrų vietinių efektų.
+            </p>
+            <p>Reik&scaron;mės gali būti nuo 30 iki 500, tačiau tipinės reik&scaron;mės yra nuo 50 iki 200.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfNeighbors">
+        <div><h2>Gretimų taškų skaičius</h2></div>
+        <hr/>
+        <div>
+            <p>Prognozės skaičiuojamos atsižvelgiant į gretimus ta&scaron;kus. &Scaron;is parametras apibrėžia, kiek ta&scaron;kų bus naudojama skaičiavimui. Naudojant didesnį gretimų ta&scaron;kų skaičių, paprastai bus gaunami tikslesni rezultatai, tačiau jų skaičiavimas truks ilgiau.
+            </p>
+            <p>&Scaron;ios reik&scaron;mės gali būti nuo 1 iki 64, tačiau tipinės reik&scaron;mės yra nuo 5 iki 15.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Išvesties gardelės dydis</h2></div>
+        <hr/>
+        <div>
+            <p>I&scaron;vesties rastrų gardelės dydis ir matavimo vienetai.
+            </p>
+            <p>Galima rinktis &scaron;iuos vienetus: pėdas, mylias, metrus ir kilometrus.
+            </p>
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Išvesties tikimybės klaida</h2></div>
+        <hr/>
+        <div>
+            <p>Pasirinkite, ar norite kurti prognozuojamų reik&scaron;mių standartinių klaidų rastrą.
+            </p>
+            <p>Standartinės paklaidos naudingos, nes pateikia informaciją apie prognozuojamų reik&scaron;mių patikimumą. Paprastai 95 proc. atvejų tikra reik&scaron;mė yra kažkur tarp dviejų standartinių prognozuojamos reik&scaron;mės verčių. Pavyzdžiui, naujos vietos prognozuojama reik&scaron;mė yra 50 su standartine paklaida 5. Vadinasi, įrankio geriausias spėjimas yra, kad tikra reik&scaron;mė toje vietoje yra 50, tačiau gali būti ir mažesnė (iki 40) arba didesnė (iki 60). Norėdami apskaičiuoti &scaron;ių galimų reik&scaron;mių intervalą, padauginkite standartinę paklaidą i&scaron; 2, pridėkite &scaron;ią reik&scaron;mę prie prognozuojamos reik&scaron;mės, kad gautumėte vir&scaron;utinę intervalo ribą, ar atimkite i&scaron; prognozuojamos reik&scaron;mės, kad gautumėte apatinę intervalo ribą.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Sluoksnio, kuris bus sukurtas puslapyje  <b>Turinys</b> ir įtrauktas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau egzistuoja, būsite papra&scaron;yti pateikti kitą pavadinimą.
+            </p>
+            <p>Galite nurodyti aplanko  <b>Turinyje</b>, kuriame rezultatai bus įra&scaron;yti naudojant i&scaron;&scaron;okantįjį meniu <b>Rezultatą įra&scaron;yti į</b>, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

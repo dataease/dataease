@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Konverter geoobjekt til raster</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="Konverter geoobjekt til rasterverkt&oslash;y"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet konverterer geoobjekter til et rasterdatasett.
+    </p>
+    <p>Enhver geoobjektklasse som inneholder punkt-, linje- eller polygongeoobjekter kan konverteres til et rasterdatasett.
+    </p>
+    <p>Cellesenteret brukes til &aring; fastsette verdien av utgangsrasterpikselen.
+    </p>
+    <p>Inngangsfelttypen fastsetter typen utgangsraster. Dersom feltet er et heltall, vil utgangsrastene v&aelig;re heltall; hvis det er et flyttall, vil utdata v&aelig;re flyttall.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Velg geoobjektslag som skal konverteres</h2></div>
+        <hr/>
+        <div>
+            <p>Inndatarasterlaget som skal konverteres til geoobjektslag.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Velg felt</h2></div>
+        <hr/>
+        <div>
+            <p>Velge feltet som skal brukes til &aring; tilordne verdier til utgangraster.
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Utdatacellestørrelse</h2></div>
+        <hr/>
+        <div>
+            <p>Cellest&oslash;rrelsen og enheten for utdatarastrene.
+            </p>
+            <p>De tilgjengelige enhetene er miles, fot, kilometer og meter. Standardenheten er fot.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Du kan angi navnet p&aring; en mappe i  <b>Mitt innhold</b>, der resultatet blir lagret via rullegardinlisten <b>Lagre resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

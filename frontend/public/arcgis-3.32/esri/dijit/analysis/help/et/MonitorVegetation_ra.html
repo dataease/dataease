@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Taimestiku seire</h2><p/>
+        <h2><img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" alt="Taimestiku seire (Portal)"></h2>
+        <hr/>
+    <p>Selle t&ouml;&ouml;riistaga saab teha mitme lainepikkusega rasterkihil aritmeetilise toimingu, et avastada uuringualal teavet taimestiku kohta.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valige sisendandmed</h2></div>
+        <hr/>
+        <div>
+            <p>Valige mitme lainepikkusega rasterkiht. Veenduge, et sisendrastril oleks olemas &otilde;iged lainepikkused.
+            </p> 
+        </div>
+    </div>
+    <div id="vegetationIndexType">
+        <div><h2>Valige taimestiku seire meetod</h2></div>
+        <hr/>
+        <div>
+            <p>Valige vegetatsiooniindeksi kihi loomise meetod. Erinevad vegetatsiooniindeksid aitavad tuua esile teatud n&auml;htusi v&otilde;i v&auml;hendada eri liiki m&uuml;ra.
+            </p>
+            <ul>
+                <li>Global Environmental Monitoring Index &mdash; 
+GEMI on mittelineaarne vegetatsiooniindeks globaalseks keskkonnaseireks satelliitpiltide abil. See sarnaneb NDVI-le, aga on atmosf&auml;&auml;rsete m&otilde;jude suhtes v&auml;hem tundlik. Seda m&otilde;jutab paljas pinnas, mist&otilde;ttu see ei sobi kasutamiseks h&otilde;reda v&otilde;i keskmise tihedusega taimestikuga aladel.
+
+                </li>
+                <li>Green Vegetation Index - Landsat TM &mdash; 
+GVI loodi algselt Landsat MSS piltide alusel aga seda muudeti, et see t&ouml;&ouml;taks Landsat TM piltidega. Seda teatakse ka Landsat TM Tasseled Capi rohelise vegetatsiooniindeksi nime all. Seda seireindeksit saab kasutada piltidega, mille lainepikkustel on &uuml;hesugused spektraalsed karakteristikud.
+
+                </li>
+                <li>Modified Soil Adjusted Vegetation Index &mdash; 
+MSAVI2 on vegetatsiooniindeks, millega &uuml;ritatakse v&auml;hendada palja pinnase m&otilde;ju SAVI-meetodis.
+
+                </li>
+                <li>Normalized Difference Vegetation Index  &mdash; 
+NDVI on standardiseeritud indeks, millega saab luua pildi, mis n&auml;itab rohelust v&otilde;i suhtelist biomassi. See indeks kasutab mitmespektrilise rasterandmestiku kahe lainepikkuse karakteristikute kontrastsust: klorof&uuml;llipigmendi imenduvust punases lainepikkuses ja taimse materjali k&otilde;rget peegelduvust infrapunal&auml;hedases lainepikkuses (NIR).
+
+                </li>
+                <li>Perpendicular Vegetation Index &mdash; 
+PVI sarnaneb vegetatsiooni normaliseeritud vaheindeksile, aga see on tundlik atmosf&auml;&auml;rsete muutuste suhtes. Kui seda meetodit kasutatakse eri piltide v&otilde;rdlemiseks, tuleb kasutada ainult pilte, mis on atmosf&auml;&auml;ri suhtes korrigeeritud. Seda teavet k&uuml;sige andmete edasim&uuml;&uuml;jalt.
+
+                </li>
+                <li>Soil-Adjusted Vegetation Index &mdash; 
+SAVI on vegetatsiooniindeks, milles proovitakse v&auml;hendada pinnase heleduse m&otilde;ju pinnase heleduse korrektsioonitegurit kasutades. Seda kasutatakse tavaliselt v&auml;hese taimkattega kuivades regioonides.
+
+                </li>
+                <li>Sultan's Formula &mdash; 
+Sultani valem on protsess, milles v&otilde;etakse kuue lainepikkusega 8-bitine pilt ja spetsiaalse algoritmi abil luuakse sellest kolme lainepikkusega 8-bitine pilt. Tulemuseks saadud pildil on esile toodud rannajoone kivimkompleksid, ehk ofioliidid. See valem koostati Landsat 5 v&otilde;i 7 vaate TM- ja ETM-lainepikkuste alusel.
+
+                </li>
+                <li>Transformed Soil-Adjusted Vegetation Index &mdash; 
+Teisendatud SAVI on vegetatsiooniindeks, milles proovitakse v&auml;hendada pinnase heleduse m&otilde;ju l&auml;htudes eeldusest, et pinnasejoonel on juhuslik kalle ja sirgl&otilde;ik.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bandIndexes">
+        <div><h2>Määrake NIR lainepikkuse ja punase lainepikkuse indeksid</h2></div>
+        <hr/>
+        <div>
+            <p>Sisestage infrapunal&auml;hedase (NIR) lainepikkuse ja punase lainepikkuse indeksid.
+            </p>
+            <p>Iga satelliidiandur ja &otilde;hukaamera j&auml;&auml;dvustab teavet, mis jaguneb lainepikkuse indeksiteks. Iga lainepikkuse indeks sisaldab teavet elektromagnetilise spektri kindla osa kohta. Selle taimestiku seire meetodi puhul peate sisestama lainepikkuse indeksi, milles j&auml;&auml;dvustati infrapunal&auml;hedane (NIR) ja punane lainepikkus.
+            </p>
+        </div>
+    </div>
+    <div id="slopeOfSoilLine">
+        <div><h2>Pinnasejoone kalle</h2></div>
+        <hr/>
+        <div>
+            <p>Pinnasejoone kalle. Kalle on NIR lainepikkuse ja punase lainepikkuse vaheline ligikaudne lineaarne seos hajuvusdiagrammil.
+            </p>
+            <p>See parameeter kehtib ainult teisendatud, pinnast arvesse v&otilde;tva vegetatsiooniindeksi puhul.
+            </p>
+        </div>
+    </div>
+    <div id="interceptOfSoilLine">
+        <div><h2>Sirglõik</h2></div>
+        <hr/>
+        <div>
+            <p>See on infrapunal&auml;hedase lainepikkuse (NIR) v&auml;&auml;rtus, kui punase lainepikkuse (punane) peegeldumise v&auml;&auml;rtus on konkreetsete pinnasejoonte puhul 0.
+            </p>
+            <p> <code>(a = NIR - sRed)</code> , kui punane on 0.
+            </p> 
+            <p>See parameeter kehtib ainult teisendatud, pinnast arvesse v&otilde;tva vegetatsiooniindeksi puhul.
+            </p>
+        </div>
+    </div>
+    <div id="greenVegetativeCover">
+        <div><h2>Rohelise taimestikuga ala suurus</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rab rohelise taimestiku hulga, mida n&otilde;uab SAVI-meetod.
+            </p>
+            <p>Kehtivad v&auml;&auml;rtused on j&auml;rgmised: 
+
+                <ul>
+                    <li>1 = ilma rohelise taimestikuta alad
+                        
+ 
+                    </li>
+                    <li>0,5 = keskmise rohelise taimestikuga alad
+                        
+ 
+                    </li>
+                    <li>0 = tiheda rohelise taimestikuga alad
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="adjustmentFactor">
+        <div><h2>Korrektiivitegur</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rab korrektiiviteguri, mis aitab minimeerida pinnas em&otilde;ju, mis on vajalik teisendatud, pinnast arvesse v&otilde;tva vegetatsiooniindeksi meetodi puhul. Vaikev&auml;&auml;rtus on 0,08.
+            </p>
+            <p>Madalam v&auml;&auml;rtus t&auml;hendab, et pinnase m&otilde;ju j&auml;&auml;b arvesse v&otilde;tmata. K&otilde;rgem v&auml;&auml;rtus t&auml;hendab, et pinnas m&otilde;jutab tulemust.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

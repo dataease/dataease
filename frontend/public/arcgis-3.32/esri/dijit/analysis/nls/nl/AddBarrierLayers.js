@@ -1,0 +1,4 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/nl/AddBarrierLayers",{addBarriers:"Barri\u00e8relagen selecteren",pointBarrier:"Puntbarri\u00e8res",lineBarrier:"Lijnbarri\u00e8res",polygonBarrier:"Polygoonbarri\u00e8res",choosePointBarrier:"Puntbarri\u00e8relaag kiezen",chooseLineBarrier:"Lijnbarri\u00e8relaag kiezen",choosePolygonBarrier:"Polygoonbarri\u00e8relaag kiezen",selectPointBarrier:"Puntbarri\u00e8res kiezen",selectLineBarrier:"Lijnbarri\u00e8res kiezen",selectPolygonBarrier:"Polygoonbarri\u00e8res kiezen"});

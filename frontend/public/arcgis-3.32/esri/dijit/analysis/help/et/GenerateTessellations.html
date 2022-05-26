@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Genereeri mosaiigid</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="Genereeri mosaiigid"></h2>
+        <hr/>
+    <p>See t&ouml;&ouml;riist genereerib mosaiigid uuringualas, mis p&otilde;hineb m&auml;&auml;ratud kujundil ja suurusel.
+    </p>
+    <p>Sellel t&ouml;&ouml;riistal on m&auml;rkeruut  <b>Kasuta kaardi praegust ulatust</b> deaktiveeritud, sest mosaiikide genereerimiseks kasutatavat ulatust reguleerib parameeter <b>M&auml;&auml;ratle ulatus</b>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Vali kujund</h2></div>
+        <hr/>
+        <div>
+            <p>Mosaiigi kujund v&otilde;i geomeetria, mida soovite luua. Saadaolevad kujundid on  <code>ruut</code>, <code>kuusnurk</code>, <code>p&otilde;ikikuusnurk</code>, <code>kolmnurk</code> v&otilde;i <code>teemant</code>.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Määratle uuringuala</h2></div>
+        <hr/>
+        <div>
+            <p>Ulatus v&otilde;i ala, mida katavad mosaiigid.  Ulatuse m&auml;&auml;ramiseks v&otilde;ib kasutada kaardi praegust ulatust v&otilde;i olemasoleva kihi ulatust v&otilde;i joonistada interaktiivselt ulatusena kasutatav ala.
+            </p>
+            <p>Kui ulatuse m&auml;&auml;ratlemiseks on valitud objektikiht, aktiveeritakse suvand, mis lubab koida ainult l&otilde;ikuvaid mosaiike. Kui see suvand on &auml;ra m&auml;rgitud,  genereeritakse tulemuseks olevas mosaiikkihis ainult need mosaiigid, mis l&otilde;ikuvad m&auml;&auml;ratud ulatuskihis asuvate objektidega. 
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>M&auml;rkimata
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="Kogu ulatuse katmine">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>M&auml;rgitud
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="Objekti katmine">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>Määratlege salve suurus, määrates alljärgnevad parameetrid:</h2></div>
+        <hr/>
+        <div>
+            <p>Iga piksli suurus.  Piksli suuruse saab m&auml;&auml;ratleda ruut&uuml;hikute m&auml;&auml;ramise teel v&otilde;i m&auml;&auml;rates kauguse, mis arvutatakse allj&auml;rgnevate m&otilde;&otilde;tmiste abil, kus d = kaugus: 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Ruut
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="Ruutmosaiik">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Kuusnurk
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="Kuusnurkmosaiik">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>P&otilde;ikikuusnurk
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="P&otilde;ikikuusnurgaga mosaiik">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Kolmnurk
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="Kolmnurkmosaiik">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Romb
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="Teemantmosaiik">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>See on selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile.  Kui kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>Rippmen&uuml;&uuml;  <b>Salvesta tulemused</b> kaudu saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemus salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,40 @@
+<div data-dojo-attach-point="containerNode">
+  <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+    data-dojo-props="target:'CovDesc',minOccurs:0,showHeader:false,label:'${i18nArcGIS.contInfo.CovDesc.caption}'">
+    <div data-dojo-type="esri/dijit/metadata/form/Tabs">
+    
+      <!-- description -->
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,label:'${i18nArcGIS.contInfo.CovDesc.section.description}'">
+      
+        <!-- attribute description -->
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'attDesc',minOccurs:1,label:'${i18nArcGIS.contInfo.attDesc}'">
+        </div>
+        
+        <!-- content type -->
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'contentTyp',minOccurs:1,label:'${i18nArcGIS.codelist.MD_CoverageContentTypeCode}'">
+          <div data-dojo-type="esri/dijit/metadata/types/arcgis/content/ContentTypCd"></div>
+        </div>
+      </div>
+      
+      <!-- range/band -->
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,label:'${i18nArcGIS.contInfo.CovDesc.section.rangesAndBands}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'covDim',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.contInfo.covDim.caption}'">
+          <div data-dojo-type="esri/dijit/metadata/form/ElementChoice">
+            <div data-dojo-type="esri/dijit/metadata/types/arcgis/content/RangeDimension"
+              data-dojo-props="label:'${i18nArcGIS.contInfo.RangeDim.caption}'">
+            </div>
+            <div data-dojo-type="esri/dijit/metadata/types/arcgis/content/Band"
+              data-dojo-props="label:'${i18nArcGIS.contInfo.Band.caption}'">
+            </div>
+          </div>    
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>

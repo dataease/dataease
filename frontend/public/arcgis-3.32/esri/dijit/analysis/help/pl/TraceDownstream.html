@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Śledź w dół</h2><p/>
+        <h2><img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" alt="Śledź w d&oacute;ł"></h2>
+        <hr/>
+    <p>To narzędzie określa szlak lub ścieżkę spływu w d&oacute;ł od punkt&oacute;w w warstwie wejściowej.
+    </p>
+    <p>Na przykład, zał&oacute;żmy, że mamy obiekty punktowe będące źr&oacute;dłem zanieczyszczenia i chcemy określić, gdzie w obrębie badanego obszaru popłynie to zanieczyszczenie. Możemy użyć narzędzia Śledź w&nbsp;d&oacute;ł, aby określić ścieżkę, kt&oacute;rą przemieści się zanieczyszczenie. Śledzenie można podzielić na pojedyncze segmenty liniowe poprzez wprowadzenie odległości i&nbsp;jednostek. Wynikowa linia może mieć całkowitą długość ścieżki przepływu, określoną maksymalną długość tej ścieżki śledzenia lub może być ograniczona do obiekt&oacute;w powierzchniowych jak np. badany obszar. W wielu przypadkach, jeśli wyświetlana jest całkowita długość ścieżki śledzenia, będzie ona rozciągać się od źr&oacute;dła aż do oceanu.
+    </p>
+    <p>Wynikiem jest linia odzwierciedlająca śledzenie w d&oacute;ł. Jeżeli odległość jest określona dla opcji  <b>Podziel śledzenie na odcinki liniowe</b>, linia śledzenia będzie podzielona na wiele odcink&oacute;w liniowych, każdy o&nbsp;konkretnej długości. Jeśli na przykład Tw&oacute;j punkt wejściowy przedstawia rozlane zanieczyszczenie i&nbsp;rzekę, do kt&oacute;rej wpływa ono w&nbsp;tempie 1&nbsp;km na godzinę lub 24&nbsp;km na dzień, rzekę można podzielić na 24-kilometrowe odcinki. Podzielenie śledzenia na 24-kilometrowe odcinki pokaże w&nbsp;przybliżeniu, gdzie zanieczyszczenia będą przemieszczać się każdego dnia. Linia będzie przedstawiona za pomocą symboli w&nbsp;kolorach stopniowanych w&nbsp;zależności od odległości i&nbsp;będzie opisana odległościami od początku śledzenia.
+    </p>
+    <p>Wynikowe śledzenie będzie mieć wszystkie atrybuty punkt&oacute;w wejściowych, jak r&oacute;wnież atrybuty dodatkowe. 
+        <ul>
+            <li> <i>PointID</i> &mdash; zawiera wartość ID od punktu wejściowego.
+                
+
+            </li>
+            <li> <i>LengthKm</i> &mdash; zawiera długość w kilometrach całkowitego śledzenia w d&oacute;ł.
+                
+
+            </li>
+            <li> <i>Description</i> oraz <i>DataResolution</i> &mdash; zawierają informacje dotyczące danych hydrologicznych użytych do obliczenia szlaku.
+                
+
+            </li>
+            <li> <i>FromDistance</i> oraz <i>ToDistance</i>  &mdash; zawierają odległości od i do każdego odcinka liniowego. Te atrybuty zostaną zapisane, jeżeli użyta będzie opcja <b>Podziel śledzenie na odcinki liniowe</b>.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jeśli opcja  <b>Użyj bieżącego zasięgu mapy</b> jest zaznaczona, zostaną przeanalizowane tylko te obiekty punktowe w&nbsp;warstwie wejściowej, kt&oacute;re są widoczne w&nbsp;bieżącym zasięgu mapy. Jeśli powyższa opcja nie jest zaznaczona, zostaną użyte wszystkie obiekty w&nbsp;warstwie wejściowej, nawet jeśli będą znajdować się poza bieżącym zasięgiem mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Obiekty punktowe używane jako lokalizacje początkowe w przypadku wszystkich śledzeń w dół</h2></div>
+        <hr/>
+        <div>
+            <p>Obiekty punktowe używane jako lokalizacje początkowe w przypadku wszystkich śledzeń w d&oacute;ł Dane wynikowe będą zawierać odrębne linie dla każdego punktu wejściowego.
+            </p>
+            <p>Poza wybraniem warstwy na mapie można wybrać opcję  <b>Wybierz warstwę analizy</b> dostępną w dolnej części menu rozwijanego. Wybranie tej opcji spowoduje otwarcie galerii, w kt&oacute;rej można wyszukać i wybrać zestawy danych pochodzące z r&oacute;żnych źr&oacute;deł w celu użycia ich podczas przeprowadzania analiz. 
+            </p>
+        </div>
+    </div>
+    <div id="SplitDistance">
+        <div><h2>Podziel śledzenie na odcinki liniowe</h2></div>
+        <hr/>
+        <div>
+            <p>Linia śledzenia będzie podzielona na wiele linii, każda o&nbsp;konkretnej długości. Jeśli na przykład Tw&oacute;j punkt wejściowy przedstawia rozlane zanieczyszczenie i&nbsp;rzekę, do kt&oacute;rej wpływa ono w&nbsp;tempie 1&nbsp;km na godzinę lub 24&nbsp;km na dzień, rzekę można podzielić na 24-kilometrowe odcinki. Podzielenie śledzenia na 24-kilometrowe odcinki pokaże w&nbsp;przybliżeniu, gdzie zanieczyszczenia będą przemieszczać się każdego dnia. Linia będzie przedstawiona za pomocą symboli w&nbsp;kolorach stopniowanych w&nbsp;zależności od odległości i&nbsp;będzie opisana odległościami od początku śledzenia. Wynik śledzenia będzie składać się z wielu odcink&oacute;w liniowych, każdy z nich będzie zawierał pola  <i>FromDistance</i> oraz <i>ToDistance</i>.
+            </p>
+        </div>
+    </div>
+    <div id="MaxDistance">
+        <div><h2>Maksymalny dystans śledzenia</h2></div>
+        <hr/>
+        <div>
+            <p>Określa całkowitą długość wynikowej linii. Jeżeli w celu ograniczenia śledzenia podane zostaną obiekty powierzchniowe, to wynik będzie ograniczony do danego obszaru, bez względu na wprowadzoną odległość.
+            </p>
+        </div>
+    </div>
+    <div id="ClipArea">
+        <div><h2>Ogranicz dane wynikowe do</h2></div>
+        <hr/>
+        <div>
+            <p>Opcja umożliwiająca wyświetlenie lub podanie warstwy ograniczającej obszar śledzenia. Jeśli na przykład chcemy, aby wyniki śledzenia znajdowały się w&nbsp;badanym obszarze, na przykład w&nbsp;konkretnym powiecie, należy wprowadzić jego obszar jako dane wejściowe, tak aby śledzenie kończyło się na granicy tego powiatu.
+            </p>
+        </div>
+    </div>
+    <div id="OutputTrace">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to nazwa warstwy, kt&oacute;ra zostanie utworzona w zakładce  <b>Moje zasoby</b> i zostanie dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli ta nazwa warstwy już istnieje, wyświetlona zostanie prośba o podanie innej nazwy.
+            </p>
+            <p>Używając menu rozwijanego  <b>Zapisz wynik w</b>, można wskazać nazwę folderu na stronie <b>Moje zasoby</b>, w kt&oacute;rym zostanie zapisany wynik.
+            </p>
+            <p> Uruchomienie tego narzędzia nie powoduje wykorzystania kredyt&oacute;w.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/config",["esri/kernel"],function(a){function b(a){a=a.split(".");return Number((Number(a[0])+Number(a[1])/100).toFixed(2))}a=Math.max(b("3.32"),b(a.version)).toFixed(2);return{jsapiVersion:a,esriDijitCssUrl:"https://js.arcgis.com/"+a+"/dijit/themes/claro/claro.css",esriCssUrl:"https://js.arcgis.com/"+a+"/esri/css/esri.css",playerSourceRootUrl:"https://js.arcgis.com/"+a+"/",runReportTask:{ignoreErrors:!0,secondAttempt:!0},maps:{maxNumberOfMapsShownAtTheSameTime:6},
+charts:{showErrorIfHasUnavailableData:!1},tables:{leaveEmptyCellsUponError:!0,showUnavailableData:!0},createImageCommand:{skipSavingFile:!1},createPDFCommand:{skipSavingFile:!1},createPlayerCommand:{prettifyDataJson:!0},exportToExcel:{skipSavingFile:!1},modules:{exportCommands:!0,complexCellTooltips:!0,paths:{panoramicViewer:null}},generalization:{factor:-1,maxVerticesInAllFeatures:1E5,numVerticesPerFeature:5E4}}});

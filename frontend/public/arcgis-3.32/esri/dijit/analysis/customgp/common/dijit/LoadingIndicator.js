@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/customgp/common/dijit/LoadingIndicator",["dojo/_base/declare","dijit/_WidgetBase","dojo/dom-style","dojo/dom-construct"],function(b,c,a,d){return b(c,{baseClass:"jimu-loading-indicator",declaredClass:"esri.dijit.analysis.customgp.common.dijit.LoadingIndicator",hidden:!1,postCreate:function(){this.inherited(arguments);(this.hidden=!0===this.hidden)&&a.set(this.domNode,{display:"none"});a.set(this.domNode,{width:"100%",height:"100%"});d.place('\x3cdiv class"jimu-loading"\x3e\x3c/div\x3e',
+this.domNode)},show:function(){this.domNode&&a.set(this.domNode,"display","block")},hide:function(){this.domNode&&a.set(this.domNode,"display","none")}})});

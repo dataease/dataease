@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/lv/SummarizeCenterAndDispersion",{inputLayerLabel:"Izv\u0113l\u0113ties aprakst\u0101mo sl\u0101ni",summaryTypes:"Kopsavilkuma veidi",centralFeature:"Centr\u0101lais elements",meanCenter:"Vid\u0113jais centrs",medianCenter:"Medi\u0101nas centrs",ellipse:"Elipse",weightBy:"V\u0113rt\u0113t p\u0113c (p\u0113c izv\u0113les)",groupBy:"Grup\u0113t p\u0113c (p\u0113c izv\u0113les)",resultLayerName:"Rezult\u0101tu sl\u0101\u0146a nosaukums",outputLayerName:"Aprakst\u012bt sl\u0101\u0146a ${layerName} izplat\u012b\u0161anu",
+none:"Neviens",itemDescription:"Elementu sl\u0101nis ir \u0123ener\u0113ts, palai\u017eot risin\u0101jumu Apkopot centru un dispersiju sl\u0101n\u012b ${layerName}. ",itemTags:"Anal\u012bzes rezult\u0101ts, Apkopot centru un dispersiju, ${layerName}",itemSnippet:"Elementu sl\u0101nis ir \u0123ener\u0113ts no risin\u0101juma Apkopot centru un dispersiju."});

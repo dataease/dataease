@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Portalo analizės aplinkos nustatymai</h2><p/>
+        <h2></h2>
+        <hr/>
+    <p>  Aplinkos nustatymai analizei Portal for ArcGIS ir  ArcGIS Online. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="overwriteResult">
+        <div><h2>Perrašyti rezultatų sluoksnį</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Nurodo, ar perra&scaron;yti esamus sluoksnius. Jeigu, pažymėjus parinktį, turinyje jau yra sluoksnis tokiu pačiu pavadinimu, jis bus perra&scaron;ytas.
+            </p>
+            <p>
+                <ul>
+                    <li>Pažymėta &ndash; jeigu turinyje jau yra sluoksnis tokiu pačiu pavadinimu, jis bus perra&scaron;ytas. I&scaron;vestis turės tokią pačią koordinačių sistemą kaip įvestis.
+                    </li>
+                    <li>Nepažymėta &ndash; jeigu pateiktas rezultatų sluoksnio pavadinimas jau yra, įvyks klaida ir prie&scaron; vykdant įrankį reikės pervardyti rezultatų sluoksnį. Tai numatytasis nustatymas.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="closeAnalysisWidget">
+        <div><h2>Uždaryti analizės valdiklį baigus analizę</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodo, ar laikyti atidarytą ir įgalintą analizės langą, kol įrankis vykdo apdorojimą. Nustatymas leidžia lengvai atlikti analizės parametrų modifikavimus kol atliekamos ankstesnės analizės užduotys. Analizė yra kartotinis procesas, o laikant atidarytą įrankio dialogo langą galima atlikti parametrų keitimus ir i&scaron; naujo paleisti analizę.
+            </p>
+            <p>
+                <ul>
+                    <li>Pažymėta &ndash; analizės įrankio langas uždaromas ir suaktyvinamas turinys. Tai numatytasis nustatymas.
+                    </li>
+                    <li>Nepažymėta &ndash; analizės įrankio langas liks atidarytas ir įgalintas.   
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="storeAnalysisResults">
+        <div><h2>Saugoti analizės rezultatus kaip talpinamus elementų sluoksnius</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Nurodo, ar rezultatų sluoksnis, sukurtas naudojant jūsų analizę, bus elementų rinkinys ar talpinamas elementų sluoksnis. 
+            </p>
+            <p>
+                <ul>
+                    <li>Pažymėta &ndash; analizės rezultatai sukurs talpinamą elementų sluoksnį, o turinyje bus sukurtas elementas. Tai numatytasis nustatymas.
+                    </li>
+                    <li>Nepažymėta &ndash; analizės rezultatai bus sukuriami kaip elementų rinkinys.     
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputCoordinateSystem">
+        <div><h2>Išvesties koordinačių sistema</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodo rastrų analizės rezultatų sluoksnio koordinačių sistemą.    
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Toks pats, kaip įvestis</b> &ndash; analizės rezultatai bus tokioje pačioje koordinačių sistemoje kaip įvestis. Tai numatytasis nustatymas.
+                    </li>
+                    <li> <b>Kaip nurodyta</b> &ndash; analizės rezultatai bus pasirinktoje koordinačių sistemoje. Pasirinkus &scaron;ią parinktį, spustelėkite gaublio mygtuką ir pasirinkite i&scaron; žinomų koordinačių sistemų sąra&scaron;o ar pateiktame lauke įtraukite erdvinės nuorodos WKID.
+                    </li>
+                    <li> <b>Sluoksnio
+&lt;name&gt;</b> &ndash; analizės rezultatai bus toje pačioje koordinačių sistemoje, kaip ir egzistuojantis sluoksnis, kurį pasirinksite savo internetiniame žemėlapyje.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingCoordinateSystem">
+        <div><h2>Apdorojimo koordinačių sistema</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodo koordinačių sistemą, kurią naudos GeoAnalytics analizė.   
+            </p>
+            <p>Tam tikroms GeoAnalytics analizėms būtina, kad apdorojimas būtų vykdomas projekcinėje koordinačių sistemoje.   Bet kuriam įrankiui, kuris taiko duomenų grupavimą ar linijinių dydžių vienetus, būtina projekcinė koordinačių sistema. 
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Toks pats, kaip įvestis</b> &ndash; analizė bus apdorojama tokioje pačioje koordinačių sistemoje kaip įvestis. Tai numatytasis nustatymas.
+                    </li>
+                    <li> <b>Kaip nurodyta</b> &ndash; analizės rezultatai bus pasirinktoje koordinačių sistemoje. Pasirinkus &scaron;ią parinktį, spustelėkite gaublio mygtuką ir pasirinkite i&scaron; žinomų koordinačių sistemų sąra&scaron;o ar pateiktame lauke įtraukite erdvinės nuorodos WKID.
+                    </li>
+                    <li> <b>Sluoksnio
+&lt;name&gt;</b> &ndash; analizės rezultatai bus toje pačioje koordinačių sistemoje, kaip ir egzistuojantis sluoksnis, kurį pasirinksite savo internetiniame žemėlapyje.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingExtent">
+        <div><h2>Aprėptis</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodo aprėptį arba ribas, kurios bus naudojamos vykdant analizę. Analizei bus naudojami visi įvesties elementai, esantys viduje, arba tie, kurie susikerta atsižvelgiant į nurodytą aprėptį.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Numatyta</b> &ndash; naudojama įrankio pateikta aprėptis.
+                    </li>
+                    <li> <b>Kaip nurodyta</b> &ndash; aprėptį apibrėžia jūsų pateiktos koordinatės.
+                    </li>
+                    <li> <b>Sluoksnio
+&lt;name&gt;</b> &ndash; analizei apdoroti naudojama aprėptis bus tokia pati, kaip erdvinė aprėptis egzistuojančio sluoksnio, kurį pasirinksite savo internetiniame žemėlapyje. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="snapRaster">
+        <div><h2>Pritraukti rastrą</h2></div>
+        <hr/>
+        <div>
+            <p>Koreguoja i&scaron;vesties rastrinio sluoksnio aprėptį, kad ji atitiktų gardelių lygiavimą nurodytame rastrų analizės  <b>Pritraukti rastrą</b> sluoksnyje.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Gardelės dydis</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodo gardelės dydį arba skiriamąją gebą, kuri bus naudojama rastrų analizėje kuriant i&scaron;vesties rastro sluoksnį. Numatytoji i&scaron;vesties skiriamoji geba nustatoma pagal įvesties rastro sluoksnio didžiausios gardelės dydį.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Minimali įvestis</b> &ndash; naudojamas visų įvesties sluoksnių gardelių mažiausias dydis.
+                    </li>
+                    <li> <b>Maksimali įvestis</b> &ndash; naudojamas visų įvesties sluoksnių gardelių didžiausias dydis. Tai numatytasis nustatymas.
+                    </li>
+                    <li> <b>Kaip nurodyta</b> &ndash; nurodykite gardelės dydžio skaitinę reik&scaron;mę. Jei pasirinkta, numatytoji reik&scaron;mė yra 1.
+                    </li>
+                    <li> <b>Sluoksnis &lt;name&gt;</b> &ndash; nustatomas pasirinkto rastro sluoksnio gardelės dydis.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="mask">
+        <div><h2>Kaukė</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodo sluoksnį, kuris rastrų analizėje bus naudojamas apibrėžti dominančią sritį. Atliekant analizę bus atsižvelgiama tik į tas gardeles, kurios patenka po analizės kauke.
+            </p>
+            <ul>
+                <li>Kaukė gali būti rastrinis arba elementų sluoksnis.
+                </li>
+                <li>Jeigu analizės kaukė yra rastras, apibrėžiant kaukę bus atsižvelgiama į visas gardeles, kurios turi reik&scaron;mę. Kaukės rastre esančios gardelės, kurios yra NoData (be duomenų) tipo, bus laikomos kaip esančios už kaukės ribų ir jų duomenys nebus įtraukiami į analizės rezultatų sluoksnį. 
+                </li>
+                <li>Jei analizės kaukė yra elementų sluoksnis, vykdymo metu viduje jis bus konvertuotas į rastrą. Dėl &scaron;ios priežasties įsitikinkite, kad analizei tinkamai nustatytas
+ <b>Gardelės dydis</b> ir <b>Pritraukti rastrą</b> .
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Duomenų saugykla</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics rezultatai gali būti saugomi  ArcGIS Data Store ir pateikiami kaip elementų sluoksnis  Portal for ArcGIS, arba sukonfigūruotame didelių duomenų failo bendrinime. 
+            </p>
+            <p>Kai rezultatą saugote  ArcGIS Data Store, dauguma atvejų rezultatai turėtų būti saugomi erdvėlaikinių duomenų saugykloje. Tai yra numatytasis nustatymas. Toliau pateikiame priežastis, kodėl reikėtų saugoti rezultatus releacinių duomenų saugykloje: 
+                <ul>
+                    <li>Norėdami naudoti savo rezultatus pasitelkdami dviejų portalų bendradarbiavimą
+                    </li>
+                    <li>Norėdami įjungti savo rezultatų sinchronizavimą
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Nenaudokite releacinių duomenų saugyklos, jei jūsų GeoAnalytics rezultatų turėtų padaugėti, ir apdorodami didelius duomenų kiekius norite pasinaudoti erdvinių-laiko didelių duomenų saugyklos galimybėmis. 
+            </p>
+        </div>
+    </div>
+    <div id="parallelProcessingFactor">
+        <div><h2>Lygiagretaus apdorojimo veiksnys</h2></div>
+        <hr/>
+        <div>
+            <p>Paskirsto analizę per kelis rastrų apdorojimo paslaugos egzempliorius. 
+            </p>
+            <p>Įrankiai, leidžiantys  <b>Lygiagretaus apdorojimo veiksnio</b> aplinką, leidžia valdyti rastrų apdorojimo paslaugos egzempliorių skaičių, kuris gali būti naudojamas duomenims apdoroti.
+            </p>
+            <p>Jei įrankis neleidžia  <b>Apdorotojo tipo</b>, arba jei <b>Apdorotojo tipo</b> aplinka nustatyta kaip <b>CPU</b>, <b>Lygiagretaus apdorojimo veiksnio</b> aplinka valdo rastrų apdorojimo (CPU) paslaugos egzempliorius. Jei <b>Apdorotojo tipas</b> nustatytas kaip <b>GPU</b>, <b>Lygiagretaus apdorojimo veiksnio</b> aplinka valdys rastrų apdorojimo GPU egzempliorių skaičių.
+            </p> 
+            <p>Nustatydami  <b>Lygiagretaus apdorojimo veiksnį</b>, galite pareikalauti, kad tam tikras rastrų analizės vaizdų serverio naudojamų lygiagrečių procesų skaičius apdorotų vieną rastrų analizės užduotį. Tačiau jei visas lygiagrečių procesų skaičius vir&scaron;ija didžiausią rastrų apdorojimo (CPU arba GPU) paslaugos egzempliorių skaičių, papildomi lygiagretūs procesai turės laukti eilėje.
+            </p>
+            <p>Jei  <b>Lygiagretaus apdorojimo veiksnys</b> nenurodytas (toks numatytasis nustatymas), įrankis naudos 80 % didžiausio rastrų apdorojimo paslaugos egzempliorių skaičiaus. Kaip lygiagretaus apdorojimo veiksnį galima įvesti sveikąjį skaičių arba procentinę dalį.
+            </p>
+        </div>
+    </div>
+    <div id="processorType">
+        <div><h2>Apdorotojo tipas</h2></div>
+        <hr/>
+        <div>
+            <p>Įrankiai, kurie leidžia  <b>Apdorotojo tipo</b> aplinką, leidžia pasirinkti, kur ir kaip norite apdoroti duomenis. Duomenis apdoroti galite naudodami serverio kompiuterio CPU arba GPU.  Jei <b>Apdorotojo tipo</b> aplinka tu&scaron;čia, įrankis duomenims apdoroti naudoja CPU. Tai numatytasis nustatymas.
+            </p> 
+            <p>CPU apdorojimas gali būti lygiagrečiai paskirstytas keliams branduoliams ir egzemplioriams, tai valdo  <b>Lygiagretaus apdorojimo veiksnys</b>.
+            </p>
+            <p>GPU efektyviai apdoroja grafiką ir vaizdus, kur itin lygiagreti jų struktūra leidžia veiksmingai apdoroti didelius duomenų blokus pakartotinai. Rastrų analizqs įrankiai, kurie leidžia naudoti &scaron;ią aplinką, gali paskirstyti darbus GPU egzemplioriams keliuose rastrų analizės serverių kompiuteriuose, tai valdo  <b>Lygiagretaus apdorojimo veiksnys</b>.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>GPU</b> &ndash; duomenys bus apdorojami naudojant grafikos apdorojimo įrenginį.
+                    </li>
+                    <li> <b>CPU</b> &ndash; duomenys bus apdorojami naudojant kompiuterio procesorių.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

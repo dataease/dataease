@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>حساب المسافة</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="حساب المسافة"></h2>
+        <hr/>
+    <p>تحسب هذه الأداة المسافة الإقليدية والاتجاه والتخصيص من مصدر مفرد أو مجموعة مصادر.
+    </p>
+    <p>تشمل أمثلة التطبيقات الإجابة على الأسئلة، مثل ما يلي:
+
+        <ul>
+            <li>ما هي المسافة إلى البلدة الأقرب؟
+                
+
+            </li>
+            <li>ما هي المسافة إلى الطريق الأقرب؟
+                
+
+            </li>
+            <li>ما هي المسافة إلى مصدر المياه الأقرب؟
+            </li>
+        </ul>
+        
+    </p>
+    <p>إذا تم التأشير على  <b>استخدام نطاق الخريطة الحالي</b>، لن يتم تحليل إلا تلك المعالم الموجودة في الطبقة المدخلة المرئية داخل نطاق الخريطة الحالي. إذا لم يتم التأشير عليها، سيتم تحليل المعالم في الطبقة المدخلة مؤقتًا، حتى إذا كانت خارج نطاق عرض الخريطة الحالي.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>اختر البيانات النقطية لطبقة موقع المعالم لحساب المسافة إلى</h2></div>
+        <hr/>
+        <div>
+            <p>الطبقة التي تحدد المصادر التي سيتم حساب المسافة إليها. قد تكون الطبقة خدمة صورة أو خدمة معلم.
+            </p>
+            <p>في خدمة الصورة، يمكن أن يكون النوع المدخل عددًا صحيحًا أو نقطة عائمة.
+            </p>
+            <p>في خدمة المعالم، يمكن أن تكون المدخلات نقطة أو خطًا أو مضلعًا.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>أقصى مسافة مطلوب حسابها</h2></div>
+        <hr/>
+        <div>
+            <p>أقصى مسافة مطلوب حسابها. على سبيل المثال، إذا قمت بتوفير قيمة بمقدار 10.000 متر، يتم حساب المسافة الإقليدية من مواقع المصدر حتى تلك القيمة (المسافة).
+            </p>
+            <p>إذا لم يتم توفير أي قيمة، سيتم حساب المسافة حتى المدى المحدد.
+            </p>
+            <p>الوحدات المتاحة هي الكيلومتر والمتر والميل والقدم.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>حجم خلية الناتج</h2></div>
+        <hr/>
+        <div>
+            <p>حجم الخلية ووحدة البيانات النقطية للإخراج.
+            </p>
+            <p>قد تكون الوحدات بالكيلومتر أو المتر أو الميل أو القدم.
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>اسم طبقة المسافة الناتجة</h2></div>
+        <hr/>
+        <div>
+            <p>سيتم إنشاء اسم الطبقة في  <b>المحتوى</b> وسيتم إضافته إلى الخريطة. يستند الاسم الافتراضي إلى اسم الأداة واسم الطبقة المدخلة. إذا وُجدت الطبقة بالفعل، سيطلب منك كتابة اسم آخر.
+            </p>
+            <p>يمكنك تحديد اسم مجلد في  <b>محتواي</b> حيث سيتم حفظ النتيجة باستخدام المربع المنسدل <b>حفظ النتيجة في</b>
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>اسم طبقة الاتجاه الناتج</h2></div>
+        <hr/>
+        <div>
+            <p>سيتم إنشاء اسم الطبقة في  <b>المحتوى</b>. يجب عليك توفير اسم غير موجود حاليًا في <b>محتواي</b>.
+            </p>
+            <p>يمكنك تحديد اسم مجلد في  <b>محتواي</b> حيث سيتم حفظ النتيجة باستخدام المربع المنسدل <b>حفظ النتيجة في</b>
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>اسم طبقة التخصيص الناتج</h2></div>
+        <hr/>
+        <div>
+            <p>سيتم إنشاء اسم الطبقة في  <b>المحتوى</b>. يجب عليك توفير اسم غير موجود حاليًا في <b>محتواي</b>.
+            </p>
+            <p>يمكنك تحديد اسم مجلد في  <b>محتواي</b> حيث سيتم حفظ النتيجة باستخدام المربع المنسدل <b>حفظ النتيجة في</b>
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>اختر حقل تخصيص</h2></div>
+        <hr/>
+        <div>
+            <p>حقل في طبقة المصدر المدخلة التي تحتفظ بالقيمة التي تحدد كل مصدر. قد يكون عددًا صحيحًا أو حقل سلسلة من مجموعة البيانات المصدر.
+            </p>
+            <p>القيمة الافتراضية هي  <i>Value</i>. إذا كنت تستخدم خدمة معالم ولم يتوفر حقل <i>Value</i>، فسيتم استخدام العدد الصحيح أو حقل السلسلة المتاح الأول. إذا لم توجد أي حقول صحيحة، سيتم استخدام حقل ObjectID (على سبيل المثال، OID أو FID، بحسب نوع مدخلات المعلم).
+            </p>
+        </div>
+    </div>
+</div>
+</html>

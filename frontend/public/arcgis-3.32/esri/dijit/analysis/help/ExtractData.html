@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Extract Data</h2><p/>
+        <h2><img src="./images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="Extract Data"></h2>
+        <hr/>
+    <p>With this tool, you can select and download data for a specified area of interest. Layers that you select will be added to a ZIP, CSV, or KMZ file.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>Layers to Extract</h2></div>
+        <hr/>
+        <div>
+            <p>These are the  layers in your table of contents from which  you can extract features.  Layers that are checked are extracted and included in the resulting ZIP or CSV file.
+            </p>
+            <p>In order for a layer to appear in the list of layers to extract, you must either own the data or the owner of the data must enable exporting of the data.    To enable data export on data you own: 
+                <ul>
+                    <li>Open the item description of the data.
+                    </li>
+                    <li>Click the  <b>Settings</b> tab.
+                    </li>
+                    <li>Scroll down to the  <b>Export Data</b> section.
+                    </li>
+                    <li>Check  <b>Allow others to export to different formats</b>.  Click <b>Save</b> when finished.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>If your analysis layer contains attachments, note that attachments will only be extracted if the output data format is a file geodatabase and the  <b>Clip features</b> is unchecked.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>Study area</h2></div>
+        <hr/>
+        <div>
+            <p>The
+area that defines which features will be included in the output ZIP or CSV file.  
+ You can choose from the following:
+                <ul>
+                    <li>The current visible extent of your map ( <b>Same as Display</b>).
+                    </li>
+                    <li>One of the layers in your table of contents. If the selected layer is point or line features, the extent of the layer will be used as the study area.
+                    </li>
+                    <li>Draw an area  to define the study area.
+                    </li>
+                </ul>
+                 All features completely within the map extent will be extracted.  For  features that cross or intersect the map extent boundary but are not completely within the extent, you have two options:
+                <ul>
+                    <li> <b>Select features</b>&mdash;Entire features that cross the boundary of the study area will be extracted.
+                    </li>
+                    <li> <b>Clip features</b>&mdash;Only those portions of features that are within the study area will be extracted.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>Output data format</h2></div>
+        <hr/>
+        <div>
+            <p>Format of the data that will be extracted. When exporting line or area features to CSV files, only non-spatial attributes are extracted.  When exporting point features, both the spatial and non-spatial attributes are extracted.  
+            </p>
+            <p>Extracted data will use the Web Mercator 1984 projection.  For CSV files,  <i>Lat</i> and <i>Long</i> fields will be appended to the data with coordinates in Web Mercator 1984.
+            </p> 
+            <p>The following output formats are supported:
+                <ul>
+                    <li>Comma separated value (CSV)&mdash; <code>.csv</code> or <code>.zip</code>
+                    </li>
+                    <li>File geodatabase&mdash; <code>.zip</code>
+                    </li>
+                    <li>Keyhole Markup Language (KML)&mdash; <code>.kmz</code> or <code>.zip</code>
+                    </li>
+                    <li>Shapefile&mdash; <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Output file name</h2></div>
+        <hr/>
+        <div>
+            <p>This is the name of the item that will be added to  <b>My Content</b>.  The item name is based on the chosen <b>Output data format</b>.     If the item already exists you will be asked to provide another name.
+            </p>
+            <p>Using the  <b>Save result in</b> drop-down box, you can  specify the name of a folder in <b>My Content</b> where the result will be saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

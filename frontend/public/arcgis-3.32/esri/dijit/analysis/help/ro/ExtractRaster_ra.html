@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Extragere raster</h2><p/>
+        <h2><img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" alt="Instrument Extragere raster pentru portal"></h2>
+        <hr/>
+    <p>Acest instrument poate ataşa un raster la o limită, la o suprafaţă dreptunghiulară sau la o formă definită interactiv pe ecran. Puteţi ataşa la extinderea suprafeţei pe care aţi afişat-o &icirc;n mod curent pe hartă sau prin suprafaţa de studiu definită de un poligon.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Selectare date de intrare pentru extragere</h2></div>
+        <hr/>
+        <div>
+            <p>Stratul tematic care va fi ataşat.
+            </p>
+        </div>
+    </div>
+    <div id="clippingGeometry">
+        <div><h2>Specificare geometrie de decupare</h2></div>
+        <hr/>
+        <div>
+            <p>Alegeţi tipul de extindere care va fi utilizat atunci c&acirc;nd ataşaţi geometria stratului tematic:
+
+                <ul>
+                    <li>Utilizare extindere curentă a hărţii - Extinderea curentă a hărţii va fi utilizată pentru a ataşa stratul tematic ataşat. Aceasta este setarea implicită.
+                        
+
+                    </li>
+                    <li>Alegere suprafaţă de studiu - Vă permite să alegeţi dacă rezultatele vor afişa suprafaţa din extinderea geometriei sau suprafaţa din afara extinderii geometriei. Dacă alegeţi opţiunea  <b>Date &icirc;n interiorul geometriei</b>, imaginile din afara extinderilor vor fi eliminate. Dacă alegeţi opţiunea <b>Date &icirc;n afara geometriei</b>, imaginile din interiorul extinderilor vor fi eliminate. De asemenea, puteţi defini o geometrie de ataşare cu ajutorul instrumentului de trasare.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic ce va fi creat &icirc;n  <b>Resursele mele</b> şi va fi adăugat pe hartă. Numele implicit se bazează pe numele instrumentului şi numele stratului tematic de intrare. Dacă stratul tematic rezultat există deja, vi se va solicita să furnizaţi un alt nume.
+            </p>
+            <p>Puteți specifica numele folderului &icirc;n  <b>Resursele mele</b> unde se va salva rezultatul folosind caseta drop-down <b>Salvați rezultatele &icirc;n</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

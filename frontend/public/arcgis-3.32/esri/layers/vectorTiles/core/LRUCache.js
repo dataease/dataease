@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/layers/vectorTiles/core/LRUCache",["require","exports"],function(d,e){return function(){function c(a){this._cache={};this._lruQueue=[];if(0>=a)throw Error("LRU cache size must be bigger than zero!");this._maxSize=a}c.prototype.has=function(a){return void 0!==this._cache[a]};c.prototype.insert=function(a,b){null!==this.use(a)?this._cache[a]=b:(this._collect(),this._cache[a]=b,this._lruQueue.unshift(a))};c.prototype.use=function(a){var b=this._cache[a];if(!b)return null;this._lruQueue.splice(this._lruQueue.indexOf(a),
+1);this._lruQueue.unshift(a);return b};c.prototype.print=function(){for(var a=0,b=this._lruQueue;a<b.length;a++){var c=b[a];console.log("key: "+c+", value: "+this._cache[c])}};c.prototype._collect=function(){if(!(this._lruQueue.length<this._maxSize)){var a=this._lruQueue.pop(),b=this._cache[a];b&&b.release&&b.release();delete this._cache[a]}};return c}()});

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/arcadeProfiles/labelingProfile","dojo/_base/declare dojo/_base/lang dojo/has ../kernel ../promiseList ../arcade/Feature ../support/expressionUtils ./utils".split(" "),function(c,e,f,g,h,k,d,l){c=new (c(null,{declaredClass:"esri.arcadeProfiles.LabelingProfile",defaults:{context:{vars:{$feature:"any"}}},initialize:function(a){var b=[];l.hasGeometryOperations(a)&&b.push(d.enableGeometryOperations());return h(b)},isAsync:function(a){return!1},parse:function(a){return d.createSyntaxTree(a.expression)},
+compile:function(a){var b=e.clone(this.defaults.context);return a.syntaxTree?d.createFunction(a.syntaxTree,b):null},getEvalOptions:function(a){var b=a.feature;return{context:{vars:{$feature:b&&a.expression.hasVariable("$feature")?k.createFromGraphicLikeObject(b.geometry,b.attributes,a.layer):null},spatialReference:a.spatialReference}}}}));f("extend-esri")&&e.setObject("arcadeProfiles.labelingProfile",c,g);return c});

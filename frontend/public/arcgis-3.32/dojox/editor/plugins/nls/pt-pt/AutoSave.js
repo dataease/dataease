@@ -1,0 +1,3 @@
+//>>built
+define("dojox/editor/plugins/nls/pt-pt/AutoSave",{saveLabel:"Guardar",saveSettingLabelOn:"Definir intervalo de grava\u00e7\u00e3o autom\u00e1tica...",saveSettingLabelOff:"Desactivar grava\u00e7\u00e3o autom\u00e1tica",saveSettingdialogTitle:"Grava\u00e7\u00e3o autom\u00e1tica",saveSettingdialogDescription:"Especificar intervalo de grava\u00e7\u00e3o autom\u00e1tica",saveSettingdialogParamName:"Intervalo de grava\u00e7\u00e3o autom\u00e1tica",saveSettingdialogParamLabel:"m\u00edn.",saveSettingdialogButtonOk:"Definir intervalo",
+saveSettingdialogButtonCancel:"Cancelar",saveMessageSuccess:"Guardado \u00e0s ${0}",saveMessageFail:"Falha ao guardar \u00e0s ${0}"});

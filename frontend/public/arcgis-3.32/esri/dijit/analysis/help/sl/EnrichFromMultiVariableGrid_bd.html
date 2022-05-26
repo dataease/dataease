@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Obogati iz mreže z več spremenljivkami</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="Obogati iz mreže z več spremenljivkami"></h2>
+        <hr/>
+    <p>Orodje  Obogati iz mreže z več spremenljivkami učinkovito spaja atribute iz mreže z več spremenljivkami na točkovni sloj.
+    </p>
+    <p>Mreža z več spremenljivkami je vsak sloj, ustvarjen z orodjem Izdelava mreže z več spremenljivkami, ki združuje atribute iz več slojev v eno samo mrežo poligonov. Uporaba mreže z več spremenljivkami vam omogoča hitro dodajanje velikih in raznolikih zbirk informacij v točkovne podatke za uporabo pri izvajanju nadaljnjih prostorskih analiz.
+    </p>
+    <p>Na primer, denimo, da ste pridobili sloj z novimi kaznivimi dejanji, ki so bila storjena po mestu v preteklem letu. Želite modelirati relacije med pogostostjo storjenih kaznivih dejanj in različnimi demografskimi, ekonomskimi in geografskimi dejavniki. Imate dostop do podatkov, ki opisujejo te dejavnike, vendar so shranjeni v petih različnih slojih z različnimi tipi geometrije. Poleg tega so nekateri sloji shranjeni v delitvi datotek velikih podatkov, drugi pa so shranjeni kot geoobjektne storitve. Z ustvarjanjem mreže z več spremenljivkami za shranjevanje teh informacij in nato spajanjem mreže z va&scaron;imi kaznivimi dejanji  z orodjem Obogati iz mreže z več spremenljivkami lahko  učinkovito združite najrazličnej&scaron;e atribute s svojim točkovnim slojem samo z dvema izvajanjema orodja. Nato lahko spojene atribute uporabite kot pojasnjevalne spremenljivke in začnete graditi model pogostosti storjenih kaznivih dejanj s slojem z rezultati.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>Izberite točkovne geoobjekte, ki jih želite obogatiti</h2></div>
+        <hr/>
+        <div>
+            <p>Točkovni geoobjekti, ki bodo obogateni z mrežo z več spremenljivkami.
+            </p>
+            <p>Poleg izbire sloja s svoje karte lahko na dnu spustnega seznama izberete  <b>Izberi sloj za analizo</b>, da po svoji vsebini poi&scaron;čete delitev datotek velikih podatkov ali geoobjektni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>Izberite mrežo z več spremenljivkami za obogatitev</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj z mrežo z več spremenljivkami, ki vsebuje atribute, ki bodo spojeni z vhodnimi točkovnimi geoobjekti. Sloj je najverjetneje ustvarjen z orodjem Izdelava mreže z več spremenljivkami in najverjetneje gre za gostujoč geoobjektni sloj. Sloji z mrežo z več spremenljivkami , ki so shranjeni v delitvi datotek velikih podatkov, niso podprti kot vhod za to orodje.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>Izberite spremenljivke za dodajanje</h2></div>
+        <hr/>
+        <div>
+            <p>Atributi na sloju z mrežo z več spremenljivkami, ki bodo spojeni z vhodnimi točkovnimi geoobjekti vsakič, ko točkovni geoobjekti presekajo mrežo.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p> To je ime sloja, ki bo ustvarjen. Če zapisujete v ArcGIS Data Store, bodo va&scaron;i rezultati shranjeni v  <b>Moji vsebini</b> in dodani na karto. Če zapisujete v delitev datotek velikih podatkov, bodo va&scaron;i rezultati shranjeni v delitev datotek velikih podatkov in dodani v njen manifest. Ne bodo dodani v skupino. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, orodje ne bo uspe&scaron;no.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

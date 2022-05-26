@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Berika från multivariabelt rutnät</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="Berika fr&aring;n multivariabelt rutn&auml;t"></h2>
+        <hr/>
+    <p>Verktyget  Berika fr&aring;n multivariabelt rutn&auml;t sammanfogar effektivt attribut fr&aring;n ett multivariabelt rutn&auml;t till ett punktlager.
+    </p>
+    <p>Ett multivariabelt rutn&auml;t &auml;r ett lager som skapats med verktyget Skapa multivariabelt rutn&auml;t, som sammanst&auml;ller attribut fr&aring;n flera lager till ett enda rutn&auml;t med polygoner. Genom att anv&auml;nda ett multivariabelt rutn&auml;t f&ouml;r berikning kan du snabbt kan l&auml;gga till en stor och m&aring;ngskiftande samling information till punktdata f&ouml;r anv&auml;ndning i vidare geografisk analys.
+    </p>
+    <p>Anta till exempel att du har erh&aring;llit ett lager med nya brottsh&auml;ndelser som intr&auml;ffat det senaste &aring;ret i en stad. Du vill modellera f&ouml;reh&aring;llandet mellan brottsfrekvens och ett flertal olika demografiska, ekonomiska och geografiska faktorer. Du har tillg&aring;ng till data som beskriver dessa faktorer, men de &auml;r lagrade i fem olika lager med olika geometrityper. Dessutom lagras n&aring;gra lager i en big data-fildelning medan andra lagras som geoobjekttj&auml;nster. Genom att skapa ett multivariabelt rutn&auml;t f&ouml;r att lagra den h&auml;r informationen och sedan koppla rutn&auml;tet till dina brottsh&auml;ndelser med verktyget  Berika fr&aring;n multivariabelt rutn&auml;t, kan du effektivt koppla ett stort antal olika attribut till ditt punktlager med endast tv&aring; verktygsk&ouml;rningar. Du kan sedan anv&auml;nda de kopplade attributen som f&ouml;rklarande variabler och b&ouml;rja bygga en modell av brottsfrekvensen med resultatlagret.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>Välj punktgeoobjekt för att berika</h2></div>
+        <hr/>
+        <div>
+            <p>Punktgeoobjekten som kommer att berikas av det multivariabla rutn&auml;tet.
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager fr&aring;n kartan kan du v&auml;lja  <b>V&auml;lj analyslager</b> l&auml;ngst ned i listrutan f&ouml;r att bl&auml;ddra till ditt inneh&aring;ll efter ett big data-fildelningsdataset eller geoobjektlager.
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>Välj multivariabelt rutnät att berika från</h2></div>
+        <hr/>
+        <div>
+            <p>Det multivariabla rutn&auml;tslagret inneh&aring;ller attribut som kommer att koppas till indatapunktgeoobjekten. Lagret m&aring;ste ha skapats med verktyget Skapa multivariabelt rutn&auml;t och det m&aring;ste vara ett driftat geoobjektlager. Multivariabla rutn&auml;tslager som lagras i en big data-fildelning st&ouml;ds inte som indata f&ouml;r det h&auml;r verktyget.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>Välj variabler att lägga till</h2></div>
+        <hr/>
+        <div>
+            <p>Attributen i det multivariabla rutn&auml;tslagret som kommer att kopplas till indatapunktgeoobjekten n&auml;r punktgeoobjekten korsar rutn&auml;tet.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p> Namnet p&aring; lagret som ska skapas.  Om du skriver till en ArcGIS Data Store, sparas dina resultat i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Om du skriver till en big data-fildelning, lagras dina resultat i big data-fildelningen och l&auml;ggs till i dess manifest. Det l&auml;ggs inte till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns misslyckas verktyget.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Mô tả Bộ dữ liệu</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="Sơ đồ quy tr&igrave;nh M&ocirc; tả Bộ dữ liệu"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ M&ocirc; tả Bộ dữ liệu cung cấp một c&aacute;i nh&igrave;n chi tiết hơn v&agrave;o bộ dữ liệu của bạn. Sử dụng c&ocirc;ng cụ n&agrave;y để x&aacute;c định dữ liệu đầu v&agrave;o của bạn l&agrave; g&igrave; v&agrave; ở đ&acirc;u trước khi chạy ph&acirc;n t&iacute;ch tr&ecirc;n một lượng lớn dữ liệu. Theo mặc định, kết quả sẽ l&agrave; một chuỗi JSON n&ecirc;u ra c&aacute;c bộ m&ocirc; tả ch&iacute;nh của lớp đầu v&agrave;o của bạn v&agrave; một bảng n&ecirc;u c&aacute;c số liệu thống k&ecirc; t&oacute;m tắt cho từng trường. 
+    </p>
+    <p>Bạn c&oacute; thể t&ugrave;y &yacute; tạo c&aacute;c lớp đối tượng đầu ra bổ sung để tiếp tục m&ocirc; tả dữ liệu của bạn. C&aacute;c t&ugrave;y chọn l&agrave; một lớp mẫu hoặc một lớp phạm vi. Bạn c&oacute; thể chọn xuất ra một hoặc cả hai loại.
+    </p>
+    <p>V&iacute; dụ: giả sử bạn được cho một phần chia sẻ tệp dữ liệu lớn chứa 15 bộ dữ liệu. Mỗi bộ dữ liệu c&oacute; 10 triệu đối tượng khu vực đại diện cho c&aacute;c t&ograve;a nh&agrave; v&agrave; nh&agrave; ở tr&ecirc;n c&aacute;c v&ugrave;ng kh&aacute;c nhau ở nước bạn. Bạn được giao nhiệm vụ ph&acirc;n t&iacute;ch v&ugrave;ng C, nhưng lại kh&ocirc;ng biết bộ dữ liệu n&agrave;o chứa c&aacute;c đối tượng n&agrave;y. Để t&igrave;m xem bạn n&ecirc;n sử dụng bộ dữ liệu n&agrave;o, h&atilde;y chạy c&ocirc;ng cụ M&ocirc; tả Bộ dữ liệu v&agrave; chọn tạo một lớp phạm vi để điều tra bộ dữ liệu n&agrave;o c&oacute; trong khu vực nghi&ecirc;n cứu của bạn.
+    </p>
+    <p>Một v&iacute; dụ kh&aacute;c, h&atilde;y tưởng tượng bạn được giao nhiệm vụ ho&agrave;n th&agrave;nh quy tr&igrave;nh ph&acirc;n t&iacute;ch tr&ecirc;n một khối lượng dữ liệu lớn. Bạn muốn thử quy tr&igrave;nh, nhưng c&oacute; thể mất h&agrave;ng giờ hoặc nhiều ng&agrave;y khi chạy bộ dữ liệu đầy đủ. Thay v&igrave; sử dụng thời gian v&agrave; t&agrave;i nguy&ecirc;n để chạy ph&acirc;n t&iacute;ch đầy đủ, h&atilde;y tạo một lớp mẫu để kiểm tra quy tr&igrave;nh ho&agrave;n chỉnh của bạn một c&aacute;ch hiệu quả.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Chọn bộ dữ liệu sẽ mô tả</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp chứa c&aacute;c đối tượng điểm, đường, v&ugrave;ng hoặc bảng sẽ được m&ocirc; tả, t&oacute;m tắt v&agrave; lấy mẫu.
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp dữ liệu từ bản đồ, bạn c&oacute; thể chọn mục  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới danh s&aacute;ch thả xuống để t&igrave;m đến nội dung của m&igrave;nh cho bộ dữ liệu chia sẻ tệp dữ liệu lớn hoặc lớp đối tượng.
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>Hiểu bộ dữ liệu của bạn bằng cách tạo một (tùy chọn)</h2></div>
+        <hr/>
+        <div>
+            <p>Xuất ra c&aacute;c lớp m&ocirc; tả bổ sung để n&acirc;ng cao mức độ hiểu biết về dữ liệu lớn của bạn. Bạn c&oacute; thể chọn xuất kh&ocirc;ng, một hoặc cả hai lớp sau:
+            </p>
+            <ul>
+                <li> <b>Lớp phạm vi</b>&mdash;tạo một đối tượng v&ugrave;ng thể hiện phạm vi của c&aacute;c đối tượng đầu v&agrave;o hoặc phạm vi quan t&acirc;m.
+                </li>
+                <li> <b>Lớp mẫu</b>&mdash;tạo một lớp tập hợp con chứa một lượng đối tượng đầu v&agrave;o được chỉ định từ bộ dữ liệu của bạn hoặc phạm vi quan t&acirc;m.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>Lớp mẫu</h2></div>
+        <hr/>
+        <div>
+            <p>Xuất ra một lớp c&oacute; chứa một tập hợp con c&aacute;c đối tượng từ lớp đầu v&agrave;o của bạn. Nếu chọn  <b>Lớp mẫu</b>, bạn c&oacute; thể x&aacute;c định số lượng đối tượng bạn muốn trả về trong lớp mẫu.  Theo mặc định, 100 đối tượng mẫu sẽ được trả về trong lớp đầu ra.
+            </p>
+            <p>Gi&aacute; trị phải lớn hơn kh&ocirc;ng. Nếu bạn chỉ định một số lớn hơn tổng số lượng đối tượng, tất cả c&aacute;c đối tượng sẽ được trả về.
+            </p>
+            <p>Nếu chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b>, th&igrave; lớp mẫu sẽ chứa c&aacute;c đối tượng từ trong phạm vi bản đồ.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Lớp phạm vi</h2></div>
+        <hr/>
+        <div>
+            <p>Xuất ra một lớp đối tượng chứa một đối tượng duy nhất đại diện cho phạm vi của c&aacute;c đối tượng đầu v&agrave;o bằng c&aacute;ch chọn n&uacute;t  <b>Lớp phạm vi</b>. Mục n&agrave;y được chọn theo mặc định.
+            </p>
+            <p>Nếu chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b> th&igrave; lớp phạm vi sẽ đại diện cho phạm vi c&oacute; thể nh&igrave;n thấy được của bản đồ.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p> T&ecirc;n lớp sẽ được tạo. Nếu bạn đang ghi v&agrave;o ArcGIS Data Store, kết quả của bạn sẽ được lưu v&agrave;o phần  <b>Nội dung của t&ocirc;i</b> v&agrave; được th&ecirc;m v&agrave;o bản đồ. Nếu bạn đang ghi v&agrave;o một phần chia sẻ tệp dữ liệu lớn, kết quả của bạn sẽ được lưu v&agrave;o phần chia sẻ tệp dữ liệu lớn v&agrave; được th&ecirc;m v&agrave;o bản k&ecirc; của n&oacute;. N&oacute; sẽ kh&ocirc;ng được th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, c&ocirc;ng cụ sẽ thất bại.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

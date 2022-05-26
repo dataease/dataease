@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Raszter területen belüli összegzése</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="Raszter ter&uuml;leten bel&uuml;li &ouml;sszegz&eacute;se eszk&ouml;z"></h2>
+        <hr/>
+    <p>Ez az eszk&ouml;z egy rasztert &ouml;sszegez az első bemenő r&eacute;teggel defini&aacute;lt ter&uuml;letek (z&oacute;n&aacute;k) alapj&aacute;n.
+    </p>
+    <p>Az alkalmaz&aacute;s&aacute;ra az al&aacute;bbi n&eacute;h&aacute;ny p&eacute;lda hozhat&oacute;:
+    </p>
+    <p>
+        <ul>
+            <li>V&iacute;zv&aacute;laszt&oacute;kat &eacute;s egy felsz&iacute;nhaszn&aacute;lati hat&aacute;rokat tartalmaz&oacute; r&eacute;teg eset&eacute;n kisz&aacute;m&iacute;thatja a felsz&iacute;nhaszn&aacute;lati t&iacute;pusok nagys&aacute;g&aacute;t mindegyik v&iacute;zgyűjtő ter&uuml;letre.
+                
+
+            </li>
+            <li>Egy megye parcell&aacute;it &eacute;s telep&uuml;l&eacute;shat&aacute;rait tartalmaz&oacute; r&eacute;teg eset&eacute;n &ouml;sszes&iacute;theti a telep&uuml;l&eacute;shat&aacute;rokon bel&uuml;li szabad parcell&aacute;k &aacute;tlagos &eacute;rt&eacute;k&eacute;t.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Az  <b>Aktu&aacute;lis t&eacute;rk&eacute;pkiterjed&eacute;s haszn&aacute;lata</b> bejel&ouml;l&eacute;s&eacute;vel az elemz&eacute;s csak az aktu&aacute;lis t&eacute;rk&eacute;pkiterjed&eacute;sen l&aacute;that&oacute; bemenő r&eacute;teget &eacute;s az &ouml;sszes&iacute;tendő r&eacute;teget foglalja mag&aacute;ban. Ha nincs bejel&ouml;lve, az elemz&eacute;s mag&aacute;ban foglal minden vektoros elemet a bemenő r&eacute;tegen &eacute;s az &ouml;sszes&iacute;tendő r&eacute;tegen egyar&aacute;nt, akkor is, ha k&iacute;v&uuml;l esnek az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Válassza ki azt a területréteget, amely egy raszteres réteg összegzésére szolgál megadott határokon belül</h2></div>
+        <hr/>
+        <div>
+            <p>Az &ouml;sszes&iacute;tendő ter&uuml;letek vagy z&oacute;n&aacute;k hat&aacute;rvonalait meghat&aacute;roz&oacute; r&eacute;teg.
+            </p>
+            <p>A r&eacute;teg lehet raszteres vagy vektoros adat. Raszterek eset&eacute;n a z&oacute;n&aacute;kat a bemenetben szereplő, azonos cella&eacute;rt&eacute;kkel rendelkező helyek hat&aacute;rozz&aacute;k meg. Ezeknek a ter&uuml;leteknek nem kell folytonosnak lenni&uuml;k.
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>Válassza ki a mezőt a határok definiálásához</h2></div>
+        <hr/>
+        <div>
+            <p>Ez a r&eacute;teg ter&uuml;letek hat&aacute;rvonalainak meghat&aacute;roz&aacute;s&aacute;ra haszn&aacute;lt attrib&uacute;tuma.
+            </p>
+            <p>Tegy&uuml;k fel p&eacute;ld&aacute;ul, hogy az első bemenő r&eacute;teg hat&aacute;rozza meg az igazgat&aacute;si egys&eacute;gek hat&aacute;rvonalait a r&eacute;gi&oacute;t, a ker&uuml;letet &eacute;s az egyes egys&eacute;gek parcellaazonos&iacute;t&oacute;j&aacute;t meghat&aacute;roz&oacute; attrib&uacute;tumokkal. Ezenk&iacute;v&uuml;l rendelkez&eacute;sre &aacute;ll egy raszteres r&eacute;teg, amely megadja az egyes helyek biodiverzit&aacute;si index&eacute;t. A kiv&aacute;lasztott mezővel d&ouml;nthet a helyi, ker&uuml;leti vagy region&aacute;lis szintű &aacute;tlagos biodiverzit&aacute;s kisz&aacute;m&iacute;t&aacute;sa mellett.
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>Válassza ki az összegezni kívánt raszteres réteget</h2></div>
+        <hr/>
+        <div>
+            <p>A r&eacute;tegben tal&aacute;lhat&oacute; raszteres cell&aacute;kat azok alapj&aacute;n a ter&uuml;letek (z&oacute;n&aacute;k) alapj&aacute;n &ouml;sszegzi, amelybe esnek.
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>Válassza ki a kiszámítandó statisztikát</h2></div>
+        <hr/>
+        <div>
+            <p>Az &ouml;sszes&iacute;tendő r&eacute;teg kiv&aacute;laszt&aacute;sa ut&aacute;n opcion&aacute;lisan kisz&aacute;m&iacute;thatja a bemenő ter&uuml;let r&eacute;teg pontjainak, vonalainak vagy ter&uuml;leteinek b&aacute;rmely numerikus attrib&uacute;tum&aacute;t.
+            </p>
+            <p>A k&ouml;vetkező statisztikat&iacute;pusok &eacute;rhetők el, ha a kiv&aacute;lasztott mező integer: &aacute;tlag, t&ouml;bbs&eacute;g, maximum, medi&aacute;n, minimum, kisebbs&eacute;g, terjedelem, sz&oacute;r&aacute;s, &ouml;sszeg &eacute;s v&aacute;ltozatoss&aacute;g.
+            </p>
+            <p>Ha a mező lebegőpontos, a k&ouml;vetkező lehetős&eacute;gek &aacute;llnak rendelkez&eacute;sre: &aacute;tlag, maximum, minimum, terjedelem, sz&oacute;r&aacute;s &eacute;s &ouml;sszeg.
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>Hiányzó értékek figyelmen kívül hagyása a számításban</h2></div>
+        <hr/>
+        <div>
+            <p>Ha a hi&aacute;nyz&oacute; &eacute;rt&eacute;kek figyelmen k&iacute;v&uuml;l hagy&aacute;s&aacute;t v&aacute;lasztja, a program csak azokat a cell&aacute;kat haszn&aacute;lja egy adott ter&uuml;let kimeneti &eacute;rt&eacute;k&eacute;nek meghat&aacute;roz&aacute;s&aacute;hoz, amelyek rendelkeznek &eacute;rt&eacute;kkel az &ouml;sszegzendő r&eacute;tegben. M&aacute;sk&uuml;l&ouml;nben, ha egy ter&uuml;leten b&aacute;rhol hi&aacute;nyz&oacute; &eacute;rt&eacute;kek vannak, &uacute;gy tekinti, mintha az adott z&oacute;n&aacute;ban az &ouml;sszes cell&aacute;hoz nem lenne elegendő inform&aacute;ci&oacute; a statisztikai sz&aacute;m&iacute;t&aacute;sok elv&eacute;gz&eacute;s&eacute;hez, &eacute;s az adott ter&uuml;let null (NoData) &eacute;rt&eacute;ket kap a kimenetben.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve. Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az Eredm&eacute;ny ment&eacute;si helye leg&ouml;rd&uuml;lő mezőben megadhatja a  <b>Saj&aacute;t tartalom</b>mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z <b>menti az eredm&eacute;nyt</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

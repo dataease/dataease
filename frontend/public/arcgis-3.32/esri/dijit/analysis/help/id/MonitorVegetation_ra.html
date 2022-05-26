@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Pantau Vegetasi</h2><p/>
+        <h2><img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" alt="Alat Pantau Vegetasi untuk Portal"></h2>
+        <hr/>
+    <p>Alat ini melakukan operasi aritmatika pada pita dari layer raster multiband untuk mengungkapkan informasi cakupan vegetasi dari area studi.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pilih input data</h2></div>
+        <hr/>
+        <div>
+            <p>Pilih layer raster multiband. Pastikan raster input memiliki pita yang sesuai.
+            </p> 
+        </div>
+    </div>
+    <div id="vegetationIndexType">
+        <div><h2>Pilih metode untuk memantau vegetasi</h2></div>
+        <hr/>
+        <div>
+            <p>Pilih metode untuk membuat layer indeks vegetasi. Indeks vegetasi yang berbeda dapat membantu menyorot fitur tertentu atau mengurangi berbagai kebisingan.
+            </p>
+            <ul>
+                <li>Global Environmental Monitoring Index &mdash; 
+GEMI adalah indeks vegetasi nonlinear untuk pemantauan lingkungan global dari citra satelit. Mirip dengan NDVI, tetapi tidak begitu sensitif dengan efek atmosfer. Hal itu terpengaruh oleh tanah gundul; oleh karenanya, tidak direkomendasikan untuk digunakan dalam area dengan vegetasi yang jarang atau tidak begitu padat.
+
+                </li>
+                <li>Green Vegetation Index - Landsat TM &mdash; 
+GVI awalnya didesain dari pencitraan Landsat MSS, tetapi telah dimodifikasi untuk digunakan dengan citra Landsat TM. Ia juga dikenal sebagai indeks vegetasi hijau Landsat TM Tasseled Cap. Indeks pemantauan ini juga dapat digunakan dengan citra yang pitanya memiliki karakteristik spektral yang sama.
+
+                </li>
+                <li>Modified Soil Adjusted Vegetation Index &mdash; 
+MSAVI2 adalah indeks vegetasi yang mencoba meminimalkan pengaruh tanah gundul dari metode SAVI.
+
+                </li>
+                <li>Normalized Difference Vegetation Index  &mdash; 
+NDVI adalah indeks terstandardisasi yang memungkinkan Anda menghasilkan citra yang menampilkan biomassa hijau atau relatif. Indeks ini memanfaatkan kekontrasan karakteristik dua pita dari multispectral raster set data: penyerapan pigmen klorofil di pita merah dan tingkat pantulan yang tinggi dari materi tanaman di pita near-infrared (NIR).
+
+                </li>
+                <li>Perpendicular Vegetation Index &mdash; 
+PVI mirip dengan indeks vegteasi yang berbeda; namun, PVU sensitif dengan variasi atmosfer. Ketika menggunakan metode ini untuk membandingkan gambar yang berbeda, ia hanya boleh digunakan pada gambar yang telah diperbaiki secara atmsofer. Informasi ini dapat disediakan oleh vendor data Anda.
+
+                </li>
+                <li>Soil-Adjusted Vegetation Index &mdash; 
+SAVI adalah indeks vegetasi yang berusaha untuk meminimalkan pengaruh kecerahan tanah dengan menggunakan faktor koreksi kecerahan tanah. Hal ini sering digunakan di wilayah kering di mana cakupan tanamannya cukup rendah.
+
+                </li>
+                <li>Sultan's Formula &mdash; 
+Proses Formula Sultan mengambil gambar 8-bit enam-pita dan menerapkan algoritma khusus padanya untuk menghasilkan gambar 8-bit tiga-pita. Gambar yang dihasilkan menyorot formasi batu yang disebut ophiolites pada garis pantai. Formula ini didesain berdasrkan pita TM dan ETM di scene Landsat 5 atau 7.
+
+                </li>
+                <li>Transformed Soil-Adjusted Vegetation Index &mdash; 
+SAVI yang telah bertransformasi adalah indeks vegetasi yang berusaha untuk meminimalkan pengaruh kecerahan tanah dengan mengasumsikan garis tanah memiliki lereng dan pemotongan acak.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bandIndexes">
+        <div><h2>Tentukan indeks pita NIR dan pita Merah</h2></div>
+        <hr/>
+        <div>
+            <p>Tentukan indeks pita untuk pita NIR dan pita merah.
+            </p>
+            <p>Setiap sensor satelit dan kamera udara menangkap informasi yang dibedakan menjadi beberapa indeks pita. Setiap indeks pita berisi informasi untuk bagian khusus spektrum elektromagnetik. Metode pemantauan tanaman ini memerlukan Anda untuk menentukan indeks pita yang menangkap panjang gelombang NIR dan merah.
+            </p>
+        </div>
+    </div>
+    <div id="slopeOfSoilLine">
+        <div><h2>Kelerengan garis tanah</h2></div>
+        <hr/>
+        <div>
+            <p>Kelerengan garis tanah. Lereng adalah perkiraan hubungan linear antara pita NIR dan merah pada scatterplot.
+            </p>
+            <p>Parameter ini hanya berlaku untuk metode Transformed Soil-Adjusted Vegetation Index.
+            </p>
+        </div>
+    </div>
+    <div id="interceptOfSoilLine">
+        <div><h2>Perpotongan</h2></div>
+        <hr/>
+        <div>
+            <p>Nilai NIR ketika nilai pantulan pita merah (Merah) adalah 0 untuk garis tanah tertentu.
+            </p>
+            <p> <code>(a = NIR - sRed)</code> , ketika Merah adalah 0.
+            </p> 
+            <p>Parameter ini hanya berlaku untuk metode Transformed Soil-Adjusted Vegetation Index.
+            </p>
+        </div>
+    </div>
+    <div id="greenVegetativeCover">
+        <div><h2>Jumlah cakupan vegetasi hijau</h2></div>
+        <hr/>
+        <div>
+            <p>Menentukan jumlah cakupan vegetasi hijau, yang diperlukan oleh metode SAVI.
+            </p>
+            <p>Nilai yang valid adalah sebagai berikut: 
+
+                <ul>
+                    <li>1 = Area tanpa cakupan vegetasi hijau
+                        
+ 
+                    </li>
+                    <li>0,5 = Area dengan cakupan vegetasi hijau sedang
+                        
+ 
+                    </li>
+                    <li>0 = Area dengan cakupan vegetasi hijau yang tinggi
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="adjustmentFactor">
+        <div><h2>Faktor penyesuaian</h2></div>
+        <hr/>
+        <div>
+            <p>Menentukan faktor penyesuaian untuk membantu meminimalkan efek tanah, yang diperlukan oleh metode Transformed Soil-Adjusted Vegetation Index. Nilai default adalah 0,08.
+            </p>
+            <p>Nilai yang rendah berarti Anda mengabaikan efek tanah. Nilai yang tinggi berarti tanah akan memengaruhi hasil Anda.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Anda dapat menentukan nama folder di  <b>Konten Saya</b> tempat hasil akan disimpan menggunakan kotak drop-down <b>Simpan hasil di</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

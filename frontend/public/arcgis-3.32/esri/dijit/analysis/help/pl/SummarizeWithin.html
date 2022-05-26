@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Sumuj w obrębie</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Sumuj w obrębie"></h2>
+        <hr/>
+    <p>Narzędzie wyszukuje obiekty (i&nbsp;części obiekt&oacute;w), kt&oacute;re znajdują się w&nbsp;granicach obszar&oacute;w w&nbsp;pierwszej warstwie wejściowej. Przykład:
+        <ul>
+            <li>Mając warstwę zlewni i warstwę granic użytkowania terenu według typu użytkowania terenu, oblicz całkowity areał typ&oacute;w użytkowania terenu dla każdej zlewni. 
+            </li>
+            <li>Uwzględniając warstwę działek w powiecie i warstwę granic miast, podsumuj średnią wartość działek wystawionych na sprzedaż w granicach każdego miasta.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jeśli jest zaznaczona opcja  <b>Użyj bieżącego zasięgu mapy</b>, przeanalizowane zostaną tylko obiekty w&nbsp;warstwie wejściowej i&nbsp;warstwie sumowania widoczne w&nbsp;bieżącym zasięgu mapy. Jeśli powyższa opcja nie jest zaznaczona, analizowane będą wszystkie obiekty w&nbsp;warstwie wejściowej i&nbsp;warstwie sumowania, nawet jeśli znajdują się poza bieżącym zasięgiem mapy.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Wybierz warstwę powierzchniową do zsumowania innych obiektów w ramach jej granic</h2></div>
+        <hr/>
+        <div>
+            <p>Warstwa obszaru, kt&oacute;ra zostanie użyta do zsumowania obiekt&oacute;w znajdujących się w jej granicach. 
+            </p>
+            <p>Można wybrać własną warstwę powierzchniową lub kosze wygenerowane podczas działania narzędzia.   Podczas generowania koszy  <b>kwadratowych</b> podana liczba i jednostki decydują o wysokości i długości kwadratu. W przypadku koszy <b>sześciokątnych</b> podana liczba i jednostki decydują o odległości między r&oacute;wnoległymi bokami sześciokąta.
+            </p>
+            <p>Poza wybraniem warstwy na mapie można wybrać opcję  <b>Wybierz warstwę analizy</b> dostępną w dolnej części menu rozwijanego. Wybranie tej opcji spowoduje otwarcie galerii, w kt&oacute;rej można wyszukać i wybrać zestawy danych pochodzące z r&oacute;żnych źr&oacute;deł w celu użycia ich podczas przeprowadzania analiz. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Wybierz warstwę do sumowania</h2></div>
+        <hr/>
+        <div>
+            <p>Zsumowane zostaną obiekty w tej warstwie, kt&oacute;re mieszczą się w granicach obiekt&oacute;w powyższej warstwy wejściowej. 
+            </p>
+            <p>Poza wybraniem warstwy na mapie można wybrać opcję  <b>Wybierz warstwę analizy</b> dostępną w dolnej części menu rozwijanego. Wybranie tej opcji spowoduje otwarcie galerii, w kt&oacute;rej można wyszukać i wybrać zestawy danych pochodzące z r&oacute;żnych źr&oacute;deł w celu użycia ich podczas przeprowadzania analiz. 
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Dodaj statystyki z warstwy do podsumowania</h2></div>
+        <hr/>
+        <div>
+            <p>Można też obliczyć dane statystyczne dla atrybut&oacute;w numerycznych punkt&oacute;w, kt&oacute;re są zawarte w&nbsp;granicach obiekt&oacute;w. 
+            </p>
+            <p>Jeśli jest zaznaczona opcja  <b>Liczba punkt&oacute;w</b>, zostanie obliczona całkowita liczba punkt&oacute;w w&nbsp;granicach każdego obszaru. Ponadto można obliczyć dane statystyczne dla atrybut&oacute;w numerycznych punkt&oacute;w, kt&oacute;re mieszczą się w granicach każdego obszaru.
+            </p>
+            <ul>
+                <li> <b>Suma</b>&mdash; całkowita wartość określonego pola.
+                </li>
+                <li> <b>Średnia</b> &mdash; wartość średnia dla określonego pola.
+                </li>
+                <li> <b>Minimum</b> &mdash; najniższa wartość określonego pola.
+                </li>
+                <li> <b>Maksimum</b> &mdash; najwyższa wartość określonego pola.
+                </li>
+                <li> <b>Odchylenie standardowe</b> &mdash; odchylenie standardowe wartości w określonym polu.
+                </li>
+            </ul>
+            
+            <p>Jeśli warstwa do podsumowania nie zawiera żadnych p&oacute;l liczbowych, dodatkowe statystyki nie będą dostępne.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Dodaj statystyki z</h2></div>
+        <hr/>
+        <div>
+            <p>Można także obliczyć dane statystyczne dla atrybut&oacute;w numerycznych linii sumowania. 
+            </p>
+            <p>Jeśli opcja  <b>Całkowita długość linii w</b> jest zaznaczona, zostanie obliczona całkowita długość linii w&nbsp;granicach każdego obszaru. Ponadto można obliczyć dane statystyczne dla atrybut&oacute;w numerycznych linii, kt&oacute;re mieszczą się w&nbsp;granicach każdego obszaru.
+            </p>
+            <ul>
+                <li> <b>Suma</b>&mdash; całkowita wartość określonego pola.
+                </li>
+                <li> <b>Średnia</b> &mdash; wartość średnia dla określonego pola.
+                </li>
+                <li> <b>Minimum</b> &mdash; najniższa wartość określonego pola.
+                </li>
+                <li> <b>Maksimum</b> &mdash; najwyższa wartość określonego pola.
+                </li>
+                <li> <b>Odchylenie standardowe</b> &mdash; odchylenie standardowe wartości w określonym polu.
+                </li>
+            </ul>
+            
+            <p>Jeśli warstwa do podsumowania nie zawiera żadnych p&oacute;l liczbowych, dodatkowe statystyki nie będą dostępne.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Dodaj statystyki z</h2></div>
+        <hr/>
+        <div>
+            <p>Można także obliczyć dane statystyczne dla atrybut&oacute;w numerycznych obszar&oacute;w sumowania. 
+            </p>
+            <p>Jeśli zaznaczona jest opcja  <b>Sumuj obszary używając</b>, obliczona zostanie całkowita powierzchnia obiekt&oacute;w, kt&oacute;re mieszczą się w&nbsp;granicach pierwszej warstwy wejściowej. Ponadto można obliczyć dane statystyczne dla atrybut&oacute;w numerycznych obiekt&oacute;w, kt&oacute;re mieszczą się w&nbsp;granicach każdego obszaru.
+            </p>
+            <ul>
+                <li> <b>Suma</b>&mdash; całkowita wartość określonego pola.
+                </li>
+                <li> <b>Średnia</b> &mdash; wartość średnia dla określonego pola.
+                </li>
+                <li> <b>Minimum</b> &mdash; najniższa wartość określonego pola.
+                </li>
+                <li> <b>Maksimum</b> &mdash; najwyższa wartość określonego pola.
+                </li>
+                <li> <b>Odchylenie standardowe</b> &mdash; odchylenie standardowe wartości w określonym polu.
+                </li>
+            </ul>
+            
+            <p>Jeśli warstwa do podsumowania nie zawiera żadnych p&oacute;l liczbowych, dodatkowe statystyki nie będą dostępne.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Dodaj statystyki z</h2></div>
+        <hr/>
+        <div>
+            <p>Po wybraniu warstwy sumowania można także obliczyć dane statystyczne dowolnych atrybut&oacute;w numerycznych punkt&oacute;w, linii lub obszar&oacute;w znajdujących się w wejściowej warstwie powierzchniowej. 
+            </p>
+            <ul>
+                <li> <b>Suma</b> &mdash; całkowita wartość określonego pola.
+                </li>
+                <li> <b>Średnia</b> &mdash; wartość średnia określonego pola.
+                </li>
+                <li> <b>Minimum</b> &mdash; najniższa wartość określonego pola.
+                </li>
+                <li> <b>Maksimum</b> &mdash; najwyższa wartość określonego pola.
+                </li>
+                <li> <b>Odchylenie standardowe</b> &mdash; odchylenie standardowe wartości dla określonego pola.
+                </li>
+            </ul>
+            
+            <p>W zależności od rodzaju sumowanych obiekt&oacute;w istnieje możliwość obliczenia całkowitej liczby punkt&oacute;w, całkowitej długości linii lub całkowitej powierzchni obszaru.
+            </p>
+            <p>Jeśli warstwa do podsumowania nie zawiera żadnych p&oacute;l liczbowych, dodatkowe statystyki nie będą dostępne.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Wybierz pole, według którego wykonane będzie grupowanie</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to atrybut  <b>Sumowania</b> obiekt&oacute;w, kt&oacute;rego można użyć, aby obliczyć dane statystyczne dla wartości każdego unikalnego atrybutu. Zał&oacute;żmy na przykład, że pierwsza warstwa wejściowa zawiera granice miasta, a&nbsp;obiekty sumowania to działki. Jeden z atrybut&oacute;w działek to <i>Status</i>, kt&oacute;ry zawiera dwie wartości: WOLNA i ZAJĘTA. Aby obliczyć całkowitą powierzchnię wolnych i zajętych działek w granicach miast, użyj atrybutu <i>Status</i> jako atrybutu Grupuj według. Statystyki dotyczące każdej z&nbsp;grup oraz liczba obiekt&oacute;w znajdujących się w&nbsp;granicach każdego z&nbsp;obszar&oacute;w zostaną wyświetlone w&nbsp;oknie podręcznym warstwy wynikowej.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Dodaj mniejszość, większość</h2></div>
+        <hr/>
+        <div>
+            <p>To pole wyboru jest aktywowane po wybraniu pola, według kt&oacute;rego jest wykonywane grupowanie. Aby dowiedzieć się, kt&oacute;re wartości atrybut&oacute;w w&nbsp;danej grupie stanowią mniejszość (nie są dominujące) lub większość (są dominujące) w&nbsp;obrębie danego obszaru znajdującego się w&nbsp;pierwszej warstwie wejściowej, zaznacz opcję  <b>Dodaj mniejszość, większość</b>. Po wybraniu opcji <b>Dodaj mniejszość, większość</b>, do warstwy wynikowej zostają dodane dwa nowe pola. Jeżeli wybierzesz także opcję <b>Dodaj wartości procentowe</b>, do warstwy wynikowej zostaną dodane dwa dodatkowe pola z&nbsp;procentowym podziałem dominujących i&nbsp;niedominujących wartości atrybut&oacute;w w&nbsp;każdej z&nbsp;grup.
+            </p>
+            <ul>
+                <li>Jeżeli przeprowadzasz sumowanie punkt&oacute;w, wartości niedominujące i&nbsp;dominujące są obliczane na podstawie liczby punkt&oacute;w znajdujących się w&nbsp;granicach każdego obszaru w&nbsp;pierwszej warstwie wejściowej.  
+                </li>
+                <li>Jeżeli przeprowadzasz sumowanie linii, wartości niedominujące i&nbsp;dominujące są obliczane na podstawie długości linii znajdujących się w&nbsp;granicach każdego obszaru w&nbsp;warstwie obszaru wejściowego.  
+                </li>
+                <li>Jeżeli przeprowadzasz sumowanie poligon&oacute;w, wartości niedominujące i&nbsp;dominujące są obliczane na podstawie powierzchni poligon&oacute;w znajdujących się w&nbsp;granicach każdego obszaru w&nbsp;warstwie obszaru wejściowego.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Dodaj wartości procentowe</h2></div>
+        <hr/>
+        <div>
+            <p>To pole wyboru jest aktywowane po wybraniu pola, według kt&oacute;rego jest wykonywane grupowanie. Jeżeli chcesz sprawdzić, jaką wartość procentową stanowią poszczeg&oacute;lne wartości atrybut&oacute;w w&nbsp;każdej z&nbsp;grup, zaznacz opcję  <b>Dodaj wartości procentowe</b>. Do tabeli wynik&oacute;w zostanie dodane nowe pole zawierające wartości procentowe, jakie stanowią poszczeg&oacute;lne wartości atrybut&oacute;w w&nbsp;każdej z grup. Jeżeli wybierzesz także opcję <b>Dodaj mniejszość, większość</b>, do warstwy wynikowej zostaną dodane dwa dodatkowe pola z&nbsp;procentowym podziałem dominujących i&nbsp;niedominujących wartości atrybut&oacute;w w&nbsp;każdej z&nbsp;grup.
+            </p>
+        </div>
+    </div>
+    <div id="ResultLayerName">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to nazwa warstwy, kt&oacute;ra zostanie utworzona w zakładce  <b>Moje zasoby</b> i zostanie dodana do mapy. Nazwa domyślna jest tworzona w oparciu o nazwę narzędzia i&nbsp;nazwę warstwy wejściowej. Jeśli ta nazwa warstwy już istnieje, wyświetlona zostanie prośba o podanie innej nazwy.
+            </p>
+            <p>Używając menu rozwijanego  <b>Zapisz wynik w</b>, można wskazać nazwę folderu na stronie <b>Moje zasoby</b>, w kt&oacute;rym zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

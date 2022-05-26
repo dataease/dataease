@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>生成细分面</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="生成细分面"></h2>
+        <hr/>
+    <p>此工具可根据指定的形状和大小在研究区域生成细分面。
+    </p>
+    <p>此工具的 <b>使用当前地图范围</b>复选框将被禁用，因为用于生成细分面的范围由 <b>定义范围</b>参数控制。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>选择形状</h2></div>
+        <hr/>
+        <div>
+            <p>要创建的细分面的形状或几何。可用的形状包括 <code>正方形</code>、 <code>六边形</code>、 <code>横向六边形</code>、 <code>三角形</code>或 <code>菱形</code>。
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>定义研究区域</h2></div>
+        <hr/>
+        <div>
+            <p>细分面将覆盖的范围或区域。可以使用当前地图范围或现有图层范围来确定范围，也可以通过交互方式绘制一个区域，以用作范围。
+            </p>
+            <p>如果已选择要素图层来确定范围，则将启用仅保留相交细分面的选项。如果选中该选项，则在结果细分面图层中，将仅生成覆盖指定范围图层中要素的细分面或与这些要素相交的细分面。
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>未选中
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="全范围覆盖">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>选中
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="要素覆盖">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>通过指定定义图格大小</h2></div>
+        <hr/>
+        <div>
+            <p>每个像元的大小。可通过指定平方单位或指定使用以下测量结果计算的距离来确定像元大小，其中 d 表示距离： 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>正方形
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="正方形细分面">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>六边形
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="六边形细分面">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>横向六边形
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="横向六边形细分面">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>三角形
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="三角形细分面">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>菱形
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="菱形细分面">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的内容</b>中创建并添加到地图中的图层的名称。如果该名称的图层已存在，则系统将要求您提供其他名称。
+            </p>
+            <p>使用 <b>将结果保存在</b>下拉菜单，可以指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

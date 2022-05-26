@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>가시권역 생성(Create Viewshed)</h2><p/>
+        <h2><img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" alt="가시권역 생성 도구"></h2>
+        <hr/>
+    <p>이 도구는 관찰자가 볼 수 있는 표면 이미지를 나타내는 영역을 식별합니다. 입력 지점 위치는 관찰자(예: 지표상의 사람 또는 화재 감시탑의 초소) 또는 관측된 개체(예: 풍력 터빈, 급수탑, 차량 또는 다른 사람)를 나타낼 수 있습니다. 결과는 경관 조망 지점에서 볼 수 있는 영역을 정의합니다.
+    </p>
+    <p>관찰자와 관측된 개체 모두 높이를 가질 수 있으며, 이러한 높이에 따라 가시성이 결정됩니다. 예를 들어 높이가 91m인 풍력 발전기와 지상에 서 있는 키가 183cm인 사람에 대해 계산된 가시권역은 일반적으로 61m 높이의 풍력 발전기와 152cm 신장의 사람에 대해 계산된 가시권역보다 큽니다.
+    </p>
+    <p>결과 레이어는 입력 표면 래스터의 각 셀 위치가 입력 관찰 포인트별로 표시될 수 있는 횟수를 기록합니다. 보이지 않는 셀에는 NoData 값이 주어집니다.
+    </p>
+    <p> <b>현재 맵 범위 사용</b>을 선택한 경우 현재 맵 범위 내에 보이는 래스터 면적과 관측자 지점만 분석됩니다. 이 옵션의 선택을 취소한 경우 현재 맵 범위 외부에 있는 피처를 포함하여 입력 레이어에 있는 모든 관측자 지점이 분석됩니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="elevationSurface">
+        <div><h2>고도 표면</h2></div>
+        <hr/>
+        <div>
+            <p>가시권역을 계산하는 데 사용되는 고도 표면입니다.
+            </p>
+            <p>입력 표면의 수직 단위가 수평 단위와 다른 경우(예: 고도 값이 피트로 표시되고 좌표체계가 미터로 표시된 경우) 표면에 정의된 수직 좌표체계가 있어야 합니다. 이는 가시권역 분석에 대한 Z 계수를 계산하기 위해 도구에서 수직(Z) 및 수평(XY) 단위를 사용하기 때문입니다. 수직 좌표체계가 없고 사용 가능한 Z 단위 정보가 없으면 도구는 Z 단위가 XY 단위와 같다고 가정합니다. 이는 1.0이라는 내부 Z 계수가 분석에 사용되어 예기치 않은 결과를 제공할 수 있기 때문입니다.
+            </p>
+            <p>고도 표면은 정수 또는 부동 소수점이 될 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="observerFeatures">
+        <div><h2>관찰자 위치를 나타내는 포인트 피처</h2></div>
+        <hr/>
+        <div>
+            <p>가시권역을 계산할 때 관찰자 위치를 나타내는 포인트 피처입니다.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>최적화</h2></div>
+        <hr/>
+        <div>
+            <p>가시권역을 계산하는 데 사용되는 최적화 방법입니다.
+            </p>
+            <ul>
+                <li>Speed &mdash; 
+이 방법은 처리 속도를 최적화하여 높은 성능에 대한 결과로 일부 정확도를 교환합니다. 이 방법이 기본값입니다.
+
+                </li>
+                <li>Accuracy &mdash; 
+이 방법은 더욱 긴 처리 시간이 걸리며 정확도에 맞게 최적화됩니다.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>최대 가시 거리</h2></div>
+        <hr/>
+        <div>
+            <p>가시 영역 계산이 중지되는 최단 거리를 입력합니다. 이 거리를 벗어나면 관측자 지점과 다른 개체에서 서로를 볼 수 있는지 여부가 결정되지 않습니다.
+            </p>
+            <p>선형 거리를 나타내는 숫자 값을 지정하거나 입력 관찰자 피처에서 숫자 필드를 선택할 수 있습니다. 필드가 제공되는 경우 필드에 포함된 값에는 입력 고도 표면의 xy 단위와 동일한 단위를 사용해야 합니다.
+            </p>
+            <p>큰 값은 계산 시간이 더 소요됩니다. 지정되지 않은 경우 기본 최대 거리는 입력 고도 표면의 해상도 및 범위를 기반으로 계산됩니다.
+            </p>
+            <p>이 매개변수는 특정 현상을 모델링하는 데 유용합니다. 예를 들어 가시성의 범위를 제한하여 옅은 안개 등의 기상 상태를 모델링할 수 있습니다. 이와 유사하게 가시성 범위를 제한하면 황혼의 영향을 계산하여 하루의 시간을 일부 제어할 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistanceField">
+        <div><h2>최대 가시 거리</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="minimumDistance">
+        <div><h2>최소 가시 거리</h2></div>
+        <hr/>
+        <div>
+            <p>가시 영역 계산이 시작된 거리를 입력합니다. 이 거리보다 가까운 표면의 셀은 결과에 표시되지 않지만 최소 및 최대 가시 거리 간 셀의 가시성은 계속 차단할 수 있습니다.
+            </p>
+            <p>선형 거리를 나타내는 숫자 값을 지정하거나 입력 관찰자 피처에서 숫자 필드를 선택할 수 있습니다. 필드가 제공되는 경우 필드에 포함된 값에는 입력 고도 표면의 xy 단위와 동일한 단위를 사용해야 합니다.
+            </p>
+            <p>이 매개변수는 관찰자로부터 지정한 거리만큼 떨어진 위치에서 가시권역 분석 영역을 제어하는 데 유용합니다. 예를 들어 건물 꼭대기에서 떨어져 있는 공원까지의 가시성을 계산하는 경우 최소 가시 거리를 설정하여 관심이 없는 가까운 영역을 제외하고 더 나은 처리 속도를 얻을 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="minimumDistanceField">
+        <div><h2>최소 가시 거리</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="viewingDistance3D">
+        <div><h2>거리가 3D임</h2></div>
+        <hr/>
+        <div>
+            <p>최소 및 최대 가시 거리 매개변수를 3차원 방식 또는 더 간단한 2차원 방식으로 측정할지 여부를 지정합니다. 옵션을 선택하면 가시 거리가 3D 거리로 처리됩니다. 옵션을 선택하지 않으면 2D 거리로 처리됩니다.
+            </p> 
+            <p>2D 거리는 해수면에서 투영된 위치를 사용하여 관찰자와 대상 간 측정된 단순 선형 거리입니다. 3D 거리는 관련 높이를 고려하여 더욱 실제적인 값을 제공합니다.
+            </p>  
+        </div>
+    </div>
+    <div id="observersElevation">
+        <div><h2>관찰자 위치의 고도</h2></div>
+        <hr/>
+        <div>
+            <p>관찰자 위치의 고도를 입력합니다.
+            </p>
+            <p>모든 관찰자의 고도를 나타내거나 각 관찰자의 고도를 나타내는 필드로 숫자 값을 지정할 수 있습니다. 필드가 제공되면 필드에 포함된 값은 입력 고도 표면의 Z 단위와 같은 단위로 표시되어야 합니다.
+            </p>
+        </div>
+    </div>
+    <div id="observersElevationField">
+        <div><h2>관찰자 위치의 고도</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="observersHeight">
+        <div><h2>관찰자의 높이</h2></div>
+        <hr/>
+        <div>
+            <p>관찰자 위치의 지상(지면으로부터의) 높이를 입력합니다.
+            </p> 
+            <p>높이에 대한 숫자 값을 지정하거나 입력 관찰자 피처의 필드를 지정할 수 있습니다. 필드가 제공되는 경우 필드에 포함된 값에는 입력 고도 표면의 z 단위와 동일한 단위를 사용해야 합니다.
+            </p>
+            <p>기본값은 183cm입니다. 전망탑 또는 높은 건물 등의 고도 위치에서 바라보는 경우 해당 높이를 대신 사용하세요. 가시권역 계산 시 지정된 경우 이 값이 관찰자 고도에 추가되며 그렇지 않은 경우 보간된 표면 z 값에 추가됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="observersHeightField">
+        <div><h2>관찰자의 높이</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="targetHeight">
+        <div><h2>대상의 높이</h2></div>
+        <hr/>
+        <div>
+            <p>가시성을 설정하는 데 사용되는 지상의 구조물 높이 또는 사람의 신장을 입력합니다.
+            </p>
+            <p>높이에 대한 숫자 값을 지정하거나 입력 관찰자 피처의 필드를 지정할 수 있습니다. 필드가 제공되는 경우 필드에 포함된 값에는 입력 고도 표면의 z 단위와 동일한 단위를 사용해야 합니다.
+            </p>
+            <p>결과 가시권역은 관측자 지점에서 지상에 있는 이러한 개체를 볼 수 있는 영역을 식별합니다. 반대로, 지상에 있는 개체에서 관측자 지점을 볼 수 있는 영역이기도 합니다. 
+            </p>
+            <p>다음은 대상 높이 설정에 대한 몇 가지 예입니다.
+            </p>
+            <ul>
+                <li>입력 지점이 풍력 발전기를 나타내는 경우 지상에 서 있는 사람이 발전기를 볼 수 있는 곳을 확인하려면 이 사람의 평균 신장(약 183cm)을 입력합니다.
+                    
+
+                </li>
+                <li>입력 지점이 화재 감시탑을 나타내는 경우 높이가 6m 이상인 연기를 볼 수 있는 감시탑들을 확인하려면 대상 높이를 6m로 입력합니다.
+                    
+
+                </li>
+                <li>입력 지점이 일부 도로 또는 오솔길 가의 경관 조망 지점을 나타내는 경우 높이가 122m 이상인 풍력 발전기를 볼 수 있는 곳을 확인하려면 높이를 122m로 입력합니다.
+                    
+
+                </li>
+                <li>입력 지점이 경관 조망 지점을 나타내는 경우 조망 지점에 서 있는 사람이 볼 수 있는 영역을 확인하려면 대상 높이에 0을 입력합니다. 
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="targetHeightField">
+        <div><h2>관찰자의 높이</h2></div>
+        <hr/>
+        <div>
+            
+        </div>
+    </div>
+    <div id="resultAglLayer">
+        <div><h2>보이게 할 결과 높이</h2></div>
+        <hr/>
+        <div>
+            <p>지상 레벨(AGL) 결과 이름입니다. AGL 결과는 각 셀 값이 최소 한 명의 관찰자가 볼 수 있도록 볼 수 없는 셀에 추가해야 하는 최소 높이인 래스터입니다. 이미 볼 수 있는 셀은 이 결과 래스터에 0으로 할당됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에 생성되고 맵에 추가되는 레이어의 이름입니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어가 이미 있는 경우 다른 이름을 입력하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 상자를 사용하여 결과가 저장될 <b>내 콘텐츠</b>에서 폴더 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

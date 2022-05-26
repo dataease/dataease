@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,user-scalable=no">
+    <title>Report Player Sample (Mobile)</title>
+
+    <link rel="stylesheet" href="../../../../../dijit/themes/claro/claro.css">
+    <link rel="stylesheet" href="../../../../../esri/css/esri.css">
+
+    <script>
+        var dojoConfig = { async: true, locale: typeof dojoConfig !== 'undefined' && dojoConfig.locale || null, packages: [{ name: 'dojo', location: './dojo' }, { name: 'dijit', location: './dijit' }, { name: 'dojox', location: './dojox' }, { name: 'dgrid', location: './dgrid' }, { name: 'dstore', location: './dstore' }, { name: 'put-selector', location: './put-selector' }, { name: 'xstyle', location: './xstyle' }, { name: 'esri', location: './esri' }, { name: 'moment', location: './moment', main: 'moment/moment' }] };
+    </script>
+    <script data-dojo-config="baseUrl: '../../../../..', isDebug: 1, waitSeconds: 60" src='../../../../../dojo/dojo.js'></script>
+
+    <style>
+        html, body {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            overflow: hidden;
+            font-size: 13px;
+            font-family: "Avenir Next";
+        }
+    </style>
+
+    <script>
+        require(["require", "esri/dijit/geoenrichment/nlsFix"],
+            function (relativeRequire, nlsFix) {
+                nlsFix.load(null, relativeRequire);
+
+                require([
+                    "esri/dijit/geoenrichment/ReportPlayer/ReportPlayer",
+                    "esri/dijit/geoenrichment/ReportPlayer/PlayerThemes",
+                    "esri/dijit/geoenrichment/utils/signIn/SignInHelper",
+                    "esri/dijit/geoenrichment/utils/UrlUtil",
+
+                    "dojo/domReady!"
+                ],
+               function (
+                   ReportPlayer,
+                   PlayerThemes,
+                   SignInHelper,
+                   UrlUtil
+                   ) {
+
+                   document.body.style.opacity = "";
+
+                   function getUrlVar(name) {
+                       var href = window.location.href;
+                       return UrlUtil.getVariableValue(href, name);
+                   };
+
+                   // parse url query parameters
+
+                   var appId = getUrlVar("appId");
+                   var portalUrl = getUrlVar("portalUrl");
+                   var countryID = getUrlVar("countryID");
+                   var reportID = getUrlVar("reportID");
+                   var theme = getUrlVar("theme");
+                   var width = getUrlVar("width");
+                   var height = getUrlVar("height");
+                   var maxWidth = getUrlVar("maxWidth");
+                   var maxHeight = getUrlVar("maxHeight");
+                   var viewMode = getUrlVar("viewMode");
+                   var resizeMode = getUrlVar("resizeMode");
+                   var analysisAreasJson = getUrlVar("analysisAreas");
+                   if (typeof analysisAreasJson === "string")
+                       analysisAreasJson = JSON.parse(analysisAreasJson);
+                   var combinedAreasInfoJson = getUrlVar("combinedAreasInfo");
+                   if (typeof combinedAreasInfoJson === "string")
+                       combinedAreasInfoJson = JSON.parse(combinedAreasInfoJson);
+
+                   // DEV
+
+                   window._dev_emulateMultiTouch = getUrlVar("emulateMultiTouch") === "true";
+                   window._dev_logTouch = getUrlVar("logTouch") === "true";
+
+                   // default parameters
+
+                   var DEFAULTS = {
+                       appId: appId || "g5vpmnaAyj9UmLKJ",
+                       portalUrl: portalUrl || "https://www.arcgis.com",
+                       countryID: countryID || "US",
+                       reportID: reportID || "transportation-to-work", // "executive-summary-call-outs-US"//"transportation-to-work-US"
+                       theme: theme || PlayerThemes.DARK
+                   };
+
+                   // sign-in
+
+                   SignInHelper.signIn({
+                       portalUrl: DEFAULTS.portalUrl,
+                       appId: DEFAULTS.appId,
+                       callback: function () {
+
+                           // initialize the player
+
+                           var player = new ReportPlayer({
+                               showToolbarInPopup: true,
+                               theme: DEFAULTS.theme
+                           }).placeAt(playerDiv)
+
+                           // layout restrictions
+
+                           if (width && height)
+                               player.resize(Number(width), Number(height));
+
+                           if (maxWidth || maxHeight) {
+                               maxWidth && player.setMaxWidth(Number(maxWidth));
+                               maxHeight && player.setMaxHeight(Number(maxHeight));
+                           }
+
+                           // analysis areas
+
+                           if (!analysisAreasJson)
+                               analysisAreasJson = [
+                                   {
+                                       "name": "New York (small polygon) 1",
+                                       "shortName": "NYC 1",
+                                       "description": "Polygon",
+                                       "feature": {
+                                           "geometry": {
+                                               "rings": [[[-8238372.646123883, 4971599.356069453], [-8236117.753789412, 4970600.8973874515], [-8235730.791333708, 4968556.206880769], [-8240211.912117044, 4969607.216019718], [-8238372.646123883, 4971599.356069453]]],
+                                               "spatialReference": {
+                                                   "wkid": 102100
+                                               }
+                                           }
+                                       }
+                                   },
+                                   {
+                                       "name": "New York (small polygon) 2",
+                                       "shortName": "NYC 2",
+                                       "description": "Polygon",
+                                       "feature": {
+                                           "geometry": {
+                                               "rings": [[[-8230561.737296041, 4970041.951618072], [-8217605.661001721, 4967137.344543238], [-8231746.5112344595, 4958347.086290455], [-8230561.737296041, 4970041.951618072]]],
+                                               "spatialReference": {
+                                                   "wkid": 102100
+                                               }
+                                           }
+                                       }
+                                   }
+                               ];
+
+                           if (window._dev_logTouch || window._dev_emulateMultiTouch)
+                               analysisAreasJson.length = 1;
+
+                           // play report
+
+                           player.playReport({
+                               portalUrl: DEFAULTS.portalUrl,
+                               countryID: DEFAULTS.countryID,
+                               reportID: DEFAULTS.reportID,
+                               analysisAreas: analysisAreasJson,
+                               combinedAreasInfo: combinedAreasInfoJson
+                           });
+                       }
+                   });
+               });
+            });
+    </script>
+</head>
+<body class="claro" style="opacity:0.01;">
+    <div id="playerDiv"></div>
+</body>
+</html>

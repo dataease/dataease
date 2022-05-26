@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Classer des pixels à l’aide de l’apprentissage en profondeur</h2><p/>
+        <h2><img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" alt="Classer des pixels &agrave; l&rsquo;aide de l&rsquo;apprentissage profond"></h2>
+        <hr/>
+    <p>Cet outil ex&eacute;cute un mod&egrave;le d&rsquo;apprentissage profond entra&icirc;n&eacute; sur un raster en entr&eacute;e afin de g&eacute;n&eacute;rer un raster class&eacute;, une &eacute;tiquette de classe &eacute;tant attribu&eacute;e &agrave; chaque pixel valide.
+    </p>
+    <p>Si l&rsquo;option  <b>Use current map extent (Utiliser l&rsquo;&eacute;tendue courante de la carte)</b> est s&eacute;lectionn&eacute;e, seule la surface raster qui est visible au sein de l&rsquo;&eacute;tendue actuelle de la carte est analys&eacute;e. Si l&rsquo;option n&rsquo;est pas s&eacute;lectionn&eacute;e, l&rsquo;ensemble du raster sera analys&eacute;, m&ecirc;me s&rsquo;il se trouve en dehors de l&rsquo;&eacute;tendue courante de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Choisir l’image utilisée pour classer les pixels</h2></div>
+        <hr/>
+        <div>
+            <p>Image en entr&eacute;e &agrave; classer.
+            </p>
+            <p>Il peut s&rsquo;agir de l&rsquo;URL d&rsquo;un service d&rsquo;imagerie, d&rsquo;une couche raster ou d&rsquo;un service d&rsquo;imagerie.
+            </p>
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Choisir le modèle d’apprentissage profond utilisé pour classer les pixels</h2></div>
+        <hr/>
+        <div>
+            <p>L&rsquo;entr&eacute;e est l&rsquo;URL d&rsquo;un &eacute;l&eacute;ment de paquetage d&rsquo;apprentissage profond ( <code>.dlpk</code>).
+            </p>
+            <p>Le paquetage d&rsquo;apprentissage profond se compose du fichier JSON d&eacute;finition du mod&egrave;le ESRI ( <code>.emd</code>), du fichier de mod&egrave;le binaire d&rsquo;apprentissage profond et, &eacute;ventuellement, de la fonction raster Python &agrave; utiliser.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Spécifier les arguments du modèle d’apprentissage profond</h2></div>
+        <hr/>
+        <div>
+            <p>Les arguments de la fonction sont d&eacute;finis dans la classe de fonction raster Python r&eacute;f&eacute;renc&eacute;e par le mod&egrave;le en entr&eacute;e. C&rsquo;est l&agrave; que vous r&eacute;pertoriez les param&egrave;tres et arguments d&rsquo;apprentissage profond suppl&eacute;mentaires &agrave; tester et affiner, par exemple un seuil de confiance pour ajuster la sensibilit&eacute;.
+            </p>
+            <p>Les noms des arguments sont renseign&eacute;s par l&rsquo;outil apr&egrave;s lecture du module Python dans le serveur d&rsquo;analyse raster.
+            </p>  
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputClassifiedRaster">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Le nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans  <b>My Content (Mon contenu)</b>, dans lequel le r&eacute;sultat sera enregistr&eacute; via la zone de liste d&eacute;roulante <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

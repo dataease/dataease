@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Lös upp gränser</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="L&ouml;s upp gr&auml;nser"></h2>
+        <hr/>
+    <p>Omr&aring;den som &ouml;verlappar eller delar en gemensam gr&auml;ns eller attributv&auml;rde sammanfogas till ett enda omr&aring;de.
+    </p>
+    <p>Du kan styra vilka gr&auml;nser som sammanfogas genom att ange ett f&auml;lt. Om du till exempel har ett lager med l&auml;n och varje l&auml;n har attributet  <pre>State_Name</pre> kan du l&ouml;sa upp gr&auml;nser med attributet <pre>State_Name</pre>.  L&auml;n kommer att sammanfogas om de har samma v&auml;rde f&ouml;r <pre>State_Name</pre>.  Resultatet blir ett lager med delstatsgr&auml;nser.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Välj det områdeslager vars gränser ska lösas upp</h2></div>
+        <hr/>
+        <div>
+            <p>Lagret som inneh&aring;ller omr&aring;desgeoobjekt som ska l&ouml;sas upp. 
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager fr&aring;n kartan kan du v&auml;lja  <b>V&auml;lj analyslager</b> l&auml;ngst ned i listrutan f&ouml;r att bl&auml;ddra till ditt inneh&aring;ll efter ett big data-fildelningsdataset eller geoobjektlager.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveFields">
+        <div><h2>Välj metod för att lösa upp</h2></div>
+        <hr/>
+        <div>
+            <p>Anger metoden som anv&auml;nds f&ouml;r att l&ouml;sa upp f&auml;lten.
+            </p>
+            <p>Du kan v&auml;lja en av tv&aring; metoder f&ouml;r att sammanfoga omr&aring;desgeoobjekt:
+                <ul>
+                    <li> <b>Omr&aring;den som &ouml;verlappar eller ligger bredvid varandra</b> &ndash; Tv&aring; eller flera omr&aring;den vars gr&auml;nser &ouml;verlappar sammanfogas till ett omr&aring;de. Dessutom sammanfogas omr&aring;den som ligger bredvid varandra (som delar en gemensam gr&auml;ns) till ett omr&aring;de.
+                    </li>
+                    <li> <b>Omr&aring;den med samma f&auml;ltv&auml;rden</b> &ndash; Tv&aring; eller flera omr&aring;den sammanfogas till ett omr&aring;de om de har samma f&auml;ltv&auml;rde.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Skapa flerdelat geoobjekt</h2></div>
+        <hr/>
+        <div>
+            <p>Flerdelad &auml;r en representation av en plats eller ett objekt som har fler &auml;n en del men som definieras som ett geoobjekt eftersom det refererar till en upps&auml;ttning attribut. I ett lager med delstater kan till exempel delstaten Hawaii betraktas som ett flerdelat geoobjekt eftersom dess separata geometriska delar klassificeras som en enda delstat.
+            </p>
+            <p> <b>Skapa flerdelat geoobjekt</b> ger tv&aring; alternativ:
+                <ul>
+                    <li>Sant (markerat) &ndash; utdatatj&auml;nsten kan inneh&aring;lla flerdelade geoobjekt.
+                    </li>
+                    <li>Falskt (avmarkerat) &ndash; utdatatj&auml;nsten inneh&aring;ller bara endelade geoobjekt och enskilda geoobjekt skapas f&ouml;r varje del. Det h&auml;r &auml;r standardinst&auml;llningen.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Lägg till statistik (valfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>N&auml;r omr&aring;den sammanfogas kan du summera deras attributv&auml;rden med meningsfull statistik. Om du till exempel uppl&ouml;ser gr&auml;nsen mellan l&auml;n baserat p&aring;  <pre>State_Name</pre> och varje l&auml;n har f&auml;ltet <i>Population</i>, kan du ber&auml;kna summan av <pre>Population</pre> f&ouml;r delstaten.
+            </p>
+            <p> Du kan ber&auml;kna statistik p&aring; summerade geoobjekt. Du kan ber&auml;kna f&ouml;ljande p&aring; numeriska f&auml;lt:
+                <ul>
+                    <li>Antal &ndash; Ber&auml;knar antal v&auml;rden som inte &auml;r null. Kan anv&auml;ndas p&aring; numeriska f&auml;lt eller str&auml;ngar. Antalet f&ouml;r [null, 0, 2] &auml;r 2.
+                    </li>
+                    <li>Summa &ndash; Summan av de numeriska v&auml;rdena i ett f&auml;lt. Summan f&ouml;r [null, null, 3] &auml;r 3.
+                    </li>
+                    <li>Medelv&auml;rde &ndash; Medelv&auml;rdet f&ouml;r numeriska v&auml;rden. Medelv&auml;rde f&ouml;r [0, 2, null] &auml;r 1.
+                    </li>
+                    <li>Min &ndash; Minimiv&auml;rdet f&ouml;r ett numeriskt f&auml;lt. Minimiv&auml;rde f&ouml;r [0, 2, null] &auml;r 0. 
+                    </li>
+                    <li>Max &ndash; Det maximala v&auml;rdet f&ouml;r ett numeriskt f&auml;lt. Det maximala v&auml;rdet f&ouml;r [0, 2, null] &auml;r 2.
+                    </li>
+                    <li>Intervall &ndash; Intervallet f&ouml;r ett numeriskt f&auml;lt. Det ber&auml;knas som det maximala v&auml;rdet minus minimiv&auml;rdena. Intervallet f&ouml;r [0, null, 1] &auml;r 1. Intervallet f&ouml;r [null, 4] &auml;r 0.
+                    </li>
+                    <li>Varians &ndash; Variansen hos ett numeriskt f&auml;lt i ett sp&aring;r. Variansen hos [1] &auml;r null. Variansen hos [null, 1,0,1,1] &auml;r 0,25.
+                    </li>
+                    <li>Standardavvikelse &ndash; Standardavvikelsen hos ett numeriskt f&auml;lt. Standardavvikelsen hos [1] &auml;r null. Standardavvikelsen hos [null, 1,0,1,1] &auml;r 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du kan ber&auml;kna f&ouml;ljande p&aring; numeriska f&auml;lt:
+                <ul>
+                    <li>Antal &ndash; Antalet str&auml;ngar som inte &auml;r null.
+                    </li>
+                    <li>Alla &ndash; Det statistiska v&auml;rdet &auml;r ett slumpm&auml;ssigt exempel p&aring; ett str&auml;ngv&auml;rde i det angivna f&auml;ltet.
+                    </li>
+                </ul>
+                All statistik ber&auml;knas p&aring; v&auml;rden som inte &auml;r null. Det resulterande lagret inneh&aring;ller ett nytt f&auml;lt f&ouml;r varje statistiskt v&auml;rde som ber&auml;knas. Du kan l&auml;gga till valfri m&auml;ngd statistiska v&auml;rden genom att v&auml;lja ett attribut och statistik. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p> Namnet p&aring; lagret som ska skapas.  Om du skriver till en ArcGIS Data Store, sparas dina resultat i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Om du skriver till en big data-fildelning, lagras dina resultat i big data-fildelningen och l&auml;ggs till i dess manifest. Det l&auml;ggs inte till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagret redan finns misslyckas verktyget.
+            </p>
+            <p>N&auml;r du skriver till   ArcGIS Data Store (relationellt eller rumstempor&auml;rt Big Data-datalager) med listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

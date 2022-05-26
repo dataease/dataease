@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Tvori nove lokacije</h2><p/>
+        <h2><img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" alt="Tvori nove lokacije"></h2>
+        <hr/>
+    <p>To orodje tvori nove geoobjekte na va&scaron;em &scaron;tudijskem območju, ki ustrezajo vrsti navedenih kriterijev. Ti kriteriji lahko temeljijo na atributnih poizvedbah (na primer parcele, ki so neizkori&scaron;čene) in prostorskih poizvedbah (na primer, parcele, ki so na poplavnih območjih).
+
+    </p>
+    <p>Če je obkljukano  <b>Uporabi trenutni obseg karte</b>, bodo analizirani samo geoobjekti, vidni znotraj trenutnega obsega karte. Če je možnost odkljukana, bodo analizirani vsi geoobjekti, tudi če so zunaj trenutnega obsega karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="Expression">
+        <div><h2>Tvori nove lokacije, ki se ujemajo z naslednjimi izrazi</h2></div>
+        <hr/>
+        <div>
+            <p>Kliknite gumb <b>Dodaj izraz</b>, da določite izraz. Dodate lahko več izrazov. Po vnosu izraza in kliku gumba <b>Zaženi analizo</b> se geoobjekti v va&scaron;em sloju za analizo filtrirajo z vsakim izrazom. Del geoobjektov, ki ustreza vsem izrazom, je zapisan v sloju z rezultati.
+            </p>
+            <p>Obstajata dva osnovna tipa izrazov, ki jih lahko ustvarite; atributni in prostorski. Atributni izrazi so poizvedbe po vrednostih poljih, kot npr.  <code>kjer je ime &raquo;San Francisco&laquo;</code>. Obstajajo &scaron;tirje tipi prostorskih izrazov:
+                <ul>
+                    <li> <b>znotraj razdalje</b>: deli geoobjektov znotraj razdalje do geoobjektov v drugem sloju. Na primer, najde dele parcel, ki so znotraj razdalje 500 metrov od reke Los Angeles.
+                    </li>
+                    <li> <b>v celoti vsebuje</b>: geoobjekt mora vsebovati celoten geoobjekt iz drugega sloja. Na primer, najde razvodja, ki v celoti vsebujejo parcele v območju za industrijsko uporabo. Noben del parcele ne sme biti zunaj razvodja.
+                    </li>
+                    <li> <b>v celoti znotraj</b>: geoobjekt mora biti popolnoma obkrožen z geoobjektom iz drugega sloja. Na primer, najde &scaron;olska okrožja, ki so v celoti znotraj meja mesta. Noben del &scaron;olskega okrožja ne sme biti zunaj meja mesta.
+                    </li>
+                    <li> <b>seka</b>: geoobjekt ali deli geoobjekta se morajo prekrivati z ali sekati geoobjekt iz drugega sloja. Na primer, najde območja znotraj nacionalnega parka s pogorelimi vegetacijskimi povr&scaron;inami.Pogorela območja zunaj meja parka ne bodo vključena.
+                    </li>
+                    <li> <b>Najbližje</b>: geoobjekt mora biti najbližje geoobjektu v drugem sloju. Na primer, najdi zelenico, ki je najbližje posamezni &scaron;oli.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Vsak prostorski izraz ima ustrezno negacijo, razen  <b>najbližje</b>, <b>ni znotraj razdalje</b>, <b>ne vsebuje v celoti</b>, <b>ni v celoti znotraj</b> in <b>ne seka</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>To je ime sloja, ki bo ustvarjen v  <b>Moji vsebini</b> in dodan na karto. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če ime sloja že obstaja, boste morali vnesti drugo ime.
+            </p>
+            <p>S pomočjo spustnega menija  <b>Shrani rezultat v</b> lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

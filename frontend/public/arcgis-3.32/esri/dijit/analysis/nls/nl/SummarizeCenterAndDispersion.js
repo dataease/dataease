@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/nl/SummarizeCenterAndDispersion",{inputLayerLabel:"Kies een laag om te beschrijven",summaryTypes:"Samenvattingstypes",centralFeature:"Centraal object",meanCenter:"Gemiddeld centrum",medianCenter:"Mediaanmidden",ellipse:"Ellips",weightBy:"Gewicht per (optioneel)",groupBy:"Groeperen per (optioneel)",resultLayerName:"Resultaat laagnaam",outputLayerName:"Beschrijf distributie van ${layerName}",none:"Geen",itemDescription:"Objectlaag die is gegenereerd door uitvoering van Samenvatting centrum en spreiding op ${layerName}. ",
+itemTags:"Analyseresultaat, samenvatten centrum en spreiding, ${layerName}",itemSnippet:"Objectlaag die is gegenereerd door uitvoering van Samenvatting centrum en spreiding"});

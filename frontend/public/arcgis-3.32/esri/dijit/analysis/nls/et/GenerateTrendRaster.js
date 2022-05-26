@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/et/GenerateTrendRaster",{toolDefine:"Trendi rastri loomine",outputLayerName:"${layername}_trend",dimensionLabel:"Valige m\u00f5\u00f5de, mida m\u00f6\u00f6da muutuja trendi anal\u00fc\u00fcsitakse",variablesLabel:"Valige trendi anal\u00fc\u00fcsimiseks muutuja(d)",variablesListLabel:"Muutujad [M\u00f5\u00f5tmeteave] (Kirjeldus)",trendLineTypeLabel:"Valige joone t\u00fc\u00fcp, mille abil sobitatakse muutujate v\u00e4\u00e4rtused piki m\u00f5\u00f5det",linear:"Lineaarne",
+harmonic:"Harmooniline",polynomial:"Pol\u00fcnoomne",frequencyLabel:"M\u00e4\u00e4rake sagedusarv harmoonilise trendi sobitamiseks",polynomialOrderLabel:"M\u00e4\u00e4rake pol\u00fcnoomi j\u00e4rjekorranumber trendi sobitamiseks",ignoreNodataLabel:"Eira arvutuses puuduvaid v\u00e4\u00e4rtusi",ignore:"Eira",analysisLayerLabel:"Valige mitmem\u00f5\u00f5tmeline pildikiht trendi anal\u00fc\u00fcsimiseks",itemDescription:"Anal\u00fc\u00fcsip\u00f5hine pilditeenus loodi trendi rastri genereerimise kaudu",
+itemTags:"Rasteranal\u00fc\u00fcsi tulemus, trendi rastri loomine, ${layername}",itemSnippet:"Anal\u00fc\u00fcsip\u00f5hine pilditeenus loodi trendi rastri genereerimise kaudu"});

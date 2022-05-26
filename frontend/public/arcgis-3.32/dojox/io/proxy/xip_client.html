@@ -1,0 +1,102 @@
+<!--
+	/*
+		Copyright (c) 2004-2011, The Dojo Foundation
+		All Rights Reserved.
+	
+		Licensed under the Academic Free License version 2.1 or above OR the
+		modified BSD license. For more information on Dojo licensing, see:
+	
+			http://dojotoolkit.org/community/licensing.shtml
+	*/
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title></title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+	<!-- Security protection: uncomment the start and end script tags to enable. -->
+	<!-- script type="text/javascript" -->
+	// <!--
+	
+	function pollHash(){
+		//Can't use location.hash because at least Firefox does a decodeURIComponent on it.
+		var urlParts = window.location.href.split("#");
+		if(urlParts.length == 2){
+			var newHash = urlParts[1];
+			if(newHash != xipCurrentHash){
+				try{
+					callMaster(xipStateId, newHash);
+				}catch(e){
+					//Make sure to not keep processing the error hash value.
+					xipCurrentHash = newHash;
+					throw e;
+				}
+				xipCurrentHash = newHash;
+			}
+		}
+	}
+
+	function unpackMessage(encodedMessage){
+		var parts = encodedMessage.split(":");
+		var command = parts[1];
+		encodedMessage = parts[2] || "";
+
+		var config = null;
+		if(command == "init"){
+			var configParts = encodedMessage.split("&");
+			config = {};
+			for(var i = 0; i < configParts.length; i++){
+				var nameValue = configParts[i].split("=");
+				config[decodeURIComponent(nameValue[0])] = decodeURIComponent(nameValue[1]);
+			}
+		}
+		return {command: command, message: encodedMessage, config: config};
+	}
+
+	//************** Init **************************
+	xipCurrentHash = "";
+	
+	//Decode the init params
+	var fragId = window.location.href.split("#")[1];
+	var config = unpackMessage(fragId).config;
+
+	xipStateId = config.id;
+	xipMasterFrame = parent.parent;
+
+	//Set up an HTML5 messaging publisher if postMessage exists.
+	//As of this writing, this is only useful to get Opera 9.25+ to work.
+	if(typeof document.postMessage != "undefined"){
+		callMaster = function(stateId, message){
+			xipMasterFrame.document.postMessage(stateId + "#" + message);
+		}
+	}else{
+		var parts = config.callback.split(".");
+		xipCallbackObject = xipMasterFrame;
+		for(var i = 0; i < parts.length - 1; i++){
+			xipCallbackObject = xipCallbackObject[parts[i]];
+		}
+		xipCallback = parts[parts.length - 1];
+
+		callMaster = function(stateId, message){
+			xipCallbackObject[xipCallback](stateId + "#" + message);
+		}
+	}
+
+	//Call the master frame to let it know it is OK to start sending.
+	callMaster(xipStateId, "0:loaded");
+	
+	//Start counter to inspect hash value.
+	setInterval(pollHash, 10);
+
+	// -->
+	<!-- </script> -->
+</head>
+<body>
+	<h4>The Dojo Toolkit -- xip_client.html</h4>
+
+	<p>This file is used for Dojo's XMLHttpRequest Iframe Proxy. This is the "client" file used
+	internally by dojox.io.proxy.xip.</p>
+</body>
+</html>

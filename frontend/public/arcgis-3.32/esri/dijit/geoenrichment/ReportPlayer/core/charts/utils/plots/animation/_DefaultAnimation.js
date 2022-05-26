@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/charts/utils/plots/animation/_DefaultAnimation",["dojo/_base/declare","esri/dijit/geoenrichment/utils/animation/Animator","esri/dijit/geoenrichment/ReportPlayer/ReportPlayerState","./_defaults"],function(a,c,d,b){return a(null,{_animationInfo:null,render:function(e,b){var a=this.animate;this.animate=!1;var c=this.inherited(arguments);if(this.animate=a)this._animationInfo={dim:e,offsets:b},this.renderAnimation();return c},renderAnimation:function(){if(this._animationInfo&&
+!this._animationInfo.isAnimating&&!d.isAnimationSuspended){this._animationInfo.isAnimating=!0;var a=this.getGroup();c.animateTransform({shape:a,duration:this.animate.duration||b.duration,easing:b.easingFunc,transform:[{name:"translate",start:[0,this._animationInfo.dim.height-this._animationInfo.offsets.b],end:[0,0]},{name:"scale",start:[1,0],end:[1,1]}],onEnd:function(){this._animationInfo.isAnimating=!1}.bind(this)})}}})});

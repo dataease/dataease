@@ -1,0 +1,4 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/utils/KeyboardUtil",["dojo/on","dojo/sniff","./DomUtil"],function(d,e,f){var c={listenToKeyboardCombinationOverNode:function(a){return d(document.body,"keydown",function(b){if(!a.isCtrl||c.isCtrl(b))if(!a.isShift||b.shiftKey)if(!a.isAlt||b.altKey)String.fromCharCode(b.keyCode).toLowerCase()!==a["char"]||a.node&&!f.isNodeInLayout(a.node)||a.callback(b)})},isCtrl:function(a){return e("mac")?a.metaKey:a.ctrlKey}};return c});

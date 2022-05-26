@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Kuvaile aineistoryhmää</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="Kuvaile aineistoryhm&auml; -ty&ouml;nkulkukaavio"></h2>
+        <hr/>
+    <p>Kuvaile aineistoryhm&auml;&auml; -ty&ouml;kalu tarjoaa yksityiskohtaisemman n&auml;kym&auml;n aineistoryhm&auml;&auml;n. Ennen kuin analysoit suurta m&auml;&auml;r&auml;&auml; aineistoa, m&auml;&auml;rit&auml; t&auml;m&auml;n ty&ouml;kalun avulla, miss&auml; l&auml;ht&ouml;aineistosi on ja mink&auml;laista tietoa se sis&auml;lt&auml;&auml;. Oletusarvon mukaan tuloksena on JSON-merkkijono, joka j&auml;sent&auml;&auml; l&auml;ht&ouml;aineiston karttatason t&auml;rkeimm&auml;t kuvaajat, ja taulu, jossa on yhteenvetotilastot kustakin kent&auml;st&auml;. 
+    </p>
+    <p>Voit vaihtoehtoisesti luoda tulosaineiston lis&auml;kohdekarttatasoja aineiston tarkempaa kuvausta varten. Vaihtoehdot ovat mallikarttataso tai laajuuskarttataso. Voit valita tulosaineiston tyypiksi jommankumman tai molemmat.
+    </p>
+    <p>Jos k&auml;yt&ouml;ss&auml;si on esimerkiksi Big Data -tiedostojako, joka sis&auml;lt&auml;&auml; 15 aineistoryhm&auml;&auml;. Kussakin aineistoryhm&auml;ss&auml; on 10 miljoonaa aluekohdetta, jotka edustavat maasi eri alueiden rakennuksia ja taloja. Teht&auml;v&auml;n&auml;si on analysoida alue C, mutta et tied&auml;, mitk&auml; aineistoryhm&auml;t sis&auml;lt&auml;v&auml;t n&auml;m&auml; kohteet. Voit selvitt&auml;&auml;, mit&auml; aineistoryhmi&auml; sinun tulisi k&auml;ytt&auml;&auml;, suorittamalla Kuvaile aineistoryhm&auml;&auml; -ty&ouml;kalun ja luomalla laajuuskarttatason sen selvitt&auml;miseksi, mik&auml; aineistoryhm&auml; on tutkimusalueellasi.
+    </p>
+    <p>Toinen esimerkki: kuvittele, ett&auml; teht&auml;v&auml;n&auml;si on viimeistell&auml; analyysin ty&ouml;nkulku, jossa k&auml;sitell&auml;&auml;n suurta m&auml;&auml;r&auml;&auml; aineistoa. Haluat kokeilla ty&ouml;nkulkua, mutta sen k&auml;ytt&ouml; kest&auml;isi tunteja tai p&auml;ivi&auml; koko aineistoryhm&auml;ll&auml;si. Sen sijaan, ett&auml; k&auml;yt&auml;t aikaa ja resursseja koko analyysin suorittamiseen, luo mallikarttataso koko ty&ouml;nkulun tehokasta testausta varten.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse kuvailtava aineistoryhmä</h2></div>
+        <hr/>
+        <div>
+            <p>Karttataso, joka sis&auml;lt&auml;&auml; piste-, viiva-, alue- tai taulukkomuotoiset kohteet, jotka kuvataan, joista laaditaan yhteenveto ja joista poimitaan otos.
+            </p>
+            <p>Sen lis&auml;ksi, ett&auml; voit valita karttatason kartasta, voit valita  <b>Valitse analyysikarttataso</b> -vaihtoehdon avattavan luettelon alareunasta ja selata Big Data -tiedostoresurssin aineistoryhm&auml;n tai karttatason sis&auml;lt&ouml;&ouml;n.
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>Saa käsitys aineistotyhmästäsi luomalla (valinnainen)</h2></div>
+        <hr/>
+        <div>
+            <p>Paranna Big Data -aineistoosi kohdistuvaa ymm&auml;rt&auml;myst&auml;si tulostamalla kuvaavia lis&auml;karttatasoja. Voit tulostaa yhden tai useamman seuraavista karttatasoista tai olla tulostamatta yht&auml;k&auml;&auml;n:
+            </p>
+            <ul>
+                <li> <b>Laajuuskarttataso</b> &ndash; luo aluekohteen, joka edustaa l&auml;ht&ouml;aineiston kohteiden tai kiinnostuskohteen laajuutta.
+                </li>
+                <li> <b>Mallikarttataso</b> &ndash; luo alijoukon karttatason, joka sis&auml;lt&auml;&auml; m&auml;&auml;ritetyn m&auml;&auml;r&auml;n aineistoryhm&auml;&auml;si tai kiinnostuskohteeseesi sis&auml;ltyvi&auml; l&auml;ht&ouml;aineiston kohteita.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>Mallikarttataso</h2></div>
+        <hr/>
+        <div>
+            <p>Tulosta karttataso, joka sis&auml;lt&auml;&auml; l&auml;ht&ouml;aineiston karttatason kohteiden osajoukon. Jos valitset  <b>Mallikarttataso</b>-vaihtoehdot, voit m&auml;ritt&auml;&auml; mallikarttatasossa palautettavien kohteiden m&auml;&auml;r&auml;n.  Oletusarvon mukaan 100 mallikohdetta palautetaan tulosaineiston karttatasoon.
+            </p>
+            <p>Arvon on oltava suurempi kuin nolla. Jos m&auml;&auml;rit&auml;t kohteiden kokonaism&auml;&auml;r&auml;&auml; suuremman luvun, kaikki kohteet palautetaan.
+            </p>
+            <p>Jos valitset  <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b> -vaihtoehdon, mallikarttataso sis&auml;lt&auml;&auml; kartan laajuuteen sis&auml;ltyv&auml;t kohteet.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Laajuuskarttataso</h2></div>
+        <hr/>
+        <div>
+            <p>Tulosta kohdekarttataso, joka sis&auml;lt&auml;&auml; yhden l&auml;ht&ouml;aineiston kohteiden laajuutta edustavan kohteen, napsauttamalla  <b>Laajuuskarttataso</b>-painiketta. T&auml;m&auml; valitaan oletusarvoisesti.
+            </p>
+            <p>Jos valitset  <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b> -vaihtoehdon, laajuuskarttataso esitt&auml;&auml; kartan n&auml;kyv&auml;n laajuuden.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Luotavan karttatason nimi.  Jos kirjoitat kohteeseen ArcGIS Data Store, tulokset tallennetaan  <b>Oma sis&auml;lt&ouml;</b> -osioon ja lis&auml;t&auml;&auml;n karttaan. Jos kirjoitat Big Data -tiedostojakoon, tulokset tallennetaan Big Data -tiedostojakoon ja lis&auml;t&auml;&auml;n sen manifest-tiedostoon. Tuloksia  ei lis&auml;t&auml; karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttataso on jo olemassa, ty&ouml;kalua ei voi suorittaa.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

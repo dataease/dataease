@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>קבע מסלול עלות נסיעה בתור קו</h2><p/>
+        <h2><img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" alt="איור הכלי 'קבע מסלול עלות הנסיעה בתור קו'"></h2>
+        <hr/>
+    <p>כלי זה מחשב את נתיב הפולי-קו עם העלות הנמוכה ביותר בין מקורות ליעדים ידועים.
+    </p>
+    <p>להלן דוגמאות ליישומים:
+        <ul>
+            <li>מצא את הנתיב הטוב ביותר עבור כביש חדש, מבחינת עלויות בנייה.
+                
+
+            </li>
+            <li>זהה את הנתיב הטוב ביותר ממספר מיקומים בפרברים (מקורות) למרכז הקניות הקרוב ביותר (יעד).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>אם האפשרות  <b>השתמש בתיחום המפה הנוכחי</b> מסומנת, רק הישויות בשכבת הקלט שנראות בתוך תיחום המפה הנוכחי ינותחו. אם האפשרות לא מסומנת, כל הישויות בשכבת הקלט ינותחו, גם אם הן מחוץ לתיחום המפה הנוכחי.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>בחר שכבת רסטר או שכבת נקודות מוצא של ישויות כדי לקבוע את המסלולים מהן</h2></div>
+        <hr/>
+        <div>
+            <p>שירות תמונה או שירות ישויות שמזהה את התאים שמהם נקבע הנתיב עם העלות הנמוכה ביותר אל היעד עם העלות הנמוכה ביותר.
+            </p>
+            <p>אם הקלט הוא שירות תמונה, הקלט מורכב מתאים שיש להם ערכים חוקיים (אפס הוא ערך חוקי), ולתאים האחרים יש להקצות NoData.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>בחר את שכבת הרסטר של עלות הנסיעה</h2></div>
+        <hr/>
+        <div>
+            <p>רסטר שמגדיר את העכבה או העלות לזוז פלאנימטרית בכל תא.
+            </p>
+            <p>הערך בכל מיקום תא מייצג את מרחק העלות-ליחידה עבור תזוזה בתוך התא. כל ערך מיקום תא מוכפל ברזולוציית התא, תוך פיצוי גם עבור תנועה אלכסונית, לקבלת העלות הכוללת של מעבר על פני התא.
+            </p>
+            <p>הערכים של רסטר העלויות יכולים להיות מספר שלם או נקודה צפה, אבל הם לא יכולים להיות מספר שלילי או אפס (לא יכולה להיות עלות שלילית או אפס).
+            </p>
+        </div>
+    </div>
+    <div id="inputDestinationRasterOrFeatures">
+        <div><h2>קלט ישויות או רסטר יעדים</h2></div>
+        <hr/>
+        <div>
+            <p>קלט שמגדיר את היעדים המשמשים לחישוב המרחק. השכבה יכולה להיות רסטר או ישות.
+            </p>
+            <p>אם הקלט הוא שירות תמונה, הקלט מורכב מתאים שיש להם ערכים חוקיים (אפס הוא ערך חוקי), ולתאים האחרים יש להקצות NoData.
+            </p>
+        </div>
+    </div>
+    <div id="outputPolylineName">
+        <div><h2>שם שכבת תוצאת הפולי-קו</h2></div>
+        <hr/>
+        <div>
+            <p>השם של השכבה שתיווצר ב <b>התוכן שלי</b> ותתווסף למפה. שם ברירת המחדל מבוסס על שם הכלי ושם שכבת הקלט. אם שם השכבה כבר קיים, תתבקש לספק שם אחר.
+            </p>
+            <p>באפשרותך לציין את השם של תיקייה ב- <b>התוכן שלי</b> שבה התוצאה תישמר באמצעות התיבה הנפתחת <b>שמור תוצאה ב</b>.
+            </p>
+        </div>
+    </div>
+    <div id="pathType">
+        <div><h2>בחר סוג נתיבים לקביעה</h2></div>
+        <hr/>
+        <div>
+            <p>מגדיר את האופן שבו הערכים והאזורים בנתוני היעד של הקלט יפורשו בחישובי עלויות הנתיבים.
+            </p>
+            <ul>
+                <li> <b>היחיד הטוב ביותר</b> - עבור כל התאים או המיקומים בנתוני היעד של הקלט, הנתיב עם העלות הנמוכה ביותר נגזר מהמיקום עם מינימום נתיבים עם העלות הנמוכה ביותר אל מיקום המקור. זוהי ברירת המחדל
+                    
+
+                </li>
+                <li> <b>אל כל תא</b> - עבור כל תא או מיקום עם ערך חוקי בנתוני יעד הקלט, נתיב עם העלות הנמוכה ביותר נקבע ונשמר בשירות הישויות של הפלט. עם אפשרות זו, כל תא של נתוני יעד הקלט מטופל בנפרד, ונתיב עם העלות הנמוכה ביותר נקבע עבור כל תא.
+                    
+
+                </li>
+                <li> <b>אל כל אזור</b> - עבור כל אזור בנתוני יעד הקלט, נתיב עם העלות הנמוכה ביותר נקבע ונשמר בשירות הישויות של הפלט. עם אפשרות זו, הנתיב עם העלות הנמוכה ביותר עבור כל אזור מתחיל בתא או במיקום עם שקלול המרחק בעל העלות הנמוכה ביותר באזור.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="destinationField">
+        <div><h2>בחר שדה לקבלת ערכים עבור המיקום</h2></div>
+        <hr/>
+        <div>
+            <p>השדה אשר משמש להשגת ערכים עבור מיקומי היעד.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

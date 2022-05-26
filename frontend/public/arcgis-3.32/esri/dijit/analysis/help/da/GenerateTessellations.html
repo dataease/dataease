@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Generer underopdelinger</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="Generer underopdelinger"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j genererer underopdelinger ud fra et studieomr&aring;de, der er baseret p&aring; en specificeret form og st&oslash;rrelse.
+    </p>
+    <p>afkrydsningsfeltet  <b>Brug aktuel kortudstr&aelig;kning</b> er ikke afkrydset for dette v&aelig;rkt&oslash;j, fordi den udstr&aelig;kning, der benyttes til at generere underopdelinger, styres af parameteren <b>Defin&eacute;r udstr&aelig;kning</b>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Vælg form</h2></div>
+        <hr/>
+        <div>
+            <p>Form eller geometri for de underopdelinger, som du vil oprette. De tilg&aelig;ngelige former er  <code>Kvadrat </code>, <code>Sekskant</code>, <code>Tv&aelig;rg&aring;ende sekskant</code>, <code>Trekant</code> eller <code>Ruder</code>.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Definer undersøgelsesområde</h2></div>
+        <hr/>
+        <div>
+            <p>Udstr&aelig;kningen eller omr&aring;det, som underopdelingerne kommer til at d&aelig;kke. Udstr&aelig;kningen kan fastl&aelig;gges ved hj&aelig;lp af den aktuelle kortudstr&aelig;kning, udstr&aelig;kningen af et eksisterende lag eller ved interaktivt at tegne et omr&aring;de, der kan bruges som udstr&aelig;kning.
+            </p>
+            <p>Hvis et vektorlag er valgt til fastl&aelig;ggelse af udstr&aelig;kningen, vil indstillingen for kun at bevare sk&aelig;rende underopdelinger v&aelig;re aktiveret. Hvis den er aktiveret, genereres der kun de underopdelinger i det resulterende underopdelingslag, som d&aelig;kker eller sk&aelig;rer objekter i det angivne udstr&aelig;kningslag. 
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Ikke afkrydset
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="D&aelig;kker hele udstr&aelig;kningen">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Afkrydset
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="D&aelig;kker objekter">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>Definer beholderstørrelse ved at angive</h2></div>
+        <hr/>
+        <div>
+            <p>St&oslash;rrelsen af ​​hver celle. Cellest&oslash;rrelse kan fastl&aelig;gges ved at angive kvadratiske enheder eller ved at angive en afstand, der beregnes ved hj&aelig;lp af f&oslash;lgende m&aring;linger, hvor d = Afstand: 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Kvadrat
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="Kvadratisk underopdeling">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Sekskant
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="Sekskantet underopdeling">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Tv&aelig;rg&aring;ende sekskant
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="Tv&aelig;rg&aring;ende sekskantet underopdeling">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Triangel
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="Trekantet underopdeling">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Ruder
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="Ruderformet underopdeling">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; det lag, som oprettes i  <b>Mit indhold</b> og f&oslash;jes til kortet. Hvis laget allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Ved hj&aelig;lp af rullemenuen  <b>Gem resultat</b> kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet skal gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

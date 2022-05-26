@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>속성 요약 (Summarize Attributes)</h2><p/>
+        <h2><img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" alt="속성 요약 다이어그램"></h2>
+        <hr/>
+    <p> 이 도구는 하나 이상의 필드에 있는 모든 일치 값을 요약하여 이에 대한 통계를 계산합니다. 가장 기본적인 통계는 요약되어 있는 피처의 개수이지만 다른 고급 통계도 계산할 수 있습니다.
+    </p>
+    <p>예를 들어  <i>DISTRICT_MANAGER_NAME</i> 필드가 포함된 커피숍 위치의 포인트 피처가 있다고 가정하고 , 매장 매니저별 커피 판매량을 요약해 보겠습니다. <i>DISTRICT_MANAGER_NAME</i> 필드를 디졸브할 필드로 지정하여 개별 매니저를 나타내는 모든 데이터 행을 요약할 수 있습니다. 즉, <pre>Manager1</pre>이 관리하는 모든 커피숍은 단일 행으로 요약되며, 이 행에는 계산된 요약 통계가 포함됩니다. 이 예시에서는 <pre>Manager1</pre>뿐 아니라 <i>DISTRICT_MANAGER_NAME</i> 필드에 나열된 다른 매니저에 대해서도, 관리하는 모든 커피숍의 매장 수와 <i>TOTAL_SALES</i> 합 등의 통계가 계산됩니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>요약할 입력 선택</h2></div>
+        <hr/>
+        <div>
+            <p>요약될 필드가 포함된 레이어입니다.  
+            </p>
+            <p>맵에서 레이어를 선택하는 것 이외에, 드롭다운 목록의 하단에 있는  <b>Analysis Layer 선택</b>을 선택하여 빅데이터 파일 공유 데이터셋 또는 피처 레이어의 콘텐츠를 찾아볼 수 있습니다.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>데이터를 요약할 방법을 선택하세요.</h2></div>
+        <hr/>
+        <div>
+            <p>데이터를 요약하는 두 가지 방법이 있습니다.
+                <ul>
+                    <li> <b>모든 피처를 단일 피처로</b> - 모든 피처에 대한 통계를 계산합니다.
+                    </li>
+                    <li> <b>필드 기준</b> - 지정한 필드의 값 등으로 피처를 그룹화합니다.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>예를 들어,  <code>Maple</code>, <code>Fir</code>, <code>Pine</code> 값을 가진 <i>treetype</i> 필드 및 <i>treeheight</i> 필드를 포함한 나무 데이터셋이 있다고 가정하고, <i>treeheight</i> 평균을 찾아보려고 합니다. 모든 피처를 단일 피처로 요약한다면 모든 나무의 높이 평균을 찾게 되고, 이는 하나의 평균 값이 됩니다. <i>treeheight</i> 필드로 요약했다면 단풍나무의 평균, 전나무의 평균, 소나무의 평균이 나타납니다.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>통계 추가(선택)</h2></div>
+        <hr/>
+        <div>
+            <p> 요약된 피처에 대한 통계를 계산할 수 있습니다. 숫자 필드에서 다음을 계산할 수 있습니다.
+                <ul>
+                    <li>개수 - null이 아닌 값의 개수를 계산합니다. 숫자 필드나 문자열에 사용할 수 있습니다. [null, 0, 2]의 개수는 2입니다.
+                    </li>
+                    <li>합계 - 필드에 있는 숫자 값의 합계입니다. [null, null, 3]의 합계는 3입니다.
+                    </li>
+                    <li>평균 - 숫자 값의 평균입니다. [0, 2, null]의 평균은 1입니다.
+                    </li>
+                    <li>최소 - 숫자 필드의 최소 값입니다. [0, 2, null]의 최소는 0입니다. 
+                    </li>
+                    <li>최대 - 숫자 필드의 최대 값입니다. [0, 2, null]의 최대는 2입니다.
+                    </li>
+                    <li>범위 - 숫자 필드의 범위입니다. 이 값은 최대 값에서 최소 값을 뺀 값입니다. [0, null, 1]의 범위는 1입니다. [null, 4]의 범위는 0입니다.
+                    </li>
+                    <li>분산 - 트랙 내 숫자 필드의 분산입니다. [1]의 분산은 null입니다. [null, 1,0,1,1]의 분산은 0.25입니다.
+                    </li>
+                    <li>표준편차 - 숫자 필드의 표준편차입니다. [1]의 표준편차는 null입니다. [null, 1,0,1,1]의 표준편차는 0.5입니다. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>문자열 필드에서 다음을 계산할 수 있습니다.
+                <ul>
+                    <li>개수 - null이 아닌 문자열의 개수입니다.
+                    </li>
+                    <li>임의 - 이 통계는 지정된 필드에 있는 문자열 값에 대한 랜덤 샘플입니다.
+                    </li>
+                </ul>
+                모든 통계는 null이 아닌 값에 대해 계산됩니다. 결과 레이어에는 계산된 각 통계에 대한 새 필드가 포함됩니다. 속성과 통계를 선택하여 원하는 개수의 통계를 추가할 수 있습니다. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>데이터 저장소 선택</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytic 결과는 데이터 저장소에 저장되며  Portal for ArcGIS에서 피처 레이어로 나타납니다. 대부분의 경우 결과는 기본 설정에 따라 시공간적 데이터 저장소에 저장되어야 합니다. 하지만 관계형 데이터 저장소에 결과를 저장하는 것이 좋은 경우도 있습니다. 결과를 관계형 데이터 저장소에 저장하려는 이유는 다음과 같습니다. 
+                <ul>
+                    <li>결과를 포털 간 컬래버레이션에 사용할 수 있습니다.
+                    </li>
+                    <li>기능을 결과와 동기화할 수 있습니다.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> 생성될 레이어의 이름입니다. ArcGIS Data Store에 작성하는 경우  결과는  <b>내 콘텐츠</b>에 저장되고 맵에 추가됩니다. 빅데이터 파일 공유에 작성하는 경우  결과는 빅데이터 파일 공유에 저장되고 해당 매니페스트에 추가됩니다. 이러한 결과는 맵에 추가되지 않습니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어가 이미 있으면 도구를 사용할 수 없습니다.
+            </p>
+            <p> ArcGIS Data Store(관계형 또는 시공간 빅데이터 저장소)에 작성하는 경우  <b>결과 저장:</b> 드롭다운 상자를 사용하여 <b>내 콘텐츠</b>에서 결과를 저장할 폴더의 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

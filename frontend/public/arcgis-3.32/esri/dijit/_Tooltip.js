@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/_Tooltip",["dijit/Tooltip","dojo/_base/array","dojo/_base/declare","dojo/_base/lang","dojo/dom"],function(f,c,k,g,l){return k(null,{declaredClass:"esri.dijit._Tooltip",_tooltips:null,constructor:function(){this._tooltips=[]},startup:function(){this.inherited(arguments);this._started||c.forEach(this._tooltips,function(a){a.startup()})},destroy:function(){this.inherited(arguments);c.forEach(this._tooltips,function(a){a.destroy()});this._tooltips=null},createTooltips:function(a){c.forEach(a,
+function(a){this.createTooltip(a.node,a.label)},this)},createTooltip:function(a,b){if(a=this._getConnectId(a))b="object"===typeof b?g.mixin({},b,{connectId:a}):{connectId:a,label:b},b=new f(b),this._started&&b.startup(),this._tooltips.push(b)},_getConnectId:function(a){var b,d;if(a){if(g.isArray(a)){if(b=[],c.forEach(a,function(a){(d=this._getNode(a))&&b.push(d)}),0===b.length)return}else if(b=this._getNode(a),!b)return;return b}},_getNode:function(a){return l.byId(a.domNode||a)},findTooltip:function(a){var b=
+this._getNode(a),d,e,f;if(a){a=this._tooltips;d=a.length;for(var h=0;h<d;h++)if(e=a[h],f=g.isArray(e.connectId)?-1<c.indexOf(e.connectId,b):e.connectId===b)return e}}})});

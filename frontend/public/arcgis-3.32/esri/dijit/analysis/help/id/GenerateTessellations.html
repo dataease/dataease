@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Buat Tessellation</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="Buat Tessellation"></h2>
+        <hr/>
+    <p>Alat ini membuat tessellation melalui sebuah area studi berdasarkan bentuk dan ukuran yang ditentukan.
+    </p>
+    <p> <b>Gunakan jangkauan peta saat ini</b> kotak centang dinonaktifkan untuk alat ini karena jangkauan yang digunakan untuk membuat tesselation dikendalikan oleh parameter <b>Jelaskan jangkauan</b>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Pilih bentuk</h2></div>
+        <hr/>
+        <div>
+            <p>Bentuk geometri tessellation yang ingin Anda buat.  Bentuk yang tersedia adalah  <code>Persegi</code>, <code>Heksagon</code>, <code>Heksagon Melintang</code>, <code>Segitiga</code>, atau <code>Wajik</code>.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Tentukan area studi</h2></div>
+        <hr/>
+        <div>
+            <p>Jangkauan atau area yang akan dicakup tessellation.  Jangkauan dapat ditentukan menggunakan jangkauan peta saat ini, jangkauan layer yang ada, atau dengan menggambar area secara interaktif untuk digunakan sebagai jangkauan.
+            </p>
+            <p>Jika sebuah feature layer dipilih untuk menentukan jangkauan, opsi untuk hanya membiarkan tessellation yang berpotongan akan diaktifkan.  Jika dicentang, hanya tessellation yang mencakup atau berpotongan dengan fitur dalam layer jangkauan yang ditentukan itu yang akan dibuat dalam layer tesselation yang dihasilkan. 
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Tidak Dicentang
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="Cakupan Jangkauan Penuh">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Dicentang
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="Cakupan Fitur">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>Tentukan ukuran bin dengan menentukan</h2></div>
+        <hr/>
+        <div>
+            <p>Ukuran setiap sel.  Ukuran sel dapat ditentukan dengan menentukan unit persegi atau dengan menentukan jarak yang dihitung menggunakan pengukuran berikut, yang mana d = Jarak: 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Persegi
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="Tessellation Persegi">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Heksagon
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="Tessellation Heksagon">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Heksagon Melintang
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="Tessellation Heksagon Melintang">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Segitiga
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="Tessellation Segitiga">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Wajik
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="Tessellation Wajik">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Ini adalah nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta.  Jika layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Dengan menggunakan  <b>Simpan hasil di</b> menu drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> sebagai tempat penyimpanan hasil.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

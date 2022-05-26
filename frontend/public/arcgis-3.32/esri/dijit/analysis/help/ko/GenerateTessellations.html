@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>공간 분할 생성(Generate Tessellations)</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="공간 분할 생성(Generate Tessellations)"></h2>
+        <hr/>
+    <p>이 도구는 지정된 쉐이프와 크기를 기반으로 연구 영역에 공간 분할을 생성합니다.
+    </p>
+    <p>공간 분할을 생성하는 데 사용된 범위가  <b>범위 정의</b> 매개변수로 제어되므로 현재 이 도구에는 <b>현재 맵 범위 사용</b> 체크 박스가 비활성화되어 있습니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>쉐이프 선택</h2></div>
+        <hr/>
+        <div>
+            <p>생성할 공간 분할의 쉐이프 또는 지오메트리입니다.  사용 가능한 쉐이프는  <code>정사각형</code>, <code>육각형</code>, <code>가로축 육각형</code>, <code>삼각형</code>, <code>마름모</code>입니다.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>연구 영역 정의</h2></div>
+        <hr/>
+        <div>
+            <p>공간 분할에 포함될 범위 또는 영역입니다.  범위는 현재 맵 범위 또는 기존 레이어의 범위를 사용하거나, 범위로 사용할 영역을 대화형으로 그려서 결정할 수 있습니다.
+            </p>
+            <p>범위를 결정하기 위해 피처 레이어가 선택되면, 교차하는 공간 분할만 유지하는 옵션이 활성화됩니다.  이 옵션을 선택하면 지정한 범위 레이어의 피처를 포함하거나 교차하는 공간 분할만 결과 공간 분할 레이어에 생성됩니다. 
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>선택하지 않음
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="전체 범위 커버리지">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>선택
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="피처 커버리지">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>지정하여 그룹 크기 정의</h2></div>
+        <hr/>
+        <div>
+            <p>각 셀의 크기입니다.  셀 크기는 제곱 단위를 지정하거나 다음 측정 값을 사용하여 계산된 거리를 지정하여 결정할 수 있습니다(여기서 d=거리:). 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>제곱
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="정사각형 공간 분할">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>육각형
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="육각형 공간 분할">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>가로축 육각형
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="가로축 육각형 공간 분할">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>삼각형
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="삼각형 공간 분할">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>마름모
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="마름모 공간 분할">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에서 생성되어 맵에 추가되는 레이어의 이름입니다. 레이어가 이미 있는 경우 다른 이름을 제공하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 메뉴를 사용하여 <b>내 콘텐츠</b>에서 결과를 저장할 폴더의 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

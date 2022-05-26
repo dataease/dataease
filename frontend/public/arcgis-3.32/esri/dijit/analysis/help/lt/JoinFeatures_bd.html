@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Sujungti elementus</h2><p/>
+        <h2><img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" alt="Sujungti elementus"></h2>
+        <hr/>
+    <p>Įrankis Sujungti elementus veikia naudodamas du duomenų sluoksnius. Įrankis Sujungti elementus sujungia vieno elemento atributus su kito elemento atributais atsižvelgiant į erdvinius, laikinuosius ir atributinius ry&scaron;ius arba visų trijų ry&scaron;ių derinį. Įrankis nustato visus įvesties elementus, kurie atitinka nurodytas sujungimo sąlygas, ir sujungia antrąjį įvesties sluoksnį su pirmuoju. Pasirinktinai galima sujungti visus elementus su atitinkančiais elementais arba sukurti atitinkančių elementų suvestinę.
+    </p>
+    <p>Įrankį Sujungti elementus galima taikyti ta&scaron;kams, linijoms, plotams ir lentelėms. Kad būtų sukurtas laikinas sujungimas, būtina, kad įvesties duomenys būtų susieti su laiku, o erdviniam sujungimui būtina, kad duomenys turėtų geometriją. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Pasirinkite tikslinį sluoksnį</h2></div>
+        <hr/>
+        <div>
+            <p>Sluoksnis, kuris turės atributus i&scaron; jungtinio sluoksnio, pridėto prie jo lentelės.
+            </p>
+            <p>Analizė naudojant erdvinį ry&scaron;į  <b>Arti</b> reikalauja projekcinės koordinačių sistemos. Galite nustatyti <b>Apdorojamą koordinačių sistemą</b> <b>analizės aplinkose</b>. Jei jūsų apdorojama koordinačių sistema nenustatyta kaip projekcinė koordinačių sistema, būsite paraginti nustatyti ją, kai <b>vykdysite analizę</b> .
+            </p>
+            <p>Galite ne tik nurodyti sluoksnį i&scaron; žemėlapio, bet ir apačioje pasirinkti  <b>Pasirinkti analizės sluoksnį</b>, kad galėtumėte turinyje ie&scaron;koti didelių duomenų rinkinio arba elemento sluoksnio.
+            </p>
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>Pasirinkite sluoksnį, kurį prijungsite prie tikslinio sluoksnio</h2></div>
+        <hr/>
+        <div>
+            <p>Jungtinis sluoksnis su atributais, kurie bus pridėti prie tikslinio sluoksnio.
+            </p>
+            <p>Galite ne tik nurodyti sluoksnį i&scaron; žemėlapio, bet ir apačioje pasirinkti  <b>Pasirinkti analizės sluoksnį</b>, kad galėtumėte turinyje ie&scaron;koti didelių duomenų rinkinio arba elemento sluoksnio.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Pasirinkite prijungimo operaciją</h2></div>
+        <hr/>
+        <div>
+            <p>Apibrėžiama, kaip bus atliekami sujungimai tarp tikslinio ir jungtinio sluoksnių i&scaron;vestyje, jeigu aptinkami keli sujungimo elementai, turintys tą patį ry&scaron;į su prijungiamu sluoksniu. Galima pasirinkti i&scaron; dviejų sujungimo operacijų:
+                <ul>
+                    <li> <b>Sujungti vieną su vienu</b> &ndash; &scaron;i parinktis susumuoja visus atitinkančius elementus su kiekvienu sujungiamu elementu.
+                    </li>
+                    <li> <b>Sujungti vieną su daugeliu</b> &ndash; &scaron;i parinktis  prijungia visus atitinkančius elementus prie sujungimo sluoksnio.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Pavyzdžiui, norite rasti prekybos centrus 2 kilometrų atstumu nuo ūkininkų turgaus. &Scaron;iuo atveju tikslinis sluoksnis turi vieną elementą, nurodantį ūkininkų turgų, o jungiamas sluoksnis nurodo vietines parduotuves, kurios turi tam tikrus atributus, pvz., bendrą metinę apyvartą. Naudodami įrankį Sujungti elementus pastebėsite, kad &scaron;ios penkios bakalėjos parduotuvės atitinka reikiamus kriterijus. Jei nurodysite sujungimo operaciją  <b>Sujungti vieną su daugeliu</b>, gausite penkių elementų rezultatą, kiekviena eilutė atspindės ūkininkų turgų ir prekybos centrą. Jeigu nurodysite ry&scaron;į <b>Sujungti vieną su vienu</b>, gausite vieną elementą, nurodantį ūkininkų turgų ir informacijos apie parduotuves suvestinę, pvz., skaičių (2), ir kitus statistinius duomenis, pvz., bendrą metinę apyvartą.
+            </p>
+        </div>
+    </div>
+    <div id="joinOptions">
+        <div><h2>Pasirinkti vieną arba kelis sujungimus</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodo naudojamą sujungimo parinktį. Galite taikyti vieną, du ar tris sujungimo tipus: 
+                <ul>
+                    <li> <b>Erdvinis</b> &ndash; sujungiant elementus naudojami nurodyti erdviniai ry&scaron;iai. Abu sluoksniai privalo turėti geometriją.
+                    </li>
+                    <li> <b>Laikinas</b> &ndash; sujungiant elementus naudojami laikini ry&scaron;iai. Abu sluoksniai turi būti susieti su laiku.
+                    </li>
+                    <li> <b>Atributų</b> &ndash; elementai sujungiami atsižvelgiant į vienodas reik&scaron;mes turinčius laukus.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Pasirinkite erdvinį ryšį</h2></div>
+        <hr/>
+        <div>
+            <p>Erdvinis ry&scaron;ys, pagal kurį nustatoma, ar elementai sujungiami vienas su kitu. &Scaron;ie galimi ry&scaron;iai priklauso nuo geometrijos tipo (ta&scaron;kas, polilinija, plotas), kuris naudojamas kaip įvesties elementas:
+                <ul>
+                    <li> <b>Susikirtimas</b> &ndash; elementai atitiks, jeigu jie susikerta.
+                    </li>
+                    <li> <b>Atitikimas</b> &ndash; elementai atitiks, jeigu yra tos pačios geometrijos.
+                    </li>
+                    <li> <b>Gretimumas</b> &ndash; elementai atitiks, jeigu jie yra nurodytu atstumu vienas nuo kito. Jei naudojamas erdvinis ry&scaron;ys <b>&Scaron;alia</b>, tikslinis sluoksnis turi būti projekcinėje koordinačių sistemoje arba projekcinė koordinačių sistema turi būti nustatyta naudojant <b>Analizės aplinką</b>.
+                    </li>
+                    <li> <b>Apima</b> &ndash; elementai atitiks, jeigu tikslinis sluoksnis priklauso prijungiamiems elementams.
+                    </li>
+                    <li> <b>Viduje</b> &ndash; elementai atitiks, jeigu tikslinis sluoksnis yra prijungiamų elementų viduje.
+                    </li>
+                    <li> <b>Liečia</b> &ndash; elementai atitiks, jeigu jie turi kra&scaron;tines, kuriomis liečiasi su tiksliniu elementu.
+                    </li>
+                    <li> <b>Kerta</b> &ndash; elementai atitiks, jeigu susikerta jų kontūrai.
+                    </li>
+                    <li> <b>Persidengia</b> &ndash; elementai bus sujungti, jeigu jie persidengia.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearSpatial">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            <p> Nurodo spindulį, taikomą erdvinio gretimumo ry&scaron;iui.
+            </p>
+            <p>Pavyzdžiui, jei turite duomenų rinkinį su branduoline elektrone ir duomenų rinkinį su gyvenamaisiais būstais, galite nustatyti 1 kilometro nearSpatial atstumą ir rasti iki 1 kilometro atstumu nuo branduolinės elektrinės esančius namus.
+            </p> 
+        </div>
+    </div>
+    <div id="temporalRelationship">
+        <div><h2>Pasirinkite laiko ryšį</h2></div>
+        <hr/>
+        <div>
+            <p>Laiko ry&scaron;ys, pagal kurį nustatoma, ar elementai sujungiami vienas su kitu. &Scaron;i parinktis galima tik tuo atveju, jeigu abiejuose sluoksniuose įjungtas laikas, o galimi ry&scaron;iai priklauso nuo laiko tipo (momentinis ar intervalas), kuris naudojamas įvesties elementams. Galimi tokie laiko ry&scaron;iai:
+                <ul>
+                    <li> <b>Atitinka</b> &ndash; elementai atitiks, jeigu pirmasis elementas atitinka antrąjį.
+                    </li>
+                    <li> <b>Atitiko</b> &ndash; elementai atitiks, jeigu antrasis elementas atitiko pirmąjį.
+                    </li>
+                    <li> <b>Perdengia</b> &ndash; elementai atitiks, jeigu pirmasis elementas perdengia antrąjį.
+                    </li>
+                    <li> <b>Perdengė</b> &ndash; elementai atitiks, jeigu antrasis elementas perdengė pirmąjį.
+                    </li>
+                    <li> <b>Per</b> &ndash; elementai atitiks, jeigu pirmasis elementai vyksta per antrąjį elementą.
+                    </li>
+                    <li> <b>Apima</b> &ndash; elementai atitiks, jeigu pirmajame elemente yra antrasis.
+                    </li>
+                    <li> <b>Lygu</b> &ndash; elementai atitiks, jeigu pirmasis elementas lygus antrajam.
+                    </li>
+                    <li> <b>Baigia</b> &ndash; elementai atitiks, jeigu pirmasis elementas baigia antrąjį.
+                    </li>
+                    <li> <b>Baigė</b> &ndash; elementai atitiks, jeigu pirmąjį elementą baigė antrasis elementas.
+                    </li>
+                    <li> <b>Pradeda</b> &ndash; elementai atitiks, jeigu pirmasis elementas pradeda antrąjį.
+                    </li>
+                    <li> <b>Pradėjo</b> &ndash; elementai atitiks, jeigu pirmąjį elementą pradėjo antrasis elementas.
+                    </li>
+                    <li> <b>Susikerta</b> &ndash; elementai atitinka, jeigu susikerta jų laikai.
+                    </li>
+                    <li> <b>Greta</b> &ndash; elementai bus sujungti, jeigu jie yra greta vienas kito atsižvelgiant į nurodytą laiką.
+                    </li>
+                    <li> <b>Greta ir prie&scaron;</b> &ndash; elementai bus sujungti, jei pirmasis elementas yra prie&scaron; antrąjį per nurodytą laiką.
+                    </li>
+                    <li> <b>Greta ir po</b> &ndash; elementai bus sujungti, jei pirmasis elementas yra po antrojo per nurodytą laiką.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="nearTemporal">
+        <div><h2></h2></div>
+        <hr/>
+        <div>
+            
+            <p>Nurodo laiko diapazoną, taikomą laikinam gretimumo ry&scaron;iui. Laikinas gretimumo ry&scaron;ys gali būti  <b>Greta</b>, <b>Greta ir prie&scaron;</b> bei <b>Greta ir po</b>.
+            </p>
+            <p>Pavyzdžiui, jei turite laivybos incidentų sluoksnį ir uragano GPS trajektorijos sluoksnį, galite paie&scaron;koti laivybos incidentų per nurodytą atstumą nuo uragano trajektorijos ir erdvėje (1 kilometro atstumu), ir laike (per 5 valandas). Bus gauti laivybos incidentai atsižvelgiant į uraganus, kurie įvyko greta pagal vietą ir laiką.
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>Pasirinkite atitinkančius laukus</h2></div>
+        <hr/>
+        <div>
+            <p>Atitinka vieno sluoksnio lauko reik&scaron;mes kito sluoksnio lauko reik&scaron;mėms. 
+            </p>
+            <p>Pavyzdžiui, jei turėtumėte visos &scaron;alies gyvenamųjų adresų (įskaitant  <i>ZIP</i> kodą) sluoksnį ir sveikatingumo demografinių lentelės duomenų rinkinį pagal pa&scaron;to kodą (laukas pavadinimu <i>HEALTHZIP</i>), galėtumėte sujungti sveikatos duomenų rinkinį su gyvenimo vietos duomenimis derindami lauką <i>ZIP</i> su lauku <i>HEALTHZIP</i>. Taip būtų sukurtas sluoksnis, kuriame pateikiami gyvenamosios vietos duomenys su atitinkamais sveikatingumo duomenimis.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Pridėti statistiką (pasirinktinis nustatymas)</h2></div>
+        <hr/>
+        <div>
+            <p>Skaičiuoja sujungtų elementų statistiką, jei jungimo operacija yra  <b>Sujungti vieną su vienu</b>. Visa statistika skaičiuojama pagal numatytuosius nustatymus.
+            </p>
+            <p>Galite apskaičiuoti į santrauką įtrauktų elementų statistiką. Naudodami skaitinius laukus, galite apskaičiuoti: 
+                <ul>
+                    <li>Skaičius &ndash; apskaičiuojamas nenulinių reik&scaron;mių skaičius.Galima naudoti skaitiniams laukams arba eilutėms. [nulinis, 0, 2] skaičius yra 2.
+                    </li>
+                    <li>Suma &ndash; lauke nurodytų skaitinių reik&scaron;mių suma. [nulinis, 0, 3] suma yra 3.
+                    </li>
+                    <li>Vidurkis &ndash; skaitinių reik&scaron;mių vidurkis. [0, 2, nulinis] vidurkis yra 1.
+                    </li>
+                    <li>Minimumas &ndash; skaitinio lauko reik&scaron;mės minimumas. [0, 2, nulinis] minimumas yra 0. 
+                    </li>
+                    <li>Maksimumas &ndash; skaitinio lauko reik&scaron;mės maksimumas. [0, 2, nulinis] maksimumas yra 2.
+                    </li>
+                    <li>Intervalas  &ndash; skaitinio lauko intervalas. Apskaičiuojamas i&scaron; maksimalios reik&scaron;mės atėmus minimalią reik&scaron;mę. [0, nulinis, 1] intervalas yra 1. [nulinis, 4] intervalas yra 0.
+                    </li>
+                    <li>Nuokrypis &ndash; skaitinio laiko nuokrypis trajektorijoje. [1] nuokrypis yra nulinis. [nulinis, 1,0,1,1] nuokrypis yra 0,25.
+                    </li>
+                    <li>Standartinis nuokrypis &ndash; skaitinio laiko standartinė deviacija. [1] standartinis nuokrypis yra nulinis. [nulinis, 1,0,1,1] standartinis nuokrypis yra 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Naudodami tekstinius laukus, galite apskaičiuoti:
+                <ul>
+                    <li>Skaičius &ndash; nenulinių eilučių skaičius.
+                    </li>
+                    <li>Bet kokį rodiklį &ndash; &scaron;is statistinis rodiklis yra atsitiktinės eilutės reik&scaron;mės i&scaron; nurodyto lauko pavyzdys.
+                    </li>
+                </ul>
+                Visi statistiniai rodikliai apskaičiuojami tik su nenulinėmis reik&scaron;mėmis. Gautame sluoksnyje bus kiekvieno apskaičiuoto statistinio rodiklio naujas laukas. Pasirenkant atributą ir statistinį rodiklį, gali būti pridėtas neribotas statistinių rodiklių kiekis.
+            </p>
+            <p>Visi statistiniai rodikliai apskaičiuojami tik su nenulinėmis reik&scaron;mėmis. Gautame sluoksnyje bus kiekvieno apskaičiuoto statistinio rodiklio naujas laukas. Pasirinktam atributui ir statistiniam rodikliui galima apskaičiuoti bet kokį skaičių statistinių rodiklių.
+            </p>
+        </div>
+    </div>
+    <div id="joinCondition">
+        <div><h2>Sukurti išraišką, kad būtų galima sujungti elementus pagal (pasirinktinai)</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodytiems laukams taikoma sąlyga. Bus sujungti tik tas sąlygas atitinkantys elementai.
+            </p>
+            <p>Pavyzdžiui, jei norite taikyti jungimą tik tiems duomenų rinkinio elementams, kurių  <i>health_spending</i>  sudaro daugiau nei 20 proc. <i>income</i>, taikykite jungtinę sąlygą <code>$target[&quot;health_spending&quot;] &gt; ($join[&quot;income&quot;] * .20)</code> naudodami lauką <i>health_spending</i> i&scaron; pirmojo duomenų rinkinio (prie kurio jungiami elementai) ir <i>income</i> lauką i&scaron; antrojo duomenų rinkinio (prijungiamo).
+            </p>
+            <p>Sujungimo sąlygas galima taikyti naudojant i&scaron;rai&scaron;kų skaičiuotuvą.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Pasirinkti duomenų saugyklą</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics rezultatai yra saugomi ArcGIS duomenų saugykloje ir rodomi  Portal for ArcGIS kaip elementų sluoksnis. Daugeliu atvejų rezultatai turi būti saugomi erdvinių-laiko duomenų saugykloje, ir tai yra numatytasis nustatymas. Kai kuriais atvejais, galima rezultatus įra&scaron;yti į releacinę duomenų saugyklą. Toliau pateikiame priežastis, kodėl reikėtų rezultatus įra&scaron;yti į releacinių duomenų saugyklą: 
+                <ul>
+                    <li>Galite rezultatus naudoti dviejų portalų bendradarbiavime.
+                    </li>
+                    <li>Galite įjungti savo rezultatų sinchronizavimą.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Nenaudokite releacinių duomenų saugyklos, jei jūsų GeoAnalytics rezultatų turėtų padaugėti, ir apdorojant didelius duomenų kiekius reikės pasinaudoti erdvės ir laiko didelių duomenų saugyklos galimybėmis.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p> Pavadinimas sluoksnio, kuris bus sukurtas. Jei įra&scaron;ote į ArcGIS Data Store, jūsų rezultatai bus įra&scaron;yti į  <b>Turinį</b> ir įtraukti į žemėlapį. Jei įra&scaron;ote į didelių duomenų failo bendrinimą, jūsų rezultatai bus saugomi didelių duomenų failo bendrinime ir pridedami į jo deklaraciją. Jie nebus įtraukti į žemėlapį. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau yra, įrankis neveiks.
+            </p>
+            <p>Kai ra&scaron;ote į   ArcGIS Data Store  (releacinių arba erdvėlaikinių didelių duomenų saugyklą) naudodami i&scaron;&scaron;okantįjį meniu  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

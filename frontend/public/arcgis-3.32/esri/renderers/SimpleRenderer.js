@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/renderers/SimpleRenderer","dojo/_base/declare dojo/_base/lang dojo/has ../kernel ../lang ../symbols/jsonUtils ./Renderer".split(" "),function(b,d,e,f,g,h,k){b=b(k,{declaredClass:"esri.renderer.SimpleRenderer",constructor:function(a,b){if(a&&!a.declaredClass){var c=a;this.symbol=(a=c.symbol)&&(a.declaredClass?a:h.fromJson(a,b));this.label=c.label;this.description=c.description}else this.symbol=a},getSymbol:function(a){return this.symbol},toJson:function(){var a=d.mixin(this.inherited(arguments),
+{type:"simple",label:this.label,description:this.description,symbol:this.symbol&&this.symbol.toJson()});return g.fixJson(a)}});e("extend-esri")&&d.setObject("renderer.SimpleRenderer",b,f);return b});

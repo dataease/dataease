@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Surveiller la végétation</h2><p/>
+        <h2><img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" alt="Outil Surveiller la v&eacute;g&eacute;tation pour le portail"></h2>
+        <hr/>
+    <p>Cet outil r&eacute;alise une op&eacute;ration arithm&eacute;tique sur les canaux d'une couche raster multicanal afin de r&eacute;v&eacute;ler des informations concernant la couverture v&eacute;g&eacute;tale de la zone d'&eacute;tude.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Sélectionner les données en entrée</h2></div>
+        <hr/>
+        <div>
+            <p>Choisissez la couche raster multicanal. V&eacute;rifiez que les canaux appropri&eacute;s sont disponibles sur le raster en entr&eacute;e.
+            </p> 
+        </div>
+    </div>
+    <div id="vegetationIndexType">
+        <div><h2>Choisir la méthode permettant de surveiller la végétation</h2></div>
+        <hr/>
+        <div>
+            <p>Choisir la m&eacute;thode pour cr&eacute;er la couche d&rsquo;indice de v&eacute;g&eacute;tation. Les diff&eacute;rents indices de v&eacute;g&eacute;tation permettent de mettre en &eacute;vidence certaines entit&eacute;s ou de r&eacute;duire diff&eacute;rents bruits.
+            </p>
+            <ul>
+                <li>Global Environmental Monitoring Index &mdash; 
+GEMI est un indice de v&eacute;g&eacute;tation non lin&eacute;aire destin&eacute; &agrave; la surveillance environnementale globale &agrave; partir des images satellite. Il est similaire &agrave; NDVI, mais est moins sensible aux effets atmosph&eacute;riques. Il est affect&eacute; par le sol nu. Par cons&eacute;quent, son utilisation n'est pas recommand&eacute;e dans les zones o&ugrave; la v&eacute;g&eacute;tation est rare ou de densit&eacute; mod&eacute;r&eacute;e.
+
+                </li>
+                <li>Green Vegetation Index - Landsat TM &mdash; 
+L'indice GVI, &agrave; l'origine con&ccedil;u &agrave; partir des images Landsat MSS, a &eacute;t&eacute; modifi&eacute; pour &ecirc;tre utilis&eacute; avec les images Landsat TM. Il est &eacute;galement connu sous le nom d'indice de v&eacute;g&eacute;tation verte Landsat TM Tasseled Cap. Cet indice de surveillance peut &eacute;galement &ecirc;tre utilis&eacute; avec des images dont les canaux partagent les m&ecirc;mes caract&eacute;ristiques spectrales.
+
+                </li>
+                <li>Modified Soil Adjusted Vegetation Index &mdash; 
+MSAVI2 est un indice de v&eacute;g&eacute;tation qui tente de minimiser les influences du sol nu de la m&eacute;thode SAVI.
+
+                </li>
+                <li>Normalized Difference Vegetation Index  &mdash; 
+NDVI est un indice normalis&eacute; qui vous permet de g&eacute;n&eacute;rer une image illustrant une couverture v&eacute;g&eacute;tale ou la biomasse relative. Cet indice repose sur le contraste des caract&eacute;ristiques de deux canaux d&rsquo;un jeu de donn&eacute;es raster multispectral&nbsp;: l&rsquo;absorption du pigment chlorophyllien dans le canal rouge et la haute r&eacute;flectivit&eacute; des mati&egrave;res v&eacute;g&eacute;tales dans le canal proche infrarouge (NIR).
+
+                </li>
+                <li>Perpendicular Vegetation Index &mdash; 
+PVI est similaire &agrave; un indice de v&eacute;g&eacute;tation par diff&eacute;rence. Il est toutefois sensible aux variations atmosph&eacute;riques. Si vous utilisez cette m&eacute;thode pour comparer diff&eacute;rentes images, ne l'appliquez qu'&agrave; des images qui ont subi une correction atmosph&eacute;rique. Ces informations peuvent &ecirc;tre propos&eacute;es par votre fournisseur des donn&eacute;es.
+
+                </li>
+                <li>Soil-Adjusted Vegetation Index &mdash; 
+SAVI est un indice de v&eacute;g&eacute;tation qui tente de minimiser les influences de la luminosit&eacute; du sol &agrave; l'aide d'un facteur de correction de luminosit&eacute; du sol. Il est souvent utilis&eacute; dans les r&eacute;gions arides o&ugrave; la couverture v&eacute;g&eacute;tale est faible.
+
+                </li>
+                <li>Sultan's Formula &mdash; 
+Le processus de la formule de Sultan utilise une image 8&nbsp;bits de six canaux et lui applique un algorithme sp&eacute;cifique pour produire une image 8&nbsp;bits &agrave; trois canaux. L'image obtenue met en surbrillance les formations rocheuses appel&eacute;es ophiolites sur le littoral. Cette formule a &eacute;t&eacute; con&ccedil;ue en fonction des canaux TM et ETM d'une sc&egrave;ne Landsat&nbsp;5 ou 7.
+
+                </li>
+                <li>Transformed Soil-Adjusted Vegetation Index &mdash; 
+L'indice transform&eacute; SAVI est un indice de v&eacute;g&eacute;tation qui tente de minimiser les influences de la luminosit&eacute; du sol en supposant que la ligne du sol pr&eacute;sente une pente et une interception arbitraires.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bandIndexes">
+        <div><h2>Spécifier les indices canal NIR et du canal rouge</h2></div>
+        <hr/>
+        <div>
+            <p>Sp&eacute;cifiez les indices des canaux proche NIR et rouge.
+            </p>
+            <p>Chaque capteur satellitaire et cam&eacute;ra a&eacute;rienne capturent des informations qui sont d&eacute;compos&eacute;es en indices de canaux. Chaque indice de canal contient les informations propres &agrave; une partie sp&eacute;cifique du spectre &eacute;lectromagn&eacute;tique. Pour recourir &agrave; cette m&eacute;thode de surveillance de la v&eacute;g&eacute;tation, vous devez sp&eacute;cifier l&rsquo;indice de canal qui a captur&eacute; les longueurs d&rsquo;onde NIR et rouge.
+            </p>
+        </div>
+    </div>
+    <div id="slopeOfSoilLine">
+        <div><h2>Pente de la ligne du sol</h2></div>
+        <hr/>
+        <div>
+            <p>La pente de la ligne de sol. La pente est la relation lin&eacute;aire approximative entre les canaux NIR et rouge dans un nuage de points.
+            </p>
+            <p>Ce param&egrave;tre est valide uniquement pour la m&eacute;thode d&rsquo;indice de v&eacute;g&eacute;tation ajust&eacute; en fonction du sol et transform&eacute;.
+            </p>
+        </div>
+    </div>
+    <div id="interceptOfSoilLine">
+        <div><h2>Intersection</h2></div>
+        <hr/>
+        <div>
+            <p>La valeur du canal proche NIR lorsque la valeur de r&eacute;flexion du canal rouge (Rouge) est &eacute;gale &agrave; 0 pour les lignes de sol donn&eacute;es.
+            </p>
+            <p> <code>(a = NIR - sRed)</code> , lorsque le canal Rouge est &eacute;gal &agrave; 0.
+            </p> 
+            <p>Ce param&egrave;tre est valide uniquement pour la m&eacute;thode d&rsquo;indice de v&eacute;g&eacute;tation ajust&eacute; en fonction du sol et transform&eacute;.
+            </p>
+        </div>
+    </div>
+    <div id="greenVegetativeCover">
+        <div><h2>Surface de couvert végétal</h2></div>
+        <hr/>
+        <div>
+            <p>Indique la surface verte de couvert v&eacute;g&eacute;tal requise par la m&eacute;thode SAVI.
+            </p>
+            <p>Les valeurs valides sont les suivantes&nbsp;: 
+
+                <ul>
+                    <li>1 = surfaces sans aucune couverture v&eacute;g&eacute;tale verte
+                        
+ 
+                    </li>
+                    <li>0,5 = surfaces avec une couverture v&eacute;g&eacute;tale verte mod&eacute;r&eacute;e
+                        
+ 
+                    </li>
+                    <li>0 = surfaces avec une couverture v&eacute;g&eacute;tale verte &eacute;lev&eacute;e
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="adjustmentFactor">
+        <div><h2>Facteur d'ajustement</h2></div>
+        <hr/>
+        <div>
+            <p>Sp&eacute;cifie le facteur d&rsquo;ajustement en vue de minimiser l&rsquo;effet du sol, requis par la m&eacute;thode de l&rsquo;indice de v&eacute;g&eacute;tation ajust&eacute; en fonction du sol et transform&eacute;. La valeur par d&eacute;faut est 0,08.
+            </p>
+            <p>Une valeur basse signifie que vous ignorez l&rsquo;effet du sol. Une valeur &eacute;lev&eacute;e signifie que le sol affectera votre r&eacute;sultat.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Le nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans  <b>My Content (Mon contenu)</b>, dans lequel le r&eacute;sultat sera enregistr&eacute; via la zone de liste d&eacute;roulante <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

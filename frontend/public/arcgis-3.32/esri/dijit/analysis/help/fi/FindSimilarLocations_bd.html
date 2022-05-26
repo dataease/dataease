@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Etsi samankaltaisia sijainteja</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="Etsi samankaltaisia sijainteja"></h2>
+        <hr/>
+    <p>Etsi samankaltaisia sijainteja -ty&ouml;kalu mittaa ehdokashakutason sijaintien samankaltaisuutta yhteen tai useampaan viitesijaintiin m&auml;&auml;ritt&auml;miesi ehtojen perusteella. T&auml;m&auml; ty&ouml;kalu voi vastata esimerkiksi seuraaviin kysymyksiin: 
+        <ul>
+            <li>Mitk&auml; liikkeist&auml;si muistuttavat eniten parhaiten menestyvi&auml; liikkeit&auml; asiakasprofiilien perusteella?
+            </li>
+            <li>Mitk&auml; muut kyl&auml;t ovat vaarassa niiden kylien ominaisuuksien perusteella, joihin tauti on iskenyt?
+            </li>
+        </ul>
+        Kun haluat vastata t&auml;m&auml;nkaltaisiin kysymyksiin, m&auml;&auml;rit&auml; viitesijainnit, hakusijaintien ehdokkaat ja hakuperusteita edustavat kent&auml;t. Ensimm&auml;isen l&auml;ht&ouml;karttatason tulisi sis&auml;lt&auml;&auml; viitesijainnit tai vertailupisteiden sijainnit. T&auml;m&auml; voi olla esimerkiksi karttataso, joka sis&auml;lt&auml;&auml; parhaiten menestyv&auml;t liikkeesi tai kyl&auml;t, joihin tauti on iskenyt pahiten. Sen j&auml;lkeen m&auml;&auml;rit&auml;t karttatason, joka sis&auml;lt&auml;&auml; hakusijaintien ehdokkaat. T&auml;m&auml; voi tarkoittaa kaikkia liikkeit&auml; tai kaikkia muita kyli&auml;. Lopuksi m&auml;&auml;rit&auml;t v&auml;hint&auml;&auml;n yhden kent&auml;n samankaltaisuusmittausta varten. Etsi samankaltaisia sijainteja -ty&ouml;kalu m&auml;&auml;ritt&auml;&auml; kaikille hakusijaintien ehdokkaille sijaluvun sen perusteella, miten hyvin ne vastaavat viitesijainteja kaikissa valitsemissasi kentiss&auml;.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse viitesijainnit sisältävä karttataso</h2></div>
+        <hr/>
+        <div>
+            <p>Karttataso, joka sis&auml;lt&auml;&auml; t&auml;sm&auml;ytett&auml;v&auml;t viitesijainnit. 
+            </p>
+            <p>Sen lis&auml;ksi, ett&auml; voit valita karttatason kartasta, voit valita  <b>Valitse analyysikarttataso</b> -vaihtoehdon avattavan luettelon alareunasta ja selata Big Data -tiedostoresurssin aineistoryhm&auml;n tai karttatason sis&auml;lt&ouml;&ouml;n.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>Käytä kaikkia sijainteja tai valitse sijainnit</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rit&auml; viitesijainnit tarvittaessa valintapainikkeiden avulla. T&auml;m&auml; valinta on k&auml;ytett&auml;viss&auml; vain, jos kohteet piirret&auml;&auml;n kartalle (ei ole k&auml;ytett&auml;viss&auml; Big Data -tiedostojaolle). Jos l&auml;ht&ouml;taso sis&auml;lt&auml;&auml; esimerkiksi kaikki sijainnit (viitesijainnit ja hakusijaintien ehdokkaat), sinun on m&auml;&auml;ritett&auml;v&auml; viitesijainnit jollakin valintaty&ouml;kalulla. Jos luot kaksi erillist&auml; karttatasoa, yhden viitesijainteja ja toisen kaikkia hakusijaintien ehdokkaita varten, valintaa ei tarvitse tehd&auml;.
+            </p>
+            <p>Jos viitesijainteja on useita, yksitt&auml;inen sijainti luodaan m&auml;&auml;ritt&auml;m&auml;ll&auml; samankaltaisuusanalyysissa k&auml;ytettyjen kenttien arvojen keskiarvo.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>Etsi samankaltaisia sijainteja kohteesta</h2></div>
+        <hr/>
+        <div>
+            <p>Hakukohteiden ehdokkaat t&auml;ss&auml; karttatasossa sijoitetaan j&auml;rjestykseen samankaltaisimmasta v&auml;hiten samankaltaiseen. 
+            </p>
+            <p>Sen lis&auml;ksi, ett&auml; voit valita karttatason kartasta, voit valita  <b>Valitse analyysikarttataso</b> -vaihtoehdon avattavan luettelon alareunasta ja selata Big Data -tiedostoresurssin aineistoryhm&auml;n tai karttatason sis&auml;lt&ouml;&ouml;n.
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>Samankaltaisuuden peruste</h2></div>
+        <hr/>
+        <div>
+            <p>Valitsemiasi kentti&auml; k&auml;ytet&auml;&auml;n samankaltaisuuden arviointiperusteina. Jos valitset esimerkiksi Asukasm&auml;&auml;r&auml;- ja Tulot-kent&auml;n, hakusijaintien ehdokkaista ne, joiden sijaluku on alhaisin (paras), ovat sijainteja, joiden asukasm&auml;&auml;r&auml; ja tulot ovat samankaltaisia viitesijaintien vastaavien arvojen kanssa.
+            </p>
+        </div>
+    </div>
+    <div id="matchMethod">
+        <div><h2>Määritä eniten ja vähiten samankaltainen käyttämällä</h2></div>
+        <hr/>
+        <div>
+            <p>Valitsemasi menetelm&auml; m&auml;&auml;ritt&auml;&auml;, miten t&auml;sm&auml;ytys m&auml;&auml;ritet&auml;&auml;n. 
+                <ul>
+                    <li> <b>Kent&auml;n arvojen</b> menetelm&auml; k&auml;ytt&auml;&auml; standardoitujen arvojen neli&ouml;ityj&auml; eroja. T&auml;m&auml; on oletusarvo.
+                    </li>
+                    <li> <b>Kentt&auml;profiilien</b> menetelm&auml; k&auml;ytt&auml;&auml; matemaattista kosinien vastaavuutta standardoitujen arvojen profiilin vertailuun. M&auml;&auml;riteprofiilien k&auml;ytt&auml;minen edellytt&auml;&auml; v&auml;hint&auml;&auml;n kahden analyysikent&auml;n k&auml;ytt&auml;mist&auml;.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>Näytä minut</h2></div>
+        <hr/>
+        <div>
+            <p>N&auml;et kaikki hakusijaintien ehdokkaat sijoitettuna j&auml;rjestykseen samankaltaisimmasta v&auml;hiten samankaltaiseen tai voit m&auml;&auml;ritt&auml;&auml; n&auml;ytett&auml;vien tulosten m&auml;&auml;r&auml;n. 
+                <ul>
+                    <li>Jos m&auml;&auml;rit&auml;t  <b>kaikki sijainnit samankaltaisimmasta v&auml;hiten samankaltaiseen</b>, kaikki ehdokashakutason kohteet sis&auml;llytet&auml;&auml;n tulostason sijoitusj&auml;rjestykseen. Tuloksia palautetaan enint&auml;&auml;n 10&nbsp;000.
+                    </li>
+                    <li>Jos m&auml;&auml;rit&auml;t <code></code> <code>eniten, v&auml;hiten tai eniten ja v&auml;hiten</code> <b>samankaltaisten sijaintien</b> m&auml;&auml;r&auml;n, m&auml;&auml;rit&auml;t, miten monta eniten, v&auml;hiten tai eniten ja v&auml;hiten samankaltaisista ehdokkaista pit&auml;&auml; sis&auml;llytt&auml;&auml; tuloskarttatasoon. Suurin sallittu arvo on 10&nbsp;000.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="appendFields">
+        <div><h2>Valitse tuloksiin lisättävät kentät</h2></div>
+        <hr/>
+        <div>
+            <p>Vaihtoehtoisesti voit lis&auml;t&auml; kent&auml;t tietoihisi hakukarttatasosta. Oletusarvoisesti kaikki kent&auml;t lis&auml;t&auml;&auml;n.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p> Luotavan karttatason nimi.  Jos kirjoitat kohteeseen ArcGIS Data Store, tulokset tallennetaan  <b>Oma sis&auml;lt&ouml;</b> -osioon ja lis&auml;t&auml;&auml;n karttaan. Jos kirjoitat Big Data -tiedostojakoon, tulokset tallennetaan Big Data -tiedostojakoon ja lis&auml;t&auml;&auml;n sen manifest-tiedostoon. Tuloksia  ei lis&auml;t&auml; karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttataso on jo olemassa, ty&ouml;kalua ei voi suorittaa.
+            </p>
+            <p>T&auml;m&auml; tulostaso sis&auml;lt&auml;&auml; viitesijainnit ja m&auml;&auml;ritt&auml;m&auml;si m&auml;&auml;r&auml;n j&auml;rjestykseen sijoitetuista hakukohteiden ehdokkaista. Jos tulostason nimi on jo k&auml;yt&ouml;ss&auml;, saat kehotuksen nimet&auml; tason uudelleen.
+            </p>
+            <p>Kun kirjoitat kohteeseen  ArcGIS Data Store  (relaatiotietokantaan perustuvaan tai spatiotemporaaliseen Big Data -s&auml;il&ouml;&ouml;n) k&auml;ytt&auml;m&auml;ll&auml; avattavaa  <b>Tallenna tulos kohteeseen</b> -luetteloa, voit m&auml;&auml;ritt&auml;&auml; kansion nimen <b>Oma sis&auml;lt&ouml;</b> -osiossa, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

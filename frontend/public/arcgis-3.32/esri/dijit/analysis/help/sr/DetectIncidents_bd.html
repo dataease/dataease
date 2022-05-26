@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Otkrij incidente</h2><p/>
+        <h2><img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" alt="Otkrij incidente"></h2>
+        <hr/>
+    <p> Ova alatka radi sa vremenski omogućenim slojem tačaka, linija, oblasti ili tabela koji predstavljaju trenutak u vremenu.   Kori&scaron;ćenjem redom poređanih geoobjekata, zvanih staze, ova alatka određuje koji geoobjekti su incidenti od značaja. Incidenti se određuju uslovima koje vi određujete.
+    </p>
+    <p>Prvo alatka određuje koji geoobjekti pripadaju stazi koristeći jedno ili vi&scaron;e polja. Kori&scaron;ćenjem vremena na svakom geoobjektu, staze su redom poređane i primenjuje se uslov incidenta. Geoobjekti koji ispunjavanju početni uslov incidenta se označavaju kao incident. Opciono možete da primenite zavr&scaron;ni uslov incidenta; kada je zavr&scaron;ni uslov tačan, geoobjekat vi&scaron;e nije incident.  Rezultati će se vratiti sa originalnim geoobjektima &ndash; sa novim kolonama koje predstavljaju naziv incidenta &ndash; i označiti koji geoobjekat ispunjava uslov incidenta. Možete da vratite sve originalne geoobjekte ili samo geoobjekte koji su incidenti.
+    </p>
+    <p>Na primer, pretpostavimo da imate GPS merenja uragana svakih 10 minuta. Svako GPS merenje zapisuje ime uragana, lokaciju, vreme zapisivanja i brzinu vetra. Kori&scaron;ćenjem ovih polja, možete da kreirate incident u kom svako merenje sa brzinom vetra većom od 208 km/h predstavlja incident sa nazivom  <code>Katastrofalan</code>. U slučaju da zavr&scaron;ni uslov nije pode&scaron;en, incident se zavr&scaron;ava ako geoobjekat vi&scaron;e ne ispunjava početni uslov (brzina vetra opada na manje od 208).
+    </p>
+    <p>Kori&scaron;ćenjem drugog primera, pretpostavimo da ste nadgledali koncentracije hemikalije u va&scaron;em lokalnom vodovodu kori&scaron;ćenjem polja sa nazivom  <code>contaminateLevel</code>. Znate da su preporučeni nivoi manji od 0,01 mg/L, a da su opasni nivoi iznad 0,03 mg/L. Da biste otkrili incidente kada je vrednost iznad 0,03mg/L incident i ostaje incident dok se nivoi zagađenja ne vrate u normalu, kreirate incident kori&scaron;ćenjem početnog uslova <code>contaminateLevel &gt; 0,03</code> i zavr&scaron;nog uslova <code>contaminateLevel &lt; 0,01</code>. Ovo će označiti svaki niz u kom vrednosti prema&scaron;uju 0,03mg/L sve dok ne vrate vrednost manju od 0,01.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Odaberite sloj iz kog će se otkrivati incidenti</h2></div>
+        <hr/>
+        <div>
+            <p>Tačke, linije, oblasti ili tabele koje će se koristiti za pronalaženje incidenata. Ulazni sloj mora da bude vremenski omogućen sa geoobjektima koji predstavljaju trenutak u vremenu, kao i sa jednim ili vi&scaron;e polja koje je moguće iskoristiti za identifikovanje staza.
+            </p>
+            <p>Kao dodatak odabiru sloja iz mape, možete da odaberete  <b>Izaberi sloj za analizu</b> na dnu padajuće liste da biste potražili deljeni skup podataka za datoteke sa velikim podacima ili sloj geoobjekta u svojim sadržajima.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Izaberite jedno ili više polja za identifikovanje staza</h2></div>
+        <hr/>
+        <div>
+            <p>Polja koja predstavljaju identifikator staza. Možete da koristite jedno polje ili vi&scaron;e polja za predstavljanje jedinstvene vrednosti staza.
+            </p>
+            <p>Na primer, ako biste rekonstruisali staze uragana, mogli biste da koristite ime uragana kao polje staze.
+            </p>
+        </div>
+    </div>
+    <div id="startConditionExpression">
+        <div><h2>Izradite uslovni izraz da označite početak incidenta</h2></div>
+        <hr/>
+        <div>
+            <p>Dodajte uslov kori&scaron;ćenjem alatke za izradu izraza radi utvrđivanja &scaron;ta je incident. Ako je uslov koji navedete tačan, geoobjekat je incident. Ako ne navedete zavr&scaron;ni uslov, incident se zavr&scaron;ava kada početni uslov vi&scaron;e nije tačan.
+            </p>
+            <p>Na primer, pretpostavimo da želite da budete upozoreni kada je zbir polja  <code>concentration_1</code> i <code>concentration_2</code> veći od <code>concentration_3</code>.   Da biste to uradili, primenite uslov <code>($feature[&quot;concentration_1&quot;] + $feature[&quot;concentration_2&quot;]) &gt; $feature[&quot;concentration_3&quot;])</code>.
+            </p>
+            <p>Ako ste zainteresovani da pogledate kako su se koncentracije menjale tokom vremena i želite da budete upozoreni kada je trenutna vrednost  <code>concentration_1</code> bila veća od prethodna dva merenja vrednosti <code>concentration_2</code>, treba da koristite izraz kao &scaron;to je <code>$feature[&quot;concentration_1&quot;] &gt;   $track.field[&quot;concentration_2&quot;].history(-3,-1)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="endConditionExpression">
+        <div><h2>Izradite uslovni izraz da označite završetak incidenta (opciono)</h2></div>
+        <hr/>
+        <div>
+            <p>Opciono dodajte uslov kori&scaron;ćenjem alatke za izradu izraza da biste odredili zavr&scaron;etak incidenta. Ako je zavr&scaron;ni uslov koji navedete tačan, geoobjekat vi&scaron;e nije incident. Ako ne navedete zavr&scaron;ni uslov, incident se zavr&scaron;ava kada početni uslov vi&scaron;e nije tačan.    
+            </p>
+            <p>Na primer, pretpostavimo da želite da budete upozoreni kada je zbir polja  <code>concentration_1</code> i <code>concentration_2</code> veći od <code>concentration_3</code>, a želite da se incident zavr&scaron;i ako je <code>concentration_4</code> manje od <code>concentration_1</code>. Da biste to uradili, primenite početni uslov <code>($feature[&quot;concentration_1&quot;] + $feature[&quot;concentration_2&quot;]) &gt; ($join[&quot;income&quot;] * .20)</code> i zavr&scaron;ni uslov <code>($feature[&quot;concentration_4&quot;] &lt; $feature[&quot;concentration_1&quot;])</code>.
+            </p>
+            <p>Ako biste želeli da se incident okonča kada je srednja vrednost trenutne  <code>concentration_1</code> i četiri prethodna merenja veća od prvog merenja, trebalo bi da koristite izraz kao &scaron;to je <code>$track.field[&quot;concentration_1&quot;].history(-5) &gt; $track.field[&quot;concentration_1&quot;].history(0)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="outputMode">
+        <div><h2>Prikaži mi</h2></div>
+        <hr/>
+        <div>
+            <p>Svi izlazni metodi će dodati polja originalnim geoobjektima. Postoje dva načina za određivanje koji se geoobjekti vraćaju:
+                <ul>
+                    <li> <b>Svi geoobjekti</b> &ndash; Ovo je podrazumevano. Svi geoobjekti sa ulaza će biti vraćeni.
+                    </li>
+                    <li> <b>Samo incidenti</b> &ndash; Ovaj metod će vratiti samo geoobjekte koji su incidenti. Nijedan geoobjekat za koji se ne utvrdi da je incident neće biti vraćen.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analizirajte podatke sa vremenskim intervalima (opciono)</h2></div>
+        <hr/>
+        <div>
+            <p>Navedite ako želite da otkrijete incidente koristeći vremenske intervale koji segmentiraju va&scaron;e ulazne geoobjekte za analizu. Ako koristite vremenske intervale, morate da podesite vremenski interval koji želite da koristite i opciono podesite referentno vreme. Ako ne podesite referentno vreme, koristiće se 1. januar 1970. 
+            </p>
+            <p>Na primer, ako podesite da vremenska granica bude 1 dan, počev&scaron;i od 9:00 AM 1. januara 1990, tada će svaka traka biti skraćena u 9:00 za svaki dan i analizirana u okviru tog segmenta. 
+            </p>
+            <p>Kori&scaron;ćenje vremenskih intervala je brz način za ubrzavanje vremena izračunavanja, jer brzo kreira manje staze za analizu. Ako deljenje vremenskim intervalom koji se ponavlja ima smisla za va&scaron;u analizu, ono se preporučuje za obradu velikih podataka.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p> Ime sloja koji će se kreirati. Ako vr&scaron;ite upis u ArcGIS Data Store, va&scaron;i rezultati će se čuvati u  <b>Mom sadržaju</b> i biće dodati na mapu. Ako vr&scaron;ite upis u deljeni resurs za datoteke sa velikim podacima, va&scaron;i rezultati će se čuvati u deljenom resursu za datoteke sa velikim podacima i biti dodati u njegov manifest. On neće biti dodat na mapu. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako sloj već postoji, alatka će otkazati.
+            </p>
+            <p>Prilikom upisa u  ArcGIS Data Store (skladi&scaron;te relacionih ili prostorno-vremenskih velikih podataka) koristeći padajuće polje  <b>Sačuvaj rezultat u</b>, možete da navedete ime fascikle u <b>Mom sadržaju</b> gde će rezultat biti sačuvan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

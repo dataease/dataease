@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/nl/FindDwellLocations",{inputLayerLabel:"Kies de laag om woningen in te zoeken",selectTracksLabel:"Selecteer een of meer velden om track te identificeren",defineDistanceLabel:"Definieer de ruimtelijke zoekafstand",distMethodLabel:"Kies de methode om de afstand te berekenen",temporalSearchLabel:"Definieer het tijdelijke zoekbereik",outputDwellLabel:"Voer woongebieden uit als",outputLayerName:"Zoek woninglocaties voor ${inputLayerName}",meanCenters:"Gemiddelde centra",
+convexHulls:"Convex hulls",dwellFeatures:"Woonobjecten",allFeatures:"Alle objecten",itemDescription:"Objectlaag die is gegenereerd door de oplossing Vind woonlocaties uit te voeren voor ${inputLayerName}.",itemTags:"Analyseresultaat, Vind woonlocaties, ${inputLayerName}",itemSnippet:"Objectlaag gegenereerd door Vind woonlocaties"});

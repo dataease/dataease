@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Find Point Clusters</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="Find Point Clusters"></h2>
+        <hr/>
+    <p>เครื่องมือนี้จะค้นหาฟีเจอร์ของจุดภายในเสียงแวดล้อมโดยอิงอยู่กับการกระจายในเชิงพื้นที่
+    </p>
+    <p>ถ้าเลือก  <b>ใช้ขอบเขตแผนที่ปัจจุบัน</b> เฉพาะฟีเจอร์ในชั้นข้อมูลจุดอินพุตภายในขอบเขตแผนที่ปัจจุบันนี้เท่านั้นจะถูกวิเคราะห์ หากไม่เลือก ฟีเจอร์ทั้งหมดในชั้นข้อมูลอินพุตจะถูกนำมาวิเคราะห์ ถึงแม้ว่าข้อมูลเหล่านั้นจะอยู่นอกขอบเขตแผนที่ปัจจุบัน
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>เลือกชั้นข้อมูลที่จะพบกลุ่ม</h2></div>
+        <hr/>
+        <div>
+            <p>ชั้นข้อมูลจุดที่จะพบกลุ่ม 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>จำนวนจุดต่ำสุดที่จะถือว่าเป็นกลุ่ม</h2></div>
+        <hr/>
+        <div>
+            <p>จำนวนต่ำสุดของฟีเจอร์ที่จะพิจารณาว่าเป็นกลุ่ม กลุ่มใด ๆ ที่มีฟีเจอร์ที่น้อยกว่าที่ให้จะพิจารณาว่าเป็นเสียง 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>จำกัดช่วงการค้นหาเป็น (ไม่บังคับ)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>ระยะทางสูงสุดที่จะพิจารณาฟีเจอร์ที่จะเป็นส่วนหนึ่งของกลุ่มเดียวกัน หากเว้นว่างไว้ เครื่องมือจะเรียกใช้ HDBSCAN ซึ่งใช้ระยะทางที่แตกต่างกันในการแยกกลุ่มของความหนาแน่นที่แตกต่างจากเสียงรบกวน หากได้รับค่าเครื่องมือจะเรียกใช้ DBSCAN ซึ่งใช้ระยะทางที่ระบุเพื่อแยกกลุ่มหนาแน่นจากเสียงรบกวน
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>ชื่อของชั้นข้อมูลผลลัพธ์</h2></div>
+        <hr/>
+        <div>
+            <p>เป็นชื่อชั้นข้อมูลที่จะถูกสร้างใน <b>เนื้อหาของฉัน</b> และเพิ่มเข้าไปในแผนที่ ชื่อเริ่มต้นจะขึ้นอยู่กับชื่อเครื่องมือและชื่อชั้นข้อมูลอินพุท ถ้าชื่อชั้นข้อมูลนี้มีอยู่แล้ว คุณจะถูกขอให้ตั้งชื่อใหม่
+            </p>
+            <p>ใช้  <b>บันทึกผลลัพธ์ใน</b> เมนูแบบเลื่อนลง เพื่อระบุชื่อของโฟล์เดอร์ใน <b>เนื้อหาของฉัน</b> เมื่อบันทึกผล
+            </p>
+        </div>
+    </div>
+</div>
+</html>

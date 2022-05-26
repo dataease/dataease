@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Localizar Hot Spots</h2><p/>
+        <h2><img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" alt="Localizar Pontos de Incid&ecirc;ncia"></h2>
+        <hr/>
+    <p> A ferramenta Localizar Hot Spots permite determinar se existe algum tipo de clustering com relev&acirc;ncia estat&iacute;stica no padr&atilde;o espacial dos seus dados.
+        <ul>
+            <li>Os seus pontos (ocorr&ecirc;ncias de crime, &aacute;rvores, acidentes de via&ccedil;&atilde;o) est&atilde;o efectivamente agrupados num cluster? Como pode ter a certeza?
+            </li>
+            <li>Descobriu efectivamente um hot spot com relev&acirc;ncia estat&iacute;stica (para despesas, mortalidade infantil, resultados de testes consistentemente elevados) ou ser&aacute; que o mapa contaria uma hist&oacute;ria diferente se alterasse a forma como est&aacute; simbolizado?
+            </li>
+        </ul>
+        A ferramenta Localizar Hot Spots ajuda-o a responder a essas perguntas com confian&ccedil;a.
+    </p>
+    <p>Mesmo padr&otilde;es espaciais aleat&oacute;rios demonstram algum n&iacute;vel de clustering. Al&eacute;m disso, os olhos e o c&eacute;rebro tentam naturalmente encontrar padr&otilde;es mesmo que estes n&atilde;o existam. Consequentemente, pode ser dif&iacute;cil saber se os padr&otilde;es encontrados nos seus dados s&atilde;o o resultado de processos espaciais verdadeiros ou se resultam apenas de algo aleat&oacute;rio. &Eacute; por esta raz&atilde;o que os investigadores e analistas utilizam m&eacute;todos estat&iacute;sticos como o Encontrar Ponto Quente (Getis-Ord Gi*) para quantificar os padr&otilde;es espaciais. Quando encontra efetivamente um clustering com relev&acirc;ncia estat&iacute;stica nos seus dados, tem acesso a informa&ccedil;&otilde;es importantes. Saber onde e quando ocorre um clustering pode fornecer pistas importantes sobre os processos que est&atilde;o na base dos padr&otilde;es detetados. Saber que os assaltos a resid&ecirc;ncias, por exemplo, s&atilde;o consistentemente elevados em determinadas zonas &eacute; uma informa&ccedil;&atilde;o essencial para o caso de ser necess&aacute;rio conceber estrat&eacute;gias de preven&ccedil;&atilde;o eficazes, alocar recursos policiais limitados, iniciar programas de vigil&acirc;ncia locais, autorizar investiga&ccedil;&otilde;es criminais aprofundadas ou identificar poss&iacute;veis suspeitos.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Escolher camada para a qual os Hot Spots serão calculados</h2></div>
+        <hr/>
+        <div>
+            <p>O ponto ou camada de &aacute;rea a partir da qual v&atilde;o ser encontrados Hot e Cold Spots. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Encontre clusters de alta e baixa intensidade</h2></div>
+        <hr/>
+        <div>
+            <p>Esta an&aacute;lise responde &agrave; pergunta: Onde se agrupam espacialmente clusters de valores altos e baixos?
+            </p>
+            <p>Se os seus dados s&atilde;o pontos e voc&ecirc; escolher  <b>Contagens de Pontos</b>, esta ferramenta ir&aacute; avaliar a distribui&ccedil;&atilde;o espacial dos elementos pontos para responder &agrave; quest&atilde;o: Onde est&atilde;o os pontos agrupados em clusters de forma inesperada ou onde &eacute; que est&atilde;o dispersos?
+            </p>
+            <p>Se escolher um campo, esta ferramenta ir&aacute; avaliar a distribui&ccedil;&atilde;o espacial dos valores associados com cada elemento para responder &agrave; quest&atilde;o: Onde est&atilde;o os valores altos e baixos a agruparem-se em clusters?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Contagem de pontos dentro</h2></div>
+        <hr/>
+        <div>
+            <p>O padr&atilde;o &eacute; contar pontos numa grade de arrast&atilde;o criado pela ferramenta com base nos seus dados de ponto. Em alternativa, pode optar por contar pontos no interior de uma grelha de hex&aacute;gonos ou fornecer uma camada de &aacute;rea (normalmente, estas refletem relat&oacute;rios administrativos, tais como &aacute;reas de recenseamento, limites municipais ou condados) de forma a responder &agrave; pergunta: Dado o n&uacute;mero de pontos dentro de cada elemento da &aacute;rea , existem locais com um clustering espacial estatisticamente significativo de pontos altos ou baixos?   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Definir onde os pontos são possíveis</h2></div>
+        <hr/>
+        <div>
+            <p>Desenhe ou forne&ccedil;a uma camada definindo onde os incidentes podem ocorrer de forma a responder &agrave; pergunta: No interior das &aacute;reas existem locais com concentra&ccedil;&otilde;es de pontos inesperadamente elevadas ou reduzidas?   
+            </p>
+            <p>Os elementos da &aacute;rea desenhada ou os elementos na &aacute;rea da camada especificada definem onde os pontos devem ocorrer. Para desenhar essas &aacute;reas , clique no bot&atilde;o  <b>Desenhar</b> e clique numa localiza&ccedil;&atilde;o no mapa para criar uma forma de &aacute;rea.  Para representar &aacute;reas adicionais, clique novamente no bot&atilde;o desenhar e clique numa localiza&ccedil;&atilde;o no mapa para continuar.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Dividido por</h2></div>
+        <hr/>
+        <div>
+            <p>Por vezes pode querer analisar os padr&otilde;es que levam em conta as distribui&ccedil;&otilde;es subjacentes. Por exemplo, se seus pontos representam crimes, dividindo pelo total da popula&ccedil;&atilde;o resultaria numa an&aacute;lise de crimes per capita em vez de contagens de crime cruas.  Escolher um atributo a dividir por &eacute; muitas vezes referida como normaliza&ccedil;&atilde;o.
+            </p>
+            <p>Selecionar  <i>Popula&ccedil;&atilde;o Esri</i> ir&aacute; enriquecer cada elemento de &aacute;rea com valores populacionais, que depois ser&atilde;o utilizados como o atributo pelo qual efetuar a divis&atilde;o.  Esta opc&ccedil;&atilde;o ir&aacute; usar cr&eacute;ditos.
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Substituir Opções</h2></div>
+        <hr/>
+        <div>
+            <p> A ferramenta encontrar&aacute; defini&ccedil;&otilde;es ideais para predefini&ccedil;&otilde;es de <b>Tamanho de C&eacute;lula</b> e <b>Banda de Dist&acirc;ncia</b> com base nas carater&iacute;sticas dos seus dados. No entanto, caso tenha uma <b>Tamanho de C&eacute;lula</b> ou <b>Banda de Dist&acirc;ncia</b> espec&iacute;fica que fa&ccedil;a sentido para a sua an&aacute;lise, as <b>Op&ccedil;&otilde;es de Substitui&ccedil;&atilde;o</b> podem ser utilizadas para definir esses valores.
+            </p>
+            <p>As  <b>Op&ccedil;&otilde;es de Substitui&ccedil;&atilde;o</b> tamb&eacute;m s&atilde;o &uacute;teis ao executar an&aacute;lise em diferentes conjuntos de dados, permitindo-lhe manter a consist&ecirc;ncia de <b>Banda de Dist&acirc;ncia</b> e <b>Tamanho de C&eacute;lula</b> transversalmente em v&aacute;rios conjuntos de dados.  Depois pode comparar os resultados de modo apropriado, por exemplo, taxas de obesidade e diabetes, ou mesmo taxas de criminalidade para dois anos diferentes.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Tamanho de Células</h2></div>
+        <hr/>
+        <div>
+            <p>O tamanho das c&eacute;lulas de grelha dentro das quais contar pontos.  
+            </p>
+            <p>Ao utilizar uma grelha de hex&aacute;gonos dentro da qual contar pontos, esta dist&acirc;ncia &eacute; utilizada como altura dos hex&aacute;gonos.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Banda de Distância</h2></div>
+        <hr/>
+        <div>
+            <p>Cada elemento &eacute; analisado no contexto dos elementos vizinhos que se localizam dentro da dist&acirc;ncia que especificar.  A ferramenta ir&aacute; calcular uma dist&acirc;ncia padr&atilde;o, ou pode utilizar esta op&ccedil;&atilde;o para definir uma dist&acirc;ncia espec&iacute;fica que fa&ccedil;a sentido para a sua an&aacute;lise. 
+            </p>
+            <p>Por exemplo, se estiver a estudar padr&otilde;es de desloca&ccedil;&otilde;es di&aacute;rias e souber que a viagem m&eacute;dia para o trabalho tem a dist&acirc;ncia de 15 milhas, por exemplo, poder&aacute; utilizar uma banda de dist&acirc;ncia de 15 milhas na sua an&aacute;lise.
+            </p>
+        </div>
+    </div>
+    <div id="hotSpotsResultLayer">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Forne&ccedil;a um nome para a camada que ser&aacute; criada no  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. A camada de resultados deve exibir agrupamentos estatisticamente significativos de valores altos e baixos ou contagem de pontos. Se o nome da camada de resultados j&aacute; existir, ser-lhe-&aacute; solicitado que altere o nome da mesma.
+            </p>
+            <p>Ao utilizar a caixa suspensa  <b>Guardar resultado em</b> pode definir o nome da pasta em <b>O Meu Conte&uacute;do</b> onde o resultado ser&aacute; guardado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

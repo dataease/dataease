@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/layers/support/WebGLSurface",["dojo/_base/declare","dojo/_base/lang","dojo/_base/array","dojo/has","../../kernel"],function(b,c,d,e,f){b=b(null,{map:null,node:null,renderers:null,constructor:function(a){c.mixin(this,a);this.renderers=[]},destroy:function(){d.forEach(this.renderers,function(a){a.destroy()});this.renderers=null},getEventSource:function(){return this.node},createRenderer:function(a,b,c,d){a=new a({surface:this,width:b,height:c,map:this.map,layer:d});this.renderers.push(a);
+return a},destroyRenderer:function(a){var b=d.indexOf(this.renderers,a);-1<b&&(a.destroy(),this.renderers.splice(b,1))},_createNode:function(){var a=document.createElement("div");a.style.pointerEvents="auto";a.style.position="absolute";return a}});e("extend-esri")&&c.setObject("layers.support.WebGLSurface",b,f);return b});

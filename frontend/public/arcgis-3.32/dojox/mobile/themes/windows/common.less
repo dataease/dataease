@@ -1,0 +1,29 @@
+@import "variables.less";
+@import "../common/common.less";
+
+body {
+	-ms-touch-action: pan-y;
+}
+
+label {
+	margin-right: 5px;
+}
+
+@-ms-viewport {
+	user-zoom: fixed;
+	max-zoom: 1;
+	min-zoom: 1;
+	zoom: 1;
+}
+
+@media screen and (orientation: portrait) and (min-device-width: 768px) {
+	@-ms-viewport {
+		width: device-width;
+	}
+}
+
+@media screen and (orientation: landscape) and (min-device-width: 1366px) {
+	@-ms-viewport {
+		width: device-width;
+	}
+}

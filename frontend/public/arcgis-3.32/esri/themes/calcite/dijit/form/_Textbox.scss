@@ -1,0 +1,112 @@
+// Text Inputs: [TextBox | DateTextBox | CurrencyTextBox | ValidationTextBox | ...] | TextArea
+// Mainly includes:
+//
+// 1. Containers
+//      .dijitTextBox
+//      .dijitInputField - container that wraps "dijitInputInner" or "dijitPlaceHolder"
+//
+// 2. Textbox input
+//      .dijitInputInner
+//      .dijitPlaceHolder
+//
+// 3. States - Hover, Focused, Disabled, Error, Error while Focused e.g.
+//      .dijitTextBoxHover
+//      .dijitTextBoxFocused
+//      .dijitTextBoxDisabled
+//      .dijitTextBoxError
+//      .dijitTextBoxErrorFocused
+//
+//
+.#{$theme-name} {
+  // Base styles
+  // --------------------------------------------------
+  .dijitTextBox {
+    background-color: $input-bg;
+    border: 1px solid $input-border;
+    @include transition(border-color ease-in-out .25s);
+    .dijitInputField {
+      padding: $padding-base-vertical $padding-base-horizontal;
+      color: $input-color;
+      font-size: $font-size-base;
+      line-height: $line-height-base;
+    }
+    .dijitInputInner {
+      line-height: $line-height-base;
+      height: $line-height-computed; // IE fix
+    }
+    .dijitPlaceHolder {
+      font-style: normal;
+      color: $input-color-placeholder;
+    }
+    // Arrows in combobox, filter select, number spinner, etc.
+    .dijitArrowButton {
+      border-width: 0 0 0 1px;
+      border-color: $input-border;
+      .dijitArrowButtonInner {
+        display: none;
+      }
+    }
+  }
+  // Focused state
+  .dijitTextBoxFocused {
+    @include dijit-form-control-focus;
+  }
+  // Error state
+  .dijitTextBoxError {
+    @include dijit-form-control-validation($state-danger-text, $state-danger-text, $state-danger-bg);
+  }
+  // Disabled state
+  .dijitTextBoxDisabled {
+    background-color: $input-bg-disabled;
+  }
+  // Alternate textboxes
+  // --------------------------------------------------
+  // Primary appears as blue
+  .btn-primary {
+    &.dijitTextBox {
+      @include dijit-form-control-variant($btn-primary-border);
+    }
+  }
+  // Success appears as green
+  .btn-success {
+    &.dijitTextBox {
+      @include dijit-form-control-variant($btn-success-border);
+    }
+  }
+  // Info appears as light blue
+  .btn-info {
+    &.dijitTextBox {
+      @include dijit-form-control-variant($btn-info-border);
+    }
+  }
+  // Warning appears as orange
+  .btn-warning {
+    &.dijitTextBox {
+      @include dijit-form-control-variant($btn-warning-border);
+    }
+  }
+  // Danger and error appear as red
+  .btn-danger {
+    &.dijitTextBox {
+      @include dijit-form-control-variant($btn-danger-border);
+    }
+  }
+  // Textarea
+  // --------------------------------------------------
+  .dijitTextArea {
+    padding: $padding-base-vertical $padding-base-horizontal;
+    color: $input-color;
+    font-size: $font-size-base;
+    line-height: $line-height-base;
+  }
+  // Date Textbox
+  // --------------------------------------------------
+  .dijitDateTextBox {
+    .dijitArrowButton {
+      padding: $input-caret-padding-vertical;
+      &:before {
+        @include icon-get-content(esri-icon-calendar);
+      }
+    }
+  }
+}

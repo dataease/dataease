@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>樹系式分類和迴歸</h2><p/>
+        <h2><img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" alt="樹系式分類和迴歸工作流程圖"></h2>
+        <hr/>
+    <p>使用改編自 Leo Breiman 的隨機樹系演算法（一種監督機器學習方法）來建立模型並產生預測。可針對分類變數（分類）和連續變數（迴歸）二者執行預測。說明變數是培訓圖徵的屬性表中的欄位。可執行此工具，產生模型以評估效能，或產生模型並預測其他資料集的結果。
+    </p>
+    <p>
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>分析類型</h2></div>
+        <hr/>
+        <div>
+            <p>指定工具的操作模式。可執行此工具，培訓模型以便只評估效能，或培訓模型並預測圖徵。預測類型如下所示：
+                <ul>
+                    <li> <b>培訓模型以評估模型效能</b> - 將培訓模型並擬合至輸入資料。先使用此選項以評估模型的精確度，再針對新資料集產生預測。此選項將輸出擬合的培訓資料的圖徵服務、模型診斷，及變數重要性的選用表格。
+                    </li>
+                    <li> <b>培訓模型和預測值</b> - 將針對圖徵產生預測或分類。必須為培訓圖徵和要預測的圖徵提供說明變數。此選項將輸出預測的值的圖徵服務、模型診斷，及變數重要性的選用表格。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="train">
+        <div><h2>培訓模型以評估模型效能</h2></div>
+        <hr/>
+        <div>
+            <p>若要擬合模型和調查擬合，請使用此模式。
+            </p>
+            <p>使用此選項時，將使用輸入圖層來培訓模型。先使用此選項以評估模型的精確度，再針對新資料集產生預測。此選項將在訊息視窗中輸出模型診斷，並將模型套用到您的培訓資料。
+            </p>
+        </div>
+    </div>
+    <div id="trainAndPredict">
+        <div><h2>培訓模型和預測值</h2></div>
+        <hr/>
+        <div>
+            <p>若要擬合模型，並將模型套用到資料集以產生預測，請使用此模式。
+            </p>
+            <p>將針對圖徵產生預測或分類。此選項將輸出圖徵服務、模型診斷，及變數重要性的選用表格。
+            </p>
+        </div>
+    </div>
+    <div id="inFeatures">
+        <div><h2>選擇培訓圖層</h2></div>
+        <hr/>
+        <div>
+            <p>包含要預測的變數，以及將用來產生預測之欄位的圖徵圖層。
+            </p>
+            <p>除了從地圖選擇圖層外，您也可以選擇下拉式清單底部的 <b>選擇分析圖層</b>，以瀏覽到大數據檔案分享資料集或圖徵圖層的內容。
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>選擇要預測值的圖層</h2></div>
+        <hr/>
+        <div>
+            <p>表示將進行預測之所在位置的圖徵圖層。此圖徵圖層還必須包含作為欄位所提供的任何說明變數，這些欄位與培訓圖徵中使用的欄位相對應。
+            </p>
+            <p>除了從地圖選擇圖層外，您也可以選擇下拉式清單底部的 <b>選擇分析圖層</b>，以瀏覽到大數據檔案分享資料集或圖徵圖層的內容。
+            </p>
+        </div>
+    </div>
+    <div id="variablePredict">
+        <div><h2>選擇要預測的欄位</h2></div>
+        <hr/>
+        <div>
+            <p>培訓圖徵中的欄位，包含用來培訓模型的值。此欄位包含將在未知位置上用來預測之變數的未知（培訓）值。如果值是分類（例如，Maple、Pine、Oak），請選擇 <b>分類</b>核取方塊。
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>選擇一或多個說明變數</h2></div>
+        <hr/>
+        <div>
+            <p>用來表示說明變數（欄位）的一或多個欄位，可協助預測要預測之變數的值或類別。為表示類別 (class) 或類別 (category) 的任何變數（例如土地覆蓋、存在或不存在）使用分類核取方塊。為表示類別 (class) 或類別 (category) 的任何項目（例如土地覆蓋、存在或不存在），將變數指定為 true，若變數為連續則為 false。
+            </p>
+        </div>
+    </div>
+    <div id="numberOfTrees">
+        <div><h2>樹狀結構數量</h2></div>
+        <hr/>
+        <div>
+            <p>要在模型中建立的樹狀結構數量。更多樹狀結構一般會導出更精確的模型預測，但模型將耗用更長的時間以進行計算。樹狀結構的預設數量為 100。
+            </p>
+        </div>
+    </div>
+    <div id="minimumLeafSize">
+        <div><h2>葉片大小下限</h2></div>
+        <hr/>
+        <div>
+            <p>需要具備觀察數下限才能保留樹葉（即樹狀結構上無法進一步分割的終端節點）。預設的迴歸最小值為 5，分類的預設值則為 1。對於極大的資料，增加這些數字將降低工具的執行時間。
+            </p>
+        </div>
+    </div>
+    <div id="maximumTreeDepth">
+        <div><h2>樹狀結構深度上限</h2></div>
+        <hr/>
+        <div>
+            <p>沿著樹狀結構向下分割的最大數量。使用較大的深度上限將建立更多的分割，這可能會增加過度擬合模型的機率。預設為資料驅動，並視建立的樹狀結構數量和包含的變數數量而異。
+            </p>
+        </div>
+    </div>
+    <div id="sampleSize">
+        <div><h2>每個樹狀結構的可用資料 (%)</h2></div>
+        <hr/>
+        <div>
+            <p>指定使用於每個決策樹的培訓圖層中圖徵的百分比。預設為資料的 100%。每個樹狀結構的樣本是從指定資料的三分之二所隨機取樣的。
+            </p>
+            <p>將使用可用的培訓資料的隨機範例或子集（大約三分之二），在樹系中建立每個決策樹。為每個決策樹使用較低的輸入資料百分比，可提升極大資料集的工具速度。
+            </p>
+        </div>
+    </div>
+    <div id="randomVariables">
+        <div><h2>隨機取樣之變數的數量</h2></div>
+        <hr/>
+        <div>
+            <p>指定用來建立每個決策樹之說明變數的數量。
+            </p>
+            <p>會使用指定的說明變數的隨機子集，在樹系中建立每個決策樹。增加每個決策樹中使用的變數數量將增加模型過度擬合的機率，特別是存在一或多個控制變數的情況下。如果要預測的說明變數是數值，則一般的作法是使用說明變數總數的平方根； 如果要預測的變數是分類，則將說明變數的總數除以 3。
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>選擇說明欄位的比對方式</h2></div>
+        <hr/>
+        <div>
+            <p>培訓圖層中的對應變數與預測圖層中變數的比對方式。表格只會包含培訓中使用的變數。
+            </p>
+        </div>
+    </div>
+    <div id="percentageForValidation">
+        <div><h2>驗證的執行次數</h2></div>
+        <hr/>
+        <div>
+            <p>指定將培訓圖層中某個百分比（介於 0% 到 50% 之間）的圖徵保留為測試資料集，供進行驗證之用。將在欠缺此隨機資料子集的情況下培訓該模型，並將這些圖徵的觀察值與預測值進行比較。預設為 10%。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的內容</b>中建立並新增到地圖中的圖層的名稱。預設名稱參照工具名稱以及輸入圖層名稱。如果該名稱的圖層已存在，則系統將要求您提供其他名稱。
+            </p>
+            <p>傳回的結果將視分析的類型而定。如果您正在培訓以評估模型擬合，則結果將包含與模型擬合的培訓資料圖層，和評估模型擬合的結果資訊。如果您正在培訓和預測，則結果將包含與模型擬合的培訓資料圖層、預測的結果圖層，和評估模型擬合的結果資訊。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式方塊，可以在 <b>我的內容</b>中指定儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

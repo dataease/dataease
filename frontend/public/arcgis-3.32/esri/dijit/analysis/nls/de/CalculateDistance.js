@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/de/CalculateDistance",{inputLayerLabel:"Raster- oder Feature-Position-Layer ausw\u00e4hlen, zu dem die Entfernung berechnet werden soll",inputRaster:"Raster oder Feature-Layer zum Darstellen von Barrieren ausw\u00e4hlen (optional)",maxDistanceLabel:"Maximale Entfernung f\u00fcr die Berechnung (optional)",outputCellSize:"Ausgabe-Zellengr\u00f6\u00dfe (optional)",distanceMethod:"Entfernungsmethode",resultDistLayerName:"Name des Ergebnis-Layers f\u00fcr die Entfernung",
+resultDirectionLayerName:"Name des Ergebnis-Layers f\u00fcr die Richtung (optional)",resultAllocationLayerName:"Name des Ergebnis-Layers f\u00fcr die Allokation (optional)",outputBackDirectionName:"Name des Ergebnis-Layers f\u00fcr die Gegenrichtung (optional)",outputLayerName:"Berechnete Entfernung von ${layername}",allocationFieldLabel:"Zuordnungsfeld ausw\u00e4hlen (optional)",itemDescription:"\u00dcber 'Entfernung berechnen' f\u00fcr ${layerName} erstellter Feature-Layer. ",itemTags:"Analyseergebnis, CalculateDistance, ${layername} ${fieldname}",
+itemSnippet:"\u00dcber 'CalculateDistance' erstellter Feature-Layer.",planar:"Planar",geodesic:"Geod\u00e4tisch",selectDistance:"-- Ausw\u00e4hlen --"});

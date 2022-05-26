@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>래스터 추출(Extract Raster)</h2><p/>
+        <h2><img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" alt="포털의 래스터 추출 도구"></h2>
+        <hr/>
+    <p>이 도구는 래스터를 경계(직사각형 영역 또는 화면에서 대화형으로 정의한 쉐이프)에 클립할 수 있습니다. 맵에 현재 표시된 영역의 범위 또는 폴리곤에 의해 정의된 처리 범위로 클립할 수 있습니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>추출할 입력 데이터 선택</h2></div>
+        <hr/>
+        <div>
+            <p>클립할 입력 레이어입니다.
+            </p>
+        </div>
+    </div>
+    <div id="clippingGeometry">
+        <div><h2>클리핑 지오메트리 지정</h2></div>
+        <hr/>
+        <div>
+            <p>레이어의 지오메트리를 클립할 때 사용할 범위 유형을 선택합니다.
+
+                <ul>
+                    <li>현재 범위 사용 - 결과 레이어를 클립하는 데 현재 맵 범위가 사용됩니다. 이 방법이 기본값입니다.
+                        
+
+                    </li>
+                    <li>처리 범위 선택 - 결과에 지오메트리 범위 내의 영역이 표시될지 또는 지오메트리 범위 밖의 영역이 표시될지 선택할 수 있습니다.  <b>지오메트리 내부의 데이터</b> 옵션을 선택하면 범위 밖의 이미지는 제거됩니다. <b>지오메트리 외부의 데이터</b> 옵션을 선택하면 범위 내의 이미지가 제거됩니다. 그리기 도구를 사용하여 클리핑 지오메트리를 정의할 수도 있습니다.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에 생성되고 맵에 추가되는 레이어의 이름입니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어가 이미 있는 경우 다른 이름을 입력하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 상자를 사용하여 결과가 저장될 <b>내 콘텐츠</b>에서 폴더 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

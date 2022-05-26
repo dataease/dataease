@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Sapludināt robežas</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Sapludināt robežas"></h2>
+        <hr/>
+    <p>Laukumi, kas pārklājas, kam ir kopīga robežu, tiek apvienoti, izveidojot vienu laukumu.    
+    </p>
+    <p>Jūs varat kontrolēt, kuras robežas tiek apvienotas, norādot lauku. Piemēram, ja jums ir apgabalu slānis un katram slānim ir atribūts  <i>State_Name</i>, jūs varat iz&scaron;ķīdināt robežas, lietojot atribūtu <i>State_Name</i>.  Laukumi, kas pieskaras, tiks apvienoti kopā, ja tiem ir vienāda vērtība laukā <i>State_Name</i>.  Rezultāts ir robežu slānis.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izvēlieties laukumu slāni, kura robežas tiks sapludinātas</h2></div>
+        <hr/>
+        <div>
+            <p>Slānis, kas satur laukuma elementus, kuri tiks sapludināti. 
+            </p>
+            <p>Papildus slāņa izvēlei no kartes varat atlasīt opciju  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta lejasdaļā. &Scaron;ī opcija atver galeriju, kurā varēsiet pārlūkot un atlasīt datu kopas no dažādiem avotiem un izmantot savā analīzē. 
+            </p>
+        </div>
+    </div>
+    <div id="DissolveFields">
+        <div><h2>Izvēlieties sapludināšanas metodi</h2></div>
+        <hr/>
+        <div>
+            <p>Jūs varat izvēlēties vienu no divām metodēm lai apvienotu laukumu elementus:
+                <ul>
+                    <li> <b>Laukumi, kas daļēji pārklājas vai atrodas blakus</b>&nbsp;&mdash; divi vai vairāki laukumi, kuru robežas savstarpēji pārklājas, tiks apvienoti vienā laukumā.  Papildus, laukumi, kas atrodas blakus (tas ir, tiem ir kopēja robeža), tiks apvienoti vienā laukumā.
+                    </li>
+                    <li> <b>Laukumi ar vienādu lauka vērtību</b>&nbsp;&mdash; apgabali, kas daļēji pārklājas vai kuriem ir kopēja robeža, tiks apvienoti vienā laukumā, ja tiem ir vienādas lauku vērtības.
+                        <p>Piemēram, ja jums ir laukumu slānis un katram slānim ir lauks  <i>State_Name</i>, jūs varat sapludināt robežas, izmantojot lauku <i>State_Name</i>.  Laukumi, kas pieskaras, tiks apvienoti kopā, ja tiem ir vienāda vērtība laukā <i>State_Name</i>.  Rezultāts ir robežu slānis.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ja ir atzīmēta iespēja  <b>Lietot pa&scaron;reizējo kartes pārklājumu</b>, tiks sapludināti tikai ievades slāņa redzamās daļas elementi pa&scaron;reizējā kartes pārklājumā.  Ja nav atzīmēts, visi elementi ievades slānī tiks noņemti, arī pa&scaron;reizējā kartes pārklājuma ārpusē.
+            </p>
+        </div>
+    </div>
+    <div id="multiPartFeatures">
+        <div><h2>Izveidot vairākdaļu elementus</h2></div>
+        <hr/>
+        <div>
+            <p>Platformā ArcGIS tādas vietas vai objekta, kam ir vairākas daļas, digitāls attēlojums tiek definēts kā viens elements, jo tas atsaucas uz vienu atribūtu kopu. Piemēram, &scaron;tatu slānī Havaju &scaron;tatu var uzskatīt par vairākdaļu elementu, jo tā atsevi&scaron;ķās ģeometriskās daļas ir klasificētas kā vienots &scaron;tats. &Scaron;im binārās izvēles parametram ir divas tālāk norādītās opcijas.
+                <ul>
+                    <li>Patiess (atzīmēts): izvades serviss var ietvert vairākdaļu elementus.
+                    </li>
+                    <li>Aplams (nav atzīmēts): izvades servisā tiks iekļauti tikai viendaļīgi elementi, un katrai daļai tiks izveidoti atsevi&scaron;ķi elementi.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Pievienot statistikas datus</h2></div>
+        <hr/>
+        <div>
+            <p>Ja teritorijas ir apvienotas, jūs varat apkopot to atribūtus. Piemēram, ja jūs iz&scaron;ķīdināt robežu starp apgabaliem atkarībā no lauka  <i>State_Name</i> vērtības un katram apgabalam ir lauks <i>Population</i>, jūs varat aprēķināt lauka <i>Population</i> summu &scaron;tatam.
+            </p>
+            <p>Pieejamie statistikas tipi ir:
+            </p>
+            <ul>
+                <li> <b>Summa</b>&nbsp;&mdash; pievieno kopējo vērtību norādītajam laukam
+                    
+
+                </li>
+                <li> <b>Vidējais</b>&nbsp;&mdash; aprēķina norādītā lauka vidējo vērtību
+                    
+
+                </li>
+                <li> <b>Minimums</b>&nbsp;&mdash; atrod mazāko vērtību visiem norādītā lauka ierakstiem
+                    
+
+                </li>
+                <li> <b>Maksimums</b>&nbsp;&mdash; atrod lielāko vērtību visiem norādītā lauka ierakstiem
+                    
+
+                </li>
+                <li> <b>Standarta Novirze</b>&nbsp;&mdash; atrod standarta novirzi norādītā lauka vērtībām
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Tas ir slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slāņa nosaukums jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Lietojot iespēju  <b>Saglabāt rezultātu</b> nolaižamā saraksta izvēlnē, jūs varat norādīt mapes nosaukumu sadaļā <b>Mans saturs</b>, kur tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

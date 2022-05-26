@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Calcolo Densità</h2><p/>
+        <h2><img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" alt="Calcolo Densit&agrave;"></h2>
+        <hr/>
+    <p>Lo strumento Calcolo densit&agrave; consente di creare una mappa di densit&agrave; a partire da feature puntuali diffondendo nella mappa quantit&agrave; note di alcuni fenomeni (rappresentati come attributi di punti). Il risultato &egrave; un layer di aree classificate a partire da quella meno densa a quella pi&ugrave; densa.   
+
+    </p>
+    <p>Per l'input di punti, ogni punto deve rappresentare la posizione di un evento, mentre il layer dei risultati rappresenta il conteggio degli eventi per area unitaria. Un valore di densit&agrave; maggiore in una nuova posizione indica che sono presenti pi&ugrave; punti nelle prossimit&agrave; di tale posizione. In molti casi il layer dei risultati pu&ograve; essere interpretato come una superficie di rischio per eventi futuri. Se ad esempio i punti di input rappresentano le posizioni in cui si sono verificati fulmini, il layer dei risultati pu&ograve; essere interpretato come una superficie a rischio fulmini in futuro.
+    </p>
+    <p>&Egrave; inoltre possibile utilizzare questo strumento nei seguenti casi:
+        <ul>
+            <li>Per creare mappe della densit&agrave; dei reati e consentire alle stazioni di polizia di allocare correttamente le risorse per le aree ad elevato rischio di criminalit&agrave;.
+            </li>
+            <li>Per calcolare le densit&agrave; relative agli ospedali presenti in una determinata area. Nel layer dei risultati verranno indicate le aree con maggiore o minore accessibilit&agrave; agli ospedali e tali informazioni saranno utili per stabilire dove costruire nuove strutture.
+            </li>
+            <li>Per identificare aree ad alto rischio di incendio sulla base delle posizioni in cui nel tempo si sono verificati incendi di aree boschive.
+            </li>
+            <li>Per individuare le comunit&agrave; pi&ugrave; lontane dalle principali autostrade e pianificare le aree in cui costruire nuove strade.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Scegli un layer puntuale in base al quale calcolare la densità</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer puntuale in base al quale verr&agrave; calcolata la densit&agrave;.
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> alla base dell'elenco a discesa per cercare un dataset di condivisione file Big Data o un feature layer.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Scegliere uno o più campi su cui calcolare la densità (facoltativo)</h2></div>
+        <hr/>
+        <div>
+            <p>Consente di visualizzare uno o pi&ugrave; campi in cui specificare il numero di eventi in ogni posizione. Se ad esempio sono presenti punti che rappresentano citt&agrave;, &egrave; possibile utilizzare un campo per rappresentare la popolazione della citt&agrave; come campo conteggio, in modo che nel layer della densit&agrave; di popolazione risultante vengano calcolate le densit&agrave; di popolazione maggiori in prossimit&agrave; di citt&agrave; con popolazioni pi&ugrave; numerose.
+            </p>
+            <p>La densit&agrave; del conteggio di punti viene sempre calcolato. Se non viene selezionato alcun campo, ogni posizione verr&agrave; utilizzata per rappresentare un singolo conteggio.
+            </p>
+        </div>
+    </div>
+    <div id="binType">
+        <div><h2>Scegli una forma contenitore</h2></div>
+        <hr/>
+        <div>
+            <p>La forma dei contenitori in cui i punti sono aggregati e utilizzati per il calcolo della densit&agrave;.
+            </p>
+            <p>L'analisi tramite l'utilizzo di contenitori  <b>Quadrato</b> o <b>Esagono</b> richiede un sistema di coordinate proiettato. &Egrave; possibile impostare il <b>Sistema di coordinate di elaborazione</b> negli <b>Ambienti di analisi</b>. Se il sistema di coordinate di elaborazione non &egrave; impostato su un sistema di coordinate proiettate, verr&agrave; chiesto di impostarlo quando si <b>Esegue l'analisi</b> .
+            </p>
+        </div>
+    </div>
+    <div id="binSizing">
+        <div><h2>Seleziona le dimensioni contenitore per l'aggregazione</h2></div>
+        <hr/>
+        <div>
+            <p>Le dimensioni dei contenitori generati. Per un contenitore quadrato, la dimensione rappresenta l'altezza del quadrato. Per un esagono, la dimensione rappresenta l'altezza dell'esagono (dai lati paralleli).
+            </p>
+        </div>
+    </div>
+    <div id="weight">
+        <div><h2>Seleziona la ponderazione della densità da applicare</h2></div>
+        <hr/>
+        <div>
+            <p>Il tipo di ponderazione applicato al calcolo di densit&agrave;. Ci sono due opzioni:
+                <ul>
+                    <li> <b>Uniforme</b>&mdash;Calcola la grandezza per area.
+                    </li>
+                    <li> <b>Kernel</b>&mdash;Applica una funzione kernel per adattare una superficie conica uniforme a ciascun punto.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Seleziona le dimensioni del confine</h2></div>
+        <hr/>
+        <div>
+            <p>Le dimensioni dell'area utilizzate per calcolare la densit&agrave;. Le dimensioni del confine devono essere maggiori di quelle del contenitore.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Scegli le unità di output per la densità</h2></div>
+        <hr/>
+        <div>
+            <p>Le unit&agrave; di output desiderate dei valori della densit&agrave;. Per impostazione predefinita, &egrave; impostato su chilometri quadrati o miglia quadrate in base alle unit&agrave; predefinite specificate nel profilo. Se i valori di densit&agrave; sono molto ridotti, &egrave; possibile aumentare le dimensioni delle unit&agrave; di area (ad esempio, da metri quadrati a chilometri quadrati) per restituire valori pi&ugrave; elevati. I valori scalano solo il risultato.  
+
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Calcola la densità usando i passaggi temporali (facoltativo)</h2></div>
+        <hr/>
+        <div>
+            <p>Se il layer di punti di input &egrave; abilitato per variazioni temporali ed &egrave; di tipo istante, &egrave; possibile eseguire l'analisi utilizzando incrementi di tempo. Sono disponibili tre parametri da impostare quando si utilizza il tempo:
+                <ul>
+                    <li> <b>Intervallo del passaggio temporale</b>
+                    </li>
+                    <li> <b>Frequenza di ripetizione del passaggio temporale</b>
+                    </li>
+                    <li> <b>Tempo a cui allineare i passaggi temporali</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ad esempio, si supponga di avere dati che rappresentano un anno e che si desidera eseguire un'analisi utilizzando incrementi settimanali. Impostare  <b>Intervallo del passaggio temporale</b> su <code>1 settimana</code>. 
+            </p>
+            <p>Ad esempio, si supponga di avere dati che rappresentano un anno e che si desidera eseguire un'analisi utilizzando la prima settimana del mese. Impostare  <b>Intervallo del passaggio temporale</b> su <code>1 settimana</code>, <b>Frequenza di ripetizione del passaggio temporale</b> su <code>1 mese</code> e <b>Tempo a cui allineare i passaggi temporali</b> su <code>1 gennaio alle ore 12.00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Intervallo del passaggio temporale</h2></div>
+        <hr/>
+        <div>
+            <p>Intervallo di tempo utilizzato per la generazione di passaggi temporali.  <b>Intervallo del passaggio temporale</b> pu&ograve; essere utilizzato da solo o con i parametri <b>Frequenza di ripetizione del passaggio temporale</b> o <b>Tempo a cui allineare i passaggi temporali</b>.
+            </p>
+            <p>Ad esempio, si supponga di desiderare di creare passaggi temporali che hanno luogo tutti i luned&igrave; dalle 9 alle 10. Impostare  <b>Intervallo del passaggio temporale</b> su <code>1 ora</code>, <b>Frequenza di ripetizione del passaggio temporale</b> su <code>1 settimana</code> e <b>Tempo a cui allineare i passaggi temporali</b> su <code>luned&igrave; ore 9</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Frequenza di ripetizione del passaggio temporale</h2></div>
+        <hr/>
+        <div>
+            <p> Il passaggio utilizzato per calcolare un passaggio temporale. <b>Frequenza di ripetizione del passaggio temporale</b>  pu&ograve; essere utilizzata da sola, o con <b>Intervallo del passaggio temporale</b>, con <b>Ora di riferimento</b> o con <b>Intervallo del passaggio temporale</b> e <b>Tempo a cui allineare i passaggi temporali</b>.
+            </p>
+            <p> Ad esempio, si supponga di desiderare di creare passaggi temporali che hanno luogo tutti i luned&igrave; dalle 9 alle 10. Impostare <b>Intervallo del passaggio temporale</b> su <code>1 ora</code>, <b>Frequenza di ripetizione del passaggio temporale</b> su <code>1 settimana</code> e <b>Tempo a cui allineare i passaggi temporali</b> su <code>luned&igrave; ore 9</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Tempo a cui allineare i passaggi temporali</h2></div>
+        <hr/>
+        <div>
+            <p>La data e l'ora utilizzate per allineare il periodo di tempo. Gli incrementi di tempo inizieranno e continueranno a ritroso da questo momento. Se non &egrave; stata selezionata un'ora di riferimento, gli incrementi di tempo si allineeranno al 1 gennaio 1970. 
+            </p>
+            <p> Ad esempio, si supponga di desiderare di creare passaggi temporali che hanno luogo tutti i luned&igrave; dalle 9 alle 10. Impostare <b>Intervallo del passaggio temporale</b> su <code>1 ora</code>, <b>Frequenza di ripetizione del passaggio temporale</b> su <code>1 settimana</code> e <b>Tempo a cui allineare i passaggi temporali</b> su <code>luned&igrave; ore 9</code>.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>Riferimento spaziale (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; un parametro temporaneo per la versione provvisoria che consente di impostare il riferimento spaziale per l'elaborazione. Molti strumenti Big Data richiedono l'utilizzo di un sistema di coordinate proiettato come riferimento spaziale per l'elaborazione. Per impostazione predefinita, lo strumento utilizzer&agrave; il sistema di coordinate di input ma non verr&ograve; eseguito se si tratta di un sistema di coordinate geografiche. Per impostare un sistema di coordinate proiettato, immettere il WKID. Ad esempio,  <b>Mercatore Sferica</b> deve essere inserito come <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Scegliere il Data Store</h2></div>
+        <hr/>
+        <div>
+            <p>I risultati di GeoAnalytics sono memorizzati in un data store ed esposti come un feature layer in  Portal for ArcGIS. Nella maggior parte dei casi, i risultati devono essere memorizzati nello Spatiotemporal Data Store e questa &egrave; l'impostazione predefinita. In alcuni casi,, il salvataggio dei risultati nel Data Store relazionale &egrave; un'ottima opzione. Di seguito sono memorizzate le ragioni per memorizzare i risultati nel Data Store relazionale: 
+                <ul>
+                    <li>&Egrave; possibile utilizzare i risultati in una collaborazione tra portali.
+                    </li>
+                    <li>&Egrave; possibile abilitare funzionalit&agrave; di sincronizzazione con i risultati.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Non utilizzare il Data Store relazionale se si prevede un incremento dei risultati GeoAnalytics ed &egrave; necessario sfruttare le funzionalit&agrave; dello Spatiotemporal Big Data Store per gestire grandi quantit&agrave; di dati.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p> Il nome del layer che verr&agrave; creato.  Se si scrive su un ArcGIS Data Store, i risultati saranno salvati in  <b>I miei contenuti</b> e aggiunti alla mappa. Se si scrive su una condivisione file Big Data, i risultati saranno memorizzati nella condivisione file Big Data e aggiunti al suo Manifest. Non saranno aggiunti alla mappa. Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il layer esiste gi&agrave;, lo strumento non verr&agrave; eseguito.
+            </p>
+            <p>Quando si scrive su  ArcGIS Data Store (data store relazionale o Spatiotemporal Big Data Store) usando la casella a discesa  <b>Salva risultato in</b>, &egrave; possibile specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

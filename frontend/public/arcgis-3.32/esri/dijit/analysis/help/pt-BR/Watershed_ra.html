@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Vertente</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="Tarefa de Vertente"></h2>
+        <hr/>
+    <p>Esta ferramenta determina a &aacute;rea de contribui&ccedil;&atilde;o acima de um conjunto de c&eacute;lulas em um raster.
+    </p>
+    <p>Uma vertente &eacute; a &aacute;rea de aclive que contribui com fluxo&mdash;geralmente &aacute;gua&mdash;para uma sa&iacute;da comum como drenagem concentrada. Pode ser parte de uma vertente maior e tamb&eacute;m pode conter vertentes pequenas, denominadas subbacias.
+    </p>
+    <p>O valor de cada vertente ser&aacute; tirado do valor da origem na raster de entrada ou camada de pontos de escoamento de fei&ccedil;&atilde;o. Quando o ponto de escoamento for um conjunto de dados raster, os valores da c&eacute;lula s&atilde;o utilizados por padr&atilde;o. Quando o ponto de escoamento for um conjunto de dados de fei&ccedil;&otilde;es de ponto, os valores vir&atilde;o do campo especificado.
+    </p>
+    <p>A ferramenta Vertente somente suporta uma camada raster de entrada de dire&ccedil;&atilde;o de fluxo D8.
+    </p>
+    <p>Ao especificar as localiza&ccedil;&otilde;es de ponto de escoamento de entrada como dados de fei&ccedil;&atilde;o, o campo padr&atilde;o ser&aacute; o primeiro campo v&aacute;lido dispon&iacute;vel. Se nenhum campo v&aacute;lido existir, o campo ObjectID (por exemplo, OID ou FID) ser&aacute; o padr&atilde;o.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>Escolha a camada de direção de fluxo</h2></div>
+        <hr/>
+        <div>
+            <p>O raster de entrada que mostra a dire&ccedil;&atilde;o do fluxo de cada c&eacute;lula.
+            </p>
+            <p>O raster de dire&ccedil;&atilde;o de fluxo pode ser criado utilizando a ferramenta Dire&ccedil;&atilde;o de Fluxo ou a tarefa FlowDirection no servi&ccedil;o RasterAnalysisTools, execute utilizando o tipo de dire&ccedil;&atilde;o de fluxo padr&atilde;o  <b>D8</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>Especificar localizações de ponto de escoamento de entrada</h2></div>
+        <hr/>
+        <div>
+            <p>Localiza&ccedil;&otilde;es de ponto de escoamento de entrada.
+            </p>
+            <p>Para um raster, isto representa c&eacute;lulas acima da &aacute;rea contribuinte ou a represa ser&aacute; determinada. Todas as c&eacute;lulas que n&atilde;o s&atilde;o NoData ser&atilde;o utilizadas como c&eacute;lulas de origem. Para uma entrada de ponto, isto representa localiza&ccedil;&otilde;es acima da &aacute;rea contribuinte ou a represa ser&aacute; determinada.
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>Escolher campo do ponto de escoamento</h2></div>
+        <hr/>
+        <div>
+            <p>O campo utilizado para atribuir valores &agrave;s localiza&ccedil;&otilde;es de ponto de escoamento.
+            </p>
+            <p>Se a camada de ponto de escoamento de entrada for um raster, O valor &eacute; utilizado. Se ele for fei&ccedil;&atilde;o, um campo num&eacute;rico &eacute; utilizado. Se o campo cont&eacute;m valores de ponto flutuante, eles ser&atilde;o truncados em inteiros.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>O nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se a camada j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>Voc&ecirc; pode especificar o nome de uma pasta em  <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo utilizando a caixa suspensa <b>Salvar resultados em</b> .
+            </p>
+        </div>
+    </div>
+</div>
+</html>

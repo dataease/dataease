@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Plan Routes</h2><p/>
+        <h2><img src="./images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" alt="Plan Routes"></h2>
+        <hr/>
+    <p>Plan Routes determines how to efficiently divide tasks among a
+mobile workforce.
+    </p>
+    <p>You provide the tool with a set of stops and the number of vehicles available to visit the stops.
+The tool assigns the stops to vehicles and returns routes showing how each vehicle can reach their
+assigned stops in the least amount of time.
+    </p>
+    <p>With Plan Routes, mobile workforces reach more job sites in less time, which increases productivity
+and improves customer service.
+        <ul>
+            <li>Inspect homes, restaurants, or construction sites
+                
+
+            </li>
+            <li>Provide repair, installation, or technical services
+            </li>
+            <li>Deliver items and small packages
+            </li>
+            <li>Make sales calls
+            </li>
+            <li>Transport people from their homes to an event
+            </li>
+        </ul>
+        
+    </p>
+    <p>The output from Plan Routes includes a layer of stops coded by the routes to which they are assigned, a layer of routes showing the shortest paths to visit assigned  stops, and, depending on whether any stops could not be reached,  a layer of unassigned stops. 
+    </p>
+    <p>If  <b>Use current map extent</b> is checked, only the features that are visible within the current map extent will be considered in the analysis.  If unchecked, all features in the input layer will be considered, even if they are outside the current map extent.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="stopsLayer">
+        <div><h2>Choose point layer representing stops to visit</h2></div>
+        <hr/>
+        <div>
+            <p>Choose the layer of points that the routes (or vehicles) should visit.  These points become assigned or unassigned stops in the output.
+
+            </p>
+            <p>In addition to choosing a layer from your map, you can select  <b>Choose Analysis Layer</b> found at the bottom of the drop-down list. This option opens a gallery where you can browse to and select datasets from various sources to use in your analysis. 
+            </p>
+            <p>The tool supports up to 2,000 input features. 
+            </p>
+        </div>
+    </div>
+    <div id="travelMode">
+        <div><h2>Travel mode for routes</h2></div>
+        <hr/>
+        <div>
+            <p>Choose your travel mode.  The output routes will  follow roads or walkways and honor applicable rules, such as one-way streets and illegal turns for driving or trucking.  The available travel modes are determined by the administrator of your organization.  
+            </p>
+        </div>
+    </div>
+    <div id="startLayer">
+        <div><h2>Routes begin at stops</h2></div>
+        <hr/>
+        <div>
+            <p>Specify where and when the vehicles start their routes.
+            </p>
+            <p>With Plan Routes you can specify one or many starting locations for
+your vehicles.
+            </p>
+            <p>When one point location is specified, all vehicles depart from
+that point regardless of the number of vehicles available.
+You can choose a point layer with one point or add a point to the
+map by choosing  <b>Add point to map</b>, clicking the adjacent point editing button, and clicking on the map. 
+            </p>
+            <p>When multiple locations are specified, each vehicle needs to be
+associated with its own point. The number of vehicles must match
+the number of points in the layer. Choose a layer with multiple points and
+specify a field that uniquely identifies the individual
+routes, vehicles, or drivers in the  <b>Route ID
+field</b> drop-down list.
+            </p>
+            <p>The starting time is the same for all routes. The time zone for the start time is the same as the time zone in which the starting point or points are located, so
+make certain the time you enter is local time. For instance, assume
+you are in Pacific Standard Time (UTC-8:00) and the vehicles you
+are routing are stationed in Mountain Standard Time (UTC-7:00). If
+it is currently 9:30 a.m. PST (10:30 a.m. MST) and your vehicles need to begin their
+routes in 30 minutes, you would set the start time to 11:00
+a.m. 
+            </p>
+            <p>If your vehicles start from different time zones, the start time can't be simultaneous; instead, they are offset. For instance, if one route starts from a point in PST and another route starts from MST, and you enter 11:00 a.m. as the start time, the route in PST will start at 11:00 a.m. PST and the route in MST will start at 11:00 a.m. MST&mdash;a one-hour difference.
+            </p>
+        </div>
+    </div>
+    <div id="endLayer">
+        <div><h2>Routes end at
+stops</h2></div>
+        <hr/>
+        <div>
+            <p>Specify where the vehicles end their routes.
+            </p>
+            <p>You can configure the routes to end in one of three locations: 
+                <ul>
+                    <li>The same location where the routes began, regardless of whether they originated from one or many locations
+                    </li>
+                    <li>A single location
+                    </li>
+                    <li>Many locations&mdash;that is, one ending point for each route
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Check  <b>Return to start</b> if the vehicles start
+and end their routes at the same locations.
+            </p>
+            <p>To route all vehicles to a common ending point other than the
+starting point, uncheck  <b>Return to start</b> and
+either add a point to the map or choose a layer that contains exactly one
+point.
+            </p>
+            <p>To have routes end at unique locations, uncheck  <b>Return to start</b> and choose a layer containing more
+than one point. The number of vehicles must equal the number of
+points in the chosen layer. In the <b>Route ID
+field</b> drop-down list, choose a field that uniquely identifies
+the individual routes, vehicles, or drivers. If the vehicles are
+starting at multiple locations and ending at multiple locations,
+the route IDs chosen for the starting and ending layers need to
+match.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Select barrier layers</h2></div>
+        <hr/>
+        <div>
+            <p> One or more features that act as temporary restrictions (barriers) when traveling on the underlying streets. You can specify the barriers using point, line, or polygon features.
+            </p>
+            <p>A point barrier can model a fallen tree, an accident, a downed electrical line, or anything that completely blocks traffic at a specific position along the street. Travel is permitted on the street but not through the barrier. You can specify up to 250 features to act as point barriers.
+            </p>
+            <p>A line barrier prohibits travel anywhere the barrier intersects the streets. For example, a parade or protest that blocks traffic across several street segments can be modeled with a line barrier. If the number of street features intersected by all the line barriers exceeds 500, the tool returns an error.
+            </p>
+            <p>A polygon barrier prohibits travel anywhere the polygon intersects the streets. One use of this type of barrier is to model floods covering areas of the street network and making road travel there impossible. If the number of street features intersected by all the polygon barriers exceeds 2000, the tool returns an error.
+            </p>
+        </div>
+    </div>
+    <div id="routeCount">
+        <div><h2>Maximum number of vehicles to route</h2></div>
+        <hr/>
+        <div>
+            <p>Specify the number of vehicles that are available to visit the stops. The tool supports up to  100 vehicles. 
+            </p>
+            <p>The tool may be able to find a solution that uses fewer vehicles than the number you specify here depending on  the total number of stops, how many stops per vehicle you allow, how far apart the stops are, the time spent at each stop, and any limit you set on the total route time per vehicle.
+            </p>
+        </div>
+    </div>
+    <div id="maxStopsPerRoute">
+        <div><h2>Maximum number of stops per vehicle</h2></div>
+        <hr/>
+        <div>
+            <p>This is one of two parameters that balance the overall workload across routes. You can specify a value between 1 and  200. 
+            </p>
+            <p>By lowering the maximum number of stops that can be assigned to each vehicle, the vehicles are more likely to have an equal number of stops assigned to them. This helps balance workloads among drivers. The drawback, however, is that it may result in a solution that is less efficient.
+            </p>
+            <p>By increasing the stops per vehicle, the tool has more freedom to find more efficient solutions; however, the workload may be unevenly distributed among drivers and vehicles. Note that you can balance workloads by time as well as by number of stops by specifying a value for the  <b>Limit the total route time per vehicle</b> parameter.
+            </p>
+            <p>The following examples demonstrate the effects of limiting the maximum stops per vehicle or the total time per vehicle. In all examples there are six stops and two routes, which start at the same location.
+            </p>
+            <table border="1">
+            <tr>
+                <td> <img src="./images/GUID-820BDC1E-97CB-457F-9235-7105D274AFEB-web.png" alt="Balanced stops and travel times">
+                </td>
+                <td>
+                    <p>Balanced travel times and  stops per route:
+                    </p>
+                    <p>The stops are more or less uniformly spread apart, so setting the maximum stops per vehicle to evenly distribute the workload results in routes that are roughly the same duration.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="./images/GUID-813F72FE-500D-4A4D-A030-B3450F09154B-web.png" alt="Unbalanced route times">
+                </td>
+                <td>
+                    <p>Balanced stops per route but unbalanced travel times:
+                    </p>
+                    <p>Five of the six stops are clustered near the starting location, but one stop is set apart and requires a much longer drive to be reached. Dividing the stops equally between the two routes causes unbalanced travel times.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="./images/GUID-082615A2-7F07-49AB-92AF-C82CEB813E6F-web.png" alt="Balanced travel times">
+                </td>
+                <td>
+                    <p>Unbalanced stops per route but balanced travel times:
+                    </p>
+                    <p>The stops are in the same location as the previous graphic, but by increasing the maximum stops per route and limiting the total travel time per vehicle, the travel times are balanced.
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="serviceTimeAtStops">
+        <div><h2>Time spent at each stop</h2></div>
+        <hr/>
+        <div>
+            <p>Set the expected average service time spent at each stop. For example, if your are planning a workday schedule for inspectors and the average inspection time is 45 minutes, enter  <code>45</code>.
+            </p>
+            <p>The service time at all stops is assumed to be the same.
+            </p>
+        </div>
+    </div>
+    <div id="maxTotalRouteTime">
+        <div><h2>Limit the total route time per vehicle</h2></div>
+        <hr/>
+        <div>
+            <p>Specify the maximum amount of time a route should last from start to finish. 
+This includes expected travel time and service times spent at stops along the route. If drivers shouldn't work longer than a given time during a day, such as eight hours, you can specify that limit here.
+            </p>
+            <p>See the help for  <b>Maximum number of stops per vehicle</b> for considerations when balancing workloads.
+            </p>
+        </div>
+    </div>
+    <div id="resultsLayer">
+        <div><h2>Result layer name</h2></div>
+        <hr/>
+        <div>
+            <p>The name of the feature layer that will be created in  <b>My Content</b> and added to the map. If the feature layer already exists, you will be asked to provide another name. The feature layer will contain a layer for each of the following: routes, assigned stops, and unassigned stops when some input stops could not be assigned to any routes.
+            </p>
+            <p>If you select  <b>Include route layers</b>, each route from the result is also saved as a route layer. A route layer includes all the information for a particular route, such as the stops assigned to the route as well as the travel directions. Creating  route layers is useful if you want to share the individual routes with other members in your organization or to further modify the routes using the <b>Directions</b> button in the map viewer. The route layers use the name provided for the feature layer  as a prefix and the route name generated as part of the analysis, which is added to create a unique name for each route layer.
+            </p>
+            <p>Using the  <b>Save result in</b> drop-down menu, you can specify the name of a folder in <b>My Content</b> where the feature layer and the route layers, if created, will be saved.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

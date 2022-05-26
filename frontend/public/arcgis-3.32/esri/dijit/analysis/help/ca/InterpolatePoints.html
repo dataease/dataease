@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpola els punts</h2><p/>
+        <h2><img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" alt="Interpola els punts"></h2>
+        <hr/>
+    <p>   L'eina Interpola els punts us permet predir els valors en ubicacions noves en funci&oacute; de les mesures d'una col&middot;lecci&oacute; de punts. L'eina pren les dades de punts amb valors en cada punt i retorna &agrave;rees classificades pels valors predits. Per exemple
+        <ul>
+            <li>Un districte de control de la qualitat de l'aire t&eacute; sensors que mesuren els nivells de contaminaci&oacute;.    Interpola els punts es pot utilitzar per predir els nivells de contaminaci&oacute; a les ubicacions que no tenen sensors, com ara ubicacions amb poblacions de risc (per exemple, hospitals o escoles).
+            </li>
+            <li>Predigueu les concentracions de metalls pesants de les collites en funci&oacute; de les mostres que s'hagin pres de plantes individuals.
+            </li>
+            <li>Predigueu els nivells de nutrients del s&ograve;l (nitrogen, f&ograve;sfor, potassi, etc.) i altres indicadors (com ara la conductivitat el&egrave;ctrica) per estudiar-ne la relaci&oacute; amb la producci&oacute; de la collita i prescriure quantitats de fertilitzant exactes per a cada ubicaci&oacute; del camp. 
+            </li>
+            <li>Les aplicacions meteorol&ograve;giques inclouen la predicci&oacute; de les temperatures, les precipitacions i les variables associades (com ara la pluja &agrave;cida). 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Trieu la capa de punts que conté les ubicacions amb valors coneguts</h2></div>
+        <hr/>
+        <div>
+            <p>Capa de punts que es far&agrave; servir com a base de la interpolaci&oacute;.  
+
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b>, que es troba al final de la llista desplegable. Aquesta opci&oacute; obre una galeria on podeu cercar i seleccionar datasets de diversos or&iacute;gens per u utilitzar-los a l'an&agrave;lisi. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Trieu el camp que s'interpolarà</h2></div>
+        <hr/>
+        <div>
+            <p>Trieu el camp que cont&eacute; els valors que voleu interpolar.  
+            </p>
+        </div>
+    </div>
+    <div id="interpolateOption">
+        <div><h2>Optimitza per a</h2></div>
+        <hr/>
+        <div>
+            <p>Trieu la vostra prefer&egrave;ncia: velocitat o precisi&oacute;. Les prediccions m&eacute;s precises triguen m&eacute;s temps a calcular-se.
+            </p> 
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Errors de predicció de sortida</h2></div>
+        <hr/>
+        <div>
+            <p> Si s'activa, es crear&agrave; una capa d'errors est&agrave;ndard per a les prediccions d'interpolaci&oacute;.  El nom de la capa de sortida ser&agrave; el nom de la capa de resultats amb la paraula &quot;Errors&quot; afegida.
+            </p>
+            <p>Els errors est&agrave;ndard s&oacute;n &uacute;tils perqu&egrave; proporcionen informaci&oacute; sobre la fiabilitat dels valors predits.  Una regla general senzilla &eacute;s que el valor real estar&agrave; compr&egrave;s entre dos errors est&agrave;ndard del valor predit el 95&nbsp;% de les vegades.  Per exemple, suposeu que una ubicaci&oacute; nova obt&eacute; un valor predit de 50 amb un error est&agrave;ndard de 5.  Aix&ograve; significa que l'estimaci&oacute; m&eacute;s aproximada d'aquesta eina &eacute;s que el valor real en aquesta ubicaci&oacute; &eacute;s de 50, per&ograve; que podria ser de 40 o de 60.  Per calcular aquest interval de valors raonables, multipliqueu l'error est&agrave;ndard per 2, sumeu-lo al valor predit per obtenir el l&iacute;mit superior de l'interval i resteu-lo del valor predit per obtenir-ne el l&iacute;mit inferior.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Classifica per</h2></div>
+        <hr/>
+        <div>
+            <p>Trieu com es classificaran en &agrave;rees els valors predits.
+                <ul>
+                    <li>Interval geom&egrave;tric: les &agrave;rees es basen en intervals de classe que tenen una s&egrave;rie geom&egrave;trica. Aquest m&egrave;tode garanteix que cada interval de classe tingui aproximadament el mateix nombre de valors en cada classe i que el canvi entre intervals sigui coherent.
+                    </li>
+                    <li>Interval igual: les &agrave;rees es creen de manera que l'interval dels valors predits sigui igual per a cada &agrave;rea.
+                    </li>
+                    <li>&Agrave;rea igual: les &agrave;rees es creen de manera que el nombre de valors de dades de cada &agrave;rea sigui igual.  Per exemple, si les dades tenen m&eacute;s valors grans que valors petits, es crearan m&eacute;s &agrave;rees per als valors grans.
+                    </li>
+                    <li>Manual: aquesta opci&oacute; us permet definir el vostre propi interval de valors per a les &agrave;rees.  Aquests valors s'introduiran en el par&agrave;metre  <b>Valors de tall de classe</b> que es mostra a continuaci&oacute;.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Nombre de classes</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica el nombre de classes (interval de valors predits) de la capa de resultats.  Cada classe defineix el l&iacute;mit de les &agrave;rees.  Els valors d'aquestes classes els determinar&agrave; el par&agrave;metre 
+ <b>Classifica per</b> anterior.
+            </p>
+        </div>
+    </div>
+    <div id="classBreaks">
+        <div><h2>Valors de tall de classe</h2></div>
+        <hr/>
+        <div>
+            <p>Introdu&iuml;u els valors de tall de classe separats per espais.  Per exemple, si voleu talls de classe als valors 1,5, 3 i 7, introdu&iuml;u  <code>1,5 3 7</code>.  Aquests valors definiran el l&iacute;mit superior de cada classe perqu&egrave; el nombre de classes sigui igual que el nombre de valors introdu&iuml;ts.  No es crear&agrave; cap &agrave;rea per a les ubicacions amb valors predits que estiguin per sobre del valor de tall m&agrave;xim que s'hagi introdu&iuml;t.  Heu d'introduir dos valors com a m&iacute;nim i 32 com a m&agrave;xim.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Retalla la sortida a</h2></div>
+        <hr/>
+        <div>
+            <p>Dibuixeu o proporcioneu una capa que especifiqui l'&agrave;rea on voleu que es dibuixi el resultat. Per exemple, si esteu interpolant mesures de contaminaci&oacute; d'un llac, podeu fer servir els l&iacute;mits del llac en aquest par&agrave;metre i la sortida nom&eacute;s s'hi dibuixar&agrave; a dins.
+            </p>
+        </div>
+    </div>
+    <div id="predictAtPointLayer">
+        <div><h2>Prediu en aquestes ubicacions</h2></div>
+        <hr/>
+        <div>
+            <p>Dibuixeu o proporcioneu una capa que especifiqui ubicacions de punts per calcular valors de predicci&oacute;. Aix&ograve; us permet fer prediccions en ubicacions d'inter&egrave;s espec&iacute;fiques. Per exemple, si la capa d'entrada representa mesures de nivells de contaminaci&oacute;, podeu fer servir aquest par&agrave;metre per predir els nivells de contaminaci&oacute; de les ubicacions amb grans poblacions de risc, com ara hospitals o escoles.  A continuaci&oacute;, podeu fer servir aquesta informaci&oacute; per fer recomanacions a les autoritats sanit&agrave;ries d'aquestes ubicacions.
+            </p>
+            <p>Si se'n proporciona una, aquesta eina generar&agrave; una capa de punts de prediccions a les ubicacions especificades.  El nom de la capa de sortida ser&agrave; el nom de la capa de resultats amb la paraula &quot;Points&quot; afegida.  
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa.  El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si el nom de la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Mitjan&ccedil;ant el men&uacute; desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta d' <b>El meu contingut</b> on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

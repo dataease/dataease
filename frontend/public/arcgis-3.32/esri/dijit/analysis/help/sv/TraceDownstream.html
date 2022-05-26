@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Spåra nedströms</h2><p/>
+        <h2><img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" alt="Sp&aring;ra nedstr&ouml;ms"></h2>
+        <hr/>
+    <p>Det h&auml;r verktyget fastst&auml;ller fl&ouml;desm&ouml;nstret nedstr&ouml;ms fr&aring;n punkterna i ditt indatalager.
+    </p>
+    <p>Du kan till exempel ha punktgeoobjekt som representerar k&auml;llor till f&ouml;roreningar och vill fastst&auml;lla var i ditt unders&ouml;kningsomr&aring;de f&ouml;roreningen kommer att fl&ouml;da. Du kan anv&auml;nda Sp&aring;ra nedstr&ouml;ms f&ouml;r att se vilken v&auml;g f&ouml;roreningen kommer att ta. Du kan &auml;ven dela upp den h&auml;r sp&aring;rningen i individuella linjesegment genom att ange distansv&auml;rde och enheter. Linjen som returneras kan vara den totala l&auml;ngden av fl&ouml;desv&auml;gen, en angiven maximal sp&aring;rningsl&auml;ngd eller en linje klippt till ett omr&aring;desgeoobjekt, till exempel unders&ouml;kningsomr&aring;det. Om hela l&auml;ngden f&ouml;r sp&aring;rningsv&auml;gen returneras handlar det ofta om en str&auml;cka fr&aring;n k&auml;llan och hela v&auml;gen till havet.
+    </p>
+    <p>Resultatet &auml;r en linje som representerar sp&aring;rningen nedstr&ouml;ms. Om ett avst&aring;nd anges f&ouml;r  <b>Dela upp sp&aring;rningen i linjesegment</b>, delas sp&aring;rningslinjen upp i flera linjer d&auml;r varje linje har angiven l&auml;ngd. Om din indatapunkt till exempel representerar en f&ouml;rorening och floden som den rinner ut i har en fl&ouml;deshastighet p&aring; 1 kilometer i timmen, eller 24 kilometer om dagen, kan du dela upp floden i 24 kilometerl&aring;nga segment. Om sp&aring;rningen delas upp i 24 kilometerl&aring;nga intervall visas ungef&auml;r var f&ouml;roreningen kommer att f&auml;rdas varje dag. Linjen symboliseras med stegvisa f&auml;rger baserat p&aring; avst&aring;nd och m&auml;rks med avst&aring;ndet fr&aring;n b&ouml;rjan av sp&aring;rningen.
+    </p>
+    <p>Den resulterande sp&aring;rningen kommer att ha alla attribut fr&aring;n indatapunkterna tillsammans med ytterligare attribut. 
+        <ul>
+            <li> <i>PointID</i> &ndash; inneh&aring;ller ID-v&auml;rdet fr&aring;n indatapunkten.
+                
+
+            </li>
+            <li> <i>LengthKm</i> &ndash; inneh&aring;ller l&auml;ngden i kilometer f&ouml;r den totala sp&aring;rningen nedstr&ouml;ms.
+                
+
+            </li>
+            <li> <i>Description</i> och <i>DataResolution</i> &ndash; inneh&aring;ller information som r&ouml;r de hydrologiska data som anv&auml;nds f&ouml;r att ber&auml;kna sp&aring;rningen.
+                
+
+            </li>
+            <li> <i>FromDistance</i> och <i>ToDistance</i> &ndash; inneh&aring;ller avst&aring;nd fr&aring;n och avst&aring;nd till f&ouml;r varje linjesegment. Dessa attribut skrivs om <b>Dela upp sp&aring;rningen i linjesegment</b> anv&auml;nds.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Om  <b>Anv&auml;nd aktuell kartutbredning</b> markeras, analyseras endast de punktgeoobjekt i analyslagret som visas i den aktuella kartutbredningen. Om alternativet inte markeras anv&auml;nds alla geoobjekt i indatalagret, &auml;ven om de ligger utanf&ouml;r den aktuella kartutbredningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Punktgeoobjekt som används som startplatser för varje nedströmsspårning</h2></div>
+        <hr/>
+        <div>
+            <p>De punktgeoobjekt som anv&auml;nds som startplats f&ouml;r nedstr&ouml;mssp&aring;rning Utdata inneh&aring;ller en linje f&ouml;r varje indatapunkt.
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager p&aring; din karta kan du v&auml;lja  <b>V&auml;lj analyslager</b>, som du hittar l&auml;ngst ned i listrutan. Det alternativet &ouml;ppnar ett galleri d&auml;r du kan bl&auml;ddra till och v&auml;lja dataupps&auml;ttningar fr&aring;n diverse k&auml;llor som du kan anv&auml;nda i din analys. 
+            </p>
+        </div>
+    </div>
+    <div id="SplitDistance">
+        <div><h2>Dela upp spårningen i linjesegment</h2></div>
+        <hr/>
+        <div>
+            <p>Sp&aring;rningslinjen delas upp i flera linjer d&auml;r varje linje &auml;r av angiven l&auml;ngd. Om din indatapunkt till exempel representerar en f&ouml;rorening och floden som den rinner ut i har en fl&ouml;deshastighet p&aring; 1 kilometer i timmen, eller 24 kilometer om dagen, kan du dela upp floden i 24 kilometerl&aring;nga segment. Om sp&aring;rningen delas upp i 24 kilometerl&aring;nga intervall visas ungef&auml;r var f&ouml;roreningen kommer att f&auml;rdas varje dag. Linjen symboliseras med stegvisa f&auml;rger baserat p&aring; avst&aring;nd och m&auml;rks med avst&aring;ndet fr&aring;n b&ouml;rjan av sp&aring;rningen. Det resulterande avst&aring;ndet inneh&aring;ller flera linjesegment som vart och ett inneh&aring;ller f&auml;lten  <i>FromDistance</i> och <i>ToDistance</i>.
+            </p>
+        </div>
+    </div>
+    <div id="MaxDistance">
+        <div><h2>Maximalt avstånd för spårningen</h2></div>
+        <hr/>
+        <div>
+            <p>Avg&ouml;r den totala l&auml;ngden f&ouml;r linjen som ska returneras. Om du anger omr&aring;desgeoobjekt f&ouml;r att klippa sp&aring;rningen kommer resultatet att klippas till omr&aring;desgeoobjektet, oavsett vilket avst&aring;nd du anger h&auml;r.
+            </p>
+        </div>
+    </div>
+    <div id="ClipArea">
+        <div><h2>Klipp ut utdata till</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan antingen rita eller ange ett lager f&ouml;r det omr&aring;de d&auml;r du vill att sp&aring;rningen ska klippas. Om du till exempel bara vill att sp&aring;rningsresultatet ska finnas inom ditt unders&ouml;kningsomr&aring;de, till exempel din kommun, anv&auml;nder du kommungeoobjektet som indata s&aring; att sp&aring;rningen stannar vid kommungr&auml;nsen.
+            </p>
+        </div>
+    </div>
+    <div id="OutputTrace">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagernamnet redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Om du anv&auml;nder listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+            <p> Det h&auml;r verktyget f&ouml;rbrukar inte krediter.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

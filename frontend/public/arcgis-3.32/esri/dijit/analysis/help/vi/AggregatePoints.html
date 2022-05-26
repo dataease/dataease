@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Tổng hợp điểm</h2><p/>
+        <h2><img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" alt="Tổng hợp điểm"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y l&agrave;m việc với một lớp đối tượng dạng điểm v&agrave; một lớp đối tượng dạng v&ugrave;ng. Đầu ti&ecirc;n c&ocirc;ng cụ x&aacute;c định c&aacute;c điểm nằm trong phạm vi từng v&ugrave;ng. Sau khi x&aacute;c định mối quan hệ kh&ocirc;ng gian giữa điểm v&agrave; v&ugrave;ng, số liệu thống k&ecirc; về tất cả c&aacute;c điểm trong từng v&ugrave;ng sẽ được t&iacute;nh to&aacute;n v&agrave; g&aacute;n v&agrave;o v&ugrave;ng tương ứng. Số liệu thống k&ecirc; cơ bản nhất l&agrave; số điểm t&iacute;nh to&aacute;n trong một v&ugrave;ng, nhưng bạn cũng c&oacute; thể lấy số liệu thống k&ecirc; kh&aacute;c. 
+    </p>
+    <p>V&iacute; dụ: giả sử bạn c&oacute; c&aacute;c đối tượng dạng điểm về c&aacute;c vị tr&iacute; qu&aacute;n c&agrave; ph&ecirc; v&agrave; c&aacute;c đối tượng dạng v&ugrave;ng của c&aacute;c quận v&agrave; bạn muốn tổng kết doanh số b&aacute;n c&agrave; ph&ecirc; theo quận. Giả sử c&aacute;c qu&aacute;n c&agrave; ph&ecirc; c&oacute; thuộc t&iacute;nh    <i>TOTAL_SALES</i>, bạn c&oacute; thể lấy tổng số tất cả <i>TOTAL_SALES</i> trong từng quận hoặc <i>TOTAL_SALES</i> 
+tối thiểu hoặc tối đa trong từng quận hoặc độ lệch chuẩn về doanh số trong phạm vi từng quận.
+    </p>
+    <p>Nếu chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b>, th&igrave; chỉ c&aacute;c đối tượng được nh&igrave;n thấy trong lớp điểm đầu v&agrave;o v&agrave; lớp khu vực trong phạm vi bản đồ hiện tại mới được ph&acirc;n t&iacute;ch. Nếu bỏ chọn, tất cả c&aacute;c đối tượng trong lớp điểm v&agrave; lớp khu vực đầu v&agrave;o sẽ được ph&acirc;n t&iacute;ch, ngay cả khi ch&uacute;ng nằm ngo&agrave;i phạm vi bản đồ hiện tại.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Chọn lớp có chứa các điểm để tổng hợp vào khu vực</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp điểm sẽ được tổng hợp v&agrave;o khu vực.
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp từ bản đồ của bạn, bạn c&oacute; thể chọn  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới c&ugrave;ng trong danh s&aacute;ch xổ xuống. T&ugrave;y chọn n&agrave;y mở ra một thư viện, tại đ&oacute; bạn c&oacute; thể duyệt v&agrave; chọn c&aacute;c bộ dữ liệu từ nhiều nguồn kh&aacute;c nhau để sử dụng trong ph&acirc;n t&iacute;ch của m&igrave;nh. 
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Chọn lớp có chứa khu vực tổng hợp</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp khu vực m&agrave; c&aacute;c điểm sẽ được tổng hợp từ đ&oacute;. Bất kỳ điểm n&agrave;o thuộc phạm vi ranh giới của v&ugrave;ng trong lớp n&agrave;y sẽ được t&iacute;nh to&aacute;n v&agrave; tổng hợp t&ugrave;y &yacute; theo lựa chọn số liệu thống k&ecirc; của bạn.  
+            </p>
+            <p>Bạn c&oacute; thể lựa chọn giữa lớp v&ugrave;ng bạn đ&atilde; cung cấp hoặc giữa những bin đ&atilde; được tạo ra khi c&ocirc;ng cụ chạy. Khi tạo c&aacute;c bin, đối với bin  <b>H&igrave;nh vu&ocirc;ng</b>, số lượng v&agrave; đơn vị cụ thể sẽ x&aacute;c định chiều cao v&agrave; chiều d&agrave;i của h&igrave;nh vu&ocirc;ng. Đối với <b>H&igrave;nh lục gi&aacute;c</b>, số lượng v&agrave; đơn vị cụ thể sẽ x&aacute;c định khoảng c&aacute;ch giữa c&aacute;c mặt song song.
+            </p>
+            <p>B&ecirc;n cạnh việc chọn một lớp từ bản đồ của bạn, bạn c&oacute; thể chọn  <b>Chọn Lớp Ph&acirc;n t&iacute;ch</b> ở dưới c&ugrave;ng trong danh s&aacute;ch xổ xuống. T&ugrave;y chọn n&agrave;y mở ra một thư viện, tại đ&oacute; bạn c&oacute; thể duyệt v&agrave; chọn c&aacute;c bộ dữ liệu từ nhiều nguồn kh&aacute;c nhau để sử dụng trong ph&acirc;n t&iacute;ch của m&igrave;nh. 
+            </p>
+        </div>
+    </div>
+    <div id="KeepBoundaryNoPoints">
+        <div><h2>Giữ vùng không có điểm</h2></div>
+        <hr/>
+        <div>
+            <p>X&aacute;c định xem v&ugrave;ng n&agrave;o kh&ocirc;ng c&oacute; c&aacute;c điểm xuất hiện trong lớp kết quả. Nếu bỏ chọn, c&aacute;c v&ugrave;ng kh&ocirc;ng c&oacute; điểm sẽ kh&ocirc;ng xuất hiện trong kết quả. Nếu chọn, c&aacute;c v&ugrave;ng kh&ocirc;ng c&oacute; điểm sẽ xuất hiện trong kết quả.  
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Thêm số liệu thống kê</h2></div>
+        <hr/>
+        <div>
+            <p>Bạn c&oacute; thể t&iacute;nh to&aacute;n số liệu thống k&ecirc; về c&aacute;c thuộc t&iacute;nh của lớp điểm đầu v&agrave;o như tổng số, trung b&igrave;nh, tối thiểu, tối đa v&agrave; độ lệch chuẩn. Lớp kết quả sẽ chứa một thuộc t&iacute;nh mới cho mỗi số liệu thống k&ecirc; được t&iacute;nh to&aacute;n. C&oacute; thể th&ecirc;m bất kỳ số lượng thống k&ecirc; bằng c&aacute;ch chọn một thuộc t&iacute;nh v&agrave; số liệu thống k&ecirc; (một hộp thả xuống mới sẽ xuất hiện).
+ 
+            </p>
+            <p>Nếu lớp tổng kết kh&ocirc;ng c&oacute; bất kỳ trường số n&agrave;o, dữ liệu thống k&ecirc; bổ sung sẽ kh&ocirc;ng khả dụng.
+            </p>
+        </div>
+    </div>
+    <div id="GroupByField">
+        <div><h2>Chọn trường để nhóm theo</h2></div>
+        <hr/>
+        <div>
+            <p> Bạn c&oacute; thể tạo c&aacute;c nh&oacute;m thống k&ecirc; bằng một thuộc t&iacute;nh trong lớp điểm đầu v&agrave;o. V&iacute; dụ: nếu bạn đang tổng hợp tội phạm cho ranh giới l&acirc;n cận, bạn c&oacute; thể c&oacute; một thuộc t&iacute;nh <i>Crime_type</i> với năm loại tội phạm kh&aacute;c nhau. Mỗi loại tội phạm ri&ecirc;ng biệt tạo th&agrave;nh một nh&oacute;m v&agrave; sẽ t&iacute;nh to&aacute;n số liệu thống k&ecirc; m&agrave; bạn chọn cho mỗi gi&aacute; trị <i>Crime_type</i> ri&ecirc;ng biệt. Số liệu thống k&ecirc; cho từng nh&oacute;m, cũng như số lượng c&aacute;c điểm, sẽ được hiển thị trong cửa sổ lớp pop-up của kết quả. Khi bạn chọn một thuộc t&iacute;nh nh&oacute;m, hai kết quả được tạo ra: lớp kết quả v&agrave; bảng kết quả c&oacute; chứa c&aacute;c số liệu thống k&ecirc; cho từng nh&oacute;m ri&ecirc;ng biệt.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Thêm thiểu số, đa số</h2></div>
+        <hr/>
+        <div>
+            <p>Hộp đ&aacute;nh dấu n&agrave;y được bật khi bạn chọn một trường để gom nh&oacute;m theo. Nếu bạn muốn t&igrave;m ra c&aacute;c gi&aacute; trị thuộc t&iacute;nh trong mỗi nh&oacute;m l&agrave; thiểu số (chiếm &iacute;t ưu thế nhất) hoặc đa số (chiếm nhiều ưu thế nhất) trong mỗi ranh giới, chọn  <b>Th&ecirc;m thiểu số, đa số</b>. Khi bạn chọn <b>Th&ecirc;m thiểu số, đa số</b>, hai trường mới được th&ecirc;m v&agrave;o lớp kết quả của bạn. Nếu bạn cũng chọn <b>Th&ecirc;m tỷ lệ phần trăm</b>, hai trường bổ sung được th&ecirc;m v&agrave;o lớp kết quả chứa tỷ lệ phần trăm c&aacute;c gi&aacute; trị thuộc t&iacute;nh thiểu số v&agrave; đa số trong mỗi nh&oacute;m.
+            </p>
+            <p>V&iacute; dụ: nếu bạn l&agrave; một nh&agrave; quy hoạch th&agrave;nh phố v&agrave; bạn muốn t&igrave;m hiểu lo&agrave;i c&acirc;y n&agrave;o &iacute;t nhất v&agrave; lo&agrave;i n&agrave;o nhiều nhất trong tất cả c&aacute;c c&ocirc;ng vi&ecirc;n th&agrave;nh phố, tổng hợp dữ liệu c&acirc;y của bạn với c&aacute;c khu vực c&ocirc;ng vi&ecirc;n v&agrave; chọn t&ugrave;y chọn n&agrave;y.
+            </p>
+        </div>
+    </div>
+    <div id="PercentPoints">
+        <div><h2>Thêm phần trăm</h2></div>
+        <hr/>
+        <div>
+            <p>Hộp chọn n&agrave;y được bật khi bạn chọn một trường để nh&oacute;m theo. Chọn  <b>Th&ecirc;m tỷ lệ phần trăm</b> nếu bạn muốn t&igrave;m tỷ lệ phần trăm của từng gi&aacute; trị thuộc t&iacute;nh tổng từng nh&oacute;m. Một trường mới sẽ được th&ecirc;m v&agrave;o bảng kết quả v&agrave; chứa tỷ lệ phần trăm của từng gi&aacute; trị thuộc t&iacute;nh trong từng nh&oacute;m. Nếu bạn chọn <b>Th&ecirc;m thiểu số, đa số</b>, hai trường bổ sung sẽ được th&ecirc;m v&agrave;o lớp kết quả v&agrave; chứa tỷ lệ phần trăm c&aacute;c gi&aacute; trị thuộc t&iacute;nh thiểu số v&agrave; đa số trong mỗi nh&oacute;m.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&acirc;y l&agrave; t&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu t&ecirc;n lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Sử dụng chức năng  <b>Lưu kết quả trong</b> menu thả xuống, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong phần <b>Nội dung của T&ocirc;i</b> nơi sẽ lưu trữ kết quả của bạn.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

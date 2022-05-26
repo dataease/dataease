@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>데이터 추출(Extract Data)</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="데이터 추출"></h2>
+        <hr/>
+    <p>이 도구를 사용하면 지정된 관심 영역에 대한 데이터를 선택하여 다운로드할 수 있습니다. 선택한 레이어는 ZIP, CSV 또는 KMZ 파일에 추가됩니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>추출할 레이어</h2></div>
+        <hr/>
+        <div>
+            <p>콘텐츠 목록에 있는 레이어 중에서 피처를 추출할 레이어입니다. 선택한 레이어는 추출되어 결과 ZIP 또는 CSV 파일에 포함됩니다.
+            </p>
+            <p>추출할 레이어 목록에 레이어를 나타내려면 데이터를 소유하거나 데이터 소유자가 데이터를 내보내도록 허용해야 합니다. 소유한 데이터에 대해 데이터 내보내기를 활성화하려면 
+                <ul>
+                    <li>데이터의 항목 설명을 엽니다.
+                    </li>
+                    <li> <b>설정</b> 탭을 클릭합니다.
+                    </li>
+                    <li> <b>데이터 내보내기</b> 섹션이 나올 때까지 화면을 아래로 스크롤합니다.
+                    </li>
+                    <li> <b>다른 사용자가 다른 형식으로 내보내도록 허용</b>을 선택합니다.  작업을 마치면 <b>저장</b>을 클릭합니다.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>분석 레이어에 첨부 파일이 포함된 경우 결과 데이터 형식이 파일 지오데이터베이스이고  <b>클립 피처</b>의 선택이 취소되어 있을 때만 첨부 파일이 추출됩니다.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>처리 범위</h2></div>
+        <hr/>
+        <div>
+            <p>결과 ZIP 또는 CSV 파일에 포함할 피처를 정의하는 영역입니다. 다음 중에서 선택할 수 있습니다.
+                <ul>
+                    <li>맵의 현재 가시 범위( <b>화면 범위와 동일함</b>)
+                    </li>
+                    <li>콘텐츠 목록에 있는 레이어 중 하나 선택한 레이어가 포인트나 라인 피처인 경우 레이어의 범위가 연구 영역으로 사용됩니다.
+                    </li>
+                    <li>처리 범위를 정의하는 영역 그리기
+                    </li>
+                </ul>
+                 맵 범위 내에 완전히 포함된 모든 피처가 추출됩니다. 완전히 범위 내에 있지 않고 맵 범위 경계를 가로지르거나 교차하는 피처의 경우 다음 두 가지 옵션 중에서 선택할 수 있습니다.
+                <ul>
+                    <li> <b>피처 선택</b> - 처리 범위의 경계를 가로지르는 피처 전체가 추출됩니다.
+                    </li>
+                    <li> <b>클립 피처</b> - 처리 범위 내에 있는 피처 부분만 추출됩니다.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>결과 데이터 형식</h2></div>
+        <hr/>
+        <div>
+            <p>추출할 데이터의 형식입니다. 라인 또는 영역 피처를 CSV 파일로 내보낼 경우 비공간 속성만 추출되고, 포인트 피처를 내보낼 경우 공간 속성과 비공간 속성이 둘 다 추출됩니다.  
+            </p>
+            <p>추출된 데이터는 웹 메르카토르 1984(Web Mercator 1984) 투영을 사용합니다.  CSV 파일의 경우  <i>Lat</i> 및 <i>Long</i> 필드가 웹 메르카토르 1984 좌표계를 사용하여 데이터에 추가됩니다.
+            </p> 
+            <p>지원되는 결과 형식은 다음과 같습니다.
+                <ul>
+                    <li>쉼표로 구분된 값(CSV) -  <code>.csv</code> 또는 <code>.zip</code>
+                    </li>
+                    <li>파일 지오데이터베이스 -  <code>.zip</code>
+                    </li>
+                    <li>키홀 마크업 언어(KML) -  <code>.kmz</code> 또는 <code>.zip</code>
+                    </li>
+                    <li>쉐이프파일 -  <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>결과 파일 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에 추가되는 항목의 이름입니다.  항목 이름은 선택한 <b>출력 데이터 형식</b>을 기반으로 합니다. 항목이 이미 있는 경우 다른 이름을 제공하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 상자를 사용하여 <b>내 콘텐츠</b>에서 결과를 저장할 폴더의 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

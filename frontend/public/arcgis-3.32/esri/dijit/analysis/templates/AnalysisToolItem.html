@@ -1,0 +1,9 @@
+<div class='${cssClass.root}' data-dojo-attach-point="_toolCtr" style="cursor:pointer;cursor:hand;" data-dojo-attach-event="onclick:_handleToolIconClick">
+  <div data-dojo-attach-point='_toolIcon'></div>
+  <div data-dojo-attach-point="_toolContent" class='${cssClass.toolContent}'>
+    <a  href="#" class='${cssClass.helpLink}' esriHelpTopic="toolDescription" data-dojo-attach-point="_helpIconNode"></a>
+  	<label data-dojo-attach-point='_toolNameLabel' class="${cssClass.toolNameLabel}" style="cursor:pointer;cursor:hand;"></label>
+    <p data-dojo-attach-point="_toolDesc" class="${cssClass.toolDesc}"></p>
+  </div>
+  <div class='${cssClass.comingSoonContent}' data-dojo-attach-point="optionsDiv" style="margin-top:0.5em;font-size:0.85em;"><label class="${cssClass.comingSoonLabel}">${i18n.comingSoonLabel}</label></div>	
+</div>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Preklapanje slojeva</h2><p/>
+        <h2><img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" alt="Preklapanje slojeva"></h2>
+        <hr/>
+    <p>Preklapanje kombinuje dva ili vi&scaron;e slojeva u jedan sloj. O preklapanju možete da razmi&scaron;ljate kao o gledanju kroz naslagane mape i kreiranju jedne mape koja sadrži sve informacije pronađene u naslaganim mapama. Preklapanje je mnogo vi&scaron;e od spajanja geometrije; svi atributi geoobjekata koji učestvuju u preklapanju prenose se do konačnog proizvoda. Preklapanje se koristi da odgovori na jedno od najosnovnijih pitanja geografije: &bdquo;&Scaron;ta je iznad čega?&ldquo; Na primer:
+        <ul>
+            <li>Koje parcele su unutar 100-godi&scaron;njeg vodoplavnog područja? (Unutar je drugi način da se kaže iznad.)
+                  
+            </li>
+            <li>Koji putevi su unutar kojih okruga?
+            </li>
+            <li>Upotreba koje zemlje je iznad kog tipa tla?
+                 
+            </li>
+            <li>Koji bunari su unutar napu&scaron;tenih vojnih baza?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Ako je opcija  <b>Koristi trenutni obuhvat mape</b> izabrana, biće preklopljeni samo oni geoobjekti na ulaznom sloju i sloju preklapanja koji su vidljivi unutar trenutnog obuhvata mape. Ako ova opcija nije potvrđena, biće preklopljeni svi geoobjekti u ulaznom sloju i sloju preklapanja, čak i ako su izvan trenutnog obuhvata mape.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Odaberite ulazni sloj</h2></div>
+        <hr/>
+        <div>
+            <p>Tačkasti i linijski sloj ili sloj oblasti koji će biti preklopljen.
+            </p>
+            <p>Pored biranja sloja sa mape, možete da selektujete  <b>Izaberi sloj za analizu</b> koji se nalazi na dnu padajuće liste. Ova opcija otvara galeriju gde možete da pregledate i birate skupove podataka iz raznih izvora za kori&scaron;ćenje u va&scaron;oj analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="OverlayLayer">
+        <div><h2>Odaberite sloj preklapanja</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj kojim će biti preklopljen ulazni sloj.  
+            </p>
+            <p>Pored biranja sloja sa mape, možete da selektujete  <b>Izaberi sloj za analizu</b> koji se nalazi na dnu padajuće liste. Ova opcija otvara galeriju gde možete da pregledate i birate skupove podataka iz raznih izvora za kori&scaron;ćenje u va&scaron;oj analizi. 
+            </p> 
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>Odaberite metod preklapanja</h2></div>
+        <hr/>
+        <div>
+            <p>Metod preklapanja defini&scaron;e kako se kombinuju ulazni sloj i sloj preklapanja.  
+
+                <ul>
+                    <li> <b>Presecanje</b> &ndash; Rezultat će sadržati samo one geoobjekte ili delove geoobjekata iz sloja preklapanja koji se preklapaju sa geoobjektima iz ulaznog sloja. Prilikom presecanja linijskih geoobjekata ili geoobjekata oblasti, imate opciju da navedete tip geoobjekata koje želite kao izlaz.
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>Tačke sa tačkama
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="Tačke i tačkasti ulaz">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="Tačke i tačke sa tačkastim izlazom">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Tačke sa linijama
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-F1E6C6C8-4F51-4063-984D-0FC8D08EB2D2-web.png" alt="Tačke i linijski ulaz">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-02CFAFDC-1B3C-4C4B-A58C-7B0B78BA0B56-web.png" alt="Tačke i linije sa tačkastim izlazom">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Tačke sa oblastima
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-5EE90BD6-CC3D-4E2F-A5D0-DC57298E8416-web.png" alt="tačke i oblasti kao ulaz">
+                                </p>
+                            </td>
+                            <td> <img src="../images/GUID-5CCA360F-D4C9-43AB-8FB2-E6E62DE93BD4-web.png" alt="tačke i oblasti sa tačkastim izlazom">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Linije sa linijama 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="Linije i linijski ulaz">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-DDCCB226-6490-4914-B87C-299125466256-web.png" alt="Linije i linije sa tačkastim izlazom">
+                                </p>
+                                <p> <img src="../images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="Linije i linije sa linijskim izlazom">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Linije sa oblastima
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-E38EB7D6-9D35-4E0D-937A-9FEC4144AF2E-web.png" alt="Linije i oblasti kao ulaz">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-639F492C-BEE7-4A5F-AEBC-325B74FEC766-web.png" alt="Linije i oblasti sa tačkastim izlazom">
+                                </p>
+                                <p> <img src="../images/GUID-58DF5CF6-0A56-4717-AD9C-C3BEC8EA6906-web.png" alt="Linije i oblasti sa linijskim izlazom">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Oblasti sa oblastima
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="Oblasti i oblasti kao ulaz">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-3F71AD46-A6A2-436D-8BBA-13E014BB94D0-web.png" alt="Oblasti i oblasti sa tačkastim izlazom">
+                                </p>
+                                <p> <img src="../images/GUID-6AF62F09-6D32-4212-97C6-844580E34A22-web.png" alt="Oblasti i oblasti sa linijskim izlazom">
+                                </p>
+                                <p> <img src="../images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="Oblasti i oblasti sa oblastima kao izlazom">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>Unija</b> &ndash; rezultat će sadržati geoobjekte iz ulaznog sloja i sloja preklapanja. Opcija Unija je dostupna samo ako ulazni sloj i sloj preklapanja sadrže geoobjekte oblasti.
+                    </li>
+                    <li> <b>Izbri&scaron;i</b> &ndash; Rezultat će sadržati geoobjekte ili delove geoobjekata iz sloja preklapanja koji se ne preklapaju sa oblastima iz ulaznog sloja. Sloj preklapanja može da sadrži tačkaste, linijske ili geoobjekte oblasti.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Ako je opcija  <b>Koristi trenutni obuhvat mape</b> izabrana, biće preklopljeni samo oni geoobjekti iz ulaznog sloja i sloja preklapanja koji su vidljivi unutar trenutnog obuhvata mape. Ako ova opcija nije potvrđena, biće preklopljeni svi geoobjekti u ulaznom sloju i sloju preklapanja, čak i ako su izvan trenutnog obuhvata mape.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p> Ovo je naziv sloja koji će biti kreiran u <b>Mom sadržaju</b> i dodat na mapu. Imaće isti tip geoobjekata (oblasti, linije ili tačke) kao sloj preklapanja. Podrazumevano ime je zasnovano na metodu preklapanja i imenu ulaznog sloja. Ako sloj već postoji, bićete upitani da unesete drugo ime.
+            </p>
+            <p>Koristeći padajuće polje  <b>Sačuvaj rezultat u</b> možete da navedete ime fascikle u <b>Mom sadržaju</b> u kojoj će rezultat biti sačuvan.
+            </p> 
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/tr/BuildMultiVariableGrid",{binsLabel:"\u00c7ok de\u011fi\u015fkenli grid olu\u015fturmak i\u00e7in kullan\u0131lacak kutular\u0131n t\u00fcr\u00fcn\u00fc se\u00e7in",layersAttrLabel:"Gride eklemek istedi\u011finiz giri\u015f katmanlar\u0131 ve de\u011fi\u015fkenleri se\u00e7in",itemDescription:"Detay katman\u0131 \u00c7ok De\u011fi\u015fkenli Grid Olu\u015ftur \u00e7al\u0131\u015ft\u0131r\u0131larak olu\u015fturuldu.",itemTags:"Analiz Sonucu, \u00c7ok De\u011fi\u015fkenli Grid Olu\u015ftur",
+itemSnippet:"Detay katman\u0131 \u00c7ok De\u011fi\u015fkenli Grid Olu\u015ftur ile olu\u015fturuldu.",addVariables:"De\u011fi\u015fken Ekle"});

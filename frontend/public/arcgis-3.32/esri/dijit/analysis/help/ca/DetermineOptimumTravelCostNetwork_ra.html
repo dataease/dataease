@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Determina la xarxa de cost de viatge òptima</h2><p/>
+        <h2><img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" alt="Il&middot;lustraci&oacute; de l'eina Determina la xarxa de cost de viatge &ograve;ptima"></h2>
+        <hr/>
+    <p>Aquesta eina calcula la xarxa de cost &ograve;ptima a partir d'un conjunt de regions d'entrada.
+    </p>
+    <p>Un exemple d'aplicaci&oacute; d'aquesta eina &eacute;s trobar la millor xarxa per a vehicles d'emerg&egrave;ncia.
+    </p>
+    <p>Si s'ha activat  <b>Utilitza l'extensi&oacute; del mapa actual</b>, nom&eacute;s s'analitzaran les ubicacions de la capa d'entrada que siguin visibles a l'extensi&oacute; de mapa actual. Si l'opci&oacute; est&agrave; desactivada, s'analitzaran totes les ubicacions de la capa d'entrada, encara que estiguin fora de l'extensi&oacute; de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRegionsRasterOrFeatures">
+        <div><h2>Trieu la capa d'ubicació de ràster o entitat per determinar les rutes de viatge entre</h2></div>
+        <hr/>
+        <div>
+            <p>Regions d'entrada que es connectaran amb la xarxa de menor cost.
+            </p>
+            <p>Les regions es poden definir amb un servei d'imatges o un servei d'entitats.
+            </p>
+            <p>Per al servei d'imatges, les regions es defineixen mitjan&ccedil;ant grups de cel&middot;les contig&uuml;es (adjacents) del mateix valor. Cadascuna de les regions ha d'estar numerada de manera &uacute;nica. Les cel&middot;les que no formin part de cap regi&oacute; han de ser NoData. El tipus de r&agrave;ster ha de ser enter i els valors poden ser positius o negatius.
+            </p>
+            <p>Per al servei d'entitats, l'entrada pot ser un punt, una l&iacute;nia o un pol&iacute;gon.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Trieu la capa ràster de cost de viatge</h2></div>
+        <hr/>
+        <div>
+            <p>R&agrave;ster que defineix la imped&agrave;ncia o el cost del moviment planim&egrave;tric a trav&eacute;s de cada cel&middot;la.
+            </p>
+            <p>El valor de cada ubicaci&oacute; de cel&middot;la representa la dist&agrave;ncia de cost per unitat per moure's a trav&eacute;s de la cel&middot;la. Cada valor d'ubicaci&oacute; de cel&middot;la es multiplica per la resoluci&oacute; de la cel&middot;la alhora que es compensa el moviment diagonal per obtenir el cost total de passar a trav&eacute;s de la cel&middot;la.
+            </p>
+            <p>Els valors del r&agrave;ster de costos poden ser enters o punts flotants, per&ograve; no poden ser negatius ni zero (no podeu tenir un cost negatiu ni de zero).
+            </p> 
+        </div>
+    </div>
+    <div id="outputOptimumNetworkName">
+        <div><h2>Nom de la capa de polilínia de les rutes òptimes de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Podeu especificar el nom d'una carpeta de  <b>El meu contingut</b> on es desar&agrave; el resultat mitjan&ccedil;ant el quadre desplegable <b>Desa el resultat a</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputNeighborNetworkName">
+        <div><h2>Nom de la capa de polilínia de les rutes veïnes de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Podeu especificar el nom d'una carpeta de  <b>El meu contingut</b> on es desar&agrave; el resultat mitjan&ccedil;ant el quadre desplegable <b>Desa el resultat a</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

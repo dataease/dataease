@@ -1,0 +1,52 @@
+@import "variables";
+* {
+  &,
+  &:before,
+  &:after {
+    @include box-sizing(border-box);
+  }
+}
+
+// Reset
+html {
+  font-size: 10px;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+body {
+  font-family: $font-family-base;
+  font-size: $font-size-base;
+  line-height: $line-height-base;
+  color: $text-color;
+  background-color: $body-bg;
+}
+
+@import "../icons/style.css";
+@import "dijit.css";
+@import "icons/CommonIcons";
+@import "icons/EditorIcons";
+@import "form/Button";
+@import "form/Checkbox";
+@import "form/NumberSpinner";
+@import "form/RadioButton";
+@import "form/Select";
+@import "form/Slider";
+@import "form/Textbox";
+@import "layout/AccordionContainer";
+@import "layout/BorderContainer";
+@import "layout/ContentPane";
+@import "layout/TabContainer";
+@import "Calendar";
+@import "ColorPalette";
+@import "Common";
+@import "Dialog";
+@import "Editor";
+@import "InlineEditBox";
+@import "Menu";
+@import "ProgressBar";
+@import "TimePicker";
+@import "TitlePane";
+@import "Toolbar";
+@import "Tree";
+// RTL
+@import "calcite_dojo_rtl";

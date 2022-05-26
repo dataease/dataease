@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>廣義線性迴歸</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="GeneralizedLinearRegression 工作流程圖"></h2>
+        <hr/>
+    <p>執行廣義線性迴歸 (GLR) 以產生預測，或依據其與說明變數集之間的關係來塑模相依變數。此工具可用來擬合連續 (Gaussian)、二進位（邏輯）和計數 (Poisson) 模型。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>分析類型</h2></div>
+        <hr/>
+        <div>
+            <p>指定工具的操作模式。可執行此工具，培訓模型以便只評估效能，或培訓模型並預測圖徵。預測類型如下所示：
+                <ul>
+                    <li> <b>擬合模型以評估模型效能</b> - 將擬合模型並將其套用至輸入資料。先使用此選項以評估模型的精確度，再針對新資料集產生預測，或理解預測之變數的關係和驅動因素。此選項將輸出擬合的資料和模型診斷的圖徵服務。
+                    </li>
+                    <li> <b>擬合模型和預測值</b> - 將針對輸入圖徵和預測圖徵產生預測或分類。必須為預測圖徵和要預測的圖徵提供說明變數。此選項將輸出擬合至輸入資料的圖徵服務、預測的值和模型診斷的圖徵服務。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>擬合模型以評估模型效能</h2></div>
+        <hr/>
+        <div>
+            <p>若要擬合模型和調查擬合，請使用此模式。
+            </p>
+            <p>使用此選項時，將使用輸入圖層來培訓模型。先使用此選項以評估模型的精確度，再針對新資料集產生預測。此選項將輸出模型診斷，並將模型套用到您的培訓資料。
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>擬合模型和預測值</h2></div>
+        <hr/>
+        <div>
+            <p>若要擬合模型，並將模型套用到資料集以產生預測，請使用此模式。
+            </p>
+            <p>將針對圖徵產生預測或分類。此選項將輸出圖徵服務、模型診斷，及變數重要性的選用表格。
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>選擇圖層以從中產生模型</h2></div>
+        <hr/>
+        <div>
+            <p>包含相依和說明變數之點、線、區域或表列圖徵所屬的圖層。
+            </p>
+            <p>除了從地圖選擇圖層外，您也可以選擇下拉式清單底部的 <b>選擇分析圖層</b>，以瀏覽到大數據檔案分享資料集或圖徵圖層的內容。
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>選擇要塑模的欄位</h2></div>
+        <hr/>
+        <div>
+            <p>包含要塑模的觀察值和正在塑模之值類型的數值欄位。您可以模型三種值類型
+                <ul>
+                    <li>連續 - 表示連續值。使用的模型是 Gaussian，且工具執行普通最小平方迴歸。
+                    </li>
+                    <li>二進位 - 表示存在或不存在值。它必須是 1s 和 0s。使用的模型是邏輯迴歸。
+                    </li>
+                    <li>計數 - 表示離散和表示事件，例如，犯罪計數、疾病事件或交通事故。使用的模型是 Poisson 迴歸。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>選擇要預測值的圖層</h2></div>
+        <hr/>
+        <div>
+            <p>含圖徵的圖層，該圖徵表示必須計算估計值的位置。此資料集內的每個圖徵應包含指定的所有說明變數的值。將使用為輸入圖層所校正的模型來估計這些圖徵的相依變數。
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>選擇說明欄位</h2></div>
+        <hr/>
+        <div>
+            <p>一或多個欄位，表示可協助預測值的說明變數（欄位）。只有數值欄位可見。
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>選擇說明欄位的比對方式</h2></div>
+        <hr/>
+        <div>
+            <p>輸入圖層中的對應變數與預測圖層中變數的比對方式。表格只會包含產生模型時所使用的變數。只能使用數值。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果圖層名稱</h2></div>
+        <hr/>
+        <div>
+            <p> 將建立之圖層的名稱。若是寫入到 ArcGIS Data Store，您的結果將儲存於<b>我的內容</b>並新增至地圖中。若是寫入到大數據檔案分享，您的結果將儲存於大數據檔案分享並新增至其資訊清單中。不會將它新增到地圖。預設名稱參照工具名稱以及輸入圖層名稱。如果圖層已存在，工具將失敗。
+            </p>
+            <p>傳回的結果將視分析的類型而定。如果您正在擬合以評估模型擬合，則結果將包含與模型擬合的輸入資料圖層，和評估模型擬合的結果資訊。如果您正在擬合和預測，則結果將包含與模型擬合的輸入資料圖層、預測的結果圖層，和評估模型擬合的結果資訊。
+            </p>
+            <p>使用 <b>將結果儲存到</b>下拉式方塊寫入到 ArcGIS Data Store（關聯式或大型的時空資料儲存庫）時，可以在<b>我的內容</b>中指定將儲存結果的資料夾名稱。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

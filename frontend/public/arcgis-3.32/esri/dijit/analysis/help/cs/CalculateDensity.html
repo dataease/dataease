@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Vypočítat hustotu (Calculate Density)</h2><p/>
+        <h2><img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" alt="Vypoč&iacute;tat hustotu"></h2>
+        <hr/>
+    <p>N&aacute;stroj Vypoč&iacute;tat hustotu vytv&aacute;ř&iacute; mapu hustoty z bodov&yacute;ch nebo liniov&yacute;ch prvků rozprostřen&iacute;m zn&aacute;m&eacute;ho množstv&iacute; určit&eacute;ho jevu (v podobě atributů bodů nebo lini&iacute;) po mapě. V&yacute;sledkem je vrstva oblast&iacute; klasifikovan&yacute;ch od nejm&eacute;ně hust&yacute;ch po nejhust&scaron;&iacute;.   
+
+    </p>
+    <p>V př&iacute;padě vstupn&iacute;ch bodů by měl každ&yacute; bod vyjadřovat polohu určit&eacute; ud&aacute;losti, v&yacute;sledn&aacute; vrstva pak představuje počet ud&aacute;lost&iacute; na jednotkovou plochu. Vy&scaron;&scaron;&iacute; hodnota hustoty v nov&eacute;m um&iacute;stěn&iacute; znamen&aacute;, že se bl&iacute;zko dan&eacute;ho um&iacute;stěn&iacute; nach&aacute;z&iacute; v&iacute;ce bodů. V mnoha př&iacute;padech lze v&yacute;slednou vrstvu vykl&aacute;dat jako grafick&eacute; zobrazen&iacute; rizika budouc&iacute;ch ud&aacute;lost&iacute;. Pokud např&iacute;klad vstupn&iacute; body představuj&iacute; m&iacute;sta &uacute;deru blesku, lze v&yacute;slednou vrstvu vykl&aacute;dat jako grafick&eacute; vyj&aacute;dřen&iacute; rizika budouc&iacute;ch &uacute;derů blesku.
+    </p>
+    <p>V př&iacute;padě vstupn&iacute;ch lini&iacute; představuje povrch hustoty lini&iacute; celkov&eacute; množstv&iacute; lini&iacute; v&nbsp;bl&iacute;zkosti dan&eacute;ho um&iacute;stěn&iacute;. Jednotky vypoč&iacute;tan&yacute;ch hodnot hustoty vyjadřuj&iacute; d&eacute;lku lini&iacute; na jednotkovou plochu. Pokud např&iacute;klad linie představuj&iacute; řeky, bude v&yacute;sledn&aacute; vrstva představovat celkovou d&eacute;lku řek v&nbsp;oblasti vyhled&aacute;v&aacute;n&iacute;. Tento v&yacute;sledek lze využ&iacute;t k&nbsp;identifikaci oblast&iacute; př&iacute;zniv&yacute;ch pro pastvu zv&iacute;řat.
+    </p>
+    <p> Mezi jin&eacute; př&iacute;pady využit&iacute; tohoto n&aacute;stroje patř&iacute;:
+        <ul>
+            <li>Vytv&aacute;řen&iacute; map hustoty trestn&yacute;ch činů, kter&eacute; pomohou policejn&iacute;m oddělen&iacute;m odpov&iacute;daj&iacute;c&iacute;m způsobem přidělit zdroje oblastem s&nbsp;vysokou m&iacute;rou kriminality.
+            </li>
+            <li>V&yacute;počet hustoty nemocnic v&nbsp;kraji. V&yacute;sledn&aacute; vrstva uk&aacute;že oblasti s&nbsp;vysokou a n&iacute;zkou m&iacute;rou dostupnosti nemocnic. Tuto informaci lze využ&iacute;t při rozhodov&aacute;n&iacute;, kde by měly b&yacute;t postaveny nov&eacute; nemocnice.
+            </li>
+            <li>Identifikace oblast&iacute; s&nbsp;vysok&yacute;m rizikem lesn&iacute;ch pož&aacute;rů na z&aacute;kladě historick&yacute;ch um&iacute;stěn&iacute; lesn&iacute;ch pož&aacute;rů.
+            </li>
+            <li>Vyhled&aacute;v&aacute;n&iacute; komunit (usedlost&iacute;), kter&eacute; se nach&aacute;zej&iacute; daleko od hlavn&iacute;ch silnic, za &uacute;čelem zji&scaron;těn&iacute;, kde je třeba postavit nov&eacute; silnice.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Zvolte vrstvu bodů nebo linií, která se použije pro výpočet hustoty.</h2></div>
+        <hr/>
+        <div>
+            <p>Vrstva bodů nebo lini&iacute;, kter&aacute; se použije pro v&yacute;počet hustoty. 
+            </p>
+            <p>Vrstvu můžete vybrat ze sv&eacute; mapy nebo můžete zvolit možnost  <b>Vybrat vrstvu anal&yacute;zy</b>, kter&aacute; se nach&aacute;z&iacute; na konci rozbalovac&iacute;ho seznamu. Pomoc&iacute; t&eacute;to možnosti se otevře galerie, kde můžete proch&aacute;zet a&nbsp;vyb&iacute;rat datov&eacute; sady z&nbsp;různ&yacute;ch vrstev, kter&eacute; můžete použ&iacute;t ve sv&eacute; anal&yacute;ze. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Použít pole počtu</h2></div>
+        <hr/>
+        <div>
+            <p>Uveďte pole, kter&eacute; určuje počet ud&aacute;lost&iacute; v&nbsp;každ&eacute;m um&iacute;stěn&iacute;. Pokud např&iacute;klad va&scaron;e body představuj&iacute; města, můžete jako pole počtu použ&iacute;t pole, kter&eacute; uv&aacute;d&iacute; počet obyvatel města. V&yacute;sledn&aacute; vrstva hustoty populace vypoč&iacute;t&aacute; vět&scaron;&iacute; hustoty populace u měst s&nbsp;vět&scaron;&iacute;m počtem obyvatel.
+            </p>
+            <p> Pokud použijete v&yacute;choz&iacute; možnost Ž&aacute;dn&eacute;, předpokl&aacute;d&aacute; se, že každ&eacute; um&iacute;stěn&iacute; představuje jedinou ud&aacute;lost.
+            </p>
+        </div>
+    </div>
+    <div id="radius">
+        <div><h2>Vzdálenost vyhledávání</h2></div>
+        <hr/>
+        <div>
+            <p>Zadejte vzd&aacute;lenost, kter&aacute; určuje, jak daleko se maj&iacute; při v&yacute;počtu hodnot hustoty hledat bodov&eacute; nebo liniov&eacute; prvky. Pokud např&iacute;klad zad&aacute;te vyhled&aacute;vac&iacute; vzd&aacute;lenost 10 000 metrů, bude hustota jak&eacute;hokoli um&iacute;stěn&iacute; ve v&yacute;stupn&iacute; vrstvě vypoč&iacute;t&aacute;na na z&aacute;kladě prvků ve vzd&aacute;lenosti 10 000 metrů od tohoto um&iacute;stěn&iacute;. Jak&eacute;koli um&iacute;stěn&iacute;, u něhož se ve vzd&aacute;lenosti 10 000 metrů nenach&aacute;z&iacute; ž&aacute;dn&eacute; jin&eacute; prvky, bude m&iacute;t nulovou hodnotu hustoty.     
+
+            </p>
+            <p>Pokud nen&iacute; zad&aacute;na ž&aacute;dn&aacute; vzd&aacute;lenost, vypoč&iacute;t&aacute; se v&yacute;choz&iacute; hodnota na z&aacute;kladě um&iacute;stěn&iacute; vstupn&iacute;ch prvků a hodnot v&nbsp;poli počtu (je-li pole počtu určeno).
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Oříznout výstup na</h2></div>
+        <hr/>
+        <div>
+            <p>Nakreslete nebo zadejte vrstvu určuj&iacute;c&iacute; oblast, ve kter&eacute; chcete vypoč&iacute;tat hustotu. Pokud např&iacute;klad prov&aacute;d&iacute;te v&yacute;počet hustoty ryb v jezeře, můžete v tomto parametru použ&iacute;t hranici jezera a v&yacute;stup se vykresl&iacute; pouze uvnitř jezera.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Klasifikovat podle</h2></div>
+        <hr/>
+        <div>
+            <p>Zvolte, jak budou hodnoty hustoty klasifikov&aacute;ny do oblast&iacute;.
+                <ul>
+                    <li>Stejn&yacute; interval &ndash; Oblasti se vytvoř&iacute; tak, aby byl rozsah hodnot hustoty stejn&yacute; pro každou oblast.
+                    </li>
+                    <li>Geometrick&yacute; interval &ndash; Intervaly tř&iacute;d jsou založeny na geometrick&yacute;ch řad&aacute;ch. Tato metoda zaji&scaron;ťuje, aby měl každ&yacute; rozsah tř&iacute;d přibližně stejn&yacute; počet hodnot v každ&eacute; tř&iacute;dě a aby změna mezi intervaly byla konzistentn&iacute;.
+                    </li>
+                    <li>Přirozen&eacute; zlomy &ndash; Intervaly tř&iacute;d oblast&iacute; jsou založeny na přirozen&yacute;ch shluc&iacute;ch dat. Identifikov&aacute;ny jsou v&yacute;razn&eacute; zlomov&eacute; hodnoty, kter&eacute; nejl&eacute;pe odděluj&iacute; jednotliv&eacute; tř&iacute;dy a shlukuj&iacute; v nich podobn&eacute; hodnoty. 
+                    </li>
+                    <li>Stejn&aacute; oblast &ndash; Oblasti se vytvoř&iacute; tak, aby velikost jednotliv&yacute;ch oblast&iacute; byla stejn&aacute;. Pokud je např&iacute;klad ve v&yacute;sledn&eacute; vrstvě vy&scaron;&scaron;&iacute; v&yacute;skyt hodnot vysok&eacute; hustoty než n&iacute;zk&eacute; hustoty, vytvoř&iacute; se pro vysok&eacute; hustoty v&iacute;ce oblast&iacute;.
+                    </li>
+                    <li>Směrodatn&aacute; odchylka &ndash; Oblasti jsou vytvořeny na z&aacute;kladě směrodatn&eacute; odchylky předpov&iacute;dan&yacute;ch hodnot hustoty. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Počet tříd</h2></div>
+        <hr/>
+        <div>
+            <p>Určuje počet tř&iacute;d (rozsah předpov&iacute;dan&yacute;ch hodnot) ve v&yacute;sledn&eacute; vrstvě. Každ&aacute; tř&iacute;da definuje hranici oblast&iacute;. Hodnoty těchto tř&iacute;d budou určeny v&yacute;&scaron;e uveden&yacute;m parametrem 
+ <b>Klasifikovat podle</b>.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Výstupní plošné jednotky</h2></div>
+        <hr/>
+        <div>
+            <p>Určete v&yacute;stupn&iacute; plo&scaron;nou jednotku. Hustota je počet dělen&yacute; plochou a tento parametr určuje plo&scaron;nou jednotku ve v&yacute;počtu hustoty.  
+
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>Toto je n&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; do mapy.  V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud n&aacute;zev vrstvy již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>V rozbalovac&iacute; nab&iacute;dce  <b>Uložit v&yacute;sledek do</b> můžete zadat n&aacute;zev složky ve složce <b>Můj obsah</b>, do kter&eacute; se m&aacute; v&yacute;sledek uložit.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

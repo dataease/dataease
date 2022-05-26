@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Derin Öğrenme Kullanarak Nesneleri Algıla</h2><p/>
+        <h2><img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" alt="Derin &Ouml;ğrenme Kullanarak Nesneleri Algıla"></h2>
+        <hr/>
+    <p>Bu ara&ccedil;, bulunan nesneleri i&ccedil;eren bir detay sınıfı oluşturmak i&ccedil;in girdi rasterı &uuml;zerinde eğitilmiş derin &ouml;ğrenme modeli &ccedil;alıştırır. Detaylar bulunan nesnelerin etrafındaki sınırlayıcı kutular veya &ccedil;okgenler veya nesnelerin merkezindeki noktalar olabilir.
+    </p>
+    <p> <b>Ge&ccedil;erli harita yayılımını kullan</b> işaretli ise, yalnızca ge&ccedil;erli harita yayılımında g&ouml;r&uuml;n&uuml;r olan raster alanı analiz edilir. İşaretli değilse, rasterın tamamı, ge&ccedil;erli harita yayılımının dışında bile olsa analiz edilir.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Nesneleri algılamak için kullanılan görüntüyü seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Nesneleri algılamak i&ccedil;in kullanılan girdi g&ouml;r&uuml;nt&uuml;s&uuml;.
+            </p> 
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Nesneleri algılamak için kullanılan derin öğrenme modelini seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Girdi derin &ouml;ğrenme paketi ( <code>.dlpk</code>) &ouml;ğesi.
+            </p>
+            <p>Derin &ouml;ğrenme paketi, Esri model tanımı JSON dosyası ( <code>.emd</code>), derin &ouml;ğrenme ikili model dosyası ve isteğe bağlı olarak kullanılacak Python raster fonksiyonundan oluşur.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Derin öğrenme modeli değişkenlerini belirtin</h2></div>
+        <hr/>
+        <div>
+            <p>İşlev değişkenleri, girdi modeli tarafından referans verilen Python raster fonksiyon sınıfında tanımlanır. Deneyler ve iyileştirmeler i&ccedil;in ek derin &ouml;ğrenme parametrelerini ve değişkenlerini burada listelersiniz, &ouml;r. hassaslığın ayarlanması i&ccedil;in bir g&uuml;ven eşiği gibi.
+            </p>
+            <p>Değişkenlerin adları, raster analiz sunucusundaki Python mod&uuml;l&uuml;n&uuml;n ara&ccedil; tarafından okunmasıyla doldurulur.
+            </p>
+        </div>
+    </div>
+    <div id="runNMS">
+        <div><h2>Çıktıdan yinelenen detayları kaldırın (opsiyonel)</h2></div>
+        <hr/>
+        <div>
+            <p>Yinelenen nesnelerin tanımlandığı ve daha d&uuml;ş&uuml;k g&uuml;venilirlik değeri olan yinelenen detayın kaldırıldığı, maksimum olmayan bir gizleme ger&ccedil;ekleştirir. 
+                <ul>
+                    <li>İşaretli değil&mdash;Algılanan t&uuml;m nesneler &ccedil;ıktı detay sınıfında olacaktır. Varsayılan değerdir.
+                        
+
+                    </li>
+                    <li>İşaretli&mdash;Algılanan yinelenen nesneleri kaldırır.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="confidenceScoreField">
+        <div><h2>Güvenilirlik puanı alanı</h2></div>
+        <hr/>
+        <div>
+            <p>Detay servisindeki alan, nesne algılama y&ouml;nteminin &ccedil;ıktısı olarak g&uuml;venilirlik puanlarını i&ccedil;erir.
+            </p>
+            <p> <b>Maksimum Olmayan Gizleme</b> parametresini işaretlerken bu parametre gereklidir.
+            </p>
+        </div>
+    </div>
+    <div id="classValueField">
+        <div><h2>Sınıf değeri alanı</h2></div>
+        <hr/>
+        <div>
+            <p>&Ccedil;ıktı detay servisindeki sınıf değeri alanı. Belirtilmediğinde ara&ccedil;  <i>Classvalue</i> ve <i>Value</i> standart sınıf değeri alanlarını kullanır. Bu alanlar yoksa, t&uuml;m detaylar aynı nesne sınıfı olarak değerlendirilir.
+            </p>
+        </div>
+    </div>
+    <div id="maxOverlapRatio">
+        <div><h2>Maksimum örtüşme düzeyi</h2></div>
+        <hr/>
+        <div>
+            <p>Kesişim alanının birleşme alanı &uuml;zerindeki oranı olarak tanımlanan iki &ouml;rt&uuml;şen detay i&ccedil;in maksimum &ouml;rt&uuml;şme oranı. Varsayılan değer 0'dir.
+            </p>
+        </div>
+    </div>
+    <div id="outputObjects">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adı. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>İ&ccedil;eriğim</b>&rsquo;de, <b>Sonu&ccedil;ları Kaydet</b> a&ccedil;ılır kutusunu kullanarak sonucun kaydedileceği klas&ouml;r&uuml;n adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

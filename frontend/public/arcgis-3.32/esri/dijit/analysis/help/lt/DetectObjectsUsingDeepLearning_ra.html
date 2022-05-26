@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Aptikti objektus naudojant gilųjį mokymąsi</h2><p/>
+        <h2><img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" alt="Aptikti objektus naudojant gilųjį mokymąsi"></h2>
+        <hr/>
+    <p>&Scaron;is įrankis įvesties rastrui naudoja apmokytą giliojo mokymosi modelį, kad sukurtų elementų klasę, kurioje yra įrankio rasti objektai. Elementai gali būti apriboti plotai arba poligonai aplink rastus objektus, arba ta&scaron;kai objektų centruose.
+    </p>
+    <p>Jei parinktis  <b>Naudoti esamą žemėlapio aprėptį</b> pažymėta, bus analizuojama tik dabartinėje žemėlapio aprėptyje matomas rastro plotas. Jei nepažymėta, bus analizuojamas visas rastras, net jei jis nepatenka į esamą žemėlapio aprėptį.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Pasirinkite, kuris vaizdas bus naudojamas aptikti objektus</h2></div>
+        <hr/>
+        <div>
+            <p>Įvesties vaizdas, kuris bus naudojamas aptikti objektus
+            </p> 
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Pasirinkite, kokį gilaus mokymosi modelį naudoti aptinkant objektus</h2></div>
+        <hr/>
+        <div>
+            <p>Įvesties giliojo mokymosi paketo ( <code>.dlpk</code>) elementas.
+            </p>
+            <p>Giliojo mokymosi paketą sudaro Esri modelio apra&scaron;o JSON failas ( <code>.emd</code>), giliojo mokymosi dvinario modelio failas ir (nebūtinai) naudojama Python rastrinė funkcija.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Nurodykite gilaus mokymosi modelio argumentus</h2></div>
+        <hr/>
+        <div>
+            <p>Funkcijos argumentai apibrėžiami įvesties modelyje nurodytoje Python rastro funkcijos klasėje. Būtent čia nurodote papildomus giliojo mokymosi parametrus ir argumentus, skirtus eksperimentuoti ir tobulinti, pavyzdžiui, pasitikėjimo ribą jautrumo korekcijoms.
+            </p>
+            <p>Argumentų pavadinimus įrankis i&scaron;platina skaitydamas Python modulį rastrų analizės serveryje.
+            </p>
+        </div>
+    </div>
+    <div id="runNMS">
+        <div><h2>Pašalinti besidubliuojančius išvesties elementus (neprivaloma)</h2></div>
+        <hr/>
+        <div>
+            <p>Atlieka slopinimą be didžiausių reik&scaron;mių slopinimo, kai identifikuojami besidubliuojantys objektai ir pa&scaron;alinamas besidubliuojantis elementas, kurio patikimumo reik&scaron;mė mažesnė. 
+                <ul>
+                    <li>Jei nepažymėta &ndash; visi aptikti objektai bus i&scaron;vesties elementų klasėje. Tai numatytasis nustatymas.
+                        
+
+                    </li>
+                    <li>Pažymėta &ndash; pa&scaron;alinami visi aptikti dublikatai.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="confidenceScoreField">
+        <div><h2>Patikimumo verčių laukas</h2></div>
+        <hr/>
+        <div>
+            <p>Laukas elementų paslaugoje, kuriame yra patikimumo reik&scaron;mės kaip objekto aptikimo metodo i&scaron;vestis.
+            </p>
+            <p>&Scaron;is parametras būtinas, jei pasirenkate naudoti parametrą  <b>Be didžiausių reik&scaron;mių slopinimo</b>.
+            </p>
+        </div>
+    </div>
+    <div id="classValueField">
+        <div><h2>Klasės reikšmės laukas</h2></div>
+        <hr/>
+        <div>
+            <p>Klasės reik&scaron;mės laukas i&scaron;vesties elementų paslaugoje. Jei jis nenurodytas, įrankis naudos standartinius klasės reik&scaron;mės laukus  <i>Classvalue</i> ir <i>Value</i>. Jei &scaron;ie laukai neegzistuoja, visi elementai bus laikomi tos pačios objektų klasės.
+            </p>
+        </div>
+    </div>
+    <div id="maxOverlapRatio">
+        <div><h2>Didžiausio persidengimo santykis</h2></div>
+        <hr/>
+        <div>
+            <p>Didžiausias dviejų persidengiančių elementų persidengimo santykis, apibrėžiamas kaip susikertančio ploto ir bendro ploto santykis. Numatytoji reik&scaron;mė yra 0.
+            </p>
+        </div>
+    </div>
+    <div id="outputObjects">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Sluoksnio, kuris bus sukurtas puslapyje  <b>Turinys</b> ir įtrauktas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau egzistuoja, būsite papra&scaron;yti pateikti kitą pavadinimą.
+            </p>
+            <p>Galite nurodyti aplanko  <b>Turinyje</b>, kuriame rezultatai bus įra&scaron;yti naudojant i&scaron;&scaron;okantįjį meniu <b>Rezultatą įra&scaron;yti į</b>, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Dichtheid berekenen</h2><p/>
+        <h2><img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" alt="Tool Dichtheid berekenen"></h2>
+        <hr/>
+    <p>Deze tool maakt een dichtheidskaart vanaf punt- of lijnobjecten door bekende hoeveelheden van een bepaald fenomeen (voorgesteld als attributen van de punten of lijnen) over de kaart te verspreiden. Het resultaat is een kaartlaag met gebieden die zijn geclassificeerd van minst dicht tot meest dicht.
+    </p>
+    <p>Voor de invoer van punten moet elk punt de locatie van een gebeurtenis of incident voorstellen en de resultaatlaag geeft een telling weer van het aantal incidenten per eenheid van het gebied. Een lagere dichtheidswaarde in een nieuwe locatie betekent dat er meer punten zijn in de buurt van die locatie. In vele gevallen kan de resultaatlaag worden ge&iuml;nterpreteerd als een risicogebied voor toekomstige gebeurtenissen. Als de invoerpunten bijvoorbeeld locaties van blikseminslagen voorstellen, kan de resultaatlaag worden ge&iuml;nterpreteerd als een risicogebied voor toekomstige blikseminslagen.
+    </p>
+    <p>Voor de invoer van lijnen geeft het lijndichtheidsoppervlak de totale hoeveelheid lijnen weer die zich in de buurt van elke locatie bevindt. De eenheden van de berekende dichtheidswaarden zijn de lengte van de lijn per eenheid van het gebied. Als de lijnen bijvoorbeeld rivieren voorstellen, zal de resultaatlaag de totale lengte aan rivieren binnen  de zoekstraal voorstellen. Dit resultaat kan worden gebruikt om gebieden te identificeren die geschikt zijn om dieren te laten grazen.
+    </p>
+    <p>Andere gebruiksvoorbeelden van deze tool zijn de volgende:
+
+        <ul>
+            <li>Dichtheidskaarten van misdaden maken om politiediensten te helpen op een geschikte manier middelen toe te wijzen aan gebieden met hoge misdaadcijfers.
+                
+ 
+            </li>
+            <li>Dichtheid berekenen van ziekenhuizen binnen een bepaalde streek. De resultaatlaag geeft gebieden weer met hoge en lage toegankelijkheid tot ziekenhuizen en deze informatie kan worden gebruikt om te beslissen waar nieuwe ziekenhuizen moeten worden gebouwd.
+                
+ 
+            </li>
+            <li>Gebieden identificeren met een hoog risico op bosbranden op basis van historische locaties van bosbranden.
+                
+ 
+            </li>
+            <li>Gemeenschappen lokaliseren die zich ver van belangrijke snelwegen bevinden om te bepalen waar nieuwe wegen moeten worden gebouwd.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointOrLineFeatures">
+        <div><h2>Kies de invoerpunten- of lijnenlaag waarmee de dichtheid moet worden berekend</h2></div>
+        <hr/>
+        <div>
+            <p>De invoerpunten- of de lijnenlaag die wordt gebruikt om de dichtheidslaag te berekenen.
+            </p>
+        </div>
+    </div>
+    <div id="countField">
+        <div><h2>Een tellingsveld gebruiken</h2></div>
+        <hr/>
+        <div>
+            <p>Geef een veld op dat het aantal incidenten op elke locatie weergeeft. Als u bijvoorbeeld punten hebt die steden voorstellen, dan kunt u een veld gebruiken om het bevolkingsaantal van elke stad voor te stellen als het tellingsveld. De resulterende bevolkingsdichtheidslaag zal grotere bevolkingsdichtheden berekenen bij steden met hogere bevolkingsaantallen.
+            </p>
+            <p>Als de standaardkeuze van  <b>Geen</b> wordt gebruikt, zal elke locatie worden beschouwd als &eacute;&eacute;n telling.
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Zoekafstand</h2></div>
+        <hr/>
+        <div>
+            <p>Voer een afstand in die opgeeft hoe ver moet worden gezocht om punt- of lijnobjecten te zoeken bij het berekenen van dichtheidswaarden. Als u bijvoorbeeld een zoekafstand opgeeft van 10.000 meter, wordt de dichtheid van elke locatie in de uitvoerlaag berekend op basis van objecten die zich binnen 10.000 meter van de locatie bevinden. Elke locatie die geen incidenten heeft binnen 10.000 meter, krijgt een dichtheidswaarde van nul.
+            </p>
+            <p>Als er geen afstand is opgegeven, wordt er een standaardwaarde berekend op basis van de locaties van de invoerobjecten en de waarden in het tellingsveld (als er een tellingsveld is opgegeven).
+            </p>
+        </div>
+    </div>
+    <div id="outputAreaUnits">
+        <div><h2>Uitvoer oppervlakte-eenheden</h2></div>
+        <hr/>
+        <div>
+            <p>Geef de eenheid van het uitvoergebied op. Dichtheid is telling gedeeld door gebied en deze parameter geeft de eenheid van het gebied op in de berekening van de dichtheid.
+            </p>
+            <p>De beschikbare gebiedseenheden zijn vierkante mijl, vierkante voet en vierkante kilometer.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Output celgrootte</h2></div>
+        <hr/>
+        <div>
+            <p>De celgrootte en de eenheid voor de uitvoerrasters.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>De naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, wordt u gevraagd een nieuwe naam te geven.
+            </p>
+            <p>U kunt de naam van een map opgeven in  <b>Mijn Content</b>, waar het resultaat wordt opgeslagen met het vervolgkeuzemenu <b>Resultaat opslaan in</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,37 @@
+@import "variables.less";
+@import "../common/CheckBox.less";
+
+.mblCheckBox + .mblCheckableInputDecorator {
+	&:before {
+		.mblCheckRadioBorder;
+	}
+}
+
+.mblCheckBox:not([disabled]) {
+	&:active + .mblCheckableInputDecorator:before,
+	& + .mblCheckableInputDecorator:active:before {
+		background-color: @win-accent-color;
+	}
+}
+
+.mblCheckBoxChecked + .mblCheckableInputDecorator {
+	&:before {
+		.mblImage(@imgCheckUrl);
+	}
+}
+
+.mblCheckBox[disabled] {
+	& + .mblCheckableInputDecorator {
+		&:before {
+			border-color: @win-disabled-color;
+		}
+	}
+
+	&.mblCheckBoxChecked + .mblCheckableInputDecorator:before {
+		.mblImage("images/check-disabled.png");
+	}
+}
+
+.mblCheckableInputContainer + label {
+   .mblCheckRadioLabel;
+}

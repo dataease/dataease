@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Temukan yang Terdekat</h2><p/>
+        <h2><img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" alt="Temukan yang Terdekat"></h2>
+        <hr/>
+    <p>Alat ini akan mencari fitur terdekat dan juga akan melaporkan serta memberikan peringkat jarak ke fitur di dekatnya. Untuk menemukan apa saja yang terdekat, alat ini dapat mengukur jarak baik menggunakan garis lurus atau mode perjalanan yang dipilih. Ada beberapa opsi untuk membatasi jumlah atau rentang pencarian terhadap fitur terdekat yang ingin dicari. Hasil dari alat ini dapat membantu Anda menjawab jenis pertanyaan berikut:
+        <ul>
+            <li>Taman apa yang paling dekat dari sini?
+            </li>
+            <li>Rumah sakit terdekat mana yang dapat saya jangkau dengan waktu mengemudi tersingkat? Berapa lama perjalanan pada hari Selasa jam 5:30 sore saat jam sibuk?
+            </li>
+            <li>Berapa jarak jalan antara kota besar tersebut?
+            </li>
+            <li>Siapa saja dari pasien-pasien tersebut yang tinggal dalam radius dua mil dari pabrik bahan kimia ini?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Temukan yang Terdekat menampilkan layer yang berisi fitur terdekat dan layer garis yang menautkan lokasi awal ke lokasi terdekatnya. Layer garis berisi informasi mengenai lokasi awal dan lokasi-lokasi terdekatnya serta jarak di antara keduanya.
+    </p>
+    <p>Jika  <b>Gunakan jangkauan peta saat ini</b> dicentang, hanya fitur-fitur yang nampak dalam jangkauan peta saat ini yang akan diperhitungkan sebagai awal dan fitur terdekatnya.  Jika tidak dicentang, semua fitur dalam layer input akan diperhitungkan, meskipun fitur tersebut berada di luar jangkauan peta saat ini.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Tentukan lokasi memulai</h2></div>
+        <hr/>
+        <div>
+            <p>Temukan yang Terdekat mengukur fitur-fitur pada layer yang Anda tentukan di sini (lokasi awal) ke lokasi yang Anda tentukan pada parameter berikutnya.  Alat ini mendukung hingga  5.000 fitur dalam setiap layer. 
+            </p>
+        </div>
+    </div>
+    <div id="NearbyLocationsLayer">
+        <div><h2>Temukan lokasi terdekat dalam</h2></div>
+        <hr/>
+        <div>
+            <p>Temukan yang Terdekat mengukur dari setiap fitur di layer pertama ke lokasi di layer ini. Alat ini mendukung hingga  5.000 lokasi dalam setiap layer. </p>
+            <p>Selain memilih sebuah layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> yang terdapat di bagian paling bawah daftar drop-down. Opsi ini membuka galeri di mana Anda dapat menelusuri dan memilih set data dari berbagai sumber untuk digunakan dalam analisis Anda. 
+            </p>
+        </div>
+    </div>
+    <div id="MeasurementMethod">
+        <div><h2>Ukur</h2></div>
+        <hr/>
+        <div>
+            <p>Pilih apakah untuk menemukan lokasi terdekat dilakukan berdasarkan jarak garis lurus atau mode perjalanan yang dipilih. Mode perjalanan hanya aktif jika layer input Anda mengandung titik. Mode perjalanan yang tersedia ditentukan oleh administrator organisasi Anda.  Saat menggunakan salah satu mode perjalanan, pengukuran dilakukan sepanjang jalan atau setapak, dan patuh pada aturan yang berlaku, seperti jalan satu arah, larangan berputar, dan sebagainya.
+            </p>
+            <p>Saat mengukur antara garis dan area, jarak dari atau ke titik terdekat sepanjang garis atau batas area sudah ditemukan. 
+            </p> 
+            <p>Ketika Anda memilih  <b>Waktu Mengemudi</b>, <b>Waktu Mengemudi Pedesaan</b>, atau <b>Waktu Mengemudi Truk</b>, Anda memiliki opsi tentang cara mengukur waktu mengemudi.
+                <ul>
+                    <li>
+                        <p>Batalkan centang  <b>Gunakan Lalu Lintas</b> untuk menemukan fitur terdekat berdasarkan kecepatan perjalanan statis, seperti batas kecepatan, alih-alih kecepatan berubah-ubah yang disebabkan oleh kondisi lalu lintas yang terus berubah.
+                        </p>
+                        <p>Ini adalah opsi yang harus dipilih jika Anda hanya ingin mengetahui apa yang terdekat, tanpa memperhitungkan kondisi lalu lintas pada waktu dan hari tertentu.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Centang  <b>Gunakan Lalu Lintas</b> untuk menemukan fitur terdekat berdasarkan waktu awal dengan memperhitungkan kondisi lalu lintas yang berubah-ubah. Juga dengan memilih opsi <b>Lalu lintas langsung</b>, waktu keberangkatan dari lokasi awal akan diatur sesuai dengan waktu saat ini, serta prediksi dan kecepatan lalu lintas saat ini diambil dari sensor untuk menentukan fitur apa saja yang terdekat. Kecepatan lalu lintas yang diprediksikan dihitung dengan mereferensikan kecepatan lalu lintas langsung, riwayat kecepatan, dan peristiwa saat ini seperti misalnya cuaca. Kecepatan lalu lintas diprediksi 12 jam ke depan, sehingga Anda dapat menggerakkan bilah geser untuk menentukan waktu keberangkatan terlebih dahulu hingga 12 jam.
+                        </p>
+                        <p>Gunakan pengaturan lalu lintas langsung ini untuk mengetahui fitur-fitur yang dapat dijangkau dengan waktu tercepat jika berangkat sekarang, berangkat satu jam dari sekarang, dan seterusnya.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Dengan mencentang  <b>Gunakan Lalu Lintas</b> dan memilih <b>Lalu lintas berdasarkan kondisi khusus</b> hari dan waktu, alat ini akan menemukan fitur terdekat berdasarkan rata-rata kecepatan historis untuk setiap interval lima menit sepanjang satu minggu rutin. Hasil menyertakan lalu lintas tapi menghapus pengaruh kondisi dan peristiwa lalu lintas saat ini, yang mungkin beragam secara signifikan dari norma.
+                        </p>
+                        <p>Anda dapat menggunakan pengaturan historis lalu lintas ini untuk menanyakan, misalnya, &quot;Fitur apa saja yang dapat dicapai paling cepat jika berangkat dari titik awal pada pukul 11:30 pagi hari Rabu?&quot; 
+                        </p>
+                        <p>Waktu yang Anda atur merujuk ke zona waktu dimana fitur awal Anda berada. Jadi jika Anda mengatur waktu ke pukul 8:00 pagi dan memiliki dua fitur awal, satu di New York dan yang lainnya di Los Angeles, maka lokasi terdekat akan ditemukan dengan menganggap waktu berangkatnya adalah pukul 8:00 pagi. Waktu Timur dan 8:00 pagi Waktu Pasifik, masing-masing.
+                        </p>
+                    </li>
+                </ul>
+                Perhatikan bahwa saat kendaraan melaju keluar dari suatu titik, waktu berlalu dan kondisi lalu lintas berubah. Alat ini akan memperhitungkan semua perubahan tersebut jika Anda mencentang <b>Gunakan lalu lintas</b>; meskipun demikian, tidak semua wilayah mendukung lalu lintas. Klik tautan <b>Lihat ketersediaan</b> pada alat untuk mengetahui apakah opsi ini ditawarkan di area studi Anda. 
+            </p>
+            <p> <b>Waktu Mengemudi Truk</b> dapat menggunakan kecepatan perjalanan dinamis pada lalu lintas tetapi hanya hingga batas kecepatan truk legal. Contoh, jika kecepatan dinamis suatu jalan berdasarkan lalu lintas langsung adalah 65 mil per jam tetapi batas kecepatan truk untuk jalan tersebut adalah 55 mil per jam, penghitungan akan menggunakan 55 mil per jam untuk jalan tersebut.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Pilih layer penghalang</h2></div>
+        <hr/>
+        <div>
+            <p> Satu atau lebih fitur yang bertindak sebagai pembatas sementara (penghalang) saat melakukan perjalanan di jalan mendasar. Anda dapat menentukan penghalang menggunakan fitur titik, garis, atau poligon.
+            </p>
+            <p>Penghalang titik dapat merepresentasikan pohon tumbang, kecelakaan, tiang listrik tumbang, atau apa pun yang memblokir lalu lintas secara menyeluruh pada posisi tertentu di sepanjang jalan. Perjalanan diperbolehkan di jalan tetapi tidak melewati penghalang. Anda dapat menemukan hingga 250 fitur untuk bertindak sebagai penghalang titik.
+            </p>
+            <p>Penghalang garis melarang perjalanan ke mana pun penghalang berpotongan dengan jalan. Misalnya, parade atau demonstrasi yang memblokir lalu lintas di beberapa segmen jalan dapat direpresentasikan dengan penghalang garis. Jika jumlah fitur jalan yang berpotongan dengan semua penghalang garis melebihi 500, alat mengembalikan suatu kesalahan.
+            </p>
+            <p>Penghalang poligon melarang perjalanan ke mana pun poligon berpotongan dengan jalan. Salah satu kegunaan penghalang tipe ini adalah untuk merepresentasikan area dari jaringan jalan yang tertutup banjir dan menyebabkan perjalanan ke sana tidak memungkinkan. Jika jumlah fitur jalan yang berpotongan dengan semua penghalang poligon melebihi 2000, alat mengembalikan suatu kesalahan.
+            </p>
+        </div>
+    </div>
+    <div id="Cutoffs">
+        <div><h2>Untuk setiap lokasi di layer input</h2></div>
+        <hr/>
+        <div>
+            <p>Anda memiliki dua opsi untuk membatasi pencarian lokasi terdekat. Opsi satu adalah dengan membatasi jumlah maksimum lokasi terdekat yang akan dicari per lokasi awal. Anda dapat mencari satu taman terdekat, dua taman terdekat, dan seterusnya. Opsi lainnya adalah dengan mengatur jarak pencarian atau waktu mengemudi maksimal.
+            </p>
+            <p>Dengan tidak mencentang opsi tersebut, jumlah maksimal lokasi terdekat yang dicari adalah 100 (batas alat ini), dan rentang pencarian maksimal adalah tidak terbatas.
+            </p>
+            <p>Waktu proses tergantung pada jumlah lokasi awal, jumlah lokasi di dekatnya, dan rentang pencarian maksimum.   Perlu waktu lebih lama untuk memproses jika terdapat lebih banyak lokasi atau rentang pencarian lebih besar.
+            </p>
+            <p>Ingat bahwa jika suatu batas sudah diatur pada rentang pencarian, alat ini mungkin tidak akan menemukan lokasi terdekat apa pun dalam rentang tersebut, atau lokasi yang ditemukan kurang dari jumlah maksimum lokasi terdekat yang Anda tentukan.
+            </p>
+        </div>
+    </div>
+    <div id="OutputNearestLocationsLayer">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Ini adalah nama feature layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta. Jika feature layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain. Feature layer ini akan berisi dua layer: satu merupakan lokasi terdekat dan satu lagi merupakan garis yang menghubungkan lokasi input dengan lokasi terdekat.
+            </p>
+            <p>Jika Anda pilih  <b>Sertakan layer rute</b>, masing-masing rute dari hasil juga disimpan sebagai layer rute. Layer rute menyertakan seluruh informasi untuk rute tertentu seperti perhentian yang ditetapkan ke rute juga arah perjalanan. Membuat layer rute bermanfaat jika Anda ingin membagikan rute individu dengan anggota lain di organisasi Anda atau untuk memodifikasi rute lebih lanjut dengan menggunakan tombol <b>Arah</b> pada penampil peta. Layer rute menggunakan nama yang diberikan untuk feature layer sebagai awalan dan nama rute yang dihasilkan sebagai bagian dari analisis, yang ditambahkan untuk membuat nama unik untuk masing-masing layer rute.
+            </p>
+            <p>Jumlah maksimum layer rute yang dapat dibuat adalah 1.000. Jika hasil berisi lebih dari 1.000 rute dan  <b>Sertakan layer rute</b> dicentang, maka alat hanya akan membuat feature service output.
+            </p>
+            <p> <b>Simpan hasil</b> dengan menggunakan menu drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> sebagai tempat penyimpanan hasil. Jika feature layer dan layer rute dibuat, juga akan disimpan disini.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Derin Öğrenme Kullanarak Pikselleri Sınıflandır</h2><p/>
+        <h2><img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" alt="Derin &Ouml;ğrenme Kullanarak Pikselleri Sınıflandır"></h2>
+        <hr/>
+    <p>Bu ara&ccedil;, atanan bir sınıf etiketi bulunan her ge&ccedil;erli pikselle sınıflandırılmış bir raster oluşturmak i&ccedil;in girdi rasterı &uuml;zerinde eğitilmiş derin &ouml;ğrenme modeli &ccedil;alıştırır.
+    </p>
+    <p> <b>Ge&ccedil;erli harita yayılımını kullan</b> işaretli ise, yalnızca ge&ccedil;erli harita yayılımında g&ouml;r&uuml;n&uuml;r olan raster alanı analiz edilir. İşaretli değilse, rasterın tamamı, ge&ccedil;erli harita yayılımının dışında bile olsa analiz edilir.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Pikselleri sınıflandırmak için kullanılan görüntüyü seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Sınıflandırılacak girdi g&ouml;r&uuml;nt&uuml;s&uuml;.
+            </p>
+            <p>Bir g&ouml;r&uuml;nt&uuml; servisi URL&rsquo;si, bir raster katmanı veya bir g&ouml;r&uuml;nt&uuml; servisi katmanı olabilir.
+            </p>
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Pikselleri sınıflandırmak için kullanılan derin öğrenme modelini seçin</h2></div>
+        <hr/>
+        <div>
+            <p>Girdi derin &ouml;ğrenme paketi ( <code>.dlpk</code>) &ouml;ğesi.
+            </p>
+            <p>Derin &ouml;ğrenme paketi, Esri model tanımı JSON dosyası ( <code>.emd</code>), derin &ouml;ğrenme ikili model dosyası ve isteğe bağlı olarak kullanılacak Python raster fonksiyonundan oluşur.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Derin öğrenme modeli değişkenlerini belirtin</h2></div>
+        <hr/>
+        <div>
+            <p>İşlev değişkenleri, girdi modeli tarafından referans verilen Python raster fonksiyon sınıfında tanımlanır. Deneyler ve iyileştirmeler i&ccedil;in ek derin &ouml;ğrenme parametrelerini ve değişkenlerini burada listelersiniz, &ouml;r. hassaslığın ayarlanması i&ccedil;in bir g&uuml;ven eşiği gibi.
+            </p>
+            <p>Değişkenlerin adları, raster analiz sunucusundaki Python mod&uuml;l&uuml;n&uuml;n ara&ccedil; tarafından okunmasıyla doldurulur.
+            </p>  
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputClassifiedRaster">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p> <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adı. Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>İ&ccedil;eriğim</b>&rsquo;de, <b>Sonu&ccedil;ları Kaydet</b> a&ccedil;ılır kutusunu kullanarak sonucun kaydedileceği klas&ouml;r&uuml;n adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

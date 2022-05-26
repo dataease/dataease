@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Crea conques hidrogràfiques</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="Crea conques hidrogr&agrave;fiques"></h2>
+        <hr/>
+    <p>Aquesta eina determina la conca hidrogr&agrave;fica o l'&agrave;rea de contribuci&oacute; aig&uuml;es amunt per a cada punt de la capa d'entrada. 
+    </p>
+    <p>Per exemple, suposeu que teniu entitats de punts que representen ubicacions de contaminaci&oacute; aqu&agrave;tica i voleu trobar les possibles fonts de contaminaci&oacute;. Ja que la font de contaminaci&oacute; ha d'estar en algun lloc dins de la conca hidrogr&agrave;fica aig&uuml;es amunt respecte del punt, podeu fer servir aquesta eina per definir les conques hidrogr&agrave;fiques que contenen les fonts de contaminaci&oacute;.
+    </p>
+    <p>La ubicaci&oacute; dels punts d'entrada &eacute;s important.  Si no estan ubicats amb precisi&oacute; en una l&iacute;nia de drenatge, &eacute;s possible que les conques hidrogr&agrave;fiques resultants siguin molt petites i no us resultin &uacute;tils per a l'an&agrave;lisi.  La  <b>Dist&agrave;ncia de cerca al drenatge m&eacute;s proper</b> es pot utilitzar per ajustar la ubicaci&oacute; dels punts d'entrada perqu&egrave; coincideixin exactament amb una l&iacute;nia de drenatge i poder trobar la conca hidrogr&agrave;fica que flueix fins al punt ubicat a la l&iacute;nia de drenatge.  Les ubicacions ajustades que s'han fet servir per trobar les conques hidrogr&agrave;fiques s'escriuen a la capa de sortida; els punts d'entrada no es modifiquen.
+    </p>
+    <p>El resultat &eacute;s una capa de grups que cont&eacute; dues capes: les conques hidrogr&agrave;fiques i els punts ajustats que s'han fet servir per calcular-les.     
+    </p>
+    <p>Les conques hidrogr&agrave;fiques resultants tindran tots els atributs dels punts d'entrada i aquests atributs addicionals:     
+        <ul>
+            <li> <i>PourPtID</i>: cont&eacute; el valor d'ID del punt d'entrada
+            </li>
+            <li> <i>Area Square Kilometers</i>: cont&eacute; l'&agrave;rea en quil&ograve;metres quadrats de la conca hidrogr&agrave;fica aig&uuml;es amunt
+            </li>
+            <li> <i>Description</i> i <i>DataResolution</i>: contenen informaci&oacute; que pertany a les dades hidrol&ograve;giques que s'han fet servir per calcular el tra&ccedil;at
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si s'ha activat  <b>Utilitza l'extensi&oacute; del mapa actual</b>, nom&eacute;s es faran servir les entitats de l'extensi&oacute; de mapa actual per calcular les conques hidrogr&agrave;fiques.  Si l'opci&oacute; est&agrave; desactivada, s'analitzaran totes les entitats de la capa d'entrada, encara que estiguin fora de l'extensi&oacute; de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Entitats de punts utilitzades per calcular les conques hidrogràfiques</h2></div>
+        <hr/>
+        <div>
+            <p>Es calcular&agrave; una conca hidrogr&agrave;fica (l'&agrave;rea de contribuci&oacute; aig&uuml;es amunt) per a cada punt.  
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b>, que es troba al final de la llista desplegable. Aquesta opci&oacute; obre una galeria on podeu cercar i seleccionar datasets de diversos or&iacute;gens per u utilitzar-los a l'an&agrave;lisi. 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>Distància de cerca al drenatge més proper</h2></div>
+        <hr/>
+        <div>
+            <p>Si els punts d'entrada estan ubicats lluny d'una l&iacute;nia de drenatge, &eacute;s probable que les conques hidrogr&agrave;fiques resultants siguin molt petites i no gaire &uacute;tils per a l'an&agrave;lisi, com ara per determinar la font de contaminaci&oacute; aig&uuml;es amunt.  En la majoria de casos, &eacute;s important que el punt d'entrada s'ajusti amb la l&iacute;nia de drenatge m&eacute;s propera per trobar les conques hidrogr&agrave;fiques que flueixen fins a un punt ubicat a la l&iacute;nia de drenatge.  Per trobar la l&iacute;nia de drenatge m&eacute;s propera, especifiqueu una dist&agrave;ncia de cerca.  Si no especifiqueu cap dist&agrave;ncia de cerca, l'eina calcular&agrave; i far&agrave; servir una dist&agrave;ncia de cerca conservadora.  
+            </p>
+            <p>Per utilitzar la ubicaci&oacute; exacta del punt d'entrada, especifiqueu una dist&agrave;ncia de cerca de zero.  
+            </p>
+            <p>Amb finalitats d'an&agrave;lisi, Esri ha calculat pr&egrave;viament les l&iacute;nies de drenatge mitjan&ccedil;ant models hidrol&ograve;gics est&agrave;ndard.  Si no hi ha cap l&iacute;nia de drenatge dins de la dist&agrave;ncia de cerca, es far&agrave; servir la ubicaci&oacute; que contingui la major acumulaci&oacute; de flux dins de la dist&agrave;ncia de cerca.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p>Nom de la capa que es crear&agrave; a  <b>El meu contingut</b> i s'afegir&agrave; al mapa.  El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si el nom de la capa ja existeix, se us demanar&agrave; que proporcioneu un altre nom.
+            </p>
+            <p>Mitjan&ccedil;ant el men&uacute; desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta d' <b>El meu contingut</b> on es desar&agrave; el resultat.
+            </p>
+            <p> L'execuci&oacute; d'aquesta eina no consumeix cr&egrave;dits.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

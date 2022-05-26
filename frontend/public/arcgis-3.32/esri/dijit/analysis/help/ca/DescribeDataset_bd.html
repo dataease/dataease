@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Descriu el dataset</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="Diagrama de flux de treball de Descriu el dataset"></h2>
+        <hr/>
+    <p>L'eina Descriu el dataset proporciona una observaci&oacute; m&eacute;s detallada del dataset. Abans d'executar l'an&agrave;lisi en grans quantitats de dades, utilitzeu aquesta eina per determinar quines s&oacute;n les vostres dades d'entrada i on es troben. Per defecte, el resultat ser&agrave; una cadena JSON amb un resum dels descriptors principals de la capa d'entrada i una taula amb les estad&iacute;stiques de resum detallades de cada camp. 
+    </p>
+    <p>Tamb&eacute; podeu crear capes d'entitats de sortida addicionals per ampliar la descripci&oacute; de les dades. Les opcions s&oacute;n una capa de mostra o una cap d'extensi&oacute;. Podeu triar que se'n mostri una o b&eacute; totes dues.
+    </p>
+    <p>Per exemple, posem que se us proporciona un recurs compartit de fitxers de dades massives que cont&eacute; 15 datasets. Cada dataset presenta 10 milions d'entitats d'&agrave;rea que representen edificis i cases en diferents regions del vostre pa&iacute;s. Se us assigna la tasca d'analitzar la regi&oacute; C, per&ograve; desconeixeu quin dataset cont&eacute; aquestes entitats. Per esbrinar quin dataset heu d'utilitzar, executeu Descriu el dataset i opteu per crear una capa d'extensi&oacute; per investigar quin dataset es troba a la vostre regi&oacute; d'estudi.
+    </p>
+    <p>Per posar un altre exemple, imagineu que us encarreguen completar un flux de treball d'an&agrave;lisi en un gran volum de dades. Tingueu en compte que la prova del flux de treball pot tardar hores o dies amb el dataset complet. En lloc d'invertir temps i recursos a executar l'an&agrave;lisi completa, creeu una capa de mostra on provar de manera efica&ccedil; el flux de treball complet.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Trieu el dataset que s'ha de descriure</h2></div>
+        <hr/>
+        <div>
+            <p>Capa que cont&eacute; les entitats de punts, l&iacute;nies, &agrave;rees o taules que es descriuran, resumiran i mostrejaran.
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b> al final de la llista desplegable per cercar al vostre contingut una capa d'entitats o un dataset de recursos compartits de fitxers de dades massives.
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>Per entendre el dataset, creeu (de manera opcional) una</h2></div>
+        <hr/>
+        <div>
+            <p>Genereu capes descriptives addicionals per millorar la vostra comprensi&oacute; de les dades massives. Podeu triar que no se'n generi cap, o b&eacute; que es generi una de les capes seg&uuml;ents o totes dues:
+            </p>
+            <ul>
+                <li> <b>Capa d'extensi&oacute;</b>: crea una entitat d'&agrave;rea que representa l'extensi&oacute; de les entitats d'entrada o l'&agrave;rea d'inter&egrave;s.
+                </li>
+                <li> <b>Capa de mostra</b>: crea una capa de subconjunt que cont&eacute; una quantitat especificada d'entitats d'entrada del dataset o l'&agrave;rea d'inter&egrave;s.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>Capa de mostra</h2></div>
+        <hr/>
+        <div>
+            <p>Genereu una capa que contingui un subconjunt d'entitats de la capa d'entrada. Si l'opci&oacute;  <b>Capa de mostra</b> est&agrave; seleccionada, podeu especificar el nombre d'entitats que voleu que es retorni a la capa de mostra.  Per defecte, es retornaran 100 entitats de mostra a la capa de sortida.
+            </p>
+            <p>El valor ha de ser m&eacute;s gran que zero. Si especifiqueu un nombre m&eacute;s gran que el nombre total d'entitats, es retornaran totes les entitats.
+            </p>
+            <p>Si l'opci&oacute;  <b>Utilitza l'extensi&oacute; del mapa actual</b> est&agrave; seleccionada, la capa de mostra contindr&agrave; entitats de l'extensi&oacute; del mapa.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Capa d'extensió</h2></div>
+        <hr/>
+        <div>
+            <p>Genereu una capa d'entitats que contingui una sola entitat que representi l'extensi&oacute; de les entitats d'entrada. Per fer-ho, seleccioneu el bot&oacute;  <b>Capa d'extensi&oacute;</b>. Aquesta opci&oacute; est&agrave; seleccionada per defecte.
+            </p>
+            <p>Si l'opci&oacute;  <b>Utilitza l'extensi&oacute; del mapa actual</b> est&agrave; seleccionada, la capa d'extensi&oacute; representar&agrave; l'extensi&oacute; visible del mapa.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la capa que es crear&agrave;.  Si esteu escrivint en un ArcGIS Data Store, els resultats es desaran a  <b>El meu contingut</b> i s'afegiran al mapa. Si esteu escrivint en un recurs compartit de fitxers de dades massives, els resultats s'emmagatzemaran en aquest recurs i s'afegiran al seu manifest. No s'afegiran al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, l'eina no funcionar&agrave;.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

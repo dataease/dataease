@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Enriquecer capa</h2><p/>
+        <h2><img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" alt="Enriquecer capa"></h2>
+        <hr/>
+    <p>Esta herramienta enriquece tus datos de puntos o &aacute;reas al obtener informaci&oacute;n sobre las personas, los lugares y los negocios en torno a tus datos y te permite responder preguntas nuevas sobre ubicaciones que no puedes contestar solo con los mapas Por ejemplo: &iquest;Qu&eacute; clase de personas vive aqu&iacute;? &iquest;Qu&eacute; le gusta hacer a los residentes de esta &aacute;rea? &iquest;Cu&aacute;les son sus costumbres y estilos de vida? &iquest;Qu&eacute; clase de negocios hay en esta &aacute;rea?
+    </p>
+    <p>El resultado ser&aacute; una nueva capa que contendr&aacute; toda la informaci&oacute;n demogr&aacute;fica y geogr&aacute;fica de determinadas colecciones de datos. Esta informaci&oacute;n nueva se a&ntilde;ade como campos en la tabla.
+    </p>
+    <p>Si se ha activado  <b>Usar la extensi&oacute;n del mapa actual</b>, solo se enriquecer&aacute;n las entidades de la capa de entrada que est&aacute;n visibles en la extensi&oacute;n de mapa actual.  Si la opci&oacute;n est&aacute; desactivada, se enriquecer&aacute;n todas las entidades de la capa de entrada, aunque est&eacute;n fuera de la extensi&oacute;n de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Elegir una capa para enriquecer con datos nuevos</h2></div>
+        <hr/>
+        <div>
+            <p>La capa de puntos, l&iacute;neas o &aacute;reas que se enriquecer&aacute;n con los nuevos datos de atributos. 
+            </p>
+            <p>Adem&aacute;s de elegir una capa del mapa, puede seleccionar  <b>Elegir capa de an&aacute;lisis</b>, que se encuentra al final de la lista desplegable. Esta opci&oacute;n abre una galer&iacute;a en la que puede buscar y seleccionar datasets de varias fuentes para usarlos en su an&aacute;lisis. 
+            </p>
+        </div>
+    </div>
+    <div id="DataCollection">
+        <div><h2>Variables de enriquecimiento</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Haz clic en  <b>Seleccionar variables</b> para abrir el <b>Explorador de datos</b>.  El <b>Explorador de datos</b> te ayuda a buscar y seleccionar variables de enriquecimiento por separado o en conjuntos.
+            </p>
+            <p>Se selecciona autom&aacute;ticamente una regi&oacute;n en funci&oacute;n de tus datos. Puedes elegir una regi&oacute;n diferente si los datos cubren m&aacute;s de un pa&iacute;s. 
+            </p>
+            <p>Las variables de enriquecimiento se organizan en conjuntos de datos para facilitar el acceso. Cuando se selecciona un conjunto de datos, el explorador muestra algunas de las variables de enriquecimiento m&aacute;s populares de ese conjunto. En  <b>Seguir examinando</b>, tambi&eacute;n se muestran las categor&iacute;as del conjunto. Dentro de cada categor&iacute;a, puedes seleccionar subcategor&iacute;as completas u obtener detalles de una subcategor&iacute;a y seleccionar variables de enriquecimiento individuales. Tambi&eacute;n puedes usar el cuadro de b&uacute;squeda para buscar una variable concreta en una categor&iacute;a.
+            </p>
+            <p>Cuando se seleccionan las variables que se deben incluir para el enriquecimiento, se agregan al carrito de la compra situado en la esquina del  <b>Explorador de datos</b>. Usa este carrito de la compra para realizar un seguimiento del n&uacute;mero de variables que has seleccionado.
+            </p>
+            <p>Cada variable seleccionada se agregar&aacute; como campo en la capa de resultados.
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Definir áreas para enriquecer</h2></div>
+        <hr/>
+        <div>
+            <p>Define el &aacute;rea que se enriquecer&aacute;, alrededor de tus puntos de entrada o l&iacute;neas, mediante una distancia en l&iacute;nea recta o un modo de viaje seleccionado. Para una distancia en l&iacute;nea recta, introduce un valor de hasta 1000 millas (1609 kil&oacute;metros). Los modos de viaje solo se pueden utilizar si la capa de entrada contiene puntos. Los modos de viaje disponibles vienen determinados por el administrador de tu organizaci&oacute;n. Al usar uno de los modos de viaje, las mediciones se efect&uacute;an en carreteras o caminos y respetan las reglas aplicables, como por ejemplo las v&iacute;as de sentido &uacute;nico, los giros prohibidos, etc. Despu&eacute;s de elegir un el modo y medirla medida, introduce una duraci&oacute;n o una distancia de hasta 5 horas (300 minutos) o 300 millas (482,8 kil&oacute;metros).
+            </p>
+            <p>Si se ha activado la opci&oacute;n  <b>Devolver resultado como &aacute;reas de l&iacute;mite</b>, el resultado devuelto ser&aacute; entidades de &aacute;rea definidas por los valores de tiempo o de distancia anteriores.  Si se ha desactivado, el resultado devuelto ser&aacute; entidades de puntos.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>Este es el nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y se agregar&aacute; al mapa.  El nombre predeterminado se basa en el nombre de la herramienta y el nombre de la capa de entrada. Si el nombre de capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Con el men&uacute; desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

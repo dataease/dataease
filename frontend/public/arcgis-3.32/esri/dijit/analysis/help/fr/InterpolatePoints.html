@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpoler les points</h2><p/>
+        <h2><img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" alt="Interpoler les points"></h2>
+        <hr/>
+    <p>   L'outil Interpoler les points vous permet de pr&eacute;voir des valeurs dans de nouveaux sites en fonction de mesures &agrave; partir d'une collection de points. L'outil s&eacute;lectionne des donn&eacute;es ponctuelles avec des valeurs &agrave; chaque point et renvoie des zones class&eacute;es par valeurs pr&eacute;vues. Par exemple
+        <ul>
+            <li>Un r&eacute;seau de gestion de la qualit&eacute; de l'air poss&egrave;de des capteurs qui mesurent les niveaux de pollution. L'outil Interpoler les points peut servir &agrave; pr&eacute;voir les niveaux de pollution aux endroits non pourvus de capteurs, tels que les sites o&ugrave; vivent les populations &agrave; risque (&eacute;coles ou h&ocirc;pitaux, par exemple).
+            </li>
+            <li>Pr&eacute;voyez les concentrations de m&eacute;taux lourds dans les r&eacute;coltes en fonction d'&eacute;chantillons pr&eacute;lev&eacute;s sur des plants individuels.
+            </li>
+            <li>Pr&eacute;voyez les niveaux nutritifs du sol (azote, phosphore, potassium, etc.) et d'autres indicateurs (comme la conductivit&eacute; &eacute;lectrique) afin d'&eacute;tudier leur impact sur le rendement des r&eacute;coltes et prescrivez des quantit&eacute;s pr&eacute;cises de fertilisants pour chaque endroit du champ.
+
+            </li>
+            <li>Les applications m&eacute;t&eacute;orologiques sont notamment la pr&eacute;vision des temp&eacute;ratures, des pr&eacute;cipitations et des variables associ&eacute;es (par exemple, les pluies acides). 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choisissez la couche ponctuelle contenant des emplacements dotés de valeurs connues</h2></div>
+        <hr/>
+        <div>
+            <p>La couche ponctuelle &agrave; utiliser comme base de l'interpolation.  
+
+            </p>
+            <p>Outre le choix d&rsquo;une couche dans votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante. Cette option ouvre une biblioth&egrave;que qui vous permet de s&eacute;lectionner des jeux de donn&eacute;es de diff&eacute;rentes sources pour les utiliser dans votre analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Choisissez le champ à interpoler</h2></div>
+        <hr/>
+        <div>
+            <p>S&eacute;lectionnez le champ contenant les valeurs que vous souhaitez interpoler.  
+            </p>
+        </div>
+    </div>
+    <div id="interpolateOption">
+        <div><h2>Optimiser pour</h2></div>
+        <hr/>
+        <div>
+            <p>Choisissez entre la vitesse et la pr&eacute;cision. Plus les pr&eacute;visions sont pr&eacute;cises et plus leur calcul est long.
+            </p> 
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Erreurs de prévision en sortie</h2></div>
+        <hr/>
+        <div>
+            <p> Si cette option est coch&eacute;e, une couche d'erreurs standard pour les pr&eacute;visions d'interpolation est cr&eacute;&eacute;e.  Le nom de la couche en sortie est le nom de la couche de r&eacute;sultat, auquel le terme 'Errors' est ajout&eacute;.
+            </p>
+            <p>Les erreurs standard sont utiles, car elles offrent des informations sur la fiabilit&eacute; des valeurs pr&eacute;vues. Un principe simple est que la valeur r&eacute;elle est comprise entre deux erreurs standard de la valeur pr&eacute;vue dans 95 pour cent des cas. Par exemple, supposons qu'un nouvel emplacement obtienne une valeur pr&eacute;vue de 50 avec une erreur standard de 5.  Cela signifie que la meilleure estimation de l'outil est que la valeur r&eacute;elle &agrave; cet emplacement est de 50, mais qu'elle peut raisonnablement descendre &agrave; 40 ou monter &agrave; 60.  Pour calculer cette plage de valeurs raisonnables, multipliez l'erreur standard par 2, ajoutez cette valeur &agrave; la valeur pr&eacute;vue pour obtenir la limite sup&eacute;rieure de la plage et soustrayez-la de la valeur pr&eacute;vue pour obtenir la limite inf&eacute;rieure de la plage.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Classer par</h2></div>
+        <hr/>
+        <div>
+            <p>Choisissez le mode de classement des valeurs pr&eacute;vues dans les zones.
+                <ul>
+                    <li>Intervalle g&eacute;om&eacute;trique&nbsp;: les zones reposent sur des intervalles de classe ayant une s&eacute;rie g&eacute;om&eacute;trique. Cette m&eacute;thode garantit que chaque plage de classes a approximativement le m&ecirc;me nombre de valeurs au sein de chaque classe et que le changement entre intervalles est coh&eacute;rent.
+                    </li>
+                    <li>Intervalle &eacute;gal : les zones sont cr&eacute;&eacute;es de fa&ccedil;on que la plage des valeurs pr&eacute;vues est &eacute;gale pour chaque surface.
+                    </li>
+                    <li>Projection &eacute;quivalente&nbsp;: les zones sont cr&eacute;&eacute;es de fa&ccedil;on que le nombre de valeurs de donn&eacute;es dans chaque zone est &eacute;gal. Par exemple, si les donn&eacute;es poss&egrave;dent plus de valeurs &eacute;lev&eacute;es que de valeurs faibles, un plus grand nombre de zones sera cr&eacute;&eacute; pour les fortes valeurs.
+                    </li>
+                    <li>Manuel : cette option vous permet de d&eacute;finir votre propre plage de valeurs pour les zones. Ces valeurs sont saisies dans le param&egrave;tre  <b>Valeurs de borne de classe</b> ci-dessous.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Nombre de classes</h2></div>
+        <hr/>
+        <div>
+            <p>Sp&eacute;cifie le nombre de classes (place de valeurs pr&eacute;vues) dans la couche de r&eacute;sultat. Chaque classe d&eacute;finit la limite des zones. Les valeurs de ces classes sont d&eacute;termin&eacute;es par le param&egrave;tre 
+ <b>Classer par</b> ci-dessus.
+            </p>
+        </div>
+    </div>
+    <div id="classBreaks">
+        <div><h2>Valeurs de borne de classe</h2></div>
+        <hr/>
+        <div>
+            <p>S&eacute;parez les valeurs d'interruption de classe souhait&eacute;es par des espaces. Par exemple, si vous souhaitez des interruptions de classe aux valeurs 1,5, 3 et 7, entrez  <code>1,5 3 7</code>.  Ces valeurs d&eacute;finiront la limite sup&eacute;rieure de chaque classe, de sorte que le nombre de classes sera &eacute;gal au nombre de valeurs saisies. Aucune zone ne sera cr&eacute;&eacute;e pour les emplacements dont les valeurs pr&eacute;vues d&eacute;passent la valeur d'interruption la plus &eacute;lev&eacute;e saisie. Vous devez saisir au moins deux valeurs et pas plus de 32.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Découper la sortie sur</h2></div>
+        <hr/>
+        <div>
+            <p>Tracez ou fournissez une couche sp&eacute;cifiant la zone o&ugrave; vous souhaitez afficher le r&eacute;sultat. Par exemple, si vous interpolez les mesures de pollution d'un lac, vous pouvez utiliser la limite du lac dans ce param&egrave;tre. La sortie ne repr&eacute;sentera alors que l'int&eacute;rieur de la limite du lac.
+            </p>
+        </div>
+    </div>
+    <div id="predictAtPointLayer">
+        <div><h2>Prévoir à ces emplacements</h2></div>
+        <hr/>
+        <div>
+            <p>Tracez ou fournissez une couche sp&eacute;cifiant les emplacements des points pour calculer les valeurs de pr&eacute;vision. Cela vous permet d'&eacute;mettre des pr&eacute;visions &agrave; des emplacements d'int&eacute;r&ecirc;t sp&eacute;cifiques. Par exemple, si la couche en entr&eacute;e repr&eacute;sente des mesures de niveaux de pollution, vous pouvez utiliser ce param&egrave;tre pour pr&eacute;voir les niveaux de pollution de sites o&ugrave; vivent les populations &agrave; risque (&eacute;coles ou h&ocirc;pitaux, par exemple).  Vous pouvez ensuite utiliser ces informations pour &eacute;mettre des recommandations aupr&egrave;s des organismes de sant&eacute; dans ces lieux.
+            </p>
+            <p>S'il est fourni, cet outil g&eacute;n&egrave;re une couche ponctuelle de pr&eacute;visions aux endroits sp&eacute;cifi&eacute;s. Le nom de la couche en sortie est le nom de la couche de r&eacute;sultat, auquel le terme 'Points' est ajout&eacute;.  
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la couche résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit du nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte.  Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si le nom de la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Le menu d&eacute;roulant  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b> permet de sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> dans lequel sera enregistr&eacute; le r&eacute;sultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

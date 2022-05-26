@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Dataset beschrijven</h2><p/>
+        <h2><img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" alt="Workflowdiagram voor Dataset beschrijven"></h2>
+        <hr/>
+    <p>De tool Dataset beschrijven biedt een gedetailleerder overzicht van uw dataset. Voordat u analyses uitvoert op grote hoeveelheden gegevens, gebruikt u deze tool om te bepalen wat en waar uw invoergegevens zijn. Standaard wordt het resultaat een JSON-string met sleutelbeschrijvingen van uw invoerlaag en een tabel met de samenvattende statistieken voor elk veld. 
+    </p>
+    <p>Optioneel kunt u extra uitvoerobjectlagen maken om uw gegevens verder te beschrijven. De opties zijn een voorbeeldlaag of een extentlaag. U kunt ervoor kiezen om een ​​of beide uit te voeren.
+    </p>
+    <p>Stel dat u een big data file share krijgt die 15 datasets bevat. Elke dataset heeft 10 miljoen gebiedsobjecten die gebouwen en huizen in verschillende regio's van uw land vertegenwoordigen. U moet regio C analyseren, maar u weet niet welke dataset deze objecten bevat. Als u wilt weten welke dataset u moet gebruiken, voert u Dataset beschrijven uit en cre&euml;ert u een extentlaag om te onderzoeken welke dataset zich in uw studieregio bevindt.
+    </p>
+    <p>Een ander voorbeeld: stel u voor dat u de taak krijgt om een ​​analyseworkflow te voltooien op een grote hoeveelheid gegevens. U wilt de workflow uitproberen, maar het kan uren of dagen duren voordat uw volledige dataset is voltooid. In plaats van tijd en middelen te gebruiken om de volledige analyse uit te voeren, maakt u een voorbeeldlaag om uw volledige workflow effici&euml;nt te testen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Kies dataset om te beschrijven</h2></div>
+        <hr/>
+        <div>
+            <p>De laag met punt-, lijn-, gebieds- of tabelobjecten die worden beschreven, samengevat en gesampled.
+            </p>
+            <p>Naast het kiezen van een laag van uw kaart, kunt u kiezen voor  <b>Analyselaag kiezen</b> onderaan de keuzelijst om in uw inhoud te zoeken naar een big data file share-dataset of objectlaag.
+            </p>
+        </div>
+    </div>
+    <div id="additionalOutputs">
+        <div><h2>Begrijp uw dataset door het maken van een (optioneel)</h2></div>
+        <hr/>
+        <div>
+            <p>Voer extra beschrijvende lagen uit om uw begrip van uw big data te verbeteren. U kunt ervoor kiezen om nul, een of beide van de volgende lagen uit te voeren:
+            </p>
+            <ul>
+                <li> <b>Extentlaag</b>&mdash;hiermee maakt u een gebiedsobject dat de reikwijdte van uw invoerobjecten of interessegebied aangeeft.
+                </li>
+                <li> <b>Voorbeeldlaag</b>&mdash;hiermee maakt u een subsetlaag met een opgegeven aantal invoerobjecten vanuit uw dataset of interessegebied.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="sampleLayer">
+        <div><h2>Voorbeeldlaag</h2></div>
+        <hr/>
+        <div>
+            <p>Voer een laag uit met een subset objecten uit uw invoerlaag. Als  <b>Voorbeeldlaag</b> geselecteerd is, kunt u het aantal objecten opgeven dat u in de voorbeeldlaag wilt retourneren. Standaard worden 100 voorbeeldobjecten geretourneerd in de uitvoerlaag.
+            </p>
+            <p>De waarde moet groter zijn dan nul. Als u een getal opgeeft dat groter is dan het totale aantal objecten, worden alle objecten geretourneerd.
+            </p>
+            <p>Als  <b>Huidige kaartextent gebruiken</b> is geselecteerd, bevat de voorbeeldlaag objecten van binnen de extent van de kaart.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Extent-laag</h2></div>
+        <hr/>
+        <div>
+            <p>Geef een objectlaag af met een enkel object dat de omvang van de invoerobjecten vertegenwoordigt door de knop  <b>Extentlaag</b> te selecteren. Dit is standaard geselecteerd.
+            </p>
+            <p>Als  <b>Huidige kaartextent gebruiken</b> is geselecteerd, vertegenwoordigt de extentlaag de zichtbare extent van de kaart.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p> De naam van de laag die wordt gemaakt. Als u naar een ArcGIS Data Store,  schrijft, worden uw resultaten opgeslagen in  <b>Mijn Content</b> en toegevoegd aan de kaart. Als u naar een big data file share schrijft, worden uw resultaten opgeslagen in de big data file share en toegevoegd aan het bijhorende manifest. Ze zullen niet worden toegevoegd aan de kaart. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, zal de tool falen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

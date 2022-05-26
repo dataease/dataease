@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Portal Analizi Ortam ayarları</h2><p/>
+        <h2></h2>
+        <hr/>
+    <p>   Portal for ArcGIS ve  ArcGIS Online uygulamalarındaki analizler i&ccedil;in ortam ayarları. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="overwriteResult">
+        <div><h2>Sonuç katmanının üzerine yaz</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Mevcut katmanların &uuml;zerine yazılıp yazılmayacağını belirtir. Bu se&ccedil;enek işaretli durumdayken i&ccedil;eriğinizde aynı ada sahip bir dosya zaten varsa, bu dosyanın &uuml;zerine yazılır.
+            </p>
+            <p>
+                <ul>
+                    <li>İşaretli; i&ccedil;eriğinizde aynı ada sahip bir katman zaten varsa, bu katmanın &uuml;zerine yazılır. &Ccedil;ıktı, girdi ile aynı koordinat sistemine sahip olur.
+                    </li>
+                    <li>İşaretli Değil&mdash;Girilen sonu&ccedil; katmanı adı zaten varsa, bir hata oluşur ve aracın &ccedil;alıştırılabilmesi i&ccedil;in sonu&ccedil; katmanı yeniden adlandırılmalıdır. Varsayılan değerdir.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="closeAnalysisWidget">
+        <div><h2>Analizi çalıştırdıktan sonra analiz aracını kapat</h2></div>
+        <hr/>
+        <div>
+            <p>Ara&ccedil; &ccedil;alışırken analiz iletişim kutusunu a&ccedil;ık ve etkin tutulup tutulmayacağını belirtir. Bu ayar, &ouml;nceki analiz işi &ccedil;alışmaya devam ederken analiz parametrelerinizde değişiklik yapmanıza olanak tanır. Analiz yinelemeli bir işlemdir ve ara&ccedil; iletişim kutusu a&ccedil;ık tutularak parametre değişikliklerini yapmanız ve analizinizi yeniden &ccedil;alıştırmanız sağlanır.
+            </p>
+            <p>
+                <ul>
+                    <li>İşaretli&mdash;Analiz aracı iletişim kutusu kapatılır ve ekran i&ccedil;indekiler b&ouml;l&uuml;m&uuml;ne geri d&ouml;nd&uuml;r&uuml;l&uuml;r. Varsayılan değerdir
+                    </li>
+                    <li>İşaretli Değil&mdash;Analiz aracı iletişim kutusu a&ccedil;ık ve etkin kalır.   
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="storeAnalysisResults">
+        <div><h2>Analiz sonuçlarını barındırılan detay katmanları olarak sakla</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Analizinizden oluşturulan sonu&ccedil; katmanının bir detay koleksiyonu mu yoksa barındırılan bir detay katmanı mı olacağını belirtir. 
+            </p>
+            <p>
+                <ul>
+                    <li>İşaretli&mdash;Analiz sonu&ccedil;larınız, barındırılan bir detay katmanı oluşturur ve i&ccedil;indekiler b&ouml;l&uuml;m&uuml;nde bir &ouml;ğe oluşturulur. Varsayılan değerdir.
+                    </li>
+                    <li>İşaretli Değil; analizinizin sonu&ccedil;ları bir detay koleksiyonu olarak oluşturulur.     
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputCoordinateSystem">
+        <div><h2>Çıktı koordinat sistemi</h2></div>
+        <hr/>
+        <div>
+            <p>Raster analizi i&ccedil;in sonu&ccedil; katmanının koordinat sistemini belirtir.    
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Girdiyle Aynı</b>; analizinizin &ccedil;ıktısı girdiyle aynı koordinat sisteminde olur. Varsayılan değerdir.
+                    </li>
+                    <li> <b>Belirtildiği Gibi</b>&mdash;Analizinizin &ccedil;ıktısı se&ccedil;tiğiniz koordinat sisteminde olur. Bu se&ccedil;enek se&ccedil;ildiğinde, d&uuml;nya butonuna tıklayarak bilinen koordinat sistemleri listesinden se&ccedil;im yapın veya mekansal başvuru WKID'sini sağlanan kutuya ekleyin.
+                    </li>
+                    <li> <b>Katman
+&lt;adı&gt;</b>&mdash;Analizinizin sonucu, web haritanızda se&ccedil;tiğiniz mevcut bir katmanla aynı koordinat sisteminde olacaktır.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingCoordinateSystem">
+        <div><h2>Koordinat sistemi işleniyor</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics analizi yapılırken analizinizin kullanacağı koordinat sistemini belirtir.   
+            </p>
+            <p>Bazı analizler GeoAnalytics i&ccedil;in işlemlerin izd&uuml;ş&uuml;ml&uuml; koordinat sisteminde yapılmasını gerektirir.   Kutulanmış verilerin veya doğrusal birimlerin kullanıldığı her ara&ccedil; izd&uuml;ş&uuml;ml&uuml; bir koordinat sistemi gerektirir. 
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Girdiyle aynı</b>; analiziniz girdiyle aynı koordinat sisteminde işlenir. Varsayılan değerdir.
+                    </li>
+                    <li> <b>Belirtildiği Gibi</b>&mdash;Analiziniz se&ccedil;tiğiniz koordinat sisteminde olur. Bu se&ccedil;enek se&ccedil;ildiğinde, d&uuml;nya butonuna tıklayarak bilinen yansıtılan koordinat sistemleri listesinden se&ccedil;im yapın veya mekansal başvuru WKID'sini sağlanan kutuya ekleyin.
+                    </li>
+                    <li> <b>Katman
+&lt;adı&gt;</b>&mdash;Analiziniz, web haritanızda se&ccedil;tiğiniz mevcut bir katmanla aynı koordinat sisteminde olacaktır.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingExtent">
+        <div><h2>Yayılım</h2></div>
+        <hr/>
+        <div>
+            <p>Analiz yapılırken kullanılacak yayılım veya sınırı belirtir. Belirtilen yayılımın tamamen i&ccedil;inde kalan veya bu yayılımla kesişen t&uuml;m girdi detayları analizde kullanılır.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Varsayılan</b>&mdash;Ara&ccedil; tarafından sağlanan yayılım.
+                    </li>
+                    <li> <b>Belirtildiği Gibi</b>&mdash;Yayılım, sağladığınız koordinatlarla tanımlanır.
+                    </li>
+                    <li> <b>Katman
+&lt;adı&gt;</b>&mdash;Analizinizi işlemek i&ccedil;in kullanılan yayılım, web haritanızda se&ccedil;tiğiniz mevcut bir katmanla aynı mekansal yayılımda olacaktır. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="snapRaster">
+        <div><h2>Raster Yakalama</h2></div>
+        <hr/>
+        <div>
+            <p>&Ccedil;ıktı raster katmanının yayılımını, raster analizinde belirtilen  <b>Yakalama Rasterı</b> katmanının h&uuml;cre hizasına uygun olacak şekilde ayarlar.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Hücre Boyutu</h2></div>
+        <hr/>
+        <div>
+            <p>&Ccedil;ıktı raster katmanını oluşturmak i&ccedil;in kullanılan h&uuml;cre boyutunu veya &ccedil;&ouml;z&uuml;n&uuml;rl&uuml;ğ&uuml;n&uuml; ayarlar. Varsayılan &ccedil;ıktı &ccedil;&ouml;z&uuml;n&uuml;rl&uuml;ğ&uuml; girdi raster katmanının en b&uuml;y&uuml;k h&uuml;cre boyutu tarafından belirlenir.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Girdilerin Minimumu</b>; t&uuml;m girdi katmanlarının en k&uuml;&ccedil;&uuml;k h&uuml;cre boyutunu kullanın.
+                    </li>
+                    <li> <b>Girdilerin Maksimumu</b>; t&uuml;m girdi katmanlarının en b&uuml;y&uuml;k h&uuml;cre boyutunu kullanın. Varsayılan değerdir.
+                    </li>
+                    <li> <b>Belirtildiği gibi</b>; h&uuml;cre boyutunu ayarlamak i&ccedil;in sayısal bir değer belirtin. Bu se&ccedil;iliyse, varsayılan değer 1'dir.
+                    </li>
+                    <li> <b>Katman &lt;adı&gt;</b>; h&uuml;cre boyutunu se&ccedil;ilen raster katmanına ayarlar.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="mask">
+        <div><h2>Maske</h2></div>
+        <hr/>
+        <div>
+            <p>Raster analizinde ilgi alanınızı tanımlamak i&ccedil;in kullanılacak bir katman belirtir.  Yalnızca analiz maskesi i&ccedil;inde kalan h&uuml;creler analiz işleminde dikkate alınır.
+            </p>
+            <ul>
+                <li>Maske bir raster veya bir detay katmanı olabilir.
+                </li>
+                <li>Analiz maskesi bir rastersa, maskeyi tanımlamak i&ccedil;in değer i&ccedil;eren t&uuml;m h&uuml;creler değerlendirilir. Bir maske rasterında i&ccedil;indeki NoData değerine sahip h&uuml;creler maskenin dışında olarak değerlendirilir ve analiz sonu&ccedil; katmanında NoData değerini alır. 
+                </li>
+                <li>Analiz maskesi bir detay katmanıysa, işlem sırasında dahili olarak bir raster'a d&ouml;n&uuml;şt&uuml;r&uuml;l&uuml;r. Bu nedenle,
+ <b>H&uuml;cre Boyutu</b> ve <b>Yakalama Rasterı </b> &ouml;zelliklerinin analizinizde uygun bi&ccedil;imde ayarlandığından emin olun.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Veri deposu</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics sonu&ccedil;ları ya bir  ArcGIS Data Store i&ccedil;inde saklanır ve  Portal for ArcGIS i&ccedil;inde bir detay katmanı olarak yansıtılır ya da yapılandırılmış bir b&uuml;y&uuml;k veri dosya paylaşımı i&ccedil;inde saklanır. 
+            </p>
+            <p>Bir sonucu  ArcGIS Data Store i&ccedil;inde sakladığınızda, &ccedil;oğu durumda, sonu&ccedil;ların  mekan-zamansal b&uuml;y&uuml;k veri deposunda depolanması gerekir. Varsayılan değerdir. Sonu&ccedil;ların ilişkisel bir veri deposuna saklanmasını isteyebileceğiniz nedenler aşağıda sunulmuştur: 
+                <ul>
+                    <li>Sonu&ccedil;larınızı portal-portal ortak kullanımında kullanmak i&ccedil;in
+                    </li>
+                    <li>Sonu&ccedil;larınızı eşzamanlama &ouml;zellikleriyle etkinleştirebilmek i&ccedil;in
+                    </li>
+                </ul>
+                
+            </p>
+            <p>GeoAnalytics sonu&ccedil;larınızın artmasını bekliyorsanız, bir ilişkisel veri deposu kullanmamalı ve b&uuml;y&uuml;k miktarda veri s&ouml;z konusu olduğunda bunları işlemek i&ccedil;in spatiotemporal big data deposunun avantajından yararlanmalısınız. 
+            </p>
+        </div>
+    </div>
+    <div id="parallelProcessingFactor">
+        <div><h2>Paralel işleme faktörü</h2></div>
+        <hr/>
+        <div>
+            <p>Analizi birden fazla Raster İşleme servisi &ouml;rneğine dağıtır. 
+            </p>
+            <p> <b>Paralel işleme fakt&ouml;r&uuml;</b> ortamını kullanan ara&ccedil;lar, verilerinizi işlemek i&ccedil;in kullanılabilecek raster işleme hizmeti &ouml;rneği sayısını kontrol etmenizi sağlar.
+            </p>
+            <p>Ara&ccedil;,  <b>İşlemci t&uuml;r&uuml;n&uuml;</b> kabul etmezse veya <b>İşlemci t&uuml;r&uuml;</b> ortamı <b>CPU</b> olarak ayarlanmışsa, <b>Paralel işleme fakt&ouml;r&uuml;</b> ortamı raster işleme (CPU) servisi &ouml;rneklerini kontrol eder. <b>İşlemci t&uuml;r&uuml;</b> <b>GPU</b> olarak ayarlanmışsa, <b>Paralel işleme fakt&ouml;r&uuml;</b> ortamı, GPU &ouml;rneklerini işleyen raster sayısını kontrol eder.
+            </p> 
+            <p> <b>Paralel işleme fakt&ouml;r&uuml;n&uuml;</b> ayarlayarak, raster analitik g&ouml;r&uuml;nt&uuml; sunucusunun bir raster analiz g&ouml;revini işlemek i&ccedil;in kullandığı paralel &ccedil;alışan sayısını talep edebilirsiniz. Bununla birlikte, toplam paralel işlem sayısı, maksimum raster işleme (CPU veya GPU) hizmeti &ouml;rneği sayısını aşıyorsa, ek paralel işlemler sıraya alınır.
+            </p>
+            <p> <b>Paralel işleme fakt&ouml;r&uuml;</b> varsayılan olarak belirtilmemişse, ara&ccedil; maksimum raster işleme hizmeti &ouml;rneği sayısının y&uuml;zde 80'ini kullanır. Paralel işleme fakt&ouml;r&uuml; olarak bir tam sayı veya y&uuml;zde belirtilebilir.
+            </p>
+        </div>
+    </div>
+    <div id="processorType">
+        <div><h2>İşlemci türü</h2></div>
+        <hr/>
+        <div>
+            <p> <b>İşlemci t&uuml;r&uuml;</b> ortamını kullanan ara&ccedil;lar, verilerinizi nerede ve nasıl işlemek istediğinizi se&ccedil;menize olanak tanır. Verilerinizi sunucu bilgisayar CPU veya GPU&rsquo;yu kullanarak işleyebilirsiniz. <b>İşlemci t&uuml;r&uuml;</b> ortamı boşsa, ara&ccedil; verileri işlemek i&ccedil;in CPU&rsquo;yu kullanır. Varsayılan değerdir.
+            </p> 
+            <p>CPU işleme,  <b>Paralel işleme fakt&ouml;r&uuml;</b> tarafından ele alındığı gibi, bir&ccedil;ok &ccedil;ekirdek ve &ouml;rnek arasında paralelleştirilebilir.
+            </p>
+            <p>GPU&rsquo;lar, grafik ve g&ouml;r&uuml;nt&uuml; işlemede etkilidir; y&uuml;ksek paralel yapıları sayesinde, b&uuml;y&uuml;k veri bloklarını tekrarlı bir şekilde işlemede verim sağlarlar. Bu ortamı kullanan Raster Analiz ara&ccedil;ları,  <b>Paralel işleme fakt&ouml;r&uuml;</b> tarafından ele alındığı gibi, işlerini GPU &ouml;rnekleri arasında birden fazla raster analiz sunucusu makinesinde dağıtabilir.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>GPU</b>&mdash;Veriler, grafik işlem birimi kullanılarak işlenecektir.
+                    </li>
+                    <li> <b>CPU</b>&mdash;Veriler, bilgisayarın merkezi işlem birimi kullanılarak işlenecektir.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

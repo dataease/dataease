@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Stroomafwaarts traceren</h2><p/>
+        <h2><img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" alt="Stroomafwaarts traceren"></h2>
+        <hr/>
+    <p>Deze tool bepaalt het spoor, of stromingstraject, stroomafwaarts vanaf de punten in uw invoerlaag.
+    </p>
+    <p>Stel bijvoorbeeld dat u puntobjecten heeft van locaties met waterverontreiniging en u wilt in uw onderzoek bepalen waar de verontreiniging naartoe stroomt. U kunt dan Stroomafwaarts traceren gebruiken om het pad te vinden dat de vervuiling zal nemen. Dit spoor kan ook verdeeld worden in afzonderlijke lijnsegmenten door het specificeren van een afstandwaarde en eenheden. De lijn die wordt geretourneerd kan de totale lengte van het stromingstraject zijn, een bepaalde maximale spoorlengte of bijgesneden op gebiedobjecten zoals uw onderzoeksgebied. In veel gevallen loopt de totale lengte van het geretourneerde spoortraject vanaf de bron tot aan zee.
+    </p>
+    <p>Het resultaat is een lijn die het spoor stroomafwaarts vertegenwoordigt. Als een afstand wordt gespecificeerd voor  <b>Splits het spoor in lijnsegmenten</b>, wordt de lijn van het spoor gesplitst in meerdere lijnen waar elke lijn een specifieke lengte heeft. Als uw invoerpunt bijvoorbeeld een vervuiling vertegenwoordigt en de betreffende rivier stroomt met een snelheid van 1 kilometer per uur, of 24 km per dag, dan wilt u de rivier wellicht splitsen in delen van 24 km. Door het spoor te splitsen in intervallen van 24 km ziet u ongeveer waar de vervuiling elke dag is. De lijn wordt aangeduid met verschillende kleuren gebaseerd op afstand en wordt voorzien van een label met de afstand vanaf het begin van het spoor.
+    </p>
+    <p>Het resulterende spoor heeft alle attributen van uw invoerpunten alsmede aanvullende attributen: 
+        <ul>
+            <li> <i>PointID</i>&mdash;Bevat de ID-waarde van het invoerpunt.
+                
+
+            </li>
+            <li> <i>LengthKm</i>&mdash;Bevat de lengte in kilometer voor het totale spoor stroomafwaarts.
+                
+
+            </li>
+            <li> <i>Description</i> en <i>DataResolution</i>&mdash;Bevat informatie met betrekking tot de hydrologische gegevens gebruikt om het spoor te berekenen
+                
+
+            </li>
+            <li> <i>FromDistance</i> en <i>ToDistance</i>&mdash;Bevat de afstand van en naar elk lijnsegment. Deze attributen worden geschreven als <b>Splits het spoor in lijnsegmenten</b> is gebruikt.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Als  <b>Huidige kaartextent gebruiken</b> is geselecteerd, worden alleen de puntobjecten geanalyseerd in de invoerlaag die zichtbaar is binnen het huidige kaartextent. Als deze optie niet is aangevinkt, worden alle objecten in de invoerlaag gebruikt, ook als ze zich buiten het huidige kaartextent bevinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Puntobjecten om te gebruiken als de startlocaties voor elk spoor stroomafwaarts</h2></div>
+        <hr/>
+        <div>
+            <p>De puntobjecten om te gebruiken als de startlocaties voor elk spoor stroomafwaarts. De uitvoer bevat een lijn voor elk invoerpunt.
+            </p>
+            <p>Naast het kiezen van een laag uit uw kaart, kunt u  <b>Analyselaag kiezen</b> selecteren onderaan de vervolgkeuzelijst. Met deze optie wordt een galerij geopend waarin u kunt bladeren naar en datasets van verschillende bronnen kunt selecteren die u in uw analyse kunt gebruiken. 
+            </p>
+        </div>
+    </div>
+    <div id="SplitDistance">
+        <div><h2>Splits het spoor in lijnsegmenten</h2></div>
+        <hr/>
+        <div>
+            <p>De lijn van het spoor wordt gesplitst in meerdere lijnen waar elke lijn de opgegeven lengte heeft. Als uw invoerpunt bijvoorbeeld een vervuiling vertegenwoordigt en de betreffende rivier stroomt met een snelheid van 1 kilometer per uur, of 24 km per dag, dan wilt u de rivier wellicht splitsen in delen van 24 km. Door het spoor te splitsen in intervallen van 24 km ziet u ongeveer waar de vervuiling elke dag is. De lijn wordt aangeduid met verschillende kleuren gebaseerd op afstand en wordt voorzien van een label met de afstand vanaf het begin van het spoor. Het resulterende spoor heeft meerdere lijnsegmenten, elk met velden  <i>FromDistance</i> en <i>ToDistance</i>.
+            </p>
+        </div>
+    </div>
+    <div id="MaxDistance">
+        <div><h2>Maximale afstand van het spoor</h2></div>
+        <hr/>
+        <div>
+            <p>Bepaalt de totale lengte van de lijn die wordt geretourneerd. Als u gebiedsobjecten opgeeft om het spoor bij te snijden dan wordt het resultaat bijgesneden voor het gebiedsobject, ongeacht de afstand die u hier invoert.
+            </p>
+        </div>
+    </div>
+    <div id="ClipArea">
+        <div><h2>Uitvoer bijsnijden naar</h2></div>
+        <hr/>
+        <div>
+            <p>Teken een laag of geef deze op om het gebied op te geven waar u wilt dat het resultaat wordt getekend. Bijvoorbeeld, als u alleen het spoorresultaat binnen uw studiegebied wilt, zoals uw provincie, dan gebruikt u uw provincie-object als input zodat de curve stopt bij de provinciegrenzen.
+            </p>
+        </div>
+    </div>
+    <div id="OutputTrace">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>Dit is de naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laagnaam al bestaat, wordt u gevraagd een nieuwe naam te verschaffen.
+            </p>
+            <p>Met behulp van het vervolgkeuzemenu  <b>Resultaat opslaan in</b> kunt u de naam van een map opgeven in <b>Mijn Content</b> waar het resultaat wordt opgeslagen.
+            </p>
+            <p> Door het uitvoeren van deze tool worden geen credits verbruikt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

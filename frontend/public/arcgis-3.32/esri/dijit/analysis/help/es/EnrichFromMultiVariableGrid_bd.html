@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Enriquecer con cuadrícula multivariable</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="Enriquecer con cuadr&iacute;cula multivariable"></h2>
+        <hr/>
+    <p>La herramienta  Enriquecer con cuadr&iacute;cula multivariable une de forma eficiente atributos de una cuadr&iacute;cula multivariable a una capa de puntos.
+    </p>
+    <p>Una cuadr&iacute;cula multivariable es cualquier capa creada con la herramienta Crear cuadr&iacute;cula multivariable, que compila atributos de varias capas en una sola cuadr&iacute;cula de pol&iacute;gonos.  El uso de una cuadr&iacute;cula multivariable como modo de enriquecimiento le permite agregar r&aacute;pidamente colecciones de informaci&oacute;n grandes y diversas a datos de puntos para su uso en an&aacute;lisis espaciales posteriores.
+    </p>
+    <p>Por ejemplo, supongamos que tiene una capa de nuevos sucesos delictivos que han tenido lugar en el &uacute;ltimo a&ntilde;o en una ciudad. Desea modelar las relaciones entre la frecuencia delictiva y una variedad de factores demogr&aacute;ficos, econ&oacute;micos y geogr&aacute;ficos. Dispone de acceso a datos que describen estos factores, pero est&aacute;n almacenados en cinco capas distintas con distintos tipos de geometr&iacute;a. Adem&aacute;s, algunas capas est&aacute;n almacenadas en recursos compartidos de archivos de big data, mientras que otras est&aacute;n almacenadas como servicios de entidades. Al crear una cuadr&iacute;cula multivariable para almacenar esta informaci&oacute;n y despu&eacute;s unir dicha cuadr&iacute;cula a sus sucesos delictivos con la herramienta  Enriquecer con cuadr&iacute;cula multivariable, puede unir de forma eficaz una variedad de atributos a su capa de puntos ejecutando solamente dos herramientas. Despu&eacute;s, puede utilizar los atributos unidos como variables explicativas y empezar a crear un modelo de frecuencia delictiva con la capa de resultados.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>Elegir las entidades de puntos que desea enriquecer</h2></div>
+        <hr/>
+        <div>
+            <p>Las entidades de puntos que se enriquecer&aacute;n con la cuadr&iacute;cula multivariable.
+            </p>
+            <p>Adem&aacute;s de elegir una capa en el mapa, puede elegir  <b>Elegir capa de an&aacute;lisis</b> en la parte inferior de la lista desplegable para examinar el contenido del dataset o la capa de entidades de un recurso compartido de archivos de big data.
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>Elegir la cuadrícula multivariable con la que se va a enriquecer</h2></div>
+        <hr/>
+        <div>
+            <p>La capa de cuadr&iacute;cula multivariable que contiene los atributos que se unir&aacute;n a las entidades de puntos de entrada. La capa se debe haber creado con la herramienta Crear cuadr&iacute;cula multivariable y debe ser una capa de entidades alojada. Las capas de cuadr&iacute;cula multivariable alojadas en un recurso compartido de archivos de big data no se admiten como entradas de esta herramienta.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>Elegir las variables que desea agregar</h2></div>
+        <hr/>
+        <div>
+            <p>Los atributos de la capa de cuadr&iacute;cula multivariable que se unir&aacute;n a las entidades de puntos de entrada siempre que las entidades de puntos intersequen la cuadr&iacute;cula.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p> El nombre de la capa que se crear&aacute;.  Si escribe en un ArcGIS Data Store, sus resultados se guardar&aacute;n en  <b>Mi contenido</b> y se agregar&aacute;n al mapa. Si escribe en un recurso compartido de archivos de big data, sus resultados se almacenar&aacute;n en el recurso compartido de archivos de big data y se agregar&aacute;n a su manifiesto. No se agregar&aacute;n al mapa. El nombre predeterminado se basa en el nombre de la herramienta y en el nombre de la capa de entrada. Si la capa ya existe, la herramienta fallar&aacute;.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

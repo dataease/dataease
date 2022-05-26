@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Hot spot analýza (Find Hot Spots)</h2><p/>
+        <h2><img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" alt="Hot spot anal&yacute;za"></h2>
+        <hr/>
+    <p> N&aacute;stroj Hot spot anal&yacute;za umožňuje zjistit, zda se v&nbsp;prostorov&eacute; struktuře dat vyskytuj&iacute; statisticky v&yacute;znamn&eacute; shluky.
+        <ul>
+            <li>Jsou body (trestn&eacute; činy, stromy, dopravn&iacute; nehody) opravdu souč&aacute;st&iacute; shluku? Jak si můžete b&yacute;t jist&iacute;?
+            </li>
+            <li>Narazili jste opravdu na statisticky v&yacute;znamn&yacute; Hot Spot (t&yacute;kaj&iacute;c&iacute; se v&yacute;dajů, kojeneck&eacute; &uacute;mrtnosti, konzistentně vysok&yacute;ch v&yacute;sledků testů), nebo by va&scaron;e mapa vypadala zcela jinak, pokud byste změnili způsob zn&aacute;zorněn&iacute;?
+            </li>
+        </ul>
+        N&aacute;stroj Hot spot anal&yacute;za v&aacute;m pomůže s&nbsp;jistotou odpovědět na tyto ot&aacute;zky.
+    </p>
+    <p>Dokonce i n&aacute;hodn&eacute; prostorov&eacute; struktury vykazuj&iacute; určitou m&iacute;ru shlukov&aacute;n&iacute;.  Na&scaron;e oči a mozek se nav&iacute;c přirozeně snaž&iacute; hledat vzory a struktury i tam, kde ž&aacute;dn&eacute; nejsou.  Může tak b&yacute;t obt&iacute;žn&eacute; určit, zda struktury ve va&scaron;ich datech jsou důsledkem skutečn&yacute;ch prostorov&yacute;ch procesů nebo jen d&iacute;lem n&aacute;hody.  Proto specialist&eacute; a analytici použ&iacute;vaj&iacute; ke kvantifikaci prostorov&yacute;ch struktur metody jako je Hot spot anal&yacute;za (Getis-Ord Gi*).  Statisticky v&yacute;znamn&eacute; shlukov&aacute;n&iacute; dat představuje cenn&eacute; informace.  Znalost toho, kde a kdy ke shlukov&aacute;n&iacute; doch&aacute;z&iacute;, může b&yacute;t užitečn&aacute; k&nbsp;pochopen&iacute; procesů, kter&eacute; tyto patrn&eacute; struktury vytv&aacute;ř&iacute;.  Pokud např&iacute;klad v&iacute;te, že m&iacute;ra vloup&aacute;n&iacute; do obytn&yacute;ch objektů je v&nbsp;určit&yacute;ch čtvrt&iacute;ch soustavně vy&scaron;&scaron;&iacute;, můžete l&eacute;pe navrhovat efektivn&iacute; strategie prevence, přidělovat omezen&eacute; zdroje policejn&iacute;ch sil, iniciovat programy sousedsk&eacute; hl&iacute;dky, schvalovat hloubkov&eacute; vy&scaron;etřov&aacute;n&iacute; trestn&yacute;ch činů nebo identifikovat potenci&aacute;ln&iacute; podezřel&eacute; osoby.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Zvolte vrstvu, která se použije k výpočtu míst s vysokou intenzitou.</h2></div>
+        <hr/>
+        <div>
+            <p>Vrstva bodů nebo prvků, kde budou vyhled&aacute;na m&iacute;sta s&nbsp;vysokou a n&iacute;zkou intenzitou (tzv. hot spots). 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Najít shluky míst s vysokou a nízkou intenzitou</h2></div>
+        <hr/>
+        <div>
+            <p>Tato anal&yacute;za odpov&iacute;d&aacute; na ot&aacute;zku: Kde se prostorově shlukuj&iacute; vysok&eacute; a n&iacute;zk&eacute; hodnoty?
+            </p>
+            <p>Pokud jsou data určen&aacute; body a zvol&iacute;te možnost  <b>Počet bodů</b>, vyhodnot&iacute; n&aacute;stroj prostorov&eacute; uspoř&aacute;d&aacute;n&iacute; bodov&yacute;ch prvků k&nbsp;zodpovězen&iacute; ot&aacute;zky: Kde se body neoček&aacute;vaně shlukuj&iacute; nebo rozprost&iacute;raj&iacute;?
+            </p>
+            <p>Pokud zvol&iacute;te pole, vyhodnot&iacute; n&aacute;stroj prostorov&eacute; uspoř&aacute;d&aacute;n&iacute; hodnot přiřazen&yacute;ch k&nbsp;jednotliv&yacute;m prvkům, aby odpověděl na ot&aacute;zku: Kde se shlukuj&iacute; vysok&eacute; a n&iacute;zk&eacute; hodnoty?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Počítat body v</h2></div>
+        <hr/>
+        <div>
+            <p>Ve v&yacute;choz&iacute;m nastaven&iacute; budou poč&iacute;t&aacute;ny body uvnitř mř&iacute;žky s&iacute;tě, kterou n&aacute;stroj vytvořil na z&aacute;kladě va&scaron;ich bodov&yacute;ch dat. Alternativně můžete spoč&iacute;tat body uvnitř &scaron;esti&uacute;heln&iacute;kov&eacute; mř&iacute;žky nebo určit vrstvu oblasti (obvykle by měla odr&aacute;žet hl&aacute;&scaron;en&iacute; podle spr&aacute;vn&iacute;ch obvodů, např&iacute;klad oblasti sč&iacute;t&aacute;n&iacute;, hranice obc&iacute; nebo kraje) k zodpovězen&iacute; ot&aacute;zky: Vzhledem k počtu bodů poč&iacute;tan&yacute;ch v&nbsp;každ&eacute;m prvku oblasti, existuj&iacute; m&iacute;sta se statisticky v&yacute;znamn&yacute;m prostorov&yacute;m shlukov&aacute;n&iacute;m vysok&eacute;ho a n&iacute;zk&eacute;ho počtů bodů?   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Definovat místa možných bodů</h2></div>
+        <hr/>
+        <div>
+            <p>Umožňuje nakreslit nebo zadat vrstvu určen&iacute;m oblast&iacute; s&nbsp;možn&yacute;mi v&yacute;skyty pro zodpovězen&iacute; ot&aacute;zky: Nach&aacute;zej&iacute; se v&nbsp;dan&yacute;ch oblastech nějak&aacute; um&iacute;stěn&iacute; s&nbsp;neoček&aacute;vaně vysokou nebo n&iacute;zkou koncentrac&iacute; bodů?   
+            </p>
+            <p>Nakreslen&eacute; prvky oblasti, nebo prvky v&nbsp;zadan&eacute; vrstvě oblasti by měly definovat m&iacute;sta, na kter&yacute;ch se mohou vyskytovat body. Pro nakreslen&iacute; těchto oblast&iacute; klikněte na tlač&iacute;tko  <b>Kreslit</b> a n&aacute;sledně klikněte do mapy a nakreslete tvar oblasti.  Chcete-li nakreslit dal&scaron;&iacute; oblasti, znovu klikněte na tlač&iacute;tko kreslen&iacute; a pot&eacute; klikněte do mapy, abyste mohli pokračovat.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Vydělit</h2></div>
+        <hr/>
+        <div>
+            <p>Někdy může b&yacute;t potřeba analyzovat struktury, kter&eacute; berou v&nbsp;&uacute;vahu podkladov&aacute; rozložen&iacute;. Pokud va&scaron;e body např&iacute;klad představuj&iacute; trestn&eacute; činy a vyděl&iacute;te je celkovou populac&iacute;, v&yacute;sledkem anal&yacute;zy bude počet trestn&yacute;ch činů na jednoho obyvatele (nikoli celkov&yacute; počet trestn&yacute;ch činů).  Volba atributu pro dělen&iacute; se často označuje jako normalizace.
+            </p>
+            <p>Pokud zvol&iacute;te možnost  <i>Populace Esri</i>, v&scaron;echny prvky oblasti se obohat&iacute; hodnotami populace, kter&eacute; pak budou použity jako atributy pro dělen&iacute;.  Tato možnost spotřebov&aacute;v&aacute; kredity.
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Přepsat možnosti</h2></div>
+        <hr/>
+        <div>
+            <p> Tento n&aacute;stroj najde na z&aacute;kladě charakteristiky va&scaron;ich dat optim&aacute;ln&iacute; nastaven&iacute; pro v&yacute;choz&iacute; hodnoty položek <b>Velikost pixelu</b> a <b>P&aacute;smo vzd&aacute;lenosti</b>. Pokud nicm&eacute;ně m&aacute;te konkr&eacute;tn&iacute; hodnotu <b>Velikost pixelu</b> nebo <b>P&aacute;smo vzd&aacute;lenosti</b>, kter&aacute; pro va&scaron;i anal&yacute;zu d&aacute;v&aacute; smysl, můžete k&nbsp;nastaven&iacute; t&eacute;to hodnoty použ&iacute;t položku <b>Přepsat možnosti</b>.
+            </p>
+            <p>Položka  <b>Přepsat možnosti</b> je užitečn&aacute; i v&nbsp;př&iacute;padě, kdy prov&aacute;d&iacute;te anal&yacute;zu různ&yacute;ch datov&yacute;ch sad, jelikož v&aacute;m umožn&iacute; zachovat konzistentn&iacute; <b>P&aacute;smo vzd&aacute;lenosti</b> a <b>Velikost pixelu</b> např&iacute;č v&iacute;ce datov&yacute;mi sadami.  Můžete tak n&aacute;ležitě porovnat v&yacute;sledky, např&iacute;klad m&iacute;ry obezity a cukrovky nebo m&iacute;ru zločinu ve dvou různ&yacute;ch letech.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Velikost pixelu</h2></div>
+        <hr/>
+        <div>
+            <p>Velikost buněk mř&iacute;žky použit&yacute;ch k&nbsp;sečten&iacute; bodů uvnitř mř&iacute;žky.  
+            </p>
+            <p>Při použit&iacute; &scaron;esti&uacute;heln&iacute;kov&eacute; mř&iacute;žky pro sečten&iacute; bodů uvnitř bude tato vzd&aacute;lenost použita jako v&yacute;&scaron;ka &scaron;esti&uacute;heln&iacute;ků.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Pásmo vzdálenosti</h2></div>
+        <hr/>
+        <div>
+            <p>Každ&yacute; prvek je analyzov&aacute;n v&nbsp;kontextu soused&iacute;c&iacute;ch prvků, kter&eacute; se nach&aacute;zej&iacute; ve v&aacute;mi zadan&eacute; vzd&aacute;lenosti.  N&aacute;stroj pro v&aacute;s vypoč&iacute;t&aacute; v&yacute;choz&iacute; vzd&aacute;lenost nebo můžete pomoc&iacute; t&eacute;to možnosti nastavit konkr&eacute;tn&iacute; vzd&aacute;lenost, kter&aacute; pro va&scaron;i anal&yacute;zu d&aacute;v&aacute; smysl. 
+            </p>
+            <p>Pokud např&iacute;klad studujete sch&eacute;mata doj&iacute;žděn&iacute; do pr&aacute;ce a v&iacute;te, že průměrn&aacute; cesta do pr&aacute;ce m&aacute; 15 km, můžete pro svou anal&yacute;zu např&iacute;klad cht&iacute;t použ&iacute;t 15kilometrov&eacute; p&aacute;smo vzd&aacute;lenosti.
+            </p>
+        </div>
+    </div>
+    <div id="hotSpotsResultLayer">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>Zadejte n&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a bude přid&aacute;na do mapy.  Tato v&yacute;sledn&aacute; vrstva zobraz&iacute; statisticky v&yacute;znamn&eacute; shluky vysok&yacute;ch a n&iacute;zk&yacute;ch hodnot, nebo počtů bodů. Pokud n&aacute;zev v&yacute;sledn&eacute; vrstvy již existuje, budete pož&aacute;d&aacute;ni o jej&iacute; přejmenov&aacute;n&iacute;.
+            </p>
+            <p>V&nbsp;rozbalovac&iacute;m seznamu  <b>Uložit v&yacute;sledek do</b> můžete zadat n&aacute;zev složky ve složce <b>Můj obsah</b>, do kter&eacute; se m&aacute; v&yacute;sledek uložit.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,73 @@
+// RadioButton
+// 
+// Styling RadioButton mainly includes:
+// 
+// 1. Containers
+//    .dijitRadio|.dijitRadioIcon - for border, padding, width|height and background image
+// 
+// 2. RadioButton within ToggleButton
+//    .dijitToggleButton|.dijitToggleButtonChecked .* - for background image
+// 
+// 3. Checked state
+//    .dijitRadioChecked - for checked background-color|image
+//    .dijitToggleButtonChecked - for border, background-color|image, display and width|height
+// 
+// 4. Hover state
+//    .dijitRadioHover|.dijitRadioCheckedHover - for background image
+// 
+// 5. Disabled state
+//    .dijitRadioDisabled|.dijitRadioCheckedDisabled - for background image
+//
+.#{$theme-name} {
+  .dijitRadio,
+  .dijitRadioIcon {
+    width: $radio-width;
+    height: $radio-height;
+    background-color: $radio-default-bg;
+    border: 1px solid $radio-default-border;
+    position: relative;
+    overflow: visible;
+    @include border-radius(50%);
+    @include box-sizing(border-box);
+    @include transition(all .25s ease);
+    &:after {
+      content: " ";
+      display: block;
+      width: 0;
+      height: 0;
+      margin: $radio-width * .5;
+      position: absolute;
+      top: 0;
+      left: 0;
+      @include border-radius(50%);
+      @include opacity(0);
+      @include transition(all 0.15s ease-in-out);
+    }
+  }
+  // Checked state
+  .dijitRadioChecked,
+  .dijitChecked .dijitRadioIcon {
+    border-color: $radio-active-border;
+    &:after {
+      background-color: $radio-active-bg;
+      width: 8px;
+      height: 8px;
+      margin: ($radio-width - 2px - 8px) * 0.5;
+      @include opacity(1);
+    }
+  }
+  // Radio icon inside alternate button styles
+  .btn-primary,
+  .btn-success,
+  .btn-danger {
+    .dijitRadioIcon {
+      background-color: $radio-alternative-bg;
+      border-color: $radio-alternative-border-fallback;
+      border-color: $radio-alternative-border;
+      &:after {
+        background-color: $radio-alternative-border-fallback;
+      }
+    }
+  }
+}
+

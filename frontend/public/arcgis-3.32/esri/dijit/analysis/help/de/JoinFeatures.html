@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Features verbinden</h2><p/>
+        <h2><img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" alt="Features verbinden"></h2>
+        <hr/>
+    <p>Mit der Funktion &quot;Features verbinden&quot;, die mit zwei Layern funktioniert, werden Attribute aus einem Feature mit denen eines anderen Features basierend auf r&auml;umlichen und Attributsbeziehungen verbunden. Das Werkzeug ermittelt alle Eingabe-Features, die den angegebenen Verbindungsbedingungen entsprechen, und f&uuml;gt den Join-Layer an den Ziel-Layer. 
+    </p>
+    <p>Der Task &quot;Features verbinden&quot; kann auf Punkte, Linien, Fl&auml;chen und Tabellen angewendet werden. Eine r&auml;umliche Verbindung setzt voraus, dass Ihre Daten eine Geometrie aufweisen. 
+    </p>
+    <p>Wenn die Option  <b>Aktuelle Kartenausdehnung verwenden</b> aktiviert ist, werden nur die Features analysiert, die in der aktuellen Kartenausdehnung sichtbar sind.  Wenn diese Option deaktiviert ist, werden auch dann alle Features im Ziel- und Join-Layer analysiert, wenn sie sich au&szlig;erhalb der aktuellen Ausdehnung befinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Ziel-Layer auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Der Ziel-Layer, der Attribute des Join-Layers an seine Tabelle anh&auml;ngen wird.
+            </p>
+            <p>Neben einem Layer aus Ihrer Karte k&ouml;nnen Sie auch die Option  <b>Analyse-Layer ausw&auml;hlen</b> unten in der Dropdown-Liste ausw&auml;hlen. Mit dieser Option &ouml;ffnen Sie eine Galerie, in der Sie zu Datasets aus verschiedenen Quellen navigieren und diese f&uuml;r Ihre Analysen ausw&auml;hlen k&ouml;nnen. 
+            </p> 
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>Layer zum Verbinden mit dem Ziel-Layer auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Der Join-Layer mit den Attributen, die an den Ziel-Layer angeh&auml;ngt werden.
+            </p>
+            <p>Neben einem Layer aus Ihrer Karte k&ouml;nnen Sie auch die Option  <b>Analyse-Layer ausw&auml;hlen</b> unten in der Dropdown-Liste ausw&auml;hlen. Mit dieser Option &ouml;ffnen Sie eine Galerie, in der Sie zu Datasets aus verschiedenen Quellen navigieren und diese f&uuml;r Ihre Analysen ausw&auml;hlen k&ouml;nnen. 
+            </p>
+        </div>
+    </div>
+    <div id="joinType">
+        <div><h2>Verbindungstyp(en) auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Sie k&ouml;nnen eine r&auml;umliche Verbindung, eine Attributverbindung oder eine Kombination aus beidem anwenden. 
+                <ul>
+                    <li> <b>R&auml;umlich</b>: Verwendet eine festgelegte r&auml;umliche Beziehung zum Verbinden von Features. Dies erfordert, dass beide Layer eine Geometrie aufweisen.
+                    </li>
+                    <li> <b>Attribut</b>: Verbindet Features basierend auf gleichen Feldern.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Räumliche Beziehung auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Die r&auml;umliche Beziehung, anhand derer festgelegt wird, ob Features miteinander verbunden werden. Die verf&uuml;gbaren Beziehungen h&auml;ngen vom Geometrietyp (Punkt, Linie, Fl&auml;chen) ab, der als Eingabe-Feature verwendet wird. Die folgenden Beziehungen sind verf&uuml;gbar:
+                <ul>
+                    <li> <b>Identisch mit</b>: Die Features im Ziel-Layer werden zugeordnet, wenn sie mit den Features im Join-Layer identisch sind.
+                    </li>
+                    <li> <b>&Uuml;berschneidet</b>: Die Features im Ziel-Layer werden zugeordnet, wenn sie sich mit den Features im Join-Layer &uuml;berschneiden.
+                    </li>
+                    <li> <b>Enth&auml;lt vollst&auml;ndig</b>: Die Features werden zugeordnet, wenn die Features im Ziel-Layer vollst&auml;ndig die Features im Join-Layer enthalten.
+                    </li>
+                    <li> <b>Vollst&auml;ndig innerhalb von</b>: Die Features werden zugeordnet, wenn die Features im Ziel-Layer vollst&auml;ndig innerhalb der Features des Join-Layers enthalten sind.
+                    </li>
+                    <li> <b>In einer Entfernung von</b>: Die Features im Ziel-Layer werden zugeordnet, wenn sie sich innerhalb einer bestimmten Entfernung zu den Features im Join-Layer befinden.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>Attributverbindung</h2></div>
+        <hr/>
+        <div>
+            <p>Die Attributbeziehung, mit der festgelegt wird, ob Features miteinander verbunden werden. Die Features werden zugeordnet, wenn die Feldwerte im Join-Layer den Feldwerten im Ziel-Layer entsprechen. 
+            </p>
+            <p>Angenommen, Sie verf&uuml;gen &uuml;ber einen landesweiten geographischen Layer mit Wohnadressen (mit einem  <i>ZIP</i>-Feld) und &uuml;ber ein Tabellen-Dataset mit demografischen Gesundheitsdaten nach PLZ-Code (mit einem Feld namens <i>HEALTHZIP</i>). Sie k&ouml;nnen das Gesundheits-Dataset mit den Wohnadressendaten verbinden, indem das Feld <i>ZIP</i> mit dem Feld <i>HEALTHZIP</i> abgeglichen wird. Dies f&uuml;hrt zu einem Layer mit Wohnsitzen, die den Gesundheitsdaten entsprechen.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Verbindungsvorgang auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Hiermit wird ermittelt, wie Verbindungen zwischen dem Ziel- und dem Join-Layer verarbeitet werden, wenn mehrere Features im Join-Layer dieselbe Beziehung mit dem Ziel-Layer aufweisen, mit dem sie verbunden sind. Es stehen folgende zwei Verbindungsvorg&auml;nge zur Auswahl:
+                <ul>
+                    <li> <b>Eins zu eins verbinden</b>: Mit dieser Option werden die Features im Ziel-Layer mit jeweils einem Feature im Join-Layer verbunden. Wie die Features verbunden werden, wird mit dem Parameter <b>Statistiken hinzuf&uuml;gen</b> oder dem Parameter <b>Festlegen, welcher Datensatz erhalten bleibt</b> festgelegt. Wird <b>Statistiken hinzuf&uuml;gen</b> verwendet, werden alle abgeglichenen verbundenen Features in den jeweiligen Features des Ziel-Layers zusammengefasst. Die Anzahl der verbundenen Features wird standardm&auml;&szlig;ig hinzugef&uuml;gt. Wird <b>Festlegen, welcher Datensatz erhalten bleibt</b> verwendet, k&ouml;nnen Sie ausw&auml;hlen, ob der erste abgeglichene Datensatz erhalten bleibt (Standardeinstellung) oder ob ein abgeglichener Datensatz basierend auf einem Ausdruck beibehalten wird. F&uuml;r einen Ausdruck kann entweder ein numerisches Feld (Option f&uuml;r den kleinsten oder gr&ouml;&szlig;ten Datensatz) oder ein Datumsfeld (Option f&uuml;r den neuesten oder &auml;ltesten Datensatz) verwendet werden.
+                    </li>
+                    <li> <b>Eins zu vielen verbinden</b>: Mit dieser Option werden alle &uuml;bereinstimmenden Features im Join-Layer mit dem Ziel-Layer verbunden.  Der Ergebnis-Layer enth&auml;lt mehrere Datens&auml;tze des Ziel-Features.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Angenommen, Sie suchen Superm&auml;rkte im Umkreis von 5 Kilometern von einem Bauernmarkt.   In diesem Fall muss der zu verbindende Layer &uuml;ber ein einzelnes Feature verf&uuml;gen, das einen Bauernmarkt darstellt, und die Verbindungs-Features stellen die lokalen Lebensmittelgesch&auml;fte mit Attributen wie dem j&auml;hrlichen Gesamtumsatz dar. Mit dem Werkzeug  <b>Features verbinden</b> ermitteln Sie, dass f&uuml;nf Lebensmittelgesch&auml;fte diesen Kriterien entsprechen. Wenn Sie den Verbindungsvorgang <b>Eins zu vielen verbinden</b> festlegen, enth&auml;lt Ihr Ergebnis f&uuml;nf Features, wobei jede Zeile den Bauernmarkt und einen Supermarkt darstellt. Wenn Sie die Beziehung <b>Eins zu eins verbinden</b> festlegen und eine Statistik ausw&auml;hlen, f&uuml;hrt Sie dies zu einem Feature, das den Bauernmarkt und die zusammengefassten Informationen zu den Superm&auml;rkten darstellt, inklusive der Anzahl (5) und anderer optionaler Statistiken wie dem Gesamtjahresumsatz.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Statistiken hinzufügen (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>Wenn die Option  <b>Eins zu eins verbinden</b> ausgew&auml;hlt ist, k&ouml;nnen Sie f&uuml;r numerische Felder Statistiken f&uuml;r verbundene Features zusammenfassen und berechnen.   Die Anzahl der &uuml;bereinstimmenden Verbindungs-Features wird standardm&auml;&szlig;ig berechnet und dem Ergebnis-Layer hinzugef&uuml;gt.  Wenn Sie keine zus&auml;tzlichen Statistiken hinzuf&uuml;gen m&ouml;chten, wird das erste &uuml;bereinstimmende Feature im Join-Layer mit dem ersten &uuml;bereinstimmenden Feature im Ziel-Layer verbunden.   Sie k&ouml;nnen Folgendes berechnen:
+            </p>
+            <ul>
+                <li>Summe
+                </li>
+                <li>Minimum
+                </li>
+                <li>Maximum
+                </li>
+                <li>Durchschnitt
+                </li>
+                <li>Standardabweichung
+                </li>
+            </ul>
+            
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird.  Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer-Name bereits vorhanden ist, werden Sie dazu aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>&Uuml;ber das Dropdown-Men&uuml;  <b>Ergebnis speichern in</b> k&ouml;nnen Sie den Namen eines Ordners in <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert werden soll.
+            </p>
+        </div>
+    </div>
+    <div id="isView">
+        <div><h2>Ergebnisse als Sicht eines gehosteten Feature-Layers erstellen</h2></div>
+        <hr/>
+        <div>
+            <p> Wenn Sie die Ergebnisse als Sicht eines gehosteten Feature-Layers erstellen, bleiben die Daten im Falle von &Auml;nderungen an den Quelldaten aktuell. Sichten gehosteter Feature-Layer, die Verbindungen enthalten, sind schreibgesch&uuml;tzt. F&uuml;r die Analyse und das Speichern werden keine Credits verbraucht.
+            </p>
+            <p>Sie k&ouml;nnen aus den Analyseergebnissen eine Sicht eines gehosteten Feature-Layers erstellen, wenn alle der folgenden Bedingungen erf&uuml;llt werden:
+                <ul>
+                    <li>Sie sind der Besitzer der beiden Layer.
+                    </li>
+                    <li>Beide Layer sind gehostete Feature-Layer.
+                    </li>
+                    <li>Sie f&uuml;hren eine auf Attributen basierende Verkn&uuml;pfung durch.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

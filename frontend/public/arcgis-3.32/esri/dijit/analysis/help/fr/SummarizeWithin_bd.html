@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Synthétiser - A l’intérieur</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Synth&eacute;tiser - &Agrave; l&rsquo;int&eacute;rieur"></h2>
+        <hr/>
+    <p>Cet outil recherche les entit&eacute;s (et parties d'entit&eacute;s) qui se trouvent au sein des limites des surfaces dans la premi&egrave;re couche en entr&eacute;e.  
+        <ul>
+            <li>En prenant une couche de limites de bassin versant et une couche de limites d'utilisation du sol, calculez la superficie totale du type d'utilisation du sol pour chaque bassin versant. 
+            </li>
+            <li>En prenant une couche de parcelles dans un comt&eacute; et une couche de limites de ville, synth&eacute;tisez la valeur moyenne des parcelles vacantes au sein de chaque limite de ville.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si l'option  <b>Utiliser l'&eacute;tendue courante de la carte</b> est s&eacute;lectionn&eacute;e, seules les entit&eacute;s de la couche en entr&eacute;e et de la couche &agrave; synth&eacute;tiser qui sont visibles au sein de l'&eacute;tendue courante de la carte seront analys&eacute;es.  Si l'option n'est pas s&eacute;lectionn&eacute;e, toutes les entit&eacute;s qui se trouvent &agrave; la fois dans la couche en entr&eacute;e et dans la couche &agrave; synth&eacute;tiser seront analys&eacute;es, m&ecirc;me si elles se trouvent en dehors de l'&eacute;tendue courante de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Choisissez une couche surfacique pour synthétiser d'autres entités au sein de ses limites</h2></div>
+        <hr/>
+        <div>
+            <p>La couche surfacique qui sera utilis&eacute;e pour synth&eacute;tiser des entit&eacute;s comprises au sein de ses limites. Vous pouvez proc&eacute;der &agrave; une synth&egrave;se dans une couche de polygones que vous sp&eacute;cifiez ou dans des groupes hexagonaux ou carr&eacute;s qui sont g&eacute;n&eacute;r&eacute;s pendant l'ex&eacute;cution de l'outil.  Lors de la g&eacute;n&eacute;ration des groupes, pour  <b>Carr&eacute;</b>, le nombre et les unit&eacute;s sp&eacute;cifi&eacute;s d&eacute;terminent la hauteur et la longueur du carr&eacute;. Pour <b>Hexagone</b>, le nombre et les unit&eacute;s sp&eacute;cifi&eacute;s d&eacute;terminent la distance entre les c&ocirc;t&eacute;s parall&egrave;les.
+            </p>
+            <p>L'analyse &agrave; l'aide de groupes  <b>carr&eacute;s</b> ou <b>hexagonaux</b> requiert un syst&egrave;me de coordonn&eacute;es projet&eacute;es. Vous pouvez d&eacute;finir le <b>syst&egrave;me de coordonn&eacute;es de traitement</b> dans <b>Environnements d'analyse</b>. Si votre syst&egrave;me de coordonn&eacute;es de traitement n&rsquo;est pas d&eacute;fini sur un syst&egrave;me de coordonn&eacute;es projet&eacute;es, vous &ecirc;tes invit&eacute; &agrave; le configurer lorsque vous lancez <b>Run analysis (Ex&eacute;cuter l&rsquo;analyse)</b> .
+            </p>
+            <p>Outre le fait de choisir une couche de votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante pour parcourir votre contenu et rechercher une couche d&rsquo;entit&eacute;s ou un jeu de donn&eacute;es de partage de fichiers Big Data.
+            </p>
+        </div>
+    </div>
+    <div id="summaryLayer">
+        <div><h2>Choisir la couche à synthétiser</h2></div>
+        <hr/>
+        <div>
+            <p>Les entit&eacute;s de cette couche qui se trouvent au sein des limites des entit&eacute;s de la couche en entr&eacute;e, ou les groupes sp&eacute;cifi&eacute;s ci-dessus, seront synth&eacute;tis&eacute;s. 
+            </p>
+            <p>Outre le fait de choisir une couche de votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante pour parcourir votre contenu et rechercher une couche d&rsquo;entit&eacute;s ou un jeu de donn&eacute;es de partage de fichiers Big Data.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Choisir une distance pour générer les groupes et dans laquelle effectuer l'agrégation</h2></div>
+        <hr/>
+        <div>
+            <p>Distance utilis&eacute;e pour g&eacute;n&eacute;rer des groupes.  
+            </p>
+            <p>L&rsquo;option  <b>Bin Size (Taille du groupe)</b> pour les groupes ou <b>Area Layer (Couche surfacique)</b> doit &ecirc;tre d&eacute;finie.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Agréger à l'aide des tranches horaires (facultatif)</h2></div>
+        <hr/>
+        <div>
+            <p>Si le temps est activ&eacute; sur la couche ponctuelle en entr&eacute;e et qu'il est de type instantan&eacute;, vous pouvez effectuer l'analyse &agrave; l'aide des intervalles temporels. Vous pouvez d&eacute;finir trois param&egrave;tres lorsque vous utilisez le temps&nbsp;:
+                <ul>
+                    <li> <b>Intervalle temporel</b>
+                    </li>
+                    <li> <b>Fr&eacute;quence de r&eacute;p&eacute;tition de l'intervalle</b>
+                    </li>
+                    <li> <b>Heure sur laquelle aligner les intervalles temporels</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Si, par exemple, vous avez des donn&eacute;es repr&eacute;sentant une ann&eacute;e et voulez les analyser selon un intervalle hebdomadaire, d&eacute;finissez  <b>Time step interval (Intervalle temporel)</b> sur <code>1&nbsp;week (1&nbsp;semaine)</code>. 
+            </p>
+            <p>Si, par exemple,  vous poss&eacute;dez des donn&eacute;es repr&eacute;sentant un an et voulez l&rsquo;analyser &agrave; l&rsquo;aide de la premi&egrave;re semaine du mois, d&eacute;finissez  <b>Time step interval (Intervalle temporel)</b> sur <code>1 week (1&nbsp;semaine)</code>, <b>How often to repeat the time step (Fr&eacute;quence de r&eacute;p&eacute;tition de l&rsquo;intervalle) (Fr&eacute;quence de r&eacute;p&eacute;tition de l&rsquo;intervalle)</b> sur <code>1 month (1 mois)</code> et <b>Time to align the time steps to (Heure sur laquelle aligner les intervalles temporels)</b> sur <code>January&nbsp;1, at 12:00&nbsp;am (1er&nbsp;janvier &agrave; 12&nbsp;h&nbsp;00)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Intervalle temporel dans lequel effectuer l'agrégation</h2></div>
+        <hr/>
+        <div>
+            <p>Intervalle de temps utilis&eacute; pour g&eacute;n&eacute;rer des intervalles temporels. Un   <b>intervalle temporel (Time step interval)</b> peut  &ecirc;tre utilis&eacute; seul ou  avec le param&egrave;tre <b>How often to repeat the time step (Fr&eacute;quence de r&eacute;p&eacute;tition de l&rsquo;intervalle) </b> ou <b>Time to align the time steps to</b> parameter (Heure sur laquelle aligner les intervalles temporels).
+            </p>
+            <p>Si, par exemple, vous voulez cr&eacute;er des intervalles qui ont lieu tous les lundis de 9&nbsp;h&nbsp;00 &agrave; 10&nbsp;h&nbsp;00, d&eacute;finissez  <b>Time step interval (Intervalle temporel)</b> sur <code>1 hour (1&nbsp;heure)</code>, <b>How often to repeat the time step (Fr&eacute;quence de r&eacute;p&eacute;tition de l&rsquo;intervalle)</b> sur <code>1&nbsp;week (1&nbsp;semaine)</code> et <b>Time to align the time steps to (Heure sur laquelle aligner les intervalles temporels)</b> sur <code>9:00:00&nbsp;a.m. on a Monday (9&nbsp;h&nbsp;00 un lundi)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Phase dans laquelle effectuer l'agrégation</h2></div>
+        <hr/>
+        <div>
+            <p> Intervalle utilis&eacute; pour calculer un intervalle. Le param&egrave;tre <b>How often to repeat the time step (Fr&eacute;quence de r&eacute;p&eacute;tition de l&rsquo;intervalle)</b> peut &ecirc;tre utilis&eacute; seul ou avec <b>Time step interval (Intervalle temporel)</b>, avec <b>Reference Time (Heure de r&eacute;f&eacute;rence)</b>, ou avec &agrave; la fois <b>Time step interval (Intervalle temporel)</b> et <b>Time to align the time steps to (Heure sur laquelle aligner les intervalles temporels)</b>.
+            </p>
+            <p>Si,  par exemple,   vous voulez  cr&eacute;er des intervalles qui  ont   lieu tous les lundis de 9&nbsp;h&nbsp;00 &agrave; 10&nbsp;h&nbsp;00, d&eacute;finissez <b>Time step interval (Intervalle temporel) </b> sur <code>1 hour (1 heure)</code>, <b>How often to repeat the time step (Fr&eacute;quence de r&eacute;p&eacute;tition de l&rsquo;intervalle) </b> sur <code>1 week (1 semaine) </code>, et <b>Time to align the time steps to (Heure sur laquelle aligner les intervalles temporels) </b> sur <code>9:00:00 a.m. on a Monday (9&nbsp;h&nbsp;00 un lundi)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Heure de référence permettant d'aligner les tranches horaires</h2></div>
+        <hr/>
+        <div>
+            <p>La date et l'heure utilis&eacute;es pour aligner les tranches horaires. Les intervalles temporels commencent &agrave; partir de cette heure et progressent vers le pass&eacute;. Si aucune heure de r&eacute;f&eacute;rence n'est s&eacute;lectionn&eacute;e, les intervalles temporels s'alignent sur le 1er&nbsp;janvier&nbsp;1970. 
+            </p>
+            <p> Si, par exemple, vous voulez cr&eacute;er des intervalles qui  ont lieu tous les lundis de 9&nbsp;h&nbsp;00 &agrave; 10&nbsp;h&nbsp;00, d&eacute;finissez <b>Time step interval (Intervalle temporel) </b> sur <code>1 hour (1&nbsp;heure)</code>, <b>How often to repeat the time step (Fr&eacute;quence de r&eacute;p&eacute;tition de l&rsquo;intervalle)</b> sur <code>1&nbsp;week (1&nbsp;semaine)</code>, et <b>Time to align the time steps to (Heure sur laquelle aligner les intervalles temporels) </b> sur <code>9:00:00&nbsp;a.m. on a Monday (9&nbsp;h&nbsp;00 un lundi).</code>.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Ajouter des statistiques (facultatif)</h2></div>
+        <hr/>
+        <div>
+            <p> Vous pouvez calculer des statistiques sur des entit&eacute;s synth&eacute;tis&eacute;es. Dans les champs num&eacute;riques,  vous pouvez calculer ce qui suit&nbsp;:
+                <ul>
+                    <li>Count (Total)&nbsp;: calcule le nombre de valeurs non Null. Il peut &ecirc;tre utilis&eacute; sur des champs num&eacute;riques ou des cha&icirc;nes. Le total de [Null, 0, 2] est &eacute;gal &agrave; 2.
+                    </li>
+                    <li>Somme&nbsp;: somme des valeurs num&eacute;riques dans un champ. La somme de [Null, 0, 3] est &eacute;gale &agrave; 3.
+                    </li>
+                    <li>Moyenne&nbsp;: moyenne des valeurs num&eacute;riques. La moyenne de [0, 2, Null] est &eacute;gale &agrave; 1.
+                    </li>
+                    <li>Min&nbsp;: valeur minimale d'un champ num&eacute;rique. La valeur minimale de [0, 2, Null] est &eacute;gale &agrave; 0. 
+                    </li>
+                    <li>Max&nbsp;: valeur maximale d'un champ num&eacute;rique. La valeur maximale de [0, 2, Null] est &eacute;gale &agrave; 2.
+                    </li>
+                    <li>Plage&nbsp;: plage d'un champ num&eacute;rique. Elle est calcul&eacute;e pour correspondre aux valeurs minimales soustraites de la valeur maximale. La plage de [0, Null, 1] est &eacute;gale &agrave; 1. La plage de [Null, 4] est &eacute;gale &agrave; 0.
+                    </li>
+                    <li>Variance&nbsp;: variance d'un champ num&eacute;rique dans une piste. La variance de [1] est la valeur Null. La variance de [null, 1,0,1,1] est &eacute;gale &agrave; 0,25.
+                    </li>
+                    <li>Ecart type&nbsp;: &eacute;cart type d'un champ num&eacute;rique. L'&eacute;cart type de [1] est la valeur Null. L&rsquo;&eacute;cart type de [null, 1,0,1,1] est &eacute;gale &agrave; 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Dans les champs de type cha&icirc;ne,  vous pouvez calculer ce qui suit&nbsp;:
+                <ul>
+                    <li>Total&nbsp;: le nombre de cha&icirc;nes diff&eacute;rentes de la valeur Null.
+                    </li>
+                    <li>Tout&nbsp;: cette statistique est un &eacute;chantillon al&eacute;atoire d'une valeur de cha&icirc;ne dans le champ sp&eacute;cifi&eacute;.
+                    </li>
+                </ul>
+                Toutes les statistiques sont calcul&eacute;es sur des valeurs non nulles. La couche obtenue contient un nouveau champ pour chaque statistique calcul&eacute;e. Vous pouvez ajouter des statistiques en choisissant un attribut et une statistique. 
+            </p>
+            <p>Outre ces statistiques, des statistiques proportionnelles seront calcul&eacute;es sur tous les champs num&eacute;riques&nbsp;:
+                <ul>
+                    <li>Total&nbsp;: total de chaque champ multipli&eacute; par la proportion de la couche de synth&egrave;se figurant dans les polygones. 
+                    </li>
+                    <li>Somme&nbsp;: somme des valeurs pond&eacute;r&eacute;es de chaque champ. Lorsque la pond&eacute;ration appliqu&eacute;e correspond &agrave; la proportion de la couche de synth&egrave;se figurant dans les polygones.
+                    </li>
+                    <li>Moyenne&nbsp;: moyenne pond&eacute;r&eacute;e des valeur de chaque champ. Lorsque la pond&eacute;ration appliqu&eacute;e correspond &agrave; la proportion de la couche de synth&egrave;se figurant dans les polygones.
+                    </li>
+                    <li>Min&nbsp;: minimum des valeurs pond&eacute;r&eacute;es de chaque champ. Lorsque la pond&eacute;ration appliqu&eacute;e correspond &agrave; la proportion de la couche de synth&egrave;se figurant dans les polygones.
+                    </li>
+                    <li>Max&nbsp;: maximum des valeurs pond&eacute;r&eacute;es de chaque champ. Lorsque la pond&eacute;ration appliqu&eacute;e correspond &agrave; la proportion de la couche de synth&egrave;se figurant dans les polygones.
+                    </li>
+                    <li>Plage&nbsp;: diff&eacute;rence entre les valeurs pond&eacute;r&eacute;es maximum et minimum.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Selon les types d'entit&eacute;s que vous synth&eacute;tisez, le nombre total de points &agrave; proximit&eacute;, la longueur totale des lignes ou la surface totale seront calcul&eacute;s.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Choisir le champ de regroupement</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit d'un attribut des entit&eacute;s &agrave;  <b>synth&eacute;tiser</b> qui permet de calculer les statistiques s&eacute;par&eacute;ment pour chaque valeur attributaire unique. Supposons par exemple que la premi&egrave;re couche en entr&eacute;e contiennent les limites de ville et que les entit&eacute;s &agrave; synth&eacute;tiser soient des parcelles.  L&rsquo;un des attributs des parcelles est <i>Status</i>. Il contient deux valeurs&nbsp;: VACANT et OCCUPIED. Pour calculer la surface totale des parcelles vacantes et occup&eacute;es au sein des limites des villes, utilisez <i>Status</i> comme groupe par attribut. Les statistiques de chaque groupe, ainsi que le nombre total d'entit&eacute;s au sein de chaque limite de zone, appara&icirc;tront dans la fen&ecirc;tre contextuelle de la couche de r&eacute;sultat.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Ajouter une minorité, majorité</h2></div>
+        <hr/>
+        <div>
+            <p>Cette case &agrave; cocher est activ&eacute;e lorsque vous s&eacute;lectionnez un champ de regroupement. Si vous souhaitez savoir quelles valeurs attributaires au sein de chaque groupe sont minoritaires (les moins dominantes) ou majoritaires (les plus dominantes), dans chaque limite de la premi&egrave;re couche en entr&eacute;e, s&eacute;lectionnez  <b>Ajouter la minorit&eacute; et la majorit&eacute;</b>.   Lorsque vous s&eacute;lectionnez <b>Ajouter la minorit&eacute; et la majorit&eacute;</b>, deux nouveaux champs sont ajout&eacute;s &agrave; votre couche de r&eacute;sultat.   Si vous s&eacute;lectionnez &eacute;galement <b>Ajouter des pourcentages</b>, deux champs suppl&eacute;mentaires sont ajout&eacute;s &agrave; la couche de r&eacute;sultat, contenant les pourcentages des valeurs attributaires minoritaires et majoritaires au sein de chaque groupe.
+            </p>
+            <ul>
+                <li>Si vous agr&eacute;gez les points, les valeurs minoritaires et majoritaires sont calcul&eacute;es en fonction du nombre de points au sein de chaque zone adjacente dans la couche surfacique en entr&eacute;e.  
+                </li>
+                <li>Si vous agr&eacute;gez les lignes, les valeurs minoritaires et majoritaires sont calcul&eacute;es en fonction de la longueur des lignes au sein de chaque zone adjacente dans la couche surfacique en entr&eacute;e.  
+                </li>
+                <li>Si vous agr&eacute;gez les surfaces, les valeurs minoritaires et majoritaires sont calcul&eacute;es en fonction des surfaces au sein de chaque zone adjacente dans la couche surfacique en entr&eacute;e.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Ajouter des pourcentages</h2></div>
+        <hr/>
+        <div>
+            <p>Cette case &agrave; cocher est activ&eacute;e lorsque vous s&eacute;lectionnez un champ de regroupement. S&eacute;lectionnez  <b>Ajouter des pourcentages</b> si vous souhaitez conna&icirc;tre le pourcentage de chaque valeur attributaire au sein de chaque groupe. Un nouveau champ est ajout&eacute; &agrave; la table de r&eacute;sultat, contenant les pourcentages de chaque valeur attributaire au sein de chaque groupe. Si l'option <b>Ajouter des pourcentages</b> est &eacute;galement s&eacute;lectionn&eacute;e, deux champs suppl&eacute;mentaires sont ajout&eacute;s &agrave; la couche de r&eacute;sultat, contenant les pourcentages des valeurs attributaires minoritaires et majoritaires au sein de chaque groupe.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Choisir un stockage des données</h2></div>
+        <hr/>
+        <div>
+            <p>Les r&eacute;sultats de g&eacute;oanalyse sont stock&eacute;s dans un r&eacute;pertoire de donn&eacute;es et s&rsquo;affichent en tant que couche d&rsquo;entit&eacute;s dans  Portal for ArcGIS. Dans la plupart des cas, les r&eacute;sultats doivent &ecirc;tre stock&eacute;s dans le stockage des donn&eacute;es spatio-temporelles, ce qui est le param&egrave;tre par d&eacute;faut. Dans certains cas, il peut &ecirc;tre judicieux d&rsquo;enregistrer les r&eacute;sultats dans un data store relationnel. Voici les raisons pour lesquelles stocker les r&eacute;sultats dans le data store relationnel&nbsp;: 
+                <ul>
+                    <li>Vous pouvez utiliser les r&eacute;sultats en mode de collaboration de portail &agrave; portail.
+                    </li>
+                    <li>Vous pouvez activer la synchronisation de vos r&eacute;sultats.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Vous ne devez pas utiliser le data store relationnel&nbsp;si vous pensez que vos r&eacute;sultats GeoAnalytics vont augmenter et que vous devez tirer parti des fonctionnalit&eacute;s du le data store Big Data spatio-temporel pour g&eacute;rer les grands volumes de donn&eacute;es.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la couche &agrave; cr&eacute;er. Si vous &eacute;crivez sur une instance ArcGIS Data Store, les r&eacute;sultats seront enregistr&eacute;s dans  <b>My Content (Mon contenu)</b> et ajout&eacute;s &agrave; la carte. Si vous &eacute;crivez sur un partage de fichiers Big Data, les r&eacute;sultats seront enregistr&eacute;s dans le partage de fichiers Big Data et ajout&eacute;s &agrave; son manifeste. Il ne sera pas ajout&eacute; &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, l'outil &eacute;choue.
+            </p>
+            <p>Lors de l&rsquo;&eacute;criture sur  ArcGIS Data Store (r&eacute;pertoire de donn&eacute;es relationnelles ou spatio-temporelles) via la zone de liste d&eacute;roulante  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>, vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> o&ugrave; le r&eacute;sultat sera enregistr&eacute;.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

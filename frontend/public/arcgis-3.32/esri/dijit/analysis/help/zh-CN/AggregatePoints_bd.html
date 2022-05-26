@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>聚合点</h2><p/>
+        <h2><img src="../images/GUID-6C1620D9-D176-41FA-8283-833D8B1CCCFC-web.png" alt="聚合点"></h2>
+        <hr/>
+    <p>该工具适用于点要素图层以及区域要素图层。输入区域要素可以来自面图层或者可以是运行工具时计算得到的方形或六边形条柱。该工具首先确定每个指定区域内的点。确定点与区域的空间关系后，会计算出区域内所有点的统计数据并将统计数据指定给该区域。最基本的统计数据是区域内点的计数，但是也可以获取其他统计数据。
+
+    </p>
+    <p>例如，假设以咖啡店位置作为点要素，以县作为面要素，并且希望按县汇总咖啡销售额。假定咖啡店具有  <i>TOTAL_SALES</i> 属性，则您可以获得每个县内
+所有 <i>TOTAL_SALES</i> 的总和、每个县内 <i>TOTAL_SALES</i> 的最小值
+或最大值，或者其他统计数据（例如，计数、范围、标准差和方差）。
+    </p>
+    <p>该工具还适用于启用时间的数据。如果在输入点上启用时间，则时间片选项将可用。时间片允许在查看特定时间片时计算点与区域的关系。例如，您可以查看小时间隔，即每小时的输出。
+    </p>
+    <p>列举一个与时间有关的例子，假设您拥有在不同咖啡店位置进行的所有事务的点要素但无区域图层。已记录了一年多的数据，且每项事务都具有位置和时间戳。假定每项事务都具有  <i>TOTAL_SALES</i> 属性，则您可以获得感兴趣的空间和时间内所有 <i>TOTAL_SALES</i> 的总和。如果这些事务是针对单个城市的，则可以生成 1 千米格网的区域，然后在时间和空间内查看每周时间片来汇总事务。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>选择包含要聚合到区域的点的图层</h2></div>
+        <hr/>
+        <div>
+            <p>将聚合到区域的点图层。必须使用 <b>分析环境</b>将聚合到 <b>方形</b>或 <b>六边形</b>条柱的点图层的处理空间参考设置为投影坐标系。
+            </p>
+            <p>除了从地图中选择图层外，还可以在下拉列表的底部选择 <b>选择分析图层</b>，以浏览至大数据文件共享数据集或要素图层中的内容。
+            </p>
+        </div>
+    </div>
+    <div id="inputAggregation">
+        <div><h2>选择要聚合到的区域图层</h2></div>
+        <hr/>
+        <div>
+            <p>点图层将聚合到的区域。可以在您提供的区域图层或工具运行时生成的条柱之间进行选择。生成 <b>方形</b>条柱时，由指定的数字和单位决定正方形的高度和长度。生成 <b>六边形</b>条柱时，由指定的数字和单位决定平行边之间的距离。
+            </p>
+            <p>使用 <b>方形</b>或 <b>六边形</b>图格需要投影坐标系。您可以在 <b>分析环境</b>中设置 <b>处理坐标系</b>。如果您的处理坐标系未设置为投影坐标系，则 <b>运行分析</b>时系统将提示您进行设置 。
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>选择要聚合到的区域图层</h2></div>
+        <hr/>
+        <div>
+            <p>将聚合点的区域图层。位于该图层的区域边界内的所有点都将计算在内，还可以使用所选的统计数据进行汇总。 
+            </p>
+            <p>必须设置图格的 <b>图格大小</b>或 <b>区域图层</b>。
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>选择距离以生成条柱，并进行聚合</h2></div>
+        <hr/>
+        <div>
+            <p>用于生成输入点要聚合到的条柱的距离。对于方形条柱，大小表示正方形的高度。对于六边形条柱，大小表示六边形的高度（以平行边为起点）。  
+            </p>
+            <p>必须设置图格的 <b>图格大小</b>或 <b>区域图层</b>。
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>使用时间步长聚合(可选)</h2></div>
+        <hr/>
+        <div>
+            <p>如果输入点图层上启用了时间且类型为时刻，则可以使用时间步长进行分析。使用时间时可设置以下三个参数：
+                <ul>
+                    <li> <b>时间步长间隔</b>
+                    </li>
+                    <li> <b>重复时间步长的频率</b>
+                    </li>
+                    <li> <b>用于对齐时间步长的时间</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>例如，如果您有在时间上表示一年的数据并且您想使用周步长对该数据进行分析，,请将 <b>时间步长间隔</b>设置为 <code>1 周</code>。 
+            </p>
+            <p>例如，如果您有在时间上表示一年的数据并且您想要使用每月的第一周对该数据进行分析，,请将 <b>时间步长间隔</b>设置为 <code>1 周</code>、 <b>重复时间步长的频率</b>设置为 <code>1 个月</code>并将 <b>用于对齐时间步长的时间</b>设置为 <code>1 月 1 日 12:00 am</code>。
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>时间步长间隔</h2></div>
+        <hr/>
+        <div>
+            <p>用于生成时间步长的时间间隔。 <b>时间步长间隔</b> 可单独使用或与 <b>重复时间步长的频率</b>或 <b>用于对齐时间步长的时间</b>参数一起使用。
+            </p>
+            <p>例如，如果您想要创建的时间步长为每周一 9:00 a.m. 到 10:00 a.m.，请将 <b>时间步长间隔</b>设置为 <code>1 小时</code>、 <b>重复时间步长的频率</b>设置为 <code>1 周</code>并将 <b>用于对齐时间步长的时间</b>设置为 <code>每周一 9:00:00 a.m.</code>。
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>重复时间步长的频率</h2></div>
+        <hr/>
+        <div>
+            <p> 用于计算时间步长的步长。 <b>重复时间步长的频率</b>可单独使用，也可与 <b>时间步长间隔</b>或 <b>参考时间</b>一起使用，或同时与 <b>时间步长间隔</b>和 <b>用于对齐时间步长的时间</b>一起使用。
+            </p>
+            <p> 例如，如果您想要创建的时间步长为每周一 9:00 a.m. 到 10:00 a.m.，请将 <b>时间步长间隔</b>设置为 <code>1 小时</code>、 <b>重复时间步长的频率</b>设置为 <code>1 周</code>并将 <b>用于对齐时间步长的时间</b>设置为 <code>每周一 9:00:00 a.m.</code>。
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>用于对齐时间步长的时间</h2></div>
+        <hr/>
+        <div>
+            <p>用于对齐时间划分的日期和时间。时间步长将从此时间开始并相对于此时间倒计时。如果未选中参考时间，则时间步长将与 1970 年 1 月 1 日对齐。
+            </p>
+            <p> 例如，如果您想要创建的时间步长为每周一 9:00 a.m. 到 10:00 a.m.，请将 <b>时间步长间隔</b>设置为 <code>1 小时</code>、 <b>重复时间步长的频率</b>设置为 <code>1 周</code>并将 <b>用于对齐时间步长的时间</b>设置为 <code>每周一 9:00:00 a.m.</code>。
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>添加统计数据(可选)</h2></div>
+        <hr/>
+        <div>
+            <p> 可以计算汇总的要素的统计数据。可计算数值字段的以下内容：
+                <ul>
+                    <li>计数 - 计算非空值的数目。此项可用于数值字段或字符串。[null, 0, 2] 的计数为 2。
+                    </li>
+                    <li>总和 - 字段内数值的总和。[null, null, 3] 的总和为 3。
+                    </li>
+                    <li>平均值 - 数值的平均值。[0, 2, null] 的平均值为 1。
+                    </li>
+                    <li>最小值 - 数值字段的最小值。[0, 2, null] 的最小值为 0。
+                    </li>
+                    <li>最大值 - 数值字段的最大值。[0, 2, null] 的最大值为 2。
+                    </li>
+                    <li>范围 - 数值字段的范围。其计算方法为最大值减去最小值。[0, null, 1] 的范围为 1。[null, 4] 的范围为 0。
+                    </li>
+                    <li>方差 - 轨迹中数值字段内数值的方差。[1] 的方差为空。[null, 1,0,1,1] 的方差为 0.25。
+                    </li>
+                    <li>标准差 - 数值字段的标准差。[1] 的标准差为空。[null, 1,0,1,1] 的标准差为 0.5。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>可计算字符串字段的以下内容：
+                <ul>
+                    <li>计数 - 非空字符串的数目。
+                    </li>
+                    <li>任意 - 该统计数据是指定字段中字符串值的随机样本。
+                    </li>
+                </ul>
+                所有统计数据均根据非空值计算而得。生成的图层将包含一个针对每个计算而得的统计数据的新字段。通过选择一个属性和统计数据可添加任意数量的统计数据。 
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>这是预发行版本中的临时参数，用于设置处理空间参考。许多大数据工具都需要将投影坐标系用作处理的空间参考。默认情况下，该工具将使用输入坐标系，但是，如果输入坐标系为地理坐标系，则将无法使用。要设置投影坐标系，请输入 WKID。例如，要将  <b>Web Mercator</b> 输入为 <code>3857</code>。
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>选择要保存结果的 ArcGIS Data Store</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics 结果存储在数据存储中并显示为  Portal for ArcGIS 中的要素图层。大多数情况下，结果应存储在时空数据存储中（此为默认设置）。某些情况下，将结果存储在关系数据存储也是一个很好的选择。下列内容说明了您可能需要将结果存储在关系数据存储中的原因： 
+                <ul>
+                    <li>可在门户到门户协作中应用结果。
+                    </li>
+                    <li>可启用结果的同步功能。
+                    </li>
+                </ul>
+                
+            </p>
+            <p>如果您希望您的 GeoAnalytics 结果增加并希望利用时空大数据存储功能处理大量数据，则您不应使用关系数据存储。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p> 要创建的图层的名称。如果您要写入 ArcGIS Data Store，则您的结果将保存在<b>我的内容</b>并添加到地图中。如果您要写入大数据文件共享，则您的结果将存储于大数据文件共享中，并添加到其清单。结果将不会添加到地图中。默认名称基于工具名称以及输入图层名称。如果该图层已存在，将无法使用该工具。
+            </p>
+            <p>如果写入  ArcGIS Data Store（关系或时空大数据存储），可以使用<b>将结果保存在</b>下拉框指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

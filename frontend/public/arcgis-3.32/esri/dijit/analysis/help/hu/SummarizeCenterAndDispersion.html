@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Középpont és szóródás összefoglalása</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="K&ouml;z&eacute;ppont &eacute;s sz&oacute;r&oacute;d&aacute;s &ouml;sszefoglal&aacute;sa"></h2>
+        <hr/>
+    <p>Ez az eszk&ouml;z k&ouml;zponti vektoros elemek &eacute;s ir&aacute;nyf&uuml;ggő eloszl&aacute;sok keres&eacute;s&eacute;re haszn&aacute;lhat&oacute;.
+K&eacute;pes v&aacute;laszt adni p&eacute;ld&aacute;ul az al&aacute;bbi k&eacute;rd&eacute;sekre:
+        <ul>
+            <li>Hol van a k&ouml;z&eacute;ppont?
+            </li>
+            <li>Melyik vektoros elem &eacute;rhető el a legk&ouml;nnyebben az &ouml;sszes t&ouml;bbi vektoros elemből?
+            </li>
+            <li>Mennyire sz&oacute;r&oacute;dnak, t&ouml;m&ouml;r&uuml;lnek vagy integr&aacute;ltak a vektoros elemek?
+            </li>
+            <li>Vannak ir&aacute;nybeli trendek?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Az  <b>Aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;s haszn&aacute;lata</b> bejel&ouml;l&eacute;s&eacute;vel a program csak a bemenő r&eacute;tegnek az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen l&aacute;that&oacute; vektoros elemeit elemzi.  Ha nincs bejel&ouml;lve, akkor a bemenő r&eacute;teg &ouml;sszes vektoros elem&eacute;t elemzi, akkor is, ha azok k&iacute;v&uuml;l esnek az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Válasszon ki egy leírni kívánt réteget</h2></div>
+        <hr/>
+        <div>
+            <p>A k&ouml;zponti vektoros elemek &eacute;s ir&aacute;nyf&uuml;ggő eloszl&aacute;sok keres&eacute;s&eacute;re haszn&aacute;lt pont-, vonal vagy ter&uuml;letr&eacute;teg.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>Összefoglalás típusai</h2></div>
+        <hr/>
+        <div>
+            <p>A k&ouml;z&eacute;ppont &eacute;s sz&oacute;r&oacute;d&aacute;s &ouml;sszefoglal&aacute;s&aacute;nak m&oacute;dszere. 
+            </p>
+            <ul>
+                <li>K&ouml;zponti vektoros elem &ndash; a legk&ouml;zpontibb helyen tal&aacute;lhat&oacute; vektoros elemet hat&aacute;rozza meg egy adathalmazban.
+                </li>
+                <li>&Aacute;tlagk&ouml;z&eacute;ppont &ndash; a f&ouml;ldrajzi k&ouml;z&eacute;ppontot (vagy a koncentr&aacute;ci&oacute; k&ouml;zpontj&aacute;t) hat&aacute;rozza meg vektoros elemek egy halmaz&aacute;n.
+                </li>
+                <li>Medi&aacute;nk&ouml;z&eacute;ppont &ndash; azt a helyet hat&aacute;rozza meg, ahonnan a legkisebb az adathalmazban l&eacute;vő vektoros elemektől m&eacute;rt euklideszi t&aacute;vols&aacute;gok &ouml;sszege.
+                </li>
+                <li>Ellipszis &ndash; sz&oacute;r&aacute;sellipsziseket hoz l&eacute;tre f&ouml;ldrajzi vektoros elemek t&eacute;rbeli jellemzőinek &ouml;sszefoglal&aacute;s&aacute;ra: elhelyezked&eacute;s (centr&aacute;lis tendencia), sz&oacute;r&oacute;d&aacute;s &eacute;s ir&aacute;nybeli trendek. Az ellipszisek lehetnek 1, 2 vagy 3 sz&oacute;r&aacute;s m&eacute;retűek.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>Súlyozva ezzel (opcionális):</h2></div>
+        <hr/>
+        <div>
+            <p>A helyek relat&iacute;v fontoss&aacute;guk szerinti s&uacute;lyoz&aacute;s&aacute;hoz haszn&aacute;lt mező. 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>Csoportosítás szempontja (opcionális):</h2></div>
+        <hr/>
+        <div>
+            <p>A vektoros elemek csoportos&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt mező a k&ouml;zponti vektoros elemek vagy a sz&oacute;r&oacute;d&aacute;s k&uuml;l&ouml;n&aacute;ll&oacute; sz&aacute;m&iacute;t&aacute;saihoz. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Eredményréteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve.  Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő men&uuml;ben megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Atrast karstos punktus</h2><p/>
+        <h2><img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" alt="Atrast karstos punktus"></h2>
+        <hr/>
+    <p> Atrast karstos punktus rīks nosaka, vai jūsu telpiskajos datos ir kādi statistiski nozīmīgi klasteri.
+        <ul>
+            <li>Vai jūsu punkti (noziedzība, koki, satiksmes negadījumi) tie&scaron;ām veido klasterus? Kā jūs varat būt dro&scaron;s?
+            </li>
+            <li>Vai jūs esat atklāju&scaron;i patie&scaron;ām nozīmīgu karsto punktu (tērē&scaron;anas paradumu, zīdaiņu mirstības, nemainīgi augsti pārbaužu rezultāti) vai jūsu karte stāstītu citu stāstu, ja jūs mainītu veidu kā tā ir simbolizēta?
+            </li>
+        </ul>
+        Atrast karstos punktus rīks palīdzēs jums atbildēt uz &scaron;iem jautājumiem ar pārliecību.
+    </p>
+    <p>Pat nejau&scaron;os telpiskajos modeļos ir novērojama klasterizācija.  Bez tam, mūsu acis un smadzenes dabīgi mēģina atrast piemērus, pat ja to nav bijis. Līdz ar to, var būt grūti zināt, vai jūsu datu piemēri ir reālu telpiskos procesu, vai nejau&scaron;ības rezultāts. Tāpēc pētnieki un analītiķi izmanto statistikas metodes, kā Atrast karstos punktus (Getis-Ord Gi*), lai skaitļotu telpiskos piemērus. Kad jūs atrodat statistiski nozīmīgus klasterus jūsu datos, jums ir vērtīga informācija. Zinot, kur un kad gadās klasteri, var sniegt svarīgus pavedienus par veicino&scaron;iem procesiem. Zinā&scaron;anas par to, ka, piemēram, dzīvokļu laupī&scaron;anu skaits atsevi&scaron;ķos rajonos ir lielāks, ir svarīga informācija profilakses stratēģijās, lai sadalītu ierobežotos policijas resursus, uzsāktu kvartālu novēro&scaron;anas programmas, atļautu padziļinātu izmeklē&scaron;anu krimināllietās vai konstatētu iespējamos aizdomās turamos.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Izvēlieties slāni, kuram tiks aprēķināti karstie punkti</h2></div>
+        <hr/>
+        <div>
+            <p>Punkta vai laukuma slānis, kuram tiks meklēti karstie un aukstie punkti. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Atrast augsta un zema kopas</h2></div>
+        <hr/>
+        <div>
+            <p>&Scaron;ī analīze atbildēs uz jautājumu: Kur telpiski rodas augstu un zemu vērtību klasteri?
+            </p>
+            <p>Ja jūsu dati ir punkti un izvēlēsities iespēju  <b>Punktu skaits</b>, &scaron;is rīks novērtēs punktu elementu telpisko izkārtojumu, lai atbildētu uz jautājumu: Kur ir punkti, kas negaidīti veido klasterus vai izkliedējas?
+            </p>
+            <p>Ja izvēlēsities lauku, &scaron;is rīks novērtēs ar katru elementu saistīto vērtību telpisko izkārtojumu, lai atbildētu uz jautājumu: Kur telpiski rodas augstu un zemu vērtību klasteri?
+            </p>
+        </div>
+    </div>
+    <div id="aggregationPolygonLayer">
+        <div><h2>Skaitīt punktus šajās robežās:</h2></div>
+        <hr/>
+        <div>
+            <p>Pēc noklusējuma tiek skaitīti punkti zvejas tīkla režģī, ko rīks izveido, ņemot vērā jūsu punktu datus. Varat arī izvēlēties skaitīt punktus se&scaron;stūra režģī vai nodro&scaron;ināt laukumu slāni (parasti tie atspoguļo administratīvās ziņo&scaron;anas rajonus, piemēram, tautas skaitī&scaron;anu, pa&scaron;valdību robežas vai apgabalus), lai atbildētu uz jautājumu: Ņemot vērā punktu skaitu katrā laukuma elementā, vai ir vietas ar statistiski nozīmīgu telpisko klasteru augstu vai zemu punktu skaitu?   
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Nosakiet, kur punkti ir iespējami</h2></div>
+        <hr/>
+        <div>
+            <p>Uzzīmējiet vai norādiet slāni, kas definē, kur iespējami incidenti, lai atbildētu uz jautājumu: vai laukumos ir izvietojumi ar negaidīti augstu vai zemu punktu koncentrāciju?   
+            </p>
+            <p>Uzzīmētais laukums vai jūsu norādītie laukuma elementi, kur punkti iespējami varēs gadīties. Lai zīmētu &scaron;os laukumus, noklik&scaron;ķiniet uz pogas  <b>Zīmēt</b> un pēc tam noklik&scaron;ķiniet uz atra&scaron;anās vietas kartē, lai izveidotu laukuma formu. Lai zīmētu papildu laukumus, vēlreiz noklik&scaron;ķiniet uz pogas Zīmēt un pēc tam noklik&scaron;ķiniet uz atra&scaron;anās vietas kartē, lai turpinātu.
+            </p>
+        </div>
+    </div>
+    <div id="dividedByField">
+        <div><h2>Dalīt ar</h2></div>
+        <hr/>
+        <div>
+            <p>Reizēm var būt nepiecie&scaron;ams analizēt modeļus, kuri ņem vērā pamata sadalījumus. Piemēram, ja jūsu punkti atspoguļo noziedzību, dalot ar kopējo iedzīvotāju skaitu, iegūsit noziegumu analīzi uz vienu iedzīvotāju, nevis neapstrādātu noziegumu skaitu.  Atribūta&nbsp;dalītāja izvēli nereti dēvē par normalizē&scaron;anu.
+            </p>
+            <p>Ja izvēlēsities sadaļu  <i>Esri iedzīvotāji</i>, katrs laukuma elements tiks bagātināts ar iedzīvotāju vērtībām, kuras tiks izmantotas kā atribūts&nbsp;&mdash; dalītājs. &Scaron;ī opcija patērē kredītus.
+            </p>
+        </div>
+    </div>
+    <div id="overrideOptions">
+        <div><h2>Ignorēt opcijas</h2></div>
+        <hr/>
+        <div>
+            <p> Rīks piemeklēs optimālos iestatījumus vienumu <b>&Scaron;ūnu izmērs</b> un <b>Attāluma josla</b> noklusējumiem, pamatojoties uz datu raksturlielumiem. Tomēr, ja ir konkrēts <b>&Scaron;ūnu izmērs</b> vai <b>Attāluma josla</b>, kas ir piemērots jūsu analīzei, sadaļā <b>Ignorē&scaron;anas opcijas</b> var iestatīt &scaron;īs vērtības.
+            </p>
+            <p>Sadaļa  <b>Ignorē&scaron;anas opcijas</b> ir noderīga arī, veicot dažādu datu kopu analīzi, jo tā ļauj saglabāt vienumus <b>Attāluma josla</b> un <b>&Scaron;ūnu izmērs</b> konsekventus vairākās datu kopās. Tā jūs varat atbilsto&scaron;i salīdzināt rezultātus, piemēram, par aptauko&scaron;anās un diabēta vai paveikto kriminālnoziegumu rādītājiem divos dažādos gados.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Šūnu izmērs</h2></div>
+        <hr/>
+        <div>
+            <p>Režģa &scaron;ūnu, kurās tiek skaitīti punkti, izmērs.  
+            </p>
+            <p>Izmantojot se&scaron;stūra režģi punktu skaitī&scaron;anai, &scaron;is attālums tiek izmantots kā se&scaron;stūru augstums.
+            </p>
+        </div>
+    </div>
+    <div id="distanceBand">
+        <div><h2>Attāluma josla</h2></div>
+        <hr/>
+        <div>
+            <p>Katrs elements tiek analizēts saistībā ar tiem blakus eso&scaron;ajiem elementiem, kas atrodas jūsu norādītajā attālumā. Rīks var aprēķināt noklusējuma attālumu, kā arī jūs varat izmantot &scaron;o opciju, lai iestatītu konkrētu attālumu, kas ir vispiemērotākais jūsu analīzei. 
+            </p>
+            <p>Piemēram, ja pētījums ir par svārstmigrācijas modeļiem, un jūs zināt, ka vidējais attālums līdz darbam ir, piemēram, 24,14&nbsp;km, jūs kā attāluma joslu savai analīzei varat iestatīt 24,14&nbsp;km.
+            </p>
+        </div>
+    </div>
+    <div id="hotSpotsResultLayer">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Norādiet slāņa nosaukumu, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Rezultāta slānis rādīs statistiski nozīmīgus augstu un zemu vērtību klasterus vai punktu skaitu. Ja rezultātu slāņa nosaukums jau pastāv, jums tiks lūgts to pārdēvēt.
+            </p>
+            <p>Lietojot iespēju  <b>Saglabāt rezultātu</b> nolaižamajā sarakstlodziņā, jūs varat norādīt mapes nosaukumu sadaļā <b>Mans saturs</b>, kur tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

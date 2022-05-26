@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>ディープ ラーニングを使用したオブジェクトの検出 (Detect Objects Using Deep Learning)</h2><p/>
+        <h2><img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" alt="ディープ ラーニングを使用したオブジェクトの検出 (Detect Objects Using Deep Learning)"></h2>
+        <hr/>
+    <p>このツールは、入力ラスターに対してトレーニング済みのディープ ラーニング モデルを実行し、検出したオブジェクトを含むフィーチャクラスを作成します。フィーチャには、検出されたオブジェクトの周囲の境界四角形やポリゴン、またはオブジェクトの中心のポイントを指定できます。
+    </p>
+    <p> <b>[現在のマップ範囲を使用]</b> がオンの場合、現在のマップ範囲内に表示されるラスターの領域だけが解析されます。オフの場合、ラスター全体が、現在のマップ範囲内になくても解析されます。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>オブジェクトの検出に使用される画像の選択</h2></div>
+        <hr/>
+        <div>
+            <p>オブジェクトの検出に使用される入力画像。
+            </p> 
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>オブジェクトの検出に使用されるディープ ラーニング モデルの選択</h2></div>
+        <hr/>
+        <div>
+            <p>入力ディープ ラーニング パッケージ (* <code>.dlpk</code>) アイテム。
+            </p>
+            <p>ディープ ラーニング パッケージは、Esri モデル定義 JSON ファイル (* <code>.emd</code>)、ディープ ラーニング バイナリ モデル ファイル、および使用されるオプションの Python ラスター関数から構成されます。
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>ディープ ラーニング モデルの引数の指定</h2></div>
+        <hr/>
+        <div>
+            <p>関数の引数は、入力モデルによって参照される Python ラスター関数クラスで定義されます。ここでは、実験や調整のための追加のディープ ラーニング パラメーターおよび引数 (感度を調整するための信頼性の閾値など) をリストします。
+            </p>
+            <p>引数の名前は、ツールがラスター解析サーバー上で Python モジュールを読み取ることによって入力されます。
+            </p>
+        </div>
+    </div>
+    <div id="runNMS">
+        <div><h2>出力からの重複フィーチャの削除 (オプション)</h2></div>
+        <hr/>
+        <div>
+            <p>Non-Maximum Suppression を実行します。重複オブジェクトが識別され、信頼値の低い重複フィーチャが削除されます。
+                <ul>
+                    <li>オフ - 検出されたすべてのオブジェクトが出力フィーチャクラス内に含められます。これがデフォルトです。
+                        
+
+                    </li>
+                    <li>オン - 検出された重複オブジェクトが削除されます。
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="confidenceScoreField">
+        <div><h2>信頼度スコア フィールド</h2></div>
+        <hr/>
+        <div>
+            <p>オブジェクト検出方法の出力として信頼度スコアを含むフィーチャ サービス内のフィールド。
+            </p>
+            <p>このパラメーターは、 <b>[Non Maximum Suppression]</b> パラメーターをオンにした場合に必要です。
+            </p>
+        </div>
+    </div>
+    <div id="classValueField">
+        <div><h2>クラス値フィールド</h2></div>
+        <hr/>
+        <div>
+            <p>出力フィーチャ サービス内のクラス値フィールド。指定しない場合、ツールは標準クラス値フィールドの  <i>Classvalue</i> と <i>Value</i> を使用します。これらのフィールドが存在しない場合、すべてのフィーチャが同じオブジェクト クラスとして扱われます。
+            </p>
+        </div>
+    </div>
+    <div id="maxOverlapRatio">
+        <div><h2>最大オーバーラップ率</h2></div>
+        <hr/>
+        <div>
+            <p>2 つの重複したフィーチャの最大オーバーラップ率。ユニオン領域に対する交差領域の比率として定義されます。デフォルトは 0 です。
+            </p>
+        </div>
+    </div>
+    <div id="outputObjects">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p> <b>[マイ コンテンツ]</b> で作成され、マップに追加されるレイヤーの名前。デフォルトの名前は、ツール名と入力レイヤー名に基づいて設定されます。レイヤーがすでに存在する場合は、別の名前を指定するよう求められます。
+            </p>
+            <p> <b>[出力の保存場所]</b> ドロップダウン ボックスを使用して、結果を保存する <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>סכם רסטר בתוך</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="כלי 'סכם רסטר בתוך'"></h2>
+        <hr/>
+    <p>כלי זה מסכם רסטר על בסיס אזורים שהוגדרו על ידי שכפת הקלט הראשונה.
+    </p>
+    <p>להלן דוגמאות ליישומים:
+    </p>
+    <p>
+        <ul>
+            <li>בהינתן שכבה של גבולות שטח קו פרשת מים ושכבה של גבולות שימוש בקרקע לפי סוג שימוש בקרקע, חשב את השטח הכולל של סוג שימוש בקרקע עבור כל שטח קו פרשת מים.
+                
+
+            </li>
+            <li>בהינתן שכבה של חלקות במחוז ושכבה של גבולות עיר, סכם את הערך הממוצע של חלקות פנויות בתוך כל גבול עיר.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>אם האפשרות  <b>השתמש בתיחום המפה הנוכחי</b> מסומנת, רק הישויות בשכבת הקלט והשכבה שיש לסכם שנראות בתוך תיחום המפה הנוכחי ינותחו. אם האפשרות לא מסומנת, כל הישויות הן בשכבת הקלט והן בשכבה לסיכום ינותחו, גם אם הן מחוץ לתיחום המפה הנוכחי.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>בחר שכבת אזור כדי לסכם שכבת רסטר בתוך גבולות מוגדרים</h2></div>
+        <hr/>
+        <div>
+            <p>השכבה שמגדירה את הגבולות של האזורים אשר יסוכמו.
+            </p>
+            <p>השכבה יכולה להיות רסטר או נתוני ישות. עבור רסטרים, האזורים מוגדרים על ידי כל המיקומים בקלט שיש להם אותו ערך תא. האזורים לא חייבים להיות ברצף.
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>בחר שדה כדי לקבוע את הגבולות</h2></div>
+        <hr/>
+        <div>
+            <p>זהו המאפיין של השכבה אשר תשמש להגדרת הגבולות של האזורים.
+            </p>
+            <p>לדוגמה, נניח ששכבת הקלט הראשונה מגדירה את גבולות יחידת הניהול, עם מאפיינים שמגדירים את מזהי האזור, המחוז והחלקה של כל יחידה. בנוסף, יש לך שכבת רסטר שמגדירה אינדקס גיוון ביולוגי עבור כל מיקום. עם השדה שבחרת, באפשרותך להחליט לחשב את הגיוון הביולוגי הממוצע ברמה המקומית, המחוזית והאזורית.
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>בחר שכבת רסטר כדי לסכם</h2></div>
+        <hr/>
+        <div>
+            <p>תאי הרסטר בשכבה זו יסוכמו לפי האזורים שבהם הם נמצאים.
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>בחר נתון סטטיסטי לחישוב</h2></div>
+        <hr/>
+        <div>
+            <p>לאחר שתבחר שכבה לסיכום, באפשרותך לבחור לחשב נתונים סטטיסטיים לכל מאפיין מספרי של הנקודות, קווים או אזורים שבתוך שכבת אזור הקלט.
+            </p>
+            <p>סוגי הנתונים הסטטיסטיים הזמינים כאשר השדה שנבחרה הוא מספר שלהם הם: ממוצע, רוב, מקסימום, חציון, מינימום, מיעוט, טווח, סטיית תקן, סכום וגיוון.
+            </p>
+            <p>אם השדה או נקודה צפה, האפשרויות הן: ממוצע, מקסימום, מינימום, טווח, סטיית תקן וסכום.
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>התעלם מערכים חסרים בחישוב</h2></div>
+        <hr/>
+        <div>
+            <p>אם תבחר להתעלם מערכים חסרים, רק התאים שיש להם ערך בשכבה לסיכום ישמשו בקביעת ערך הפלט עבור האזור. אחרת, אם ישנם ערכים חסרים במקום כלשהו באזור, הקביעה היא שאין מספיק מידע לבצע חישובים סטטיסטיים עבור כל התאים באותו אזור, שהאזור יקבל ערך null &rlm;(NoData) בפלט.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>שם שכבת התוצאה</h2></div>
+        <hr/>
+        <div>
+            <p>השם של השכבה שתיווצר ב <b>התוכן שלי</b> ותתווסף למפה. שם ברירת המחדל מבוסס על שם הכלי ושם שכבת הקלט. אם שם השכבה כבר קיים, תתבקש לספק שם אחר.
+            </p>
+            <p>באפשרותך לציין את השם של תיקייה ב- <b>התוכן שלי</b> שבה התוצאה תישמר באמצעות התיבה הנפתחת <b>שמור תוצאה ב</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

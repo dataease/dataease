@@ -1,0 +1,133 @@
+// Select
+// 
+// Styling Select mainly includes:
+// 
+// 1. Containers
+//    .dijitSelect - for border, background-color
+//    .dijitButtonContents - for border
+//
+// 2. Arrow
+//    .dijitArrowButton - for border, padding and background-color|image
+//    .dijitArrowButtonInner - for border, background-color|image, display and width|height
+// 
+// 3. Menu
+//    .dijitSelectMenu .* - for border, padding
+// 
+// 4. Various states
+//    .dijitSelectHover|.dijitSelectFocused|.dijitSelectDisabled .* - for border, padding and background-color|image 
+//
+.#{$theme-name} {
+  .dijitSelect {
+    // Select appears the same as dijit.form.*Button widgets
+    touch-action: manipulation;
+    cursor: pointer;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    @include user-select(none);
+    @include button-variant($btn-default-color, $btn-default-bg, $btn-default-border);
+    .dijitButtonContents {
+      border-right: 0;
+    }
+    .dijitButtonNode.dijitArrowButton {
+      border: 0;
+      background-color: transparent;
+      input {
+        display: none;
+      }
+    }
+    // Opened state
+    &.dijitOpened {
+      @include button-variant-default-active;
+      border-color: $input-border-focus;
+      .dijitButtonNode,
+      .dijitButtonContents {
+        background-color: transparent;
+      }
+    }
+  }
+  // Error state
+  .dijitSelectError {
+    @include dijit-form-control-validation($state-danger-text, $state-danger-text, $state-danger-bg);
+    .dijitButtonContents {
+      padding-right: 0;
+    }
+    .dijitValidationContainer {
+      padding: 0;
+    }
+  }
+  // Disable state
+  .dijitSelectDisabled {
+    outline: none;
+    cursor: false;
+    pointer-events: none;
+  }
+  // Alternate styles
+  // --------------------------------------------------
+  // Primary appears as blue
+  .btn-primary {
+    &.dijitSelect {
+      @include button-variant($btn-primary-color, $btn-primary-bg, $btn-primary-border, false);
+      &:hover {
+        background-color: $Calcite_Blue_a200;
+        border-color: $Calcite_Blue_a200;
+      }
+    }
+  }
+  // Success appears as green
+  .btn-success {
+    &.dijitSelect {
+      @include button-variant($btn-success-color, $btn-success-bg, $btn-success-border, false);
+      &:hover {
+        background-color: $Calcite_Green_250;
+        border-color: $Calcite_Green_250;
+      }
+    }
+  }
+  // Info appears as light blue
+  .btn-info {
+    &.dijitSelect {
+      @include button-variant($btn-info-color, $btn-info-bg, $btn-info-border, false);
+      &:hover {
+        background-color: $Calcite_Blue_100;
+        color: $Calcite_Gray_650;
+        .dijitArrowButton {
+          color: $btn-default-color;
+        }
+      }
+    }
+  }
+  // Warning appears as orange
+  .btn-warning {
+    &.dijitSelect {
+      @include button-variant($btn-warning-color, $btn-warning-bg, $btn-warning-border, false);
+      &:hover {
+        background-color: $Calcite_Yellow_100;
+        color: $Calcite_Gray_650;
+        .dijitArrowButton {
+          color: $btn-default-color;
+        }
+      }
+    }
+  }
+  // Danger appears as red
+  .btn-danger {
+    &.dijitSelect {
+      @include button-variant($btn-danger-color, $btn-danger-bg, $btn-danger-border, false);
+      &:hover {
+        background-color: $Calcite_Red_a100;
+      }
+    }
+  }
+  // Link appears as transparent
+  .btn-link {
+    &.dijitSelect {
+      @include button-variant($btn-link-color, $btn-link-bg, $btn-link-border, false);
+      &:hover {
+        .dijitSelectLabel {
+          text-decoration: $link-hover-decoration;
+        }
+      }
+    }
+  }
+}
+

@@ -1,0 +1,11 @@
+/*
+	Copyright (c) 2004-2016, The JS Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+//>>built
+define("dojo/_base/Color",["./kernel","./lang","./array","./config"],function(f,g,h,k){var c=f.Color=function(a){a&&this.setColor(a)};c.named={black:[0,0,0],silver:[192,192,192],gray:[128,128,128],white:[255,255,255],maroon:[128,0,0],red:[255,0,0],purple:[128,0,128],fuchsia:[255,0,255],green:[0,128,0],lime:[0,255,0],olive:[128,128,0],yellow:[255,255,0],navy:[0,0,128],blue:[0,0,255],teal:[0,128,128],aqua:[0,255,255],transparent:k.transparentColor||[0,0,0,0]};g.extend(c,{r:255,g:255,b:255,a:1,_set:function(a,
+b,c,d){this.r=a;this.g=b;this.b=c;this.a=d},setColor:function(a){g.isString(a)?c.fromString(a,this):g.isArray(a)?c.fromArray(a,this):(this._set(a.r,a.g,a.b,a.a),a instanceof c||this.sanitize());return this},sanitize:function(){return this},toRgb:function(){return[this.r,this.g,this.b]},toRgba:function(){return[this.r,this.g,this.b,this.a]},toHex:function(){return"#"+h.map(["r","g","b"],function(a){a=this[a].toString(16);return 2>a.length?"0"+a:a},this).join("")},toCss:function(a){var b=this.r+", "+
+this.g+", "+this.b;return(a?"rgba("+b+", "+this.a:"rgb("+b)+")"},toString:function(){return this.toCss(!0)}});c.blendColors=f.blendColors=function(a,b,e,d){d=d||new c;d.r=Math.round(a.r+(b.r-a.r)*e);d.g=Math.round(a.g+(b.g-a.g)*e);d.b=Math.round(a.b+(b.b-a.b)*e);d.a=a.a+(b.a-a.a)*e;return d.sanitize()};c.fromRgb=f.colorFromRgb=function(a,b){return(a=a.toLowerCase().match(/^rgba?\(([\s\.,0-9]+)\)/))&&c.fromArray(a[1].split(/\s*,\s*/),b)};c.fromHex=f.colorFromHex=function(a,b){var e=b||new c,d=4==a.length?
+4:8,f=(1<<d)-1;a=Number("0x"+a.substr(1));if(isNaN(a))return null;h.forEach(["b","g","r"],function(b){var c=a&f;a>>=d;e[b]=4==d?17*c:c});e.a=1;return e};c.fromArray=f.colorFromArray=function(a,b){b=b||new c;b._set(Number(a[0]),Number(a[1]),Number(a[2]),Number(a[3]));isNaN(b.a)&&(b.a=1);return b.sanitize()};c.fromString=f.colorFromString=function(a,b){var e=c.named[a];return e&&c.fromArray(e,b)||c.fromRgb(a,b)||c.fromHex(a,b)};return c});

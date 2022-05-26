@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/charts/utils/cleanUp/chartTypes/graphic/_Gauge",[],function(){return{isChart:1,type:1,seriesItems:[{label:1,color:1,points:1}],visualProperties:{width:1,height:1,marginTop:1,marginRight:1,marginBottom:1,marginLeft:1,backgroundColor:1,backgroundColorOpacity:1,plotAreaOutlineColor:1,plotAreaOutlineOpacity:1,plotAreaOutlineThickness:1,plotAreaOutlineStyle:1,panelBackgroundColor:1,title:{text:1,align:1,style:1,verticalShift:1},fillOpacity:1,outlineColor:1,
+outlineOpacity:1,outlineThickness:1,outlineStyle:1,gaugeHolePercent:1,gaugeRangeMin:1,gaugeRangeMax:1,gaugeGap:1,gaugeStartAngle:1,gaugeArcPercent:1,gaugeLabelPlacement:1,gaugeLabelStyle:1,gaugeShowArrow:1,gaugeArrowLineColor:1,gaugeArrowFillColor:1,gaugeConditionalStylingOthers:1,gaugeConditionalStylingLabel:1,gaugeShowFromToLabels:1,gaugeFromLabelStyle:1,gaugeToLabelStyle:1,dataLabelsDecimals:1,dataLabelsShowValuePercentSymbol:1,dataLabelsShowValueCurrencySymbol:1,chartIcons:1,floatingIcons:1,showChartIcons:1,
+floatingTexts:1,conditionalStyling:1}}});

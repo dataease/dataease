@@ -1,0 +1,109 @@
+.#{$theme-name} {
+  .dark {
+    &.esriPopup {
+      color: $Calcite_Gray_700;
+      @include scollbar($Calcite_Gray_300);
+      .esriPopupWrapper {
+        background-color: $popup-bg;
+      }
+      .titlePane {
+        background-color: $popup-header-bg;
+        color: $popup-header-color;
+        .spinner {
+          background-image: url($image-loading-circular);
+        }
+      }
+      a {
+        &,
+        &:hover,
+        &:active,
+        &:visited {
+          color: $Calcite_Highlight_Blue_350;
+        }
+      }
+      .actionList a,
+      .titleButton,
+      .mediaHandle {
+        color: $popup-btn-color;
+        &:hover {
+          color: $popup-btn-hover-color;
+        }
+      }
+      .pointer,
+      .outerPointer {
+        border-color: $popup-bg;
+      }
+      .pointer {
+        &.top {
+          border-right-color: transparent;
+          border-left-color: transparent;
+        }
+        &.bottom {
+          border-right-color: transparent;
+          border-left-color: transparent;
+        }
+        &.right {
+          border-top-color: transparent;
+          border-bottom-color: transparent;
+        }
+        &.left {
+          border-top-color: transparent;
+          border-bottom-color: transparent;
+        }
+        &.topLeft {
+          border-right-color: transparent;
+          border-top-color: transparent;
+        }
+        &.topRight {
+          border-left-color: transparent;
+          border-top-color: transparent;
+        }
+        &.bottomRight {
+          border-left-color: transparent;
+          border-bottom-color: transparent;
+        }
+        &.bottomLeft {
+          border-right-color: transparent;
+          border-bottom-color: transparent;
+        }
+      }
+      .outerPointer {
+        &.right {
+          border-top-color: transparent;
+          border-bottom-color: transparent;
+        }
+        &.left {
+          border-top-color: transparent;
+          border-bottom-color: transparent;
+        }
+      }
+    }
+    .esriViewPopup {
+      .hzLine {
+        border-bottom: 1px solid $divider-bg;
+      }
+      .caption {
+        color: $popup-caption-color;
+      }
+      .mainSection {
+        .attrTable {
+          color: $Calcite_Gray_700;
+          tr:nth-child(odd) {
+            background-color: darken($Calcite_Gray_300, 14.5%); // fallback
+            background-color: rgba($Calcite_Gray_300, 0.1);
+          }
+        }
+      }
+      .gallery {
+        ul.summary {
+          li {
+            color: $popup-gallery-summary-color;
+          }
+        }
+      }
+      .editSummary {
+        color: $popup-gallery-summary-edit-color;
+      }
+    }
+  }
+}

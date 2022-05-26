@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Extragere date</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="Extragere date"></h2>
+        <hr/>
+    <p>Cu acest instrument puteţi selecta şi descărca date pentru o anumită suprafaţă de interes. Straturile tematice pe care le selectaţi vor fi adăugate &icirc;ntr-un fişier ZIP, CSV sau KMZ.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>Straturi tematice de extras</h2></div>
+        <hr/>
+        <div>
+            <p>Acestea sunt straturile tematice din tabelul dvs. de resurse din care puteţi extrage obiecte spaţiale. Straturile tematice bifate sunt extrase şi incluse &icirc;n fişierul ZIP sau CSV rezultat.
+            </p>
+            <p>Pentru ca stratul tematic să apară &icirc;n lista de straturi tematice de extras, trebuie fie să deţineţi datele, fie proprietarul datelor să activeze exportul datelor. Pentru a activa exportul datelor pentru datele pe care le deţineţi: 
+                <ul>
+                    <li>Deschideţi descrierea elementului aferentă datelor.
+                    </li>
+                    <li>Faceţi clic pe fila  <b>Setări</b>.
+                    </li>
+                    <li>Derulaţi &icirc;n jos, p&acirc;nă la secţiunea  <b>Export date</b>.
+                    </li>
+                    <li>Bifaţi  <b>Se permite altora să exporte &icirc;n alte formate</b>.  Faceţi clic pe <b>Salvare</b> c&acirc;nd terminaţi.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Dacă stratul dvs. tematic de analiză conţine ataşamente, reţineţi faptul că acestea vor fi extrase doar dacă formatul datelor rezultate este o bază de date geografice arhivă, iar funcţia  <b>Fixare obiecte spaţiale</b> este debifată.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>Zonă studiată</h2></div>
+        <hr/>
+        <div>
+            <p>Suprafaţa care defineşte ce straturi tematice vor fi incluse &icirc;n fişierul ZIP sau CSV rezultat. Puteţi alege din următoarele opţiuni:
+                <ul>
+                    <li>Extinderea vizibilă &icirc;n prezent a hărţii ( <b>Identică cu ceea ce este afişat</b>).
+                    </li>
+                    <li>Unul din straturile tematice din tabelul de resurse. Dacă stratul tematic selectat este de obiecte spațiale punct sau linie, extinderea stratului tematic va fi utilizată ca zonă studiată.
+                    </li>
+                    <li>Trasaţi o suprafaţă pentru a defini suprafaţa de studiu.
+                    </li>
+                </ul>
+                 Vor fi extrase toate obiectele spaţiale care sunt cuprinse complet &icirc;n extinderea hărţii. Pentru obiectele spaţiale care traversează sau intersectează limita extinderii hărţii şi care nu se află integral &icirc;n interiorul extinderii, aveţi două opţiuni:
+                <ul>
+                    <li> <b>Selectare obiecte spaţiale</b>&mdash;Obiectele spaţiale care traversează limita suprafeţei de studiu vor fi extrase &icirc;n &icirc;ntregime.
+                    </li>
+                    <li> <b>Decupare obiecte spaţiale</b>&mdash;Vor fi extrase numai acele porţiuni din obiectele spaţiale care se află &icirc;n interiorul suprafeţei de studiu.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>Format date de ieşire</h2></div>
+        <hr/>
+        <div>
+            <p>Formatul datelor care vor fi extrase. C&acirc;nd se exportă obiecte spaţiale liniare sau de suprafaţă &icirc;n fişiere CSV, se extrag doar atributele nespaţiale. C&acirc;nd se exportă obiecte spaţiale punctuale, sunt extrase at&acirc;t atributele spaţiale, c&acirc;t şi cele nespaţiale.  
+            </p>
+            <p>Datele extrase vor folosi proiecția Web Mercator 1984.  Pentru fișierele CSV, c&acirc;mpurile  <i>Lat</i> și <i>Long</i> vor fi anexate datelor cu coordonate &icirc;n Web Mercator 1984.
+            </p> 
+            <p>Sunt acceptate următoarele formate de ieșire:
+                <ul>
+                    <li>Valori separate prin virgulă (CSV)&mdash; <code>.csv</code> sau <code>.zip</code>
+                    </li>
+                    <li>Fișier bază de date geografice&mdash; <code>.zip</code>
+                    </li>
+                    <li>Colecție keyhole markup language(KML)&mdash; <code>.kmz</code> sau <code>.zip</code>
+                    </li>
+                    <li>Shapefile&mdash; <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nume fişier de ieşire</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele elementului care va fi adăugat &icirc;n  <b>Conținutul Meu</b>.  Numele elementului se bazează pe <b>Formatul datelor de ieşire</b> ales.     Dacă elementul există deja, vi se va solicita să furnizați un alt nume.
+            </p>
+            <p>Utiliz&acirc;nd caseta derulantă  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

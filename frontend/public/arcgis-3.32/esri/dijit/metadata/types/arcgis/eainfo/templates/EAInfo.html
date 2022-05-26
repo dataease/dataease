@@ -1,0 +1,78 @@
+<div data-dojo-attach-point="containerNode">
+  <div data-dojo-type="esri/dijit/metadata/form/Element"
+    data-dojo-props="target:'eainfo',minOccurs:0,label:'${i18nArcGIS.eainfo.caption}'">
+    <div data-dojo-type="esri/dijit/metadata/form/Tabs">
+    
+       <!-- detailed -->
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,label:'${i18nArcGIS.eainfo.section.detailed}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'detailed',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.eainfo.detailed.caption}'">
+          
+          <!-- ArcGIS item name -->
+          <div data-dojo-type="esri/dijit/metadata/form/HiddenAttribute" data-dojo-props="target:'Name'"></div>  
+          
+          <div data-dojo-type="esri/dijit/metadata/form/Tabs">
+          
+            <!-- entity -->
+            <div data-dojo-type="esri/dijit/metadata/form/Section"
+              data-dojo-props="showHeader:false,label:'${i18nArcGIS.eainfo.detailed.section.enttyp}'">
+              <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+                data-dojo-props="target:'enttyp',minOccurs:1,showHeader:false,label:'${i18nArcGIS.eainfo.detailed.enttyp.caption}'">
+                <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+                  data-dojo-props="target:'enttypl',minOccurs:1,label:'${i18nArcGIS.eainfo.detailed.enttyp.enttypl}'">
+                </div>
+                <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+                  data-dojo-props="target:'enttypd',minOccurs:1,label:'${i18nArcGIS.eainfo.detailed.enttyp.enttypd}'">
+                </div>
+                <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+                  data-dojo-props="target:'enttypds',minOccurs:1,label:'${i18nArcGIS.eainfo.detailed.enttyp.enttypds}'">
+                </div>
+                <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+                  data-dojo-props="target:'enttypt',minOccurs:0,label:'${i18nArcGIS.eainfo.detailed.enttyp.enttypt}'">
+                </div>
+                <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+                  data-dojo-props="target:'enttypc',minOccurs:0,label:'${i18nArcGIS.eainfo.detailed.enttyp.enttypc}'">
+                  <div data-dojo-type="esri/dijit/metadata/form/InputNumber" data-dojo-props="integerOnly:true"></div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- attributes -->
+            <div data-dojo-type="esri/dijit/metadata/form/Section"
+              data-dojo-props="showHeader:false,label:'${i18nArcGIS.eainfo.detailed.section.attr}'">
+              <div data-dojo-type="esri/dijit/metadata/form/Element"
+                data-dojo-props="target:'attr',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.eainfo.detailed.attr.caption}'">
+                <div data-dojo-type="esri/dijit/metadata/types/arcgis/eainfo/AttrElements"></div>
+              </div>
+            </div>
+            
+            <!-- hidden -->
+            <div data-dojo-type="esri/dijit/metadata/form/Section"
+              data-dojo-props="showHeader:false,notApplicable:true,label:'?Hidden'">
+              <div data-dojo-type="esri/dijit/metadata/types/arcgis/eainfo/Hidden"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    
+      <!-- overview -->
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,label:'${i18nArcGIS.eainfo.section.overview}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'overview',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.eainfo.overview.caption}'">
+          <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+            data-dojo-props="target:'eaover',minOccurs:0,label:'${i18nArcGIS.eainfo.overview.eaover}'">
+            <div data-dojo-type="esri/dijit/metadata/form/InputTextArea"></div>
+          </div>
+          <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+            data-dojo-props="target:'eadetcit',minOccurs:0,maxOccurs:'unbounded',label:'${i18nArcGIS.eainfo.overview.eadetcit}'">
+            <div data-dojo-type="esri/dijit/metadata/form/InputTextArea"></div>
+          </div>
+        </div>
+      </div>
+    
+    </div>
+  </div>
+</div>

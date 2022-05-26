@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="bdToolbox">
+        <p> GeoAnalytics 会将分析工作分配到您的整个 ArcGIS GeoAnalytics Server 中。这样您就可以使用多台计算机更快地分析更多数据。以下工具可用： <ul>
+                <li> 聚合点
+                </li>
+                <li> 构建多变量格网
+                </li>
+                <li> 描述数据集
+                </li>
+                <li> 连接要素
+                </li>
+                <li> 重新构建轨迹
+                </li>
+                <li> 汇总属性
+                </li>
+                <li> 范围内汇总
+                </li>
+                <li> 对表格中的位置进行地理编码
+                </li>
+                <li> 从多变量格网丰富
+                </li>
+                <li> 检测事件
+                </li>
+                <li> 查找相似位置
+                </li>
+                <li> 计算密度
+                </li>
+                <li> 查找点聚类
+                </li>
+                <li> 查找热点
+                </li>
+                <li> 基于森林的分类与回归
+                </li>
+                <li> 广义线性回归
+                </li>
+                <li> 创建缓冲区
+                </li>
+                <li> 追加数据
+                </li>
+                <li> 计算字段
+                </li>
+                <li> 复制到数据存储
+                </li>
+                <li> 叠加图层
+                </li>
+                <li> 融合边界
+                </li>
+                <li> 合并图层
+                </li>
+                <li> 裁剪图层 
+                </li>
+            </ul>
+            
+        </p>
+        <p>GeoAnalytics 主要用于通过空间和时间模式重点对大量数据进行分析。 
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="largesize">
+        <h2>Summarize Data</h2>
+        <hr/>
+        <p> The Summarize Data toolset contains tools that calculate total counts, lengths, areas, and basic descriptive statistics of features and their attributes within areas or near other features.
+            <ul>
+                <li> <b>Aggregate Points</b> calculates statistics about points that fall within specified areas or bins.
+                </li>
+                <li> <b>Build Multi-Variable Grid</b> generates a grid of square or hexagonal bins and calculates values for each bin based on the proximity of each input layer.
+                </li>
+                <li> <b>Describe Dataset</b> calculates a summary of your input, and can optionally generate a sample of your input layer.
+                </li>
+                <li> <b>Join Features</b> calculates statistics about features that share a spatial, temporal, or attribute relationship with other features.
+                </li>
+                <li> <b>Reconstruct Tracks</b> calculates statistics about points or polygons that belong to the same track and reconstructs inputs into tracks.
+                </li>
+                <li> <b>Summarize Attributes</b> calculates statistics about feature or tabular data that share attributes.
+                </li>
+                <li> <b>Summarize Within</b> calculates statistics for area features and attributes that overlap each other.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="AggregatePointsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>聚合点</h2></td>
+                    <td>
+                    <img src="../images/GUID-6C1620D9-D176-41FA-8283-833D8B1CCCFC-web.png" class="titleImage" alt="聚合点">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>该工具使用点要素图层以及区域要素图层或以指定距离定义的图格，确定各区域或图格内的点并计算各区域或图格内所有点的统计数据。可以选择将时间片应用于此工具。
+            </p>
+            <p>以下为示例：
+                <ul>
+                    <li>给定犯罪事件的点位置并计算每个县或其他行政区的犯罪数。
+                    </li>
+                    <li>使用 100 千米图格来查找特许经营位置的最高月收入和最低月收入。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="BuildMultiVariableGridTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>构建多变量格网</h2></td>
+                    <td>
+                    <img src="../images/GUID-B78AB95A-E412-4983-ADBA-3678BF207A79-web.png" class="titleImage" alt="&ldquo;追加数据&rdquo;工作流示意图">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>&ldquo;构建多变量格网&rdquo;工具会生成正方形或六边形图格，并根据一个或多个输入图层的邻近性计算每个图格的变量。
+            </p>
+            <p>以下为示例：
+                <ul>
+                    <li>已知多个公共交通基础设施图层，城市的哪个区域公共交通最不便利？
+                    </li>
+                    <li>已知水体（例如湖泊和河流）图层，最接近美国各区域的水体名称是什么？
+                    </li>
+                    <li>已知家庭收入图层，美国哪个位置周围 50 英里范围内收入差距最大？
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="DescribeDatasetTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>描述数据集</h2></td>
+                    <td>
+                    <img src="../images/GUID-972BB93A-AEF8-4701-9890-7AE52391CA69-web.png" class="titleImage" alt="描述数据集工作流示意图">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>使用统计数据、样本图层和可视化汇总输入要素。您可以选择输出样本图层或范围图层。
+            </p>
+            <p>以下为示例：
+                <ul>
+                    <li>参考计算的汇总统计数据可以了解您的数据集包含哪些值。
+                    </li>
+                    <li>在将要素及其属性添加到地图中时，无需绘制整个数据集，只需创建一个子集图层即可进行可视化。
+                    </li>
+                    <li>在整个数据集上运行分析之前，您可以对样本图层进行分析以节省时间和资源。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="JoinFeaturesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>连接要素</h2></td>
+                    <td>
+                    <img src="../images/GUID-900E33CD-3789-45B5-8F0C-92D91E64D2A4-web.png" class="titleImage" alt="连接要素">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>使用要素图层或表格数据，可基于输入图层或表之间的特定关系连接要素和记录。连接将取决于空间、时态和属性关系，并可选择计算汇总统计数据。
+            </p>
+            <p>以下为示例：
+                <ul>
+                    <li>已知犯罪事件的点位置与时间，将犯罪数据与其本身连接，并指定彼此 1 千米范围内以及彼此 1 小时内发生的犯罪的空间关系，以确定在空间和时间上是否存在彼此接近的一系列犯罪。
+                    </li>
+                    <li>已知邮政编码表，其中包含人口统计信息和表示住宅建筑物的区域要素，将人口统计信息连接到住宅，这样，每个住宅现在都具有信息。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="ReconstructTracksTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>重新构建轨迹</h2></td>
+                    <td>
+                    <img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" class="titleImage" alt="重新构建轨迹">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>该工具使用启用时间的点或面要素（表示 <code>时刻</code>）图层，确定属于轨迹的输入要素并按时间顺序对输入进行排序。可选择计算每条轨迹内输入要素的统计数据。
+            </p>
+            <p>以下为示例：
+                <ul>
+                    <li>已知飓风测量的点位置和时间，计算飓风的平均风速和最大风压。
+                    </li>
+                    <li>使用船只的 GPS 测量结果，以将船只路径重新构建为线。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeAttributesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>汇总属性</h2></td>
+                    <td>
+                    <img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" class="titleImage" alt="汇总属性 示意图">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>该工具使用要素或表格数据汇总指定字段的统计数据。
+            </p>
+            <p>以下为示例：
+                <ul>
+                    <li>已知具有字段  <i>COMPANY_NAME</i> 的杂货店位置，按照公司名称汇总杂货店以确定各个公司的统计数据。
+                    </li>
+                    <li>已知具有字段  <i>COMPANY_NAME</i> 和 <i>COUNTY</i> 的杂货店表，按公司名称和县汇总杂货店，以确定每个县内每家公司的统计数据。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeWithinTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>范围内汇总</h2></td>
+                    <td>
+                    <img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" class="titleImage" alt="范围内汇总">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>查找两个图层间叠加的区域（和部分区域）并计算叠加的统计数据。
+            </p>
+            <p>以下为示例：
+                <ul>
+                    <li>给定流域图层和按土地使用类型划分的土地使用区域图层，计算每个流域的土地使用类型的总面积。
+                    </li>
+                    <li>已知县内宗地的图层和城市边界图层，汇总各城市内闲置宗地的平均值。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="FindLocationsCategory" class="smallsize">
+        <h2>查找位置</h2>
+        <hr/>
+        <p>这些工具用于确定符合多种不同指定标准的区域。 
+            <ul>
+                <li> <b>检测事件</b>使用启用了时间的图层来确定哪些要素符合指定的条件。
+                </li>
+                <li> <b>对表格中的位置进行地理编码</b>可将地址转换为坐标。
+                </li>
+                <li> <b>查找相似位置</b>可根据指定条件查找与一个或多个参考位置最相似的位置。
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="DetectIncidentsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>检测事件</h2></td>
+                    <td>
+                    <img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" class="titleImage" alt="检测事件">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>此工具使用启用时间点、线、面图层或表，这个图层或表可表示时间上的某个瞬间。通过按顺序排列的要素（称为轨迹），该工具可确定哪些要素是感兴趣的事件。事件由您指定的条件确定。
+            </p>
+            <p>以下为示例：
+                <ul>
+                    <li>根据风速属性来检测飓风类别为 4 的飓风测量结果。
+                    </li>
+                    <li>可以使用船只运动的 GPS 测量结果和表示船只速度的字段，查找大于前五次测量结果平均值 1.5 倍的测量结果。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="GeocodeLocationsfromTableTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>对表格中的位置进行地理编码</h2></td>
+                    <td>
+                    <img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" class="titleImage" alt="对表格中的位置进行地理编码">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>将地址转换为坐标。在大数据文件共享表上使用该工具。
+            </p>
+            <br/>
+        </div>
+        <div id="FindSimilarLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>查找相似位置</h2></td>
+                    <td>
+                    <img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" class="titleImage" alt="查找相似位置">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>根据所指定的条件，通过测量候选搜索图层中的位置与一个或多个参考位置之间的相似性查找相似位置。
+            </p>
+            <p>以下为示例： 
+                <ul>
+                    <li>通过检查员工数量和年销售额，找到十个最相似的商店。
+                    </li>
+                    <li>通过检查人口、年增长率和税收之间的关系，找到 100 个最相似的城市。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="smallsize">
+        <h2>分析模式</h2>
+        <hr/>
+        <p>  这些工具可帮助您确定、量化并显示数据的空间模式。
+            <ul>
+                <li> <b>计算密度</b>可对某一现象的已知量进行处理，并将这些量扩展到整个地图上。
+                </li>
+                <li> <b>查找热点</b>可确定数据空间模式中具有统计显著性的聚类。
+                </li>
+                <li> <b>查找点聚类</b>可基于点要素的空间分布查找周围噪点中的点要素聚类。
+                </li>
+                <li> <b>基于森林的分类与回归</b>可使用 Leo Breiman 随机森林算法（一种监督式机器学习方法）的改编版本创建模型并生成预测。
+                </li>
+                <li> <b>广义线性回归</b>可生成预测，或对因变量与一组解释变量的关系进行建模。
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>计算密度</h2></td>
+                    <td>
+                    <img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" class="titleImage" alt="计算密度">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>&ldquo;计算密度&rdquo;工具用于通过将某种现象的已知量（表示为点的属性）散布到整个地图上以从点要素创建密度地图。结果是表示密度的区域图层。
+            </p>
+            <p>以下为示例：
+                <ul>
+                    <li>计算某县的医院密度。结果图层将显示容易到达医院和不容易到达医院的区域，此信息可用于确定新建医院的位置。
+                    </li>
+                    <li>根据发生森林火灾的历史位置确定森林火灾的高风险区域。
+                    </li>
+                    <li>查找距离主干道较远的社区以计划修建新道路的位置。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindPointClustersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>查找点聚类</h2></td>
+                    <td>
+                    <img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" class="titleImage" alt="查找点聚类">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>&ldquo;查找点聚类&rdquo;工具可基于点要素的空间分布查找周围噪点中的点要素聚类。
+            </p>
+            <p>以下为示例：
+                <ul>
+                    <li>查找被害虫传播疾病感染的家庭，以帮助确定根除工作的目标。
+                    </li>
+                    <li>根据使用自然灾害或恐怖袭击之后的地理定位推文确定的聚类大小和位置，报告救援和疏散需求并采取行动。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindHotSpotsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>查找热点</h2></td>
+                    <td>
+                    <img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" class="titleImage" alt="查找热点">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>查找热点工具可以确定数据在空间模式方面是否存在任何统计显著性的聚类。
+                <ul>
+                    <li>各个点要素（犯罪事件、树木、交通事故）是否可进行聚类？ 您又是如何确定的？
+                    </li>
+                    <li>您是否确实发现了具有统计显著性的热点（消费、婴儿死亡率、长期保持高测试分数）？或者说如果更改地图的符号化方式，地图会呈现出另一种结果吗？
+                    </li>
+                </ul>
+                &ldquo;查找热点&rdquo;工具可针对这些问题给出令人信服的答案。
+            </p>
+            <br/>
+        </div>
+        <div id="ForestBasedClassificationAndRegressionTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>基于森林的分类与回归</h2></td>
+                    <td>
+                    <img src="../images/GUID-AD37EC59-C890-49AC-BD28-2E87F99A08E9-web.png" class="titleImage" alt="基于森林的分类与回归工作流示意图">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>&ldquo;基于森林的分类与回归&rdquo;工具可使用 Leo Breiman 随机森林算法（一种监督式机器学习方法）的改编版本创建模型并生成预测
+            </p>
+            <p>以下为示例：
+                <ul>
+                    <li>给出有关海草是否存在的数据以及表示为属性（此属性已使用多变量格网进行丰富）的许多环境解释变量，以计算距上游工厂和主要港口的距离，还可以根据对这些相同环境解释变量的未来预测来推断未来是否存在海草。
+                          
+                    </li>
+                    <li>假设您拥有全国数百个农场的作物产量数据，以及每个农场的其他属性（员工人数、占地面积等）。可使用这些数据提供代表您没有作物产量（但您确实拥有所有其他变量）的农场的要素集，然后对作物产量进行预测。
+                    </li>
+                    <li>可根据当年已售房屋的价格来预测房屋价值。可使用已售房屋的售价以及有关卧室数量、距学校的距离、与主要高速公路的接近度、平均收入和犯罪计数的信息预测类似房屋的售价。
+                         
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="GeneralizedLinearRegressionTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>广义线性回归</h2></td>
+                    <td>
+                    <img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" class="titleImage" alt="广义线性回归工作流示意图">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>广义线性回归工具可生成预测，或对因变量与一组解释变量的关系进行建模。此工具可用于拟合连续 (OLS)、二进制（逻辑）和计数（泊松）模型。
+            </p>
+            <p>以下为示例：
+                <ul>
+                    <li>哪些人口特征导致了较高的公共交通工具使用率？
+                    </li>
+                    <li>财产破坏的行为数与盗窃数之间是否存在明确的关系？
+                    </li>
+                    <li>哪些变量可有效预测 911 呼叫数？ 鉴于对未来的预测，对应急资源的预期需求有哪些？
+                    </li>
+                    <li>哪些变量会影响低出生率？
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="smallsize">
+        <h2>邻近分析</h2>
+        <hr/>
+        <p>这些工具可帮助回答在空间分析中提出的一个最普遍问题：什么在什么附近？
+            <ul>
+                <li> <b>创建缓冲区</b>用于创建距要素指定距离的区域。
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CreateBuffersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>创建缓冲区</h2></td>
+                    <td>
+                    <img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" class="titleImage" alt="创建缓冲区">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>缓冲区是一个以点、线或面要素为起点覆盖给定距离的区域。
+            </p>
+            <p>以下为示例：
+                <ul>
+                    <li>使用线状河流要素，按河流宽度的 50 倍对每条河流进行缓冲，以确定拟建河岸边界。
+                    </li>
+                    <li>已知表示国家的区域，按 200 海里对每个国家进行缓冲，以确定海岸边界。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="largesize">
+        <h2>Manage Data</h2>
+        <hr/>
+        <p>These tools are used for the day-to-day management of geographic and tabular data. 
+            <ul>
+                <li> <b>Append Data</b> appends features to an existing hosted feature layer.
+                </li>
+                <li> <b>Calculate Field</b> creates a new field or modifies an existing field and creates a new layer in your contents.
+                </li>
+                <li> <b>Clip Layer</b> copies features that intersect a defined area of interest. 
+                </li>
+                <li> <b>Copy to Data Store</b> copies data to your ArcGIS Data Store and creates a layer in your contents. 
+                </li>
+                <li> <b>Dissolve Boundaries</b> merges areas that share a common boundary or attribute value.
+                </li>
+                <li> <b>Merge Layers</b> copies all features from two layers into a single result layer.
+                </li>
+                <li> <b>Overlay Layers</b> combines two or more layers into a single layer.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CopyToDataStoreTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>复制到数据存储</h2></td>
+                    <td>
+                    <img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" class="titleImage" alt="复制到数据存储">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>将输入要素图层或表复制到  ArcGIS Data Store 并在  ArcGIS Enterprise 的内容中创建图层。 </p>
+            <p>以下为示例：
+                <ul>
+                    <li>将大数据文件共享中的  <code>.csv</code> 文件集合复制到时空数据存储以进行可视化。
+                    </li>
+                    <li>将存储在时空数据存储中的当前地图范围内的要素复制到关系数据存储中。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="CalculateFieldTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>计算字段</h2></td>
+                    <td>
+                    <img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" class="titleImage" alt="计算字段">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>计算新字段或现有字段的值，并在  ArcGIS Enterprise 的内容中创建图层。 </p>
+            <p>以下为示例：
+                <ul>
+                    <li>将名为  <i>total</i> 的现有字段修改为字段 <i>total_2016</i>、 <i>total_2017</i> 和 <i>total_2018</i> 的收入总和。
+                    </li>
+                    <li>创建一个新字段，以基于字段值（例如  <i>windspeed</i> 和 <i>pollutant</i>）对危险级别进行分类。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="ClipLayerTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>裁剪图层</h2></td>
+                    <td>
+                    <img src="../images/GUID-3F6A1ED7-A7F5-4F5C-BB2A-5D94403F2230-web.png" class="titleImage" alt="裁剪图层">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>从定义的感兴趣区域裁剪输入要素。输出结果将是输入要素的子集。
+            </p>
+            <p>以下为示例： 
+                <ul>
+                    <li>创建位于洪水区的有风险的建筑物子集。
+                    </li>
+                    <li>确定哪些主要道路贯穿您的潜在开发区。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="DissolveBoundariesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>融合边界</h2></td>
+                    <td>
+                    <img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" class="titleImage" alt="融合边界">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>合并相交或共享公共字段值的区域要素以创建连续或多部分要素。
+            </p>
+            <p>以下为示例：
+                <ul>
+                    <li>通过融合夏威夷群岛的边界，创建表示夏威夷州的单个要素。
+                    </li>
+                    <li>根据土壤类型将相似的研究区域组合起来，以输出相邻土壤类型数据集。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="OverlayLayersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>叠加图层</h2></td>
+                    <td>
+                    <img src="../images/GUID-00A64703-4E97-4398-AE5C-F1885375BC30-web.png" class="titleImage" alt="叠加图层">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>将两个或多个图层合并成一个图层。叠加操作用于回答一个最基本的地理问题：什么在什么上？
+            </p>
+            <p>以下为示例：
+                <ul>
+                    <li>哪些宗地位于百年一遇的洪泛区中？ （&ldquo;在...中&rdquo;只是&ldquo;在...上&rdquo;的另一种表达方式。）
+                          
+                    </li>
+                    <li>什么土地利用在什么土壤类型上？
+                         
+                    </li>
+                    <li>什么井在废弃的军事基地中？
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="AppendDataTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>追加数据</h2></td>
+                    <td>
+                    <img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" class="titleImage" alt="&ldquo;追加数据&rdquo;工作流示意图">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>将要素追加到  ArcGIS Enterprise 中您内容中的现有托管图层。 </p>
+            <p>以下为示例：
+                <ul>
+                    <li>每月报告可用后，更新您的 2018_Sales 要素图层。
+                    </li>
+                    <li>将 2016 年和 2017 年的飓风追踪数据集追加到主飓风数据集中。
+                    </li>
+                    <li>使用自定义字段映射采集和追加方案不同的各种源中的数据集。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="MergeLayersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>合并图层</h2></td>
+                    <td>
+                    <img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" class="titleImage" alt="合并图层">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>合并两个要素图层以创建单个结果图层。默认情况下，将包含合并图层中的所有字段，或者可以指定自定义合并规则以定义生成的方案。
+            </p>
+            <p>以下为示例：
+                <ul>
+                    <li>将包含英格兰、威尔士和苏格兰人口信息的三个图层合并为一个英国图层。
+                    </li>
+                    <li>将包含相邻镇区宗地信息的两个图层组合在一起，仅保留两个图层中具有相同名称和类型的字段。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="EnrichLocationsCategory" class="smallsize">
+        <h2>数据丰富</h2>
+        <hr/>
+        <p>这些工具可帮助您了解区域特征。
+            <ul>
+                <li> <b>从多变量格网丰富</b>可以将多变量格网图层中的属性连接到点图层。
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="EnrichFromMultiVariableGridTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>从多变量格网丰富</h2></td>
+                    <td>
+                    <img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" class="titleImage" alt="从多变量格网丰富">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>您可以高效地将多变量格网中的属性连接到点图层，从而快速地将多样的大型信息集合添加到点数据，以便在空间分析中进一步使用。
+            </p>
+            <p>以下为示例：
+                <ul>
+                    <li>假设您拥有一个包含数百万次停电事件的图层，您可以使用主要用途、环境风险和基础设施状况等信息丰富事件要素，以研究这些因素和停电频率之间的关系。
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

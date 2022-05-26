@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/infographics/simpleInfographic/dataDrilling/panels/US/LifeStyle",["../../ChartBuilder"],function(b){var a={};a.musicAndTheater={states:"n,p,i",defaultState:"i",stateSettings:{n:{yAxisTitle:"Number of adults"},p:{yAxisTitle:"Percent of adults"}},fieldInfo:{isChart:!0,chartJson:b.createChart({title:"Attended Performance in last 12 months",points:[{label:"Classical music or opera",fullName:"LeisureActivitiesLifestyle.MP20061A_B"},{label:"Country music",
+fullName:"LeisureActivitiesLifestyle.MP20062A_B"},{label:"Rock music",fullName:"LeisureActivitiesLifestyle.MP20063A_B"},{label:"Live theater",fullName:"LeisureActivitiesLifestyle.MP20069A_B"}],visualProps:{sorting:"Descending"}})}};return a});

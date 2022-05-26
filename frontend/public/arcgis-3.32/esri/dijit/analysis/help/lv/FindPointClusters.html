@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Atrast punktu klasterus</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="Atrast punktu klasterus"></h2>
+        <hr/>
+    <p>&Scaron;is rīks atrod punktu elementu klasterus apkārtējos trok&scaron;ņos, ņemot vērā to telpisko sadalījumu.
+    </p>
+    <p>Ja ir atzīmēta opcija  <b>Lietot pa&scaron;reizējo kartes pārklājumu</b>, tiks analizēti tikai ievades punktu slāņa elementi pa&scaron;reizējā kartes pārklājumā. Ja &scaron;ī opcija nav atzīmēta, tiks analizēti visi ievades punktu slāņa elementi, arī tad, ja tie atrodas ārpus pa&scaron;reizējā kartes pārklājuma.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Izvēlēties slāni, kuram tiks atrasti klasteri</h2></div>
+        <hr/>
+        <div>
+            <p>Punktu slānis, kurā tiks atrasti klasteri. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Minimālais punktu skaits, kas uzskatāms par klasteri</h2></div>
+        <hr/>
+        <div>
+            <p>Minimālais elementu skaits, kas uzskatāms par klasteri. Jebkur&scaron; klasteris ar mazāk elementiem, kā norādīts, tiks uzskatīts par troksni. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Ierobežojiet meklēšanas diapazonu līdz (pēc izvēles)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Maksimālā distance, lai elementi būtu viena klastera daļa. Ja vērtība nav norādīta, rīks palaidīs HDBSCAN, kas izmanto mainīgus attālumus, lai atdalītu mainīgo blīvumu klasterus no vāja trok&scaron;ņa. Ja vērtība ir dota, rīks palaidīs DBSCAN, kas izmanto norādīto attālumu, lai atdalītu blīvos klasterus no vāja trok&scaron;ņa.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Tas ir slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slāņa nosaukums jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Lietojot iespēju  <b>Saglabāt rezultātu</b> nolaižamā saraksta izvēlnē, jūs varat norādīt mapes nosaukumu sadaļā <b>Mans saturs</b>, kur tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

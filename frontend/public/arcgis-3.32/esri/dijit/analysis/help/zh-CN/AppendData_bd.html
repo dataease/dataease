@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>追加数据</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="&ldquo;追加数据&rdquo;工作流示意图"></h2>
+        <hr/>
+    <p>此工具用于将数据追加到现有托管要素图层。&ldquo;追加数据&rdquo;可修改原始输入图层，但不会生成新的输出图层。可根据字段名称和字段类型匹配字段，或者可应用更高级的匹配方法。
+    </p>
+    <p>以下为示例： 
+        <ul>
+            <li>您是一家大型保险公司的员工，每月都会生成销售记录。对于您的年度报告，必须编译每月数据以供分析。要启动销售分析，可在获得每月数据后，利用&ldquo;追加数据&rdquo;更新 AnnualReport_2018 图层。由于您的组织保持一致的每月方案，因此可使用默认字段映射方法根据字段名称和类型高效追加要素。
+            </li>
+            <li>十个环境组织各自在其管辖范围内采集数十万个气候测量值。这些组织想要编译自己的数据，从而更好地理解地区和全球模式。每个组织都确定了数据集的方案。他们各自为温度和风速数据指定了不同的字段名称。由于数据集之间的字段名称各不相同，因此可利用字段映射指定如何将温度和风速测量值追加到其各自的字段。
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>选择要追加到的图层</h2></div>
+        <hr/>
+        <div>
+            <p>数据要追加到的表、点、线或面要素。
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>将在执行该工具期间修改要追加到的图层。继续操作之前，请确保您要修改此图层。
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>除了从地图中选择图层外，还可以在下拉列表的底部选择 <b>选择分析图层</b>，以浏览至您的托管要素图层内容。
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>选择要追加的图层</h2></div>
+        <hr/>
+        <div>
+            <p>要追加到输入图层的表、点、线或面要素。
+            </p>
+            <p>除了从地图中选择图层外，还可以在下拉列表的底部选择 <b>选择分析图层</b>，以浏览至大数据文件共享数据集或要素图层中的内容。
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>追加所有要素或定义一个子集（可选）</h2></div>
+        <hr/>
+        <div>
+            <p>标识要追加的要素。此参数属于可选操作。
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>选择追加字段的方式（可选）</h2></div>
+        <hr/>
+        <div>
+            <p>指定追加图层字段如何追加到输入图层。默认情况下，将追加所有匹配输入和追加字段。字段名称和字段类型相同的字段相互匹配。或者，可选择字段的匹配方式，或计算 Arcade 表达式来填充字段值。
+            </p>
+            <p>例如，您拥有的输入图层包含  <i>field_number</i>、 <i>field_string</i>、 <i>date_field</i> 和 <i>unused_field</i> 字段，追加图层包含 <i>field_string</i>、 <i>field_number</i> 和 <i>MY_DATE_FIELD</i> 字段。
+                <ul>
+                    <li>默认情况下，该工具会将输入图层中的  <i>field_number</i> 与追加图层中的 <i>field_number</i> 进行匹配，以及将输入图层中的 <i>field_string</i> 与追加图层中的 <i>field_string</i> 进行匹配。
+                    </li>
+                    <li>默认情况下，将在输入图层的  <i>date_field</i> 和 <i>unused_field</i> 字段中填充 <i>null</i> 值，因为它们在追加图层中没有匹配字段。
+                    </li>
+                    <li>或者，可将值追加到默认情况下未自动匹配的字段。例如，输入图层中的  <i>date_field</i> 可以与追加字段 <i>MY_DATE_FIELD</i> 进行匹配。要执行此操作，请在第一列中 <i>date_field</i> 旁的下拉菜单中，选择位于第二列中的 <i>MY_DATE_FIELD</i>。
+                    </li>
+                </ul>
+                 再举一例，输入图层具有数值字段 <i>value_1</i>、 <i>value_2</i>、 <i>value_3</i> 和 <i>my_Average</i>，追加图层具有数值字段 <i>value_1</i>、 <i>value_2</i> 和 <i>value_3</i>。
+                <ul>
+                    <li>默认情况下，将对  <i>value_1</i>、 <i>value_2</i> 和 <i>value_3</i> 进行匹配和追加。
+                    </li>
+                    <li>除了默认行为之外，还可以为  <i>my_Average</i> 字段计算值。要执行此操作，可在 <i>my_Average</i> 旁的列中选择 <b>表达式</b>下拉选项，然后使用多个字段和数学运算构建自定义 Arcade 表达式（例如 <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>）。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

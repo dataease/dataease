@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Rechercher des emplacements similaires</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="Rechercher des emplacements similaires"></h2>
+        <hr/>
+    <p>Selon les crit&egrave;res que vous sp&eacute;cifiez, l'outil Rechercher des emplacements similaires mesure la similarit&eacute; des emplacements dans votre couche de recherche de candidats par rapport &agrave; un ou plusieurs emplacements de r&eacute;f&eacute;rence. Cet outil permet de r&eacute;pondre &agrave; des questions du type&nbsp;:
+        <ul>
+            <li>Lesquels de vos points de vente se rapprochent le plus de vos points de vente les plus performants, en termes de profils de clients&nbsp;?
+            </li>
+            <li>En fonction des caract&eacute;ristiques des villages les plus durement touch&eacute;s par la maladie, quels sont les autres villages les plus expos&eacute;s&nbsp;?
+            </li>
+        </ul>
+        Pour r&eacute;pondre &agrave; des questions de ce type, indiquez les emplacements de r&eacute;f&eacute;rence, les emplacements de recherche de candidats et les champs repr&eacute;sentant les crit&egrave;res &agrave; respecter. La premi&egrave;re couche en entr&eacute;e doit contenir vos emplacements de r&eacute;f&eacute;rence ou d'&eacute;tude.  Il peut s'agir par exemple d'une couche comportant vos points de vente les plus performants ou les villages les plus durement touch&eacute;s par la maladie. Sp&eacute;cifiez ensuite la couche contenant vos emplacements de recherche de candidats. Il peut s'agir de tous vos points de vente ou de tous les autres villages. Enfin, identifiez un ou plusieurs champs &agrave; utiliser pour mesurer la similarit&eacute;. L'outil Rechercher des emplacements similaires classe ensuite tous les emplacements de recherche de candidats selon leur degr&eacute; de correspondance avec vos emplacements de r&eacute;f&eacute;rence dans tous les champs que vous avez s&eacute;lectionn&eacute;s.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choisissez la couche contenant les emplacements de référence</h2></div>
+        <hr/>
+        <div>
+            <p>La couche ponctuelle, lin&eacute;aire ou surfacique contenant les emplacements de r&eacute;f&eacute;rence &agrave; apparier. 
+            </p>
+            <p>Outre le choix d&rsquo;une couche dans votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante. Cette option ouvre une biblioth&egrave;que qui vous permet de s&eacute;lectionner des jeux de donn&eacute;es de diff&eacute;rentes sources pour les utiliser dans votre analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>Vous pouvez utiliser tous les emplacements ou effectuer une sélection</h2></div>
+        <hr/>
+        <div>
+            <p>Vous pouvez utiliser les boutons de s&eacute;lection pour d&eacute;signer les emplacements de r&eacute;f&eacute;rence. Par exemple, si la couche en entr&eacute;e contient tous les emplacements (les emplacements de r&eacute;f&eacute;rence, ainsi que les emplacements de recherche de candidats), vous devez utiliser un des outils de s&eacute;lection pour d&eacute;signer les emplacements de r&eacute;f&eacute;rence. Si vous cr&eacute;ez deux couches distinctes, une contenant les emplacements de r&eacute;f&eacute;rence et l'autre contenant tous les emplacements de recherche de candidats, vous n'avez pas besoin d'effectuer une s&eacute;lection. 
+            </p>
+            <p>S'il existe plusieurs emplacements de r&eacute;f&eacute;rence, un seul emplacement est cr&eacute;&eacute; en calculant la moyenne des valeurs de chacun des champs utilis&eacute;s pour analyser la similarit&eacute;.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>Rechercher des emplacements similaires dans</h2></div>
+        <hr/>
+        <div>
+            <p>Les emplacements de recherche de candidats dans cette couche sont class&eacute;s du plus similaire au moins similaire. La similarit&eacute; repose sur le degr&eacute; de correspondance de chaque emplacement avec l'emplacement de r&eacute;f&eacute;rence dans les champs que vous avez sp&eacute;cifi&eacute;s. 
+            </p>
+            <p>Outre le choix d&rsquo;une couche dans votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante. Cette option ouvre une biblioth&egrave;que qui vous permet de s&eacute;lectionner des jeux de donn&eacute;es de diff&eacute;rentes sources pour les utiliser dans votre analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>Baser la similarité sur</h2></div>
+        <hr/>
+        <div>
+            <p>Les champs que vous s&eacute;lectionnez constituent les crit&egrave;res utilis&eacute;s pour &eacute;valuer la similarit&eacute;. Si vous s&eacute;lectionnez un champ de population et de revenu, par exemple, les emplacements de recherche de candidats avec les classements les plus faibles (les meilleurs) sont ceux dont les valeurs de population et de revenu sont similaires aux valeurs de vos emplacements de r&eacute;f&eacute;rence. 
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>Me montrer</h2></div>
+        <hr/>
+        <div>
+            <p>Vous pouvez voir tous les emplacements de recherche de candidats class&eacute;s du plus similaire au moins similaire ou vous pouvez sp&eacute;cifier le nombre de r&eacute;sultats que vous souhaitez voir. 
+                <ul>
+                    <li> <b>Tous les emplacements du plus similaire au moins similaire</b>&nbsp;: toutes les entit&eacute;s de la couche de recherche de candidats sont comprises dans la couche de r&eacute;sultats selon l&rsquo;ordre de classement
+                    </li>
+                    <li> <b>Nombre d&rsquo;emplacements retourn&eacute;s</b>&nbsp;: vous d&eacute;terminez le nombre de candidats les plus similaires devant figurer dans la couche de r&eacute;sultats. L&rsquo;entr&eacute;e par d&eacute;faut est 1.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Donnez un nom &agrave; la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte.  Cette couche de r&eacute;sultats contiendra les emplacements de r&eacute;f&eacute;rence et le nombre d'emplacements de recherche de candidats class&eacute;s que vous avez sp&eacute;cifi&eacute;. Si le nom de la couche de r&eacute;sultats existe d&eacute;j&agrave;, vous devez renommer la couche.
+            </p>
+            <p>La zone de liste d&eacute;roulante  <b>Enregistrer le r&eacute;sultat dans</b> vous permet de sp&eacute;cifier le nom d'un dossier dans <b>Mon contenu</b> o&ugrave; le r&eacute;sultat sera enregistr&eacute;.
+            </p>  
+        </div>
+    </div>
+</div>
+</html>

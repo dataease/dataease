@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Allavoolu jälitus</h2><p/>
+        <h2><img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" alt="Allavoolu j&auml;litus"></h2>
+        <hr/>
+    <p>See t&ouml;&ouml;riist m&auml;&auml;rab kindlaks voolu tee Teie sisendkihi punktidest allavoolu suunas.
+    </p>
+    <p>Oletagem n&auml;iteks, et Teil on hulk punktobjekte, mis t&auml;histavad vee saastumise allikaid, ja soovite kindlaks teha, kuhu Teie uuringualas saastumine k&otilde;ige t&otilde;en&auml;olisemalt voolab. Allavoolu j&auml;lituse t&ouml;&ouml;riistaga saate kindlaks m&auml;&auml;rata saastumise tee. J&auml;lituse saab jaotada ka individuaalseteks joonsegmentideks, m&auml;&auml;rates vahemaa v&auml;&auml;rtuse ja &uuml;hikud. Tagastatav joon v&otilde;ib v&otilde;rduda voolutee kogupikkusega, olla m&auml;&auml;ratud maksimaalne j&auml;lgimise pikkus v&otilde;i olla m&auml;&auml;ratud alaobjektidega (nt Teie uuringuala). Voolutee kogupikkuse tagastamise korral on see sageli m&otilde;&otilde;detud allikast alates kuni mereni v&auml;lja.
+    </p>
+    <p>Tulemuseks on allavooluj&auml;litust t&auml;histav joon. Kui seade  <b>T&uuml;kelda j&auml;litus joonsegmentideks</b> jaoks on m&auml;&auml;ratud vahemaa v&auml;&auml;rtus, t&uuml;keldatakse j&auml;litusjoon mitmeks jooneks, millest iga&uuml;ks on m&auml;&auml;ratud pikkusega.  Kui Teie sisendpunkt n&auml;iteks t&auml;histab saastumiskohta ja j&otilde;gi, kuhu see voolab, liigub kiirusega 1 km tunnis ehk 24 km p&auml;evas, v&otilde;iksite j&otilde;e t&uuml;keldada 24 km segmentideks. J&auml;lituse t&uuml;keldamisel 24 km intervalliga n&auml;ete ligikaudselt seda, kuhu saastumine iga p&auml;evaga liigub. Joone jaoks kasutatakse vahemaast l&auml;htuvalt erinevaid v&auml;rve ja vahemaa t&auml;histatakse j&auml;lituse algusest alates kaugust n&auml;itavate siltidega.
+    </p>
+    <p>Tulemuseks saadud j&auml;litusel on k&otilde;ik teie sisendpunktide atribuudid koos t&auml;iendavate atribuutidega. 
+        <ul>
+            <li> <i>PointID</i>&mdash; sisaldab sisendpunkti ID-v&auml;&auml;rtust.
+                
+
+            </li>
+            <li> <i>LengthKm</i>&mdash; sisaldab kogu allavoolu j&auml;lituse pikkust kilomeetrites.
+                
+
+            </li>
+            <li> <i>Description</i> ja <i>DataResolution</i>&mdash; sisaldavad j&auml;lgimise arvutamiseks kasutatud h&uuml;droloogiliste andmetega seotud teavet.
+                
+
+            </li>
+            <li> <i>FromDistance</i> ja <i>ToDistance</i>&mdash; sisaldavad kaugust iga joonsegmendini ja -segmendist. Need atribuudid kirjutatakse juhul, kui seade <b>T&uuml;kelda j&auml;litus joonsegmentideks</b> on kasutusel.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Kui ruut  <b>Kasuta praegust kaardi ulatust</b> on m&auml;rgitud, kasutatakse anal&uuml;&uuml;simiseks ainult neid sisendkihi punktobjekte, mis on praegu kaardil n&auml;ha. Kui vastav tingimus on v&auml;lja l&uuml;litatud, kasutatakse anal&uuml;&uuml;sil k&otilde;iki sisendkihis olevaid objekte s&otilde;ltumata asjaolust, kas need on anal&uuml;&uuml;si k&auml;ivitamise hetkel ekraanil n&auml;htavad v&otilde;i mitte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Punktobjektid kasutamiseks iga allavoolu raja alguskohana</h2></div>
+        <hr/>
+        <div>
+            <p>Punktobjektid kasutamiseks allavoolu raja alguskohana.  V&auml;ljundis on iga sisendpunkti kohta &uuml;ks rida.
+            </p>
+            <p>Lisaks kaardil asuvale kihile saate valida variandi  <b>Vali anal&uuml;&uuml;sikiht</b>, mille leiate ripploendi allosast. See variant avab galerii, mida saate sirvida ja kus saate erinevatest allikatest valida anal&uuml;&uuml;sil kasutamiseks andmestikke. 
+            </p>
+        </div>
+    </div>
+    <div id="SplitDistance">
+        <div><h2>Tükelda jälitus joonsegmentideks</h2></div>
+        <hr/>
+        <div>
+            <p>J&auml;litusjoon t&uuml;keldatakse mitmeks jooneks, millest iga&uuml;ks on m&auml;&auml;ratud pikkusega. Kui Teie sisendpunkt n&auml;iteks t&auml;histab saastumiskohta ja j&otilde;gi, kuhu see voolab, liigub kiirusega 1 km tunnis ehk 24 km p&auml;evas, v&otilde;iksite j&otilde;e t&uuml;keldada 24 km segmentideks. J&auml;lituse t&uuml;keldamisel 24 km intervalliga n&auml;ete ligikaudselt seda, kuhu saastumine iga p&auml;evaga liigub. Joone jaoks kasutatakse vahemaast l&auml;htuvalt erinevaid v&auml;rve ja vahemaa t&auml;histatakse j&auml;lituse algusest alates kaugust n&auml;itavate siltidega. Tulemuseks saadud j&auml;litus koosneb mitmest joonsegmendist, mis k&otilde;ik sisaldavad v&auml;lju  <i>FromDistance</i> ja <i>ToDistance</i>.
+            </p>
+        </div>
+    </div>
+    <div id="MaxDistance">
+        <div><h2>Jälituse maksimaalne vahemaa</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rab kindlaks tagastatava joone kogupikkuse. Kui sisestate j&auml;lgimise l&otilde;ikamiseks kindla ala, piirdub tulemus selle alaobjektiga s&otilde;ltumata siin sisestatud vahemaa v&auml;&auml;rtusest.
+            </p>
+        </div>
+    </div>
+    <div id="ClipArea">
+        <div><h2>Lõika tulemus</h2></div>
+        <hr/>
+        <div>
+            <p>Joonistage v&otilde;i sisestage selle ala kiht, millega soovite j&auml;lituse piiritleda. Kui soovite n&auml;iteks j&auml;lituse tulemuse piiritleda ainult oma uuringualaga (nt oma maakonnaga), kasutage sisendina oma maakonna objekti. Sel juhul peatub j&auml;litus maakonna piiril.
+            </p>
+        </div>
+    </div>
+    <div id="OutputTrace">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>See on selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile.  Vaikenimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui samanimeline kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>Rippmen&uuml;&uuml;  <b>Salvesta tulemused</b> kaudu saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemus salvestatakse.
+            </p>
+            <p> Selle t&ouml;&ouml;riista k&auml;itamine ei kasuta krediiti.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

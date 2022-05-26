@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/lt/DescribeDataset",{inputLayerLabel:"Pasirinkite, kur\u012f duomen\u0173 rinkin\u012f apra\u0161yti",describeDataLabel:"Supraskite, koki\u0105 informacij\u0105 pateikia duomenys, sukurdami (neprivaloma)",sampleLayer:"Pavyzdinis sluoksnis",extentLayer:"Apr\u0117pties sluoksnis",noOfFeaturesLabel:"\u012etraukiam\u0173 element\u0173 skai\u010dius",outputLayerName:"Rezultat\u0173 sluoksnio pavadinimas",resultName:"Apra\u0161yti ${layername} duomenis",itemDescription:"Element\u0173 sluoksnis, sukurtas paleidus Apra\u0161yti duomen\u0173 rinkin\u012f, skirt\u0105 ${layerName}. ",
+itemTags:"Analiz\u0117s rezultatas, Apra\u0161yti duomen\u0173 rinkin\u012f, ${layername}",itemSnippet:"Element\u0173 sluoksnis, sukurtas naudojant Apra\u0161yti duomen\u0173 rinkin\u012f."});

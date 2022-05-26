@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Trasuoti pasroviui</h2><p/>
+        <h2><img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" alt="Trasuoti pasroviui"></h2>
+        <hr/>
+    <p>&Scaron;is įrankis atlieka trasavimą arba suranda tėkmę pasroviui nuo ta&scaron;kų, esančių jūsų įvesties sluoksnyje.
+    </p>
+    <p>Pavyzdžiui, turite ta&scaron;kus, kurie yra tar&scaron;os &scaron;altiniai, ir norite nustatyti, kur  tekės ter&scaron;alai. Galite naudoti funkciją Trasuoti pasroviui ir nustatyti, koks bus ter&scaron;alų kelias. &Scaron;į trasavimą galima padalyti į atskirus linijos segmentus, nurodant atstumo reik&scaron;mę ir vienetus. Pateikta linija gali būti visa tėkmė, nurodytas maksimalus trasavimo ilgis arba sukarpyta pagal teritoriją, pvz., jūsų tyrimo plotą. Daugeliu atveju jei pateikiamas bendras trasavimo kelio ilgis, tar&scaron;os &scaron;altinis bus visame baseine iki pat vandenyno.
+    </p>
+    <p>Rezultatas &ndash; linija, kuri nurodo tėkmę pasroviui. Jei ties  <b>I&scaron;skaidyti trasavimą į linijos segmentus</b> nurodytas atstumas, trasavimo linija bus suskaidyta į kelias konkretaus ilgio linijas. Pavyzdžiui, jei jūsų įvesties ta&scaron;kas rei&scaron;kia ter&scaron;alų i&scaron;siliejimą, o upė plukdo juos 0,6 km per valandą greičiu arba 15 km per dieną, galbūt norėsite padalyti upę į 15 kilometrų segmentus. Padaliję trasavimą į 15 kilometrų intervalus, apytiksliai sužinosite, kur kiekvieną dieną bus ter&scaron;alai. Linija bus pažymėta kintančiomis spalvomis pagal atstumą ir bus žymimas atstumas nuo trasavimo pradžios.
+    </p>
+    <p>Gautas trasa turės visus įvesties ta&scaron;kų atributus ir papildomus atributus. 
+        <ul>
+            <li> <i>PointID</i> &ndash; turi ID reik&scaron;mę i&scaron; įvesties ta&scaron;ko.
+                
+
+            </li>
+            <li> <i>LengthKm</i> &ndash; turi bendrą trasavimo pasroviui ilgį kilometrais.
+                
+
+            </li>
+            <li> <i>Description</i> ir <i>DataResolution</i> &ndash; turi informaciją, susijusią su hidrologiniais duomenimis, kurie naudoti skaičiuojant tėkmę.
+                
+
+            </li>
+            <li> <i>FromDistance</i> ir <i>ToDistance</i> &ndash; turi kiekvienos linijos segmento pradžios ir pabaigos atstumą. &Scaron;ie atributai įra&scaron;omi, jei naudojama funkcija <b>I&scaron;skaidyti trasavimą į linijos segmentus</b>.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jei pažymėta  <b>Naudoti esamą žemėlapio aprėptį</b>, bus analizuojami tik aprėptyje matomi įvesties sluoksnio elementai. Jei nepažymėtas, bus panaudoti visi sluoksnio elementai.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Taškų ypatybės, kurias galima naudoti kaip pradinius trasavimo pasroviui taškus</h2></div>
+        <hr/>
+        <div>
+            <p>Ta&scaron;kų ypatybės, kurias galima naudoti kaip pradinius kiekvieno trasavimo pasroviui ta&scaron;kus  I&scaron;vestyje bus kiekvieno įvesties ta&scaron;ko linija.
+            </p>
+            <p>Pasirinkę sluoksnį žemėlapyje, galite pasirinkti  <b>Pasirinkite analizės sluoksnį</b>, kurį rasite i&scaron;plečiamo sąra&scaron;o apačioje. &Scaron;i parinktis atidaro galeriją, kurioje galite ie&scaron;koti duomenų rinkinių i&scaron; įvairių &scaron;altinių ir juos pasirinkti naudoti savo analizėje. 
+            </p>
+        </div>
+    </div>
+    <div id="SplitDistance">
+        <div><h2>Išskaidyti trasavimą į linijos segmentus</h2></div>
+        <hr/>
+        <div>
+            <p>Trasavimo linija bus padalyta į kelias konkretaus ilgio linijas. Pavyzdžiui, jei jūsų įvesties ta&scaron;kas rei&scaron;kia ter&scaron;alų i&scaron;siliejimą, o upė plukdo juos 0,6 km per valandą greičiu arba 15 km per dieną, galbūt norėsite padalyti upę į 15 kilometrų segmentus. Padaliję trasavimą į 15 kilometrų intervalus, apytiksliai sužinosite, kur kiekvieną dieną bus ter&scaron;alai. Linija bus pažymėta kintančiomis spalvomis pagal atstumą ir bus žymimas atstumas nuo trasavimo pradžios. Gauta trasa bus sudaryta i&scaron; kelių linijos segmentų, kurių kiekvienas turės lauką  <i>FromDistance</i> ir <i>ToDistance</i>.
+            </p>
+        </div>
+    </div>
+    <div id="MaxDistance">
+        <div><h2>Maksimalus trasavimo atstumas</h2></div>
+        <hr/>
+        <div>
+            <p>Nustato bendrą linijos, kuri bus grąžinta, ilgį. Jei nurodysite ploto elementus trasavimui apkirpti, rezultatas bus apkirptas iki ploto elemento neatsižvelgiant į čia įvestą atstumą.
+            </p>
+        </div>
+    </div>
+    <div id="ClipArea">
+        <div><h2>Apkirpti išvestį pagal</h2></div>
+        <hr/>
+        <div>
+            <p>Nubrėžkite arba nurodykite plotų sluoksnį, kuriuo norite apkirpti trasavimo rezultatą. Pavyzdžiui, jei jūs norite, kad trasavimo rezultatai būtų tik i&scaron; jūsų tyrimo teritorijos, pvz., jūsų apskrities, naudokite apskrities elementą kaip įvestį, kad trasavimas nutrūktų ties apskrities riba.
+            </p>
+        </div>
+    </div>
+    <div id="OutputTrace">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Tai sluoksnio, kuris bus sukurtas ir patalpintas  <b>Turinyje</b> ir pridėtas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnio pavadinimas jau egzistuoja, jūsų papra&scaron;ys pateikti kitą pavadinimą.
+            </p>
+            <p>I&scaron;plečiamajame meniu pasirinkę  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+            <p> Naudojant &scaron;į įrankį kreditai nenaudojami.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

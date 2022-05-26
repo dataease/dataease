@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Calcul densitate</h2><p/>
+        <h2><img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" alt="Calcul densitate"></h2>
+        <hr/>
+    <p>Instrumentul Calcul densitate creează o hartă de densitate din obiecte spaţiale de tip punct răsp&acirc;ndind pe hartă cantităţi cunoscute ale unui anumit fenomen (reprezentate ca atribute ale punctelor). Rezultatul este un strat tematic de suprafeţe clasificate de la cea mai puţin densă la cea mai densă.   
+
+    </p>
+    <p>Pentru introducerea punctelor, fiecare punct trebuie să reprezinte locaţia unui eveniment sau incident, iar stratul tematic rezultat reprezintă un număr de incidente pe suprafaţă unitară. O valoare mai are a densităţii &icirc;ntr-o locaţie nouă denotă faptul că există mai multe puncte &icirc;n apropierea acelei locaţii. &Icirc;n multe cazuri, stratul tematic rezultat poate fi interpretat drept o suprafaţă de risc pentru evenimente viitoare. De exemplu, dacă punctele introduse reprezintă locaţii ale loviturilor de fulgere, stratul tematic rezultat poate fi interpretat drept o suprafaţă de risc pentru viitoare lovituri de fulgere.
+    </p>
+    <p>Printre posibilităţile de utilizare ale acestui instrument se numără:
+        <ul>
+            <li>Crearea unor hărţi de densitate pentru criminalitate &icirc;n vederea ajutării secţiilor de poliţie să aloce resurse adecvate zonelor cu criminalitate ridicată.
+            </li>
+            <li>Calculul densităţii spitalelor dintr-un judeţ. Stratul tematic rezultat va prezenta zone cu accesibilitate ridicată şi scăzută la spitale, iar aceste informaţii pot fi utilizate pentru a decide dacă să se construiască noi spitale.
+            </li>
+            <li>Identificarea zonelor cu risc ridicat de incendii forestiere pe baza locaţiilor istorice de incendii forestiere.
+            </li>
+            <li>Localizarea comunităţilor aflate departe de artere rutiere majore, pentru a planifica unde trebuie construite noi drumuri.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Alegeţi un strat tematic de puncte din care să calculaţi densitatea</h2></div>
+        <hr/>
+        <div>
+            <p>Stratul tematic de puncte pentru care se calculează densitatea.
+            </p>
+            <p>&Icirc;n afară de a alege un strat tematic din harta dvs., puteţi selecta opţiunile  <b>Alegere strat tematic de analiză</b> &icirc;n partea inferioară a listei verticale pentru a răsfoi conţinutul pentru stratul tematic sau setul de date pentru partajarea de fişiere big data.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Alegeţi unul sau mai multe câmpuri pe care să calculaţi densitatea (opţional)</h2></div>
+        <hr/>
+        <div>
+            <p>Furnizaţi unul sau mai multe c&acirc;mpuri, specific&acirc;nd numărul de incidente din fiecare locaţie. De exemplu, dacă aveţi puncte ce reprezintă oraşe, puteţi utiliza un c&acirc;mp care reprezintă populaţia oraşului drept c&acirc;mp de numărare, iar stratul tematic de densitate a populaţiei va calcula densităţile mai mari de populaţie din apropierea oraşelor cu populaţii mai mari.
+            </p>
+            <p>Densitatea pentru numărul de puncte este &icirc;ntotdeauna calculată.   Dacă nu se selectează niciun c&acirc;mp, fiecare locaţie este considerată ca reprezent&acirc;nd un singur număr.
+            </p>
+        </div>
+    </div>
+    <div id="binType">
+        <div><h2>Alegeţi o formă de coş</h2></div>
+        <hr/>
+        <div>
+            <p>Forma coşurilor &icirc;n care sunt agregate punctele şi folosite pentru calculul densităţii.
+            </p>
+            <p>Analiza cu coşurile  <b>Pătrat</b> sau <b>Hexagon</b> necesită un sistem de coordonate proiectat. Puteţi seta <b>Sistemul de coordonate de procesare</b> din <b>Medii de analiză</b>. Dacă sistemul dvs. de coordonate de procesare nu este setat la un sistem de coordonate proiectat, vi se va indica să &icirc;l setaţi atunci c&acirc;nd <b>Executați Analiza</b> .
+            </p>
+        </div>
+    </div>
+    <div id="binSizing">
+        <div><h2>Selectaţi dimensiunea coşurilor pentru agregare</h2></div>
+        <hr/>
+        <div>
+            <p>Dimensiunea coşurilor generate. Pentru un coş pătrat, dimensiunea reprezintă &icirc;nălţimea pătratului. Pentru hexagon, dimensiunea reprezintă &icirc;nălţimea hexagonului (de la laturile paralele).
+            </p>
+        </div>
+    </div>
+    <div id="weight">
+        <div><h2>Selectaţi ponderarea densităţii care va fi aplicată</h2></div>
+        <hr/>
+        <div>
+            <p>Tipul de greutate aplicată pentru calcularea densităţii. Sunt disponibile două opţiuni:
+                <ul>
+                    <li> <b>Uniform</b>&mdash;Se calculează magnitudinea per zonă.
+                    </li>
+                    <li> <b>Kernel</b>&mdash;Se aplică funcţia kernel pentru a se potrivi unei suprafeţe conice netede &icirc;n fiecare punct.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Selectaţi dimensiunea cartierului</h2></div>
+        <hr/>
+        <div>
+            <p>Dimensiunea suprafeţei utilizate pentru calcularea densităţii. Dimensiunea cartierului trebuie să fie mai mare dec&acirc;t dimensiunea coşului.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Alegeţi unităţile pentru densitate</h2></div>
+        <hr/>
+        <div>
+            <p>Unităţile de ieşire dorite pentru valorile de densitate. Acestea sunt implicit setate la kilometri pătraţi sau mile pătrate, pe baza unităţilor implicite specificate &icirc;n profilul dvs. Dacă valorile de densitate sunt foarte mici, puteţi creşte dimensiunea unităţilor suprafeţei (de exemplu, metri pătraţi la kilometri pătraţi) pentru a obţine valori mai mari. Valorile scalează numai rezultatul.  
+
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Calculaţi densitatea utilizând trepte temporale (opţional)</h2></div>
+        <hr/>
+        <div>
+            <p>Dacă timpul este activat &icirc;n stratul tematic de puncte de intrare şi este de tip instantaneu, puteţi analiza prin intermediul intervalelor de trepte temporare. Există trei parametri pe care &icirc;i puteţi seta atunci c&acirc;nd utilizaţi timpul:
+                <ul>
+                    <li> <b>Interval trepte temporale</b>
+                    </li>
+                    <li> <b>C&acirc;t de des se repetă treapta temporală</b>
+                    </li>
+                    <li> <b>Ora la care se aliniază treptele temporale</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>De exemplu, dacă aveți date care reprezintă un an &icirc;n timp și doriți să le analizați cu ajutorul treptelor săptăm&acirc;nale, setați  <b>Interval trepte temporale</b> la <code>1 săpt&acirc;m&acirc;nă</code>. 
+            </p>
+            <p>De exemplu, dacă aveți date care reprezintă un an &icirc;n timpși doriți să le analizați folosindprima săptăm&acirc;nă a lunii, setați  <b>Interval trepte temporale</b> la <code>1 săptăm&acirc;nă</code>, <b>C&acirc;t de des se repetă treapta temporală</b> la <code>1 lună</code>, și <b>Momentul de aliniere treptele temporale</b> la <code>1 ianuarie, la 12:00 am</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Interval trepte temporale</h2></div>
+        <hr/>
+        <div>
+            <p>Interval de timp folosit la generarea treptelor temporale.  <b>Intervalul de trepte temporale</b> poate fi folosit individual sau cu <b>C&acirc;t de des se repetă treptele temporale</b> sau <b>Timpul de aliniere a treptelor temporale la</b> parametru.
+            </p>
+            <p>De exemplu, dacă doriți să creați trepte temporale care  au loc &icirc;n fiecare luni de la 09:00 p&acirc;nă la 10:00, setați  <b>Interval de trepte temporale</b> la <code>1 oră</code>, <b>C&acirc;t de des se repetă treapta temporală</b> la <code>1 săptăm&acirc;nă</code>, și <b>Timpul de aliniere a treptelor temporale</b> la <code>9:00:00 &icirc;ntr-o zi de luni</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Cât de des se repetă treapta temporală</h2></div>
+        <hr/>
+        <div>
+            <p> Treapta utilizată pentru calculul unui segment de timp. <b>C&acirc;t de des se repetă treapta temporală</b> poate fi utilizat individual, cu <b>Interval treaptă temporală</b>, cu <b>Timp de Referință</b>, sau at&acirc;t cu <b>Interval trepte temporale</b> c&acirc;t și cu <b>Timpul de aliniere a treptelor temporale la</b>.
+            </p>
+            <p> De exemplu, dacă doriți să creați trepte temporale care au loc &icirc;n fiecare luni de la 09:00 p&acirc;nă la 10:00, setați <b>Interval de trepte temporale</b> la <code>1 oră</code>, <b>C&acirc;t de des se repetă treapta temporală</b> la <code>1 săptăm&acirc;nă</code>, și <b>Timpul de aliniere a treptelor temporale la</b> la <code>9:00:00 a.m. &icirc;ntr-o zi de luni</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Ora la care se aliniază treptele temporale</h2></div>
+        <hr/>
+        <div>
+            <p>Data şi ora utilizate pentru alinierea segmentelor temporale. Treptele temporale vor &icirc;ncepe la și vor continua &icirc;napoi de la această oră. Dacă nu este selectat nicio oră de referinţă, treptele temporare se vor alinia la 1 ianuarie 1970. 
+            </p>
+            <p> De exemplu, dacă doriți să creați trepte temporale care au loc &icirc;n fiecare luni de la 09:00 p&acirc;nă la 10:00, setați <b>Interval de trepte temporale</b> la <code>1 oră</code>, <b>C&acirc;t de des se repetă treapta temporală</b> la <code>1 săptăm&acirc;nă</code>, și <b>Timpul de aliniere a treptelor temporale la</b> la <code>9:00:00 a.m. &icirc;ntr-o zi de luni</code>.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este un parametru temporar pentru pre-lansare, destinat procesării referinţei spaţiale. Numeroase instrumente big data necesită utilizarea unui sistem de coordonate estimat ca referinţă spaţială pentru procesare. &Icirc;n mod implicit, instrumentul va utiliza sistemul de coordonate de intrare dar va eşua dacă este un sistem de coordonate geografice. Pentru a seta un sistem de coordonate estimate, introduceţi WKID. De exemplu,  <b>Web Mercator</b> ar fi introdus ca <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Alegeţi depozitul de date</h2></div>
+        <hr/>
+        <div>
+            <p>Rezultatele GeoAnalytics sunt stocate &icirc;ntr-un depozit de date și sunt expuse ca strat tematic de obiecte spaţiale &icirc;n  Portal for ArcGIS. &Icirc;n cele mai multe situaţii, rezultatele trebuie stocate &icirc;n depozitul de date spaţio-temporar, &icirc;n mod implicit. &Icirc;n unele cazuri, salvarea rezultatelor &icirc;n depozitul depozit de date relaţionale este o opțiune bună. Mai jos sunt motivele pentru care ați dori să stocați rezultatele &icirc;n depozitul depozit de date relaţionale: 
+                <ul>
+                    <li>Puteți folosi rezultatele &icirc;n colaborarea-dintre-portaluri.
+                    </li>
+                    <li>Puteți activa capacitățile de sincronizare cu rezultatele dvs.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Nu trebuie să utilizaţi depozitul de date relaţionale dacă vă aşteptaţi ca rezultatele GeoAnalytics să crească &icirc;n cantitate şi aveţi nevoie de capacităţile depozitului mare de stocare spaţio-temporal de a gestiona cantităţi mari de date.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p> Numele stratului tematic care va fi creat. Dacă scrieți &icirc;ntr-un ArcGIS Data Store, rezultatele dvs. vor fi salvate &icirc;n  <b>Resursele mele</b> și adăugate pe hartă. Dacă scrieți &icirc;ntr-o partajare de fişiere big data, rezultatele dvs. vor fi stocate &icirc;n partajarea de fişiere big data și adăugate la manifestul acesteia. Nu vor fi adăugate pe hartă. Numele implicit se bazează pe numele instrumentului şi numele stratului tematic de intrare. Dacă stratul tematic există deja, instrumentul va eşua.
+            </p>
+            <p>C&acirc;nd scrieți &icirc;n  ArcGIS Data Store (depozit de date relaționale sau spațio-temporale de volum mare) utiliz&acirc;nd caseta derulantă  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

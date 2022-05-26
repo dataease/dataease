@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Sumiraj u okviru</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Sumiraj vrednosti za objekte unutar definisanog opsega"></h2>
+        <hr/>
+    <p>Ova alatka pronalazi geoobjekte (i delove geoobjekata) koji su unutar granica oblasti u prvom ulaznom sloju. Na primer:
+        <ul>
+            <li>S obzirom na dati sloj granica vododelnice i sloj granica upotrebe zemlji&scaron;ta po tipu upotrebe zemlji&scaron;ta, izračunajte ukupnu povr&scaron;inu tipa upotrebe zemlji&scaron;ta za svaku vododelnicu. 
+            </li>
+            <li>S obzirom na dati sloj sa parcelama u okrugu i sloj granica grada, sumirajte prosečnu vrednost praznih parcela unutar granica svakog grada.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Ako je opcija  <b>Koristi trenutni obuhvat mape</b> izabrana, biće sumirani samo oni geoobjekti iz ulaznog sloja i sloja za sumiranje koji su vidljivi unutar trenutnog obuhvata mape. Ako ova opcija nije potvrđena, biće sumirani svi geoobjekti u ulaznom sloju i sloju za sumiranje, čak i ako su izvan trenutnog obuhvata mape.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Odaberite sloj oblasti da biste sumirali druge geoobjekte u okviru njegovih granica</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj oblasti koji će se koristi za sumiranje geoobjekata koji padaju unutar njegovih granica. 
+            </p>
+            <p>Možete da birate između sloja oblasti koji ćete vi obezbediti ili blokova koji se generi&scaron;u kada je pokrenut alat. Pri pravljenju blokova, za  <b>Kvadrat</b>, navedeni broj i jedinice određuju visinu i dužinu kvadrata. Za <b>&Scaron;estougao</b>, navedeni broj i jedinice određuju rastojanje između paralelnih stranica.
+            </p>
+            <p>Pored biranja sloja sa mape, možete da selektujete  <b>Izaberi sloj za analizu</b> koji se nalazi na dnu padajuće liste. Ova opcija otvara galeriju gde možete da pregledate i birate skupove podataka iz raznih izvora za kori&scaron;ćenje u va&scaron;oj analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Odaberite sloj za sumiranje</h2></div>
+        <hr/>
+        <div>
+            <p>Biće sumirani geoobjekti u ovom sloju koji padaju unutar granica geoobjekata u ulaznom sloju iznad. 
+            </p>
+            <p>Pored biranja sloja sa mape, možete da selektujete  <b>Izaberi sloj za analizu</b> koji se nalazi na dnu padajuće liste. Ova opcija otvara galeriju gde možete da pregledate i birate skupove podataka iz raznih izvora za kori&scaron;ćenje u va&scaron;oj analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Dodaj statistiku iz sloja za sumiranje</h2></div>
+        <hr/>
+        <div>
+            <p>Opcionalno možete da izračunate statistiku za brojčane atribute tačaka koje padaju unutar granica geoobjekata. 
+            </p>
+            <p>Ako je polje za potvrdu  <b>Brojač tačaka</b> potvrđeno, biće izračunat ukupan broj tačaka unutar granica svake oblasti. Pored toga, možete da izračunate statistiku za brojčane atribute tačaka koje su unutar granica svake oblasti.
+            </p>
+            <ul>
+                <li> <b>Zbir</b> &ndash; ukupna vrednost za navedeno polje.
+                </li>
+                <li> <b>Prosek</b> &ndash; prosek ili srednja vrednost za navedeno polje.
+                </li>
+                <li> <b>Minimum</b> &ndash; najmanja vrednost u navedenom polju.
+                </li>
+                <li> <b>Maksimum</b> &ndash; najveća vrednost u navedenom polju.
+                </li>
+                <li> <b>Std. Devijacija</b> &ndash; standardna devijacija vrednosti u navedenom polju.
+                </li>
+            </ul>
+            
+            <p>Ako sloj za sumiranje nema nijedno numeričko polje, dodatna statistika neće biti dostupna.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Dodaj statistiku iz</h2></div>
+        <hr/>
+        <div>
+            <p>Opcionalno možete da izračunate statistiku za brojčane atribute linija za sumiranje. 
+            </p>
+            <p>Ako je polje za potvrdu  <b>Ukupna dužina linija u</b> potvrđeno, biće izračunata ukupna dužina linija unutar granica svake oblasti. Pored toga, možete da izračunate statistiku za brojčane atribute linija koje su unutar granica svake oblasti.
+            </p>
+            <ul>
+                <li> <b>Zbir</b> &ndash; ukupna vrednost za navedeno polje.
+                </li>
+                <li> <b>Prosek</b> &ndash; prosek ili srednja vrednost za navedeno polje.
+                </li>
+                <li> <b>Minimum</b> &ndash; najmanja vrednost u navedenom polju.
+                </li>
+                <li> <b>Maksimum</b> &ndash; najveća vrednost u navedenom polju.
+                </li>
+                <li> <b>Std. Devijacija</b> &ndash; standardna devijacija vrednosti u navedenom polju.
+                </li>
+            </ul>
+            
+            <p>Ako sloj za sumiranje nema nijedno numeričko polje, dodatna statistika neće biti dostupna.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Dodaj statistiku iz</h2></div>
+        <hr/>
+        <div>
+            <p>Opcionalno možete da izračunate statistiku za brojčane atribute oblasti za sumiranje. 
+            </p>
+            <p>Ako je polje za potvrdu  <b>Izračunaj zbir oblasti koristeći</b> potvrđeno, biće izračunata ukupna povr&scaron;ina geoobjekata koji su unutar granica svake oblasti prvog ulaznog sloja. Pored toga, možete da izračunate statistiku za brojčane atribute geoobjekata koji su unutar granica svake oblasti.
+            </p>
+            <ul>
+                <li> <b>Zbir</b> &ndash; ukupna vrednost za navedeno polje.
+                </li>
+                <li> <b>Prosek</b> &ndash; prosek ili srednja vrednost za navedeno polje.
+                </li>
+                <li> <b>Minimum</b> &ndash; najmanja vrednost u navedenom polju.
+                </li>
+                <li> <b>Maksimum</b> &ndash; najveća vrednost u navedenom polju.
+                </li>
+                <li> <b>Std. Devijacija</b> &ndash; standardna devijacija vrednosti u navedenom polju.
+                </li>
+            </ul>
+            
+            <p>Ako sloj za sumiranje nema nijedno numeričko polje, dodatna statistika neće biti dostupna.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Dodaj statistiku iz</h2></div>
+        <hr/>
+        <div>
+            <p>Kada odaberete sloj za sumiranje, opcionalno možete da izračunate statistiku bilo kojeg numeričkog atributa tačaka, linija ili oblasti unutar ulaznog sloja oblasti. 
+            </p>
+            <ul>
+                <li> <b>Zbir</b> &ndash; ukupna vrednost za navedeno polje
+                </li>
+                <li> <b>Prosek</b> &ndash; prosek ili srednja vrednost za navedeno polje
+                </li>
+                <li> <b>Minimum</b> &ndash; najmanja vrednost u navedenom polju
+                </li>
+                <li> <b>Maksimum</b> &ndash; najveća vrednost u navedenom polju
+                </li>
+                <li> <b>Std. Devijacija</b> &ndash; standardna devijacija vrednosti u navedenom polju
+                </li>
+            </ul>
+            
+            <p>U zavisnosti od tipova geoobjekata koje sumirate, možete da izračunate ukupan broj tačaka, ukupnu dužinu linija ili ukupnu povr&scaron;inu.
+            </p>
+            <p>Ako sloj za sumiranje nema nijedno numeričko polje, dodatna statistika neće biti dostupna.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Odaberite polje po kojem ćete da grupišete</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je atribut geoobjekata  <b>Sumiraj</b> koje možete da koristite za izračunavanje statistike zasebno za svaku jedinstvenu vrednost atributa. Na primer, pretpostavimo da prvi ulazni sloj sadrži granice grada, a da su parcele geoobjekti sumiranja. Jedan od atributa parcela je <i>Status</i> koji sadrži dve vrednosti: PRAZNO i ZAUZETO. Da biste izračunali ukupnu povr&scaron;inu praznih i zauzetih parcela unutar granica grada, koristite <i>Status</i> kao atribut za grupisanje. Statistika za svaku grupu, kao i broj geoobjekata unutar granica svake oblasti, biće prikazani u iskačućem prozoru sloja sa rezultatima.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Dodaj manjinu, većinu</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo polje za potvrdu je omogućeno kada odaberete polje po kojem ćete da grupi&scaron;ete. Ako želite da saznate koje vrednosti atributa unutar svake grupe predstavljaju manjinu (najmanje zastupljenu vrednost) ili većinu (najzastupljeniju vrednost) unutar svake granice prvog ulaznog sloja, selektujte  <b>Dodaj manjinu, većinu</b>. Kada selektujete <b>Dodaj manjinu, većinu</b>, dva nova polja se dodaju sloju sa rezultatima. Ako selektujete i <b>Dodaj procente</b>, dva dodatna polja dodaju se sloju sa rezultatima, koja sadrže procente vrednosti atributa manjine i većine unutar svake grupe.
+            </p>
+            <ul>
+                <li>Ako sumirate tačke, vrednosti manjine i većine se izračunavaju na osnovu broja tačaka unutar svake granične oblasti u ulaznom sloju oblasti.  
+                </li>
+                <li>Ako sumirate linije, vrednosti manjine i većine se izračunavaju na osnovu dužine linija unutar svake granične oblasti u ulaznom sloju oblasti.  
+                </li>
+                <li>Ako sumirate oblasti, vrednosti manjine i većine se izračunavaju na osnovu oblasti unutar svake granične oblasti u ulaznom sloju oblasti.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Dodaj procente</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo polje za potvrdu je omogućeno kada odaberete polje po kojem ćete da grupi&scaron;ete. Selektujte opciju  <b>Dodaj procente</b> ako želite da pronađete procenat svake vrednosti atributa unutar svake grupe. Novo polje se dodaje tabeli sa rezultatima koja sadrži procente svake vrednosti atributa unutar svake grupe. Ako je selektovana i opcija <b>Dodaj manjinu, većinu</b>, dva dodatna polja dodaju se sloju sa rezultatima, koja sadrže procente vrednosti atributa manjine i većine unutar svake grupe.
+            </p>
+        </div>
+    </div>
+    <div id="ResultLayerName">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja koji će biti kreiran u  <b>Mom sadržaju</b> i dodat na mapu. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako naziv sloja već postoji, bićete upitani da unesete drugi naziv.
+            </p>
+            <p>Koristeći padajući meni  <b>Sačuvaj rezultat u</b>, možete da navedete ime fascikle u <b>Mom sadržaju</b> u kojoj će rezultat biti sačuvan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Nokta Kümelerini Bul</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="Nokta K&uuml;melerini Bul"></h2>
+        <hr/>
+    <p>Bu ara&ccedil;, ortam g&uuml;r&uuml;lt&uuml;s&uuml;ndeki nokta &ouml;zellikli k&uuml;melerini mekansal dağılımlarına g&ouml;re bulur.
+    </p>
+    <p> <b>Ge&ccedil;erli harita yayılımını kullan</b> işaretli ise, yalnızca ge&ccedil;erli harita yayılımındaki nokta katmanı girdisindeki detaylar analiz edilir. İşaretli değilse, nokta katmanı girdisindeki t&uuml;m detaylar, ge&ccedil;erli harita yayılımının dışında bile olsa analiz edilir.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Kümelerin bulunacağı katmanı seçin</h2></div>
+        <hr/>
+        <div>
+            <p>K&uuml;melerin bulunacağı nokta katmanıdır. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Bir küme olarak kabul edilecek minimum nokta sayısı</h2></div>
+        <hr/>
+        <div>
+            <p>Bir k&uuml;me olarak kabul edilecek minimum detay sayısı. Sağlanandan daha az detaya sahip herhangi bir k&uuml;me g&uuml;r&uuml;lt&uuml; olarak kabul edilecektir. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Arama aralığını şununla sınırla (isteğe bağlı)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Detayların aynı k&uuml;menin par&ccedil;ası olması i&ccedil;in g&ouml;z &ouml;n&uuml;nde bulundurulması gereken maksimum mesafe. Boş bırakılırsa ara&ccedil;, değişen yoğunluktaki k&uuml;meleri seyrek parazitlerden ayırmak i&ccedil;in değişen mesafeler kullanan HDBSCAN&rsquo;ı &ccedil;alıştırır. Bir değer verilirse ara&ccedil;, yoğun k&uuml;meleri seyrek parazitlerden ayırmak i&ccedil;in belirli bir mesafeyi kullanan DBSCAN&rsquo;ı &ccedil;alıştırır.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p>Bu,  <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adıdır.  Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman adı zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır men&uuml;s&uuml;n&uuml; kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

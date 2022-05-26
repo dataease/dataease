@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Extreu les dades</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="Extreu les dades"></h2>
+        <hr/>
+    <p>Amb aquesta eina, podeu seleccionar i baixar les dades d'una &agrave;rea d'inter&egrave;s especificada. Les capes que seleccioneu s'afegiran a un fitxer ZIP, CSV o KMZ.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>Capes que s'extrauran</h2></div>
+        <hr/>
+        <div>
+            <p>Aquestes s&oacute;n les capes de la taula de continguts de les quals podeu extreure entitats.  Les capes activades s'extreuen i s'inclouen al fitxer ZIP o CSV resultant.
+            </p>
+            <p>Perqu&egrave; una capa aparegui a la llista de capes que s'extrauran, heu de ser el propietari de les dades o b&eacute; el propietari de les dades ha d'habilitar-ne l'exportaci&oacute;.    Per habilitar l'exportaci&oacute; de dades de la vostra propietat: 
+                <ul>
+                    <li>Obriu la descripci&oacute; de l'element de les dades.
+                    </li>
+                    <li>Feu clic a la pestanya  <b>Configuraci&oacute;</b>.
+                    </li>
+                    <li>Desplaceu-vos cap avall fins a la secci&oacute;  <b>Exporta les dades</b>.
+                    </li>
+                    <li>Activeu l'opci&oacute;  <b>Permet que altres persones puguin fer exportacions a diferents formats</b>.  Quan acabeu, feu clic a <b>Desa</b>.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Si la vostra capa d'an&agrave;lisi cont&eacute; fitxers adjunts, tingueu en compte que nom&eacute;s s'extrauran si el format de les dades de sortida &eacute;s una geobase de dades de fitxers i l'opci&oacute;  <b>Retalla entitats</b> est&agrave; desactivada.
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>Àrea d'estudi</h2></div>
+        <hr/>
+        <div>
+            <p>&Agrave;rea que defineix quines entitats s'inclouran al fitxer ZIP o CSV de sortida.   Podeu triar entre les opcions seg&uuml;ents:
+                <ul>
+                    <li>L'extensi&oacute; visible actual del mapa ( <b>Igual que la visualitzaci&oacute;</b>).
+                    </li>
+                    <li>Una de les capes de la taula de continguts. Si la capa seleccionada es d'entitats de punts o l&iacute;nies, l'extensi&oacute; de la capa s'utilitzar&agrave; com a &agrave;rea d'estudi.
+                    </li>
+                    <li>Dibuixeu una &agrave;rea per definir l'&agrave;rea d'estudi.
+                    </li>
+                </ul>
+                 S'extrauran totes les entitats que estiguin totalment dins de l'extensi&oacute; del mapa.  Per a les entitats que creuen els l&iacute;mits de l'extensi&oacute; del mapa o s'hi intersequen, per&ograve; no estan completament dins de l'extensi&oacute;, teniu dues opcions:
+                <ul>
+                    <li> <b>Seleccioneu entitats</b>: s'extrauran les entitats completes que creuin el l&iacute;mit de l'&agrave;rea d'estudi.
+                    </li>
+                    <li> <b>Retalla entitats</b>: nom&eacute;s s'extrauran les parts de les entitats que estiguin dins de l'&agrave;rea d'estudi.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>Format de les dades de sortida</h2></div>
+        <hr/>
+        <div>
+            <p>Format de les dades que s'extrauran. Quan s'exporten entitats de l&iacute;nies o d'&agrave;rees a fitxers CSV, nom&eacute;s s'extreuen els atributs no espacials.  Quan s'exporten entitats de punts, s'extreuen tant els atributs espacials com els no espacials.  
+            </p>
+            <p>Les dades extretes utilitzaran la projecci&oacute; del Web Mercator 1984.  Per als fitxers CSV, els camps  <i>Lat</i> i <i>Long</i> s'annexaran a les dades amb coordenades al Web Mercator 1984.
+            </p> 
+            <p>S'admeten els formats de sortida seg&uuml;ents:
+                <ul>
+                    <li>Valors separats per comes (CSV),  <code>.csv</code> o <code>.zip</code>
+                    </li>
+                    <li>Geobase de dades de fitxers:  <code>.zip</code>
+                    </li>
+                    <li>Keyhole Markup Language (KML),  <code>.kmz</code> o <code>.zip</code>
+                    </li>
+                    <li>Shapefile:  <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nom del fitxer de sortida</h2></div>
+        <hr/>
+        <div>
+            <p>&Eacute;s el nom de l'element que s'afegir&agrave; a  <b>El meu contingut</b>.  El nom de l'element es basa en el <b>Format de les dades de sortida</b> que s'ha triat.     Si l'element ja existeix, se us demanar&agrave; que escriviu un altre nom.
+            </p>
+            <p>Mitjan&ccedil;ant el quadre desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta d' <b>El meu contingut</b> on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

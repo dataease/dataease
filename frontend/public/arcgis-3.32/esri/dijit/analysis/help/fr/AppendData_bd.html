@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Ajouter des données</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="Diagramme de processus Ajouter des donn&eacute;es"></h2>
+        <hr/>
+    <p>Cet outil ajoute des donn&eacute;es &agrave; une couche d&rsquo;entit&eacute;s h&eacute;berg&eacute;e. Ajouter des donn&eacute;es modifie la couche en entr&eacute;e d&rsquo;origine et ne g&eacute;n&egrave;re pas une nouvelle couche en sortie. Vous pouvez apparier les champs en vous basant sur le nom champ et le type de champ ou vous pouvez appliquer d&rsquo;autres m&eacute;thodes d&rsquo;appariement plus sophistiqu&eacute;es.
+    </p>
+    <p>Voici quelques exemples&nbsp;: 
+        <ul>
+            <li>Vous travaillez dans une grande compagnie d&rsquo;assurance qui g&eacute;n&egrave;re des ventes tous les mois. Pour votre rapport annuel, les donn&eacute;es mensuelles doivent &ecirc;tre compil&eacute;es en vue d&rsquo;&ecirc;tre analys&eacute;es. Pour d&eacute;marrer l&rsquo;analyse des ventes, vous pouvez utiliser l&rsquo;outil Ajouter des donn&eacute;es pour mettre &agrave; jour votre couche AnnualReport_2018 d&egrave;s que les valeurs mensuelles sont disponibles. Comme vous savez que votre organisation maintient une structure homog&egrave;ne chaque mois, vous pouvez utiliser la m&eacute;thode d&rsquo;appariement de champ par d&eacute;faut pour ajouter les entit&eacute;s en fonction du nom et du type de champ.
+            </li>
+            <li>Dix groupes environnementaux collectent chacun des milliers de mesures relatives au climat au sein de leur zone de comp&eacute;tence. Ces organisations veulent compiler leurs donn&eacute;es pour mieux appr&eacute;hender les mod&egrave;les r&eacute;gionaux et mondiaux. Chaque organisation d&eacute;termine la structure de son jeu de donn&eacute;es. Chacune d&rsquo;entre elles sp&eacute;cifie les diff&eacute;rents noms de champ pour les donn&eacute;es de temp&eacute;rature et de vitesse du vent. &Eacute;tant donn&eacute; les diff&eacute;rences de nom de champ entre les jeux de donn&eacute;es, l&rsquo;appariement des champs peut &ecirc;tre utilis&eacute; pour sp&eacute;cifier la mani&egrave;re d&rsquo;ajouter les mesures de temp&eacute;rature et de vitesses de vent dans leurs champs respectifs.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choisir la couche à ajouter à</h2></div>
+        <hr/>
+        <div>
+            <p>Entit&eacute;s tabulaires, ponctuelles, lin&eacute;aires ou surfaciques auxquelles les donn&eacute;es seront ajout&eacute;es.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>La couche &agrave; laquelle vous ajoutez des &eacute;l&eacute;ments est modifi&eacute;e au cours de l&rsquo;ex&eacute;cution de l&rsquo;outil. Avant de poursuivre, assurez-vous de bien vouloir modifier cette couche.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>Outre le fait de choisir une couche de votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante pour parcourir votre contenu et rechercher une couche d&rsquo;entit&eacute;s h&eacute;berg&eacute;e.
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>Choisir la couche à laquelle ajouter</h2></div>
+        <hr/>
+        <div>
+            <p>Entit&eacute;s tabulaires, ponctuelles, lin&eacute;aires ou surfaciques &agrave; ajouter &agrave; la couche en entr&eacute;e.
+            </p>
+            <p>Outre le fait de choisir une couche de votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante pour parcourir votre contenu et rechercher une couche d&rsquo;entit&eacute;s ou un jeu de donn&eacute;es de partage de fichiers Big Data.
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>Ajouter toutes les entités ou définir un sous-ensemble (facultatif)</h2></div>
+        <hr/>
+        <div>
+            <p>Identifie les entit&eacute;s &agrave; ajouter. Ce param&egrave;tre est facultatif.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>Choisir le mode d’ajout aux champs (facultatif)</h2></div>
+        <hr/>
+        <div>
+            <p>Sp&eacute;cifie la mani&egrave;re dont les champs de couche sont ajout&eacute;s &agrave; la couche en entr&eacute;e. Par d&eacute;faut, tous les champs en entr&eacute;e et les champs &agrave; ajouter appari&eacute;s sont ajout&eacute;s. Les champs sont appari&eacute;s s&rsquo;ils poss&egrave;dent le m&ecirc;me nom de champ et le m&ecirc;me type de champ. Vous pouvez &eacute;galement choisir la fa&ccedil;on dont les champs sont appari&eacute;s ou calculer les expressions Arcade pour renseigner la valeur des champs.
+            </p>
+            <p>Par exemple, vous avez une couche en entr&eacute;e contenant les champs  <i>field_number</i>, <i>field_string</i>, <i>date_field</i>, <i>unused_field</i> et une couche d&rsquo;ajout contenant les champs <i>field_string</i>, <i>field_number</i> et <i>MY_DATE_FIELD</i>.
+                <ul>
+                    <li>Par d&eacute;faut, l&rsquo;outil va apparier  <i>field_number</i> dans la couche en entr&eacute;e &agrave; <i>field_number</i> dans la couche d&rsquo;ajout et <i>field_string</i> dans la couche en entr&eacute;e &agrave; <i>field_string</i> dans la couche d&rsquo;ajout.
+                    </li>
+                    <li>Par d&eacute;faut, les champs  <i>date_field</i> et <i>unused_field</i> de la couche en entr&eacute;e sont remplis par les valeurs <i>null</i> du fait qu&rsquo;ils ne correspondent &agrave; aucun champ dans la couche d&rsquo;ajout.
+                    </li>
+                    <li>Vous pouvez &eacute;ventuellement ajouter des valeurs aux champs non appari&eacute;s par d&eacute;faut. Ainsi,  <i>date_field</i> dans la couche en entr&eacute;e peut &ecirc;tre appari&eacute; au champ d&rsquo;ajout <i>MY_DATE_FIELD</i>. Pour ce faire, utilisez le menu d&eacute;roulant figurant &agrave; c&ocirc;t&eacute; de <i>date_field</i> dans la premi&egrave;re colonne et s&eacute;lectionnez <i>MY_DATE_FIELD</i> dans le menu d&eacute;roulant de la deuxi&egrave;me colonne.
+                    </li>
+                </ul>
+                 &Agrave; titre d&rsquo;autre exemple, consid&eacute;rons une couche en entr&eacute;e contenant les champs num&eacute;riques <i>value_1</i>, <i>value_2</i>, <i>value_3</i> et <i>my_Average</i> ainsi qu&rsquo;une couche d&rsquo;ajout poss&eacute;dant les champs num&eacute;riques <i>value_1</i>, <i>value_2</i> et <i>value_3</i>.
+                <ul>
+                    <li>Par d&eacute;faut,  <i>value_1</i>, <i>value_2</i> et <i>value_3</i> sont appari&eacute;s et ajout&eacute;s.
+                    </li>
+                    <li>Outre le comportement par d&eacute;faut, les valeurs peuvent &ecirc;tre calcul&eacute;es pour le champ  <i>my_Average</i>. Pour cela, utilisez plusieurs champs et op&eacute;rations math&eacute;matiques en s&eacute;lectionnant l&rsquo;option d&eacute;roulante <b>Expression</b> dans la colonne figurant &agrave; c&ocirc;t&eacute; de <i>my_Average</i> et en cr&eacute;ant une expression Arcade personnalis&eacute;e telle que <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

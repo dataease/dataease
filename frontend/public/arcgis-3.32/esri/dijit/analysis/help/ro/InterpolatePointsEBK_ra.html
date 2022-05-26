@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpolare puncte</h2><p/>
+        <h2><img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" alt="Instrument Interpolare puncte"></h2>
+        <hr/>
+    <p>Acest instrument vă permite să anticipaţi valori &icirc;n locaţii noi, pe baza măsurătorilor dintr-o colecţie de puncte. Instrumentul ia date punctuale cu valori &icirc;n fiecare punct şi returnează un raster de valori prezise.
+    </p>
+    <p>Printre posibilităţile de utilizare ale acestui instrument se numără:
+
+        <ul>
+            <li>Un sector de management al calităţii aerului are senzori care măsoară niveluri de poluare. Instrumentul Interpolare puncte poate fi utilizat pentru a prezice nivelurile de poluare din locaţiile &icirc;n care nu există senzori, cum ar fi locaţiile cu populaţii &icirc;n pericol, cum ar fi şcolile sau spitalele.
+                
+
+            </li>
+            <li>Preziceţi concentraţiile de metale grele din recolte pe baza mostrelor luate din plante individuale.
+                
+
+            </li>
+            <li>Preziceţi nivelurile de nutrienţi din sol (azot, fosfor, potasiu şi aşa mai departe) şi alţi indicatori (precum conductivitatea electrică) pentru a studia relaţiile acestora cu producţia şi prescrieţi cantităţi precise de fertilizatori pentru fiecare locaţie de pe c&acirc;mp.
+                
+
+            </li>
+            <li>Printre aplicaţiile meteorologice se numără prezicerea temperaturilor, cantitatea de precipitaţii şi variabile asociate (cum ar fi ploaia acidă).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointFeatures">
+        <div><h2>Alegeţi stratul tematic de puncte care conţine locaţiile cu valori cunoscute</h2></div>
+        <hr/>
+        <div>
+            <p>Stratul tematic de puncte care conţine punctele &icirc;n care au fost măsurate valorile.
+            </p>
+        </div>
+    </div>
+    <div id="interpolateField">
+        <div><h2>Alegere câmp pentru interpolare</h2></div>
+        <hr/>
+        <div>
+            <p>Alegeţi c&acirc;mpul care conţine valorile pe care doriţi să le interpolaţi. C&acirc;mpul trebuie să fie numeric.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimizare pentru</h2></div>
+        <hr/>
+        <div>
+            <p>Alegeţi preferinţa pentru viteză sau precizie.
+            </p>
+            <p>Predicţiile mai precise necesită mai mult timp pentru a fi calculate. Acest parametru alterează valorile implicite ale altor c&acirc;torva parametri din Interpolare puncte pentru a optimiza viteza de calcul, acurateţea rezultatelor sau echilibrul dintre cele două. &Icirc;n mod implicit, instrumentul va optimiza pentru echilibru.
+            </p>
+        </div>
+    </div>
+    <div id="transformData">
+        <div><h2>Transformare date în distribuţii normale</h2></div>
+        <hr/>
+        <div>
+            <p>Alegeţi dacă să transformaţi datele la distribuţia normală.
+            </p>
+            <p>Interpolarea este cea mai precisă pentru datele care urmează o distribuţie normală (&icirc;n formă de clopot). Dacă datele dvs. nu par a fi distribuite normal, ar trebui să efectuaţi o transformare.
+            </p>
+        </div>
+    </div>
+    <div id="sizeOfLocalModels">
+        <div><h2>Dimensiune modele locale</h2></div>
+        <hr/>
+        <div>
+            <p>Interpolare puncte funcţionează prin crearea de modele locale de interpolare care sunt combinate pentru a crea harta finală de predicţii. Acest parametru controlează c&acirc;te puncte vor fi conţinute de fiecare model local. Valorile mai mici vor face rezultatele mai locale şi pot dezvălui efecte la scară mică, dar pot introduce unele instabilităţi &icirc;n calcule. Valorile mai mari vor fi mai stabile, &icirc;nsă unele efecte locale pot fi ratate.
+            </p>
+            <p>Valorile se pot &icirc;ncadra &icirc;ntre 30 şi 500, &icirc;nsă cele tipice se &icirc;ncadrează &icirc;ntre 50 şi 200.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfNeighbors">
+        <div><h2>Număr de vecini</h2></div>
+        <hr/>
+        <div>
+            <p>Predicţiile sunt calculate &icirc;n baza punctelor &icirc;nvecinate. Acest parametru controlează c&acirc;te puncte vor fi utilizate &icirc;n calcul. Utilizarea unui număr mare de vecini vor produce &icirc;n general rezultate mai precise, &icirc;nsă calculul acestora durează mai mult.
+            </p>
+            <p>Această valoare se poate &icirc;ncadra &icirc;ntre 1 şi 64, &icirc;nsă valorile tipice se &icirc;ncadrează &icirc;ntre 5 şi 15.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Dimensiune celulă ieşire</h2></div>
+        <hr/>
+        <div>
+            <p>Dimensiunea celulei şi unitatea de măsură pentru rasterele de ieşire.
+            </p>
+            <p>Unităţile disponibile sunt Ft, Mile, Metri şi Kilometri.
+            </p>
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Eroare de predicţie rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Alegeţi dacă doriţi să creaţi un raster cu erori standard pentru valorile prezise.
+            </p>
+            <p>Erorile standard sunt utile, deoarece furnizează informaţii despre siguranţa valorilor prezise. O metodă empirică simplă este aceea că valoarea adevărată se va &icirc;ncadra &icirc;ntre două erori standard ale valorii prezise, 95% din timp. De exemplu, să presupunem că o nouă locaţie primeşte o valoare prezisă 50 cu o eroare standard de 5. Aceasta &icirc;nseamnă că cea mai sigură bănuială a instrumentului este că valoarea adevărată &icirc;n locaţia respectivă este 50, &icirc;nsă ar putea &icirc;n mod rezonabil să fie şi cel puţin 40 sau cel mult 60. Pentru a calcula acest interval de valori rezonabile, multiplicaţi eroarea standard cu 2, adunaţi această valoare la valoarea prezisă pentru a obţine limita superioară a intervalului şi scădeţi-o din valoarea prezisă pentru a obţine limita inferioară a intervalului.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic ce va fi creat &icirc;n  <b>Resursele mele</b> şi va fi adăugat pe hartă. Numele implicit se bazează pe numele instrumentului şi numele stratului tematic de intrare. Dacă stratul tematic rezultat există deja, vi se va solicita să furnizaţi un alt nume.
+            </p>
+            <p>Puteți specifica numele folderului &icirc;n  <b>Resursele mele</b> unde se va salva rezultatul folosind caseta drop-down <b>Salvați rezultatele &icirc;n</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

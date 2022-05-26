@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/graphicsUtils",["dojo/_base/lang","dojo/_base/array","dojo/has","./kernel","./geometry/Extent"],function(h,f,k,l,m){var g={graphicsExtent:function(b){if(!b||!b.length)return null;var c=null,d,n=b.length;for(d=0;d<n;d++){var a=b[d].geometry;if(a){var e=a.getExtent();e||"point"!==a.type||null==a.x||null==a.y||(e=new m(a.x,a.y,a.x,a.y,a.spatialReference));e&&(c=c?c.union(e):e)}}return 0>c.getWidth()&&0>c.getHeight()?null:c},getGeometries:function(b){return f.map(b,function(c){return c.geometry})},
+_encodeGraphics:function(b,c){return f.map(b,function(d,b){d=d.toJson();var a={};d.geometry&&(b=c&&c[b],a.geometry=b&&b.toJson()||d.geometry);d.attributes&&(a.attributes=d.attributes);return a})}};k("extend-esri")&&h.mixin(l,g);return g});

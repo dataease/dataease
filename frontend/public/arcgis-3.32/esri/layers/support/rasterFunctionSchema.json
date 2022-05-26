@@ -1,0 +1,6027 @@
+{
+  "AspectFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      }
+    }
+  },
+  "ColormapFunction": {
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "ColorSchemeType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.colorSchemeTypeName}",
+        "defaultValue": 0,
+        "hidden": false,
+        "domain": {
+          "type": "list",
+          "enum": "colorSchemeTypes"
+        },
+        "editorStateTrigger": {
+          "active": true,
+          "triggers": [
+            {
+              "values": [
+                0
+              ],
+              "active": [
+                "ColormapName"
+              ],
+              "inactive": [
+                "ColorRamp"
+              ],
+              "autoRevert": true
+            }
+          ]
+        }
+      },
+      "Colormap": {
+        "required": true,
+        "displayName": "${rasterFunctions.rfxArgs.colormapName}",
+        "dataType": "rastercolormap",
+        "hidden": true
+      },
+      "ColormapName": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.colormapNameName}",
+        "hidden": false,
+        "defaultValue": "Gray",
+        "domain": {
+          "type": "list",
+          "enum": "colormapTypes"
+        }
+      },
+      "ColorRamp": {
+        "required": true,
+        "displayName": "${rasterFunctions.rfxArgs.colorRampName}",
+        "dataType": "colorramp",
+        "hidden": false
+      }
+    }
+  },
+  "ContrastBrightnessFunction": {
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "ContrastOffset": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.contrastOffsetName}",
+        "hidden": false,
+        "defaultValue": 0,
+        "domain": {
+          "type": "range",
+          "min": -100,
+          "max": 100
+        }
+      },
+      "BrightnessOffset": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.brightnessOffsetName}",
+        "hidden": false,
+        "defaultValue": 0,
+        "domain": {
+          "type": "range",
+          "min": -100,
+          "max": 100
+        }
+      }
+    }
+  },
+  "ExtractBandFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "Method": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.methodName}",
+        "hidden": false,
+        "defaultValue": 2,
+        "domain": {
+          "type": "list",
+          "enum": "bandComboMethods"
+        },
+        "editorStateTrigger": {
+          "active": false,
+          "triggers": [
+            {
+              "values": [
+                0
+              ],
+              "active": [
+                "BandNames"
+              ],
+              "inactive": [
+                "BandWavelengths",
+                "BandIds"
+              ]
+            },
+            {
+              "values": [
+                1
+              ],
+              "active": [
+                "BandWavelengths"
+              ],
+              "inactive": [
+                "BandNames",
+                "BandIds"
+              ]
+            },
+            {
+              "values": [
+                2
+              ],
+              "active": [
+                "BandIds"
+              ],
+              "inactive": [
+                "BandNames",
+                "BandWavelengths"
+              ]
+            }
+          ]
+        }
+      },
+      "BandNames": {
+        "required": true,
+        "dataType": "stringarray",
+        "displayName": "${rasterFunctions.rfxArgs.bandNamesName}",
+        "hidden": false,
+        "defaultValue": [
+          "Red",
+          "Green",
+          "Blue"
+        ]
+      },
+      "BandWavelengths": {
+        "required": true,
+        "dataType": "doublearray",
+        "displayName": "${rasterFunctions.rfxArgs.bandWavelengthsName}",
+        "hidden": false,
+        "defaultValue": [
+          600,
+          400,
+          200
+        ]
+      },
+      "BandIds": {
+        "required": true,
+        "dataType": "longarray",
+        "displayName": "${rasterFunctions.rfxArgs.bandIdsName}",
+        "hidden": false,
+        "defaultValue": [
+          0,
+          1,
+          2
+        ]
+      },
+      "MissingBandAction": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.missingBandActionName}",
+        "hidden": false,
+        "defaultValue": 0,
+        "domain": {
+          "type": "list",
+          "enum": "esriMissingBandActions"
+        }
+      }
+    },
+    "editorArgumentOverride": {
+      "active": true,
+      "overrides": [
+        {
+          "argumentNames": [
+            "Method",
+            "BandNames",
+            "BandWavelengths",
+            "BandIds"
+          ],
+          "widget": {
+            "path": "esri/dijit/RasterFunctionEditor/RFxBandCombinationEditor"
+          }
+        }
+      ]
+    }
+  },
+  "GrayscaleFunction": {
+    "Description": "",
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "ConversionParameters": {
+        "required": true,
+        "dataType": "doublearray",
+        "dataTypeAttributes": {
+          "type": "bandmatrix",
+          "nBands": "Raster",
+          "cols": 1,
+          "displayNames": [
+            "${rasterFunctions.rfxArgs.weightName}"
+          ]
+        },
+        "displayName": "${rasterFunctions.rfxArgs.conversionParametersName}",
+        "hidden": false,
+        "defaultValue": [
+          0.299,
+          0.587,
+          0.114
+        ]
+      }
+    }
+  },
+  "HillshadeFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "DEM": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "HillshadeType": {
+        "required": false,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.hillshadeTypeName}",
+        "hidden": false,
+        "defaultValue": 0,
+        "domain": {
+          "type": "list",
+          "enum": "esriHillshadeTypes"
+        },
+        "editorStateTrigger": {
+          "active": true,
+          "triggers": [
+            {
+              "values": [
+                1
+              ],
+              "inactive": [
+                "Azimuth",
+                "Altitude"
+              ],
+              "autoRevert": true
+            }
+          ]
+        }
+      },
+      "Azimuth": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.azimuthName}",
+        "hidden": false,
+        "defaultValue": 315
+      },
+      "Altitude": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.altitudeName}",
+        "hidden": false,
+        "defaultValue": 45
+      },
+      "SlopeType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.slopeTypeName}",
+        "hidden": false,
+        "defaultValue": 1,
+        "domain": {
+          "type": "list",
+          "enum": "esriSlopeTypes13"
+        },
+        "editorStateTrigger": {
+          "active": true,
+          "triggers": [
+            {
+              "values": [
+                3
+              ],
+              "active": [
+                "PSPower",
+                "PSZFactor"
+              ],
+              "autoRevert": true
+            }
+          ]
+        }
+      },
+      "ZFactor": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.zFactorName}",
+        "hidden": false,
+        "defaultValue": 1
+      },
+      "PSPower": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.PSPowerName}",
+        "hidden": false,
+        "defaultValue": 0.664
+      },
+      "PSZFactor": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.PSZFactorName}",
+        "hidden": false,
+        "defaultValue": 0.024
+      },
+      "RemoveEdgeEffect": {
+        "required": true,
+        "dataType": "boolean",
+        "displayName": "${rasterFunctions.rfxArgs.removeEdgeEffectName}",
+        "hidden": false,
+        "defaultValue": false
+      }
+    }
+  },
+  "ShadedReliefFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "ColorSchemeType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.colorSchemeTypeName}",
+        "hidden": false,
+        "defaultValue": 1,
+        "domain": {
+          "type": "list",
+          "enum": "colorSchemeTypes"
+        },
+        "editorStateTrigger": {
+          "active": true,
+          "triggers": [
+            {
+              "values": [
+                1
+              ],
+              "active": [
+                "ColorRamp"
+              ],
+              "inactive": [
+                "Colormap"
+              ],
+              "autoRevert": true
+            }
+          ]
+        }
+      },
+      "ColorRamp": {
+        "required": true,
+        "dataType": "colorramp",
+        "displayName": "${rasterFunctions.rfxArgs.colorRampName}",
+        "hidden": false
+      },
+      "Colormap": {
+        "required": true,
+        "dataType": "rastercolormap",
+        "displayName": "${rasterFunctions.rfxArgs.colormapName}",
+        "hidden": false
+      },
+      "Azimuth": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.azimuthName}",
+        "hidden": false,
+        "defaultValue": 315
+      },
+      "Altitude": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.altitudeName}",
+        "hidden": false,
+        "defaultValue": 45
+      },
+      "SlopeType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.slopeTypeName}",
+        "hidden": false,
+        "defaultValue": 1,
+        "domain": {
+          "type": "list",
+          "enum": "esriSlopeTypes13"
+        },
+        "editorStateTrigger": {
+          "active": true,
+          "triggers": [
+            {
+              "values": [
+                3
+              ],
+              "active": [
+                "PSPower",
+                "PSZFactor"
+              ],
+              "autoRevert": true
+            }
+          ]
+        }
+      },
+      "ZFactor": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.zFactorName}",
+        "hidden": false,
+        "defaultValue": 1
+      },
+      "PSPower": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.PSPowerName}",
+        "hidden": false,
+        "defaultValue": 0.664
+      },
+      "PSZFactor": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.PSZFactorName}",
+        "hidden": false,
+        "defaultValue": 0.024
+      },
+      "RemoveEdgeEffect": {
+        "required": true,
+        "dataType": "boolean",
+        "displayName": "${rasterFunctions.rfxArgs.removeEdgeEffectName}",
+        "hidden": false,
+        "defaultValue": false
+      }
+    }
+  },
+  "SlopeFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "DEM": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.DEMName}",
+        "hidden": false
+      },
+      "SlopeType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.slopeTypeName}",
+        "hidden": false,
+        "defaultValue": 1,
+        "domain": {
+          "type": "list",
+          "enum": "esriSlopeTypes"
+        },
+        "editorStateTrigger": {
+          "active": true,
+          "triggers": [
+            {
+              "values": [
+                3
+              ],
+              "active": [
+                "PSPower",
+                "PSZFactor"
+              ],
+              "autoRevert": true
+            }
+          ]
+        }
+      },
+      "Zfactor": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.zFactorName}",
+        "hidden": false,
+        "defaultValue": 1
+      },
+      "PSPower": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.PSPowerName}",
+        "hidden": false,
+        "defaultValue": 0.664
+      },
+      "PSZFactor": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.PSZFactorName}",
+        "hidden": false,
+        "defaultValue": 0.024
+      },
+      "RemoveEdgeEffect": {
+        "required": true,
+        "dataType": "boolean",
+        "displayName": "${rasterFunctions.rfxArgs.removeEdgeEffectName}",
+        "hidden": false,
+        "defaultValue": false
+      }
+    }
+  },
+  "UnitConversionFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "FromUnit": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.fromUnitName}",
+        "hidden": false,
+        "defaultValue": 3,
+        "domain": {
+          "type": "list",
+          "enum": "esriUnitConversionFxUnitTypes"
+        }
+      },
+      "ToUnit": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.toUnitName}",
+        "hidden": false,
+        "defaultValue": 10,
+        "domain": {
+          "type": "list",
+          "enum": "esriUnitConversionFxUnitTypes"
+        }
+      }
+    },
+    "editorArgumentOverride": {
+      "active": true,
+      "overrides": [
+        {
+          "argumentNames": [
+            "FromUnit",
+            "ToUnit"
+          ],
+          "widget": {
+            "path": "esri/dijit/RasterFunctionEditor/RFxUnitPicker"
+          }
+        }
+      ]
+    }
+  },
+  "StretchFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "StretchType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.rasterTypeName}",
+        "hidden": false,
+        "defaultValue": 0,
+        "domain": {
+          "type": "list",
+          "enum": "esriRasterStretchTypes"
+        },
+        "editorStateTrigger": {
+          "active": true,
+          "triggers": [
+            {
+              "values": [
+                0,
+                5
+              ],
+              "inactive": [
+                "MinPercent",
+                "MaxPercent",
+                "NumberOfStandardDeviation",
+                "SigmoidStrengthLevel"
+              ]
+            },
+            {
+              "values": [
+                3
+              ],
+              "active": [
+                "NumberOfStandardDeviation"
+              ],
+              "inactive": [
+                "MinPercent",
+                "MaxPercent",
+                "SigmoidStrengthLevel"
+              ]
+            },
+            {
+              "values": [
+                6
+              ],
+              "active": [
+                "MinPercent",
+                "MaxPercent"
+              ],
+              "inactive": [
+                "NumberOfStandardDeviation",
+                "SigmoidStrengthLevel"
+              ]
+            },
+            {
+              "values": [
+                9
+              ],
+              "active": [
+                "SigmoidStrengthLevel"
+              ],
+              "inactive": [
+                "MinPercent",
+                "MaxPercent",
+                "NumberOfStandardDeviation"
+              ]
+            }
+          ]
+        }
+      },
+      "Min": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.minName}",
+        "hidden": false,
+        "defaultValue": 0
+      },
+      "Max": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.maxName}",
+        "hidden": false,
+        "defaultValue": 255
+      },
+      "MinPercent": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.minPercentName}",
+        "hidden": false,
+        "defaultValue": 0.25
+      },
+      "MaxPercent": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.maxPercentName}",
+        "hidden": false,
+        "defaultValue": 0.5
+      },
+      "NumberOfStandardDeviation": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.numberOfStandardDeviationName}",
+        "hidden": false,
+        "defaultValue": 2
+      },
+      "SigmoidStrengthLevel": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.sigmoidStrengthLevelName}",
+        "hidden": false,
+        "defaultValue": 2,
+        "domain": {
+          "type": "numlist",
+          "start": 1,
+          "count": 6,
+          "inc": 1,
+          "asc": true
+        }
+      },
+      "EstimateStatsHistogram": {
+        "required": true,
+        "dataType": "boolean",
+        "displayName": "${rasterFunctions.rfxArgs.estimateStatsHistogramName}",
+        "hidden": false,
+        "defaultValue": false,
+        "categoryRefId": "rfxArgCat_Statistics"
+      },
+      "DRA": {
+        "required": true,
+        "dataType": "boolean",
+        "displayName": "${rasterFunctions.rfxArgs.DRAName}",
+        "hidden": false,
+        "defaultValue": false,
+        "categoryRefId": "rfxArgCat_Statistics"
+      },
+      "Statistics": {
+        "required": true,
+        "dataType": "arrayofrasterstatistics",
+        "displayName": "${rasterFunctions.rfxArgs.statisticsName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_Statistics"
+      },
+      "Histograms": {
+        "required": true,
+        "dataType": "arrayofrasterhistogram",
+        "displayName": "${rasterFunctions.rfxArgs.histogramsName}",
+        "hidden": true,
+        "categoryRefId": "rfxArgCat_Statistics"
+      },
+      "ComputeGamma": {
+        "required": true,
+        "dataType": "boolean",
+        "displayName": "${rasterFunctions.rfxArgs.computeGammaName}",
+        "hidden": false,
+        "defaultValue": false,
+        "categoryRefId": "rfxArgCat_Gamma"
+      },
+      "UseGamma": {
+        "required": true,
+        "dataType": "boolean",
+        "displayName": "${rasterFunctions.rfxArgs.useGammaName}",
+        "hidden": false,
+        "defaultValue": false,
+        "categoryRefId": "rfxArgCat_Gamma"
+      },
+      "Gamma": {
+        "required": true,
+        "dataType": "doublearray",
+        "displayName": "${rasterFunctions.rfxArgs.gammaName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_Gamma"
+      }
+    },
+    "editorArgumentOverride": {
+      "active": true,
+      "overrides": [
+        {
+          "argumentNames": [
+            "Gamma"
+          ],
+          "widget": {
+            "path": "esri/dijit/RasterFunctionEditor/RFxGammaEditor"
+          }
+        }
+      ]
+    }
+  },
+  "RasterCalculatorFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Rasters": {
+        "required": true,
+        "dataType": "rasterarray",
+        "displayName": "${rasterFunctions.rfxArgs.rastersName}",
+        "hidden": false,
+        "allowScalar": true
+      },
+      "InputNames": {
+        "required": true,
+        "dataType": "stringarray",
+        "displayName": "${rasterFunctions.rfxArgs.inputNamesName}",
+        "hidden": false
+      },
+      "Expression": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.expressionName}",
+        "hidden": false
+      },
+      "CellsizeType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.cellsizeTypeName}",
+        "hidden": false,
+        "defaultValue": 2,
+        "domain": {
+          "type": "list",
+          "enum": "esriCellsizeTypes"
+        }
+      },
+      "ExtentType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.extentTypeName}",
+        "hidden": false,
+        "defaultValue": 1,
+        "domain": {
+          "type": "list",
+          "enum": "esriExtentTypes"
+        }
+      }
+    },
+    "editorArgumentOverride": {
+      "active": true,
+      "overrides": [
+        {
+          "argumentNames": [
+            "Rasters",
+            "InputNames"
+          ],
+          "widget": {
+            "path": "esri/dijit/RasterFunctionEditor/RFxNamedRasterEditor"
+          }
+        }
+      ]
+    }
+  },
+  "ClassifyFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "ClassifierDefinitionFile": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.classifierDefinitionFileName}",
+        "hidden": false
+      },
+      "Raster2": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.raster2Name}",
+        "hidden": false
+      }
+    }
+  },
+  "MaskFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "NoDataInterpretation": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.noDataInterpretationName}",
+        "hidden": false,
+        "defaultValue": 0,
+        "domain": {
+          "type": "list",
+          "enum": "esriNoDataInterpretationTypes"
+        }
+      },
+      "NoDataValues": {
+        "required": true,
+        "dataType": "stringarray",
+        "displayName": "${rasterFunctions.rfxArgs.noDataValuesName}",
+        "hidden": false,
+        "dataTypeAttributes": {
+          "type": "bandmatrix",
+          "nBands": "Raster",
+          "cols": 1,
+          "displayNames": [
+            "${rasterFunctions.rfxArgs.noDataValuesName}"
+          ]
+        }
+      },
+      "IncludedRanges": {
+        "required": true,
+        "dataType": "doublearray",
+        "displayName": "${rasterFunctions.rfxArgs.includedRangesName}",
+        "hidden": false,
+        "dataTypeAttributes": {
+          "type": "bandmatrix",
+          "nBands": "Raster",
+          "cols": 2,
+          "displayNames": [
+            "${rasterFunctions.rfxArgs.minimumName}",
+            "${rasterFunctions.rfxArgs.maximumName}"
+          ]
+        }
+      },
+      "Invert": {
+        "required": true,
+        "dataType": "boolean",
+        "hidden": true,
+        "defaultValue": false
+      }
+    }
+  },
+  "ColormapToRGBFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "UnmappedAsRandomColor": {
+        "required": false,
+        "displayName": "${rasterFunctions.rfxArgs.unmappedAsRandomColorName}",
+        "dataType": "boolean",
+        "hidden": false,
+        "defaultValue": false
+      }
+    }
+  },
+  "CurvatureFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.DEMName}",
+        "hidden": false
+      },
+      "CurvatureType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.curvatureTypeName}",
+        "hidden": false,
+        "defaultValue": 0,
+        "domain": {
+          "type": "list",
+          "enum": "esriCurvatureTypes"
+        }
+      },
+      "ZFactor": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.zFactorName}",
+        "hidden": false,
+        "defaultValue": 1
+      }
+    }
+  },
+  "CompositeBandFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Rasters": {
+        "required": true,
+        "dataType": "rasterarray",
+        "displayName": "${rasterFunctions.rfxArgs.rastersName}",
+        "hidden": false
+      }
+    }
+  },
+  "TableFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "AttributeTableAsRecordSet": {
+        "required": true,
+        "dataType": "table",
+        "displayName": "${rasterFunctions.rfxArgs.attributeTableName}",
+        "hidden": false
+      }
+    },
+    "editorArgumentOverride": {
+      "active": true,
+      "overrides": [
+        {
+          "argumentNames": ["Raster", "AttributeTableAsRecordSet"],
+          "widget": {
+            "path": "esri/dijit/RasterFunctionEditor/RFxAttributeTable"
+          }
+        }
+      ]
+    }
+  },
+  "ConvolutionFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "ConvolutionType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.rasterTypeName}",
+        "hidden": false,
+        "defaultValue": 19,
+        "domain": {
+          "type": "list",
+          "enum": "esriRasterFilterTypes"
+        }
+      },
+      "Rows": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.rowsName}",
+        "hidden": false,
+        "defaultValue": 3,
+        "domain": {
+          "type": "numlist",
+          "start": 1,
+          "count": 100,
+          "inc": 1,
+          "asc": true
+        }
+      },
+      "Columns": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.columnsName}",
+        "hidden": false,
+        "defaultValue": 3,
+        "domain": {
+          "type": "numlist",
+          "start": 1,
+          "count": 100,
+          "inc": 1,
+          "asc": true
+        }
+      },
+      "Kernel": {
+        "required": true,
+        "dataType": "doublearray",
+        "displayName": "${rasterFunctions.rfxArgs.kernelName}",
+        "hidden": false
+      },
+      "MirrorEdges": {
+        "required": true,
+        "dataType": "boolean",
+        "displayName": "${rasterFunctions.rfxArgs.mirrorEdgesName}",
+        "hidden": true,
+        "defaultValue": false
+      }
+    },
+    "editorArgumentOverride": {
+      "active": true,
+      "overrides": [
+        {
+          "argumentNames": ["ConvolutionType", "Rows", "Columns", "Kernel"],
+          "widget": {
+            "path": "esri/dijit/RasterFunctionEditor/RFxKernelSelector"
+          }
+        }
+      ]
+    }
+  },
+  "StatisticsHistogramFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "Statistics": {
+        "required": true,
+        "dataType": "rasterstatisticsarray",
+        "displayName": "${rasterFunctions.rfxArgs.statisticsName}",
+        "hidden": false
+      },
+      "Histograms": {
+        "required": true,
+        "dataType": "rasterhistogramarray",
+        "displayName": "${rasterFunctions.rfxArgs.histogramsName}",
+        "hidden": false
+      }
+    }
+  },
+  "WeightedOverlayFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Rasters": {
+        "required": true,
+        "dataType": "rasterarray",
+        "displayName": "${rasterFunctions.rfxArgs.rastersName}",
+        "hidden": false
+      },
+      "Influences": {
+        "required": true,
+        "dataType": "doublearray",
+        "displayName": "${rasterFunctions.rfxArgs.influencesName}",
+        "hidden": false
+      },
+      "Fields": {
+        "required": true,
+        "dataType": "stringarray",
+        "displayName": "${rasterFunctions.rfxArgs.fieldsName}",
+        "hidden": false
+      },
+      "Remaps": {
+        "required": true,
+        "dataType": "stringarray",
+        "displayName": "${rasterFunctions.rfxArgs.remapsName}",
+        "hidden": false
+      },
+      "EvalFrom": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.evalFromName}",
+        "hidden": false,
+        "defaultValue": 1
+      },
+      "EvalTo": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.evalToName}",
+        "hidden": false,
+        "defaultValue": 9
+      },
+      "CellsizeType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.cellsizeTypeName}",
+        "hidden": false,
+        "defaultValue": 2,
+        "domain": {
+          "type": "list",
+          "enum": "esriCellsizeTypes"
+        }
+      },
+      "ExtentType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.extentTypeName}",
+        "hidden": false,
+        "defaultValue": 1,
+        "domain": {
+          "type": "list",
+          "enum": "esriExtentTypes"
+        }
+      }
+    },
+    "editorArgumentOverride": {
+      "active": true,
+      "overrides": [
+        {
+          "argumentNames": [
+            "Rasters",
+            "Influences",
+            "Fields",
+            "Remaps",
+            "EvalFrom",
+            "EvalTo"
+          ],
+          "widget": {
+            "path": "esri/dijit/RasterFunctionEditor/RFxWeightedOverlayTableEditor"
+          }
+        }
+      ]
+    }
+  },
+  "WeightedSumFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Rasters": {
+        "required": true,
+        "dataType": "rasterarray",
+        "displayName": "${rasterFunctions.rfxArgs.rastersName}",
+        "hidden": false
+      },
+      "Fields": {
+        "required": true,
+        "dataType": "stringarray",
+        "displayName": "${rasterFunctions.rfxArgs.fieldsName}",
+        "hidden": false
+      },
+      "Weights": {
+        "required": true,
+        "dataType": "doublearray",
+        "displayName": "${rasterFunctions.rfxArgs.weightsName}",
+        "hidden": false
+      },
+      "CellsizeType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.cellsizeTypeName}",
+        "hidden": false,
+        "defaultValue": 2,
+        "domain": {
+          "type": "list",
+          "enum": "esriCellsizeTypes"
+        }
+      },
+      "ExtentType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.extentTypeName}",
+        "hidden": false,
+        "defaultValue": 1,
+        "domain": {
+          "type": "list",
+          "enum": "esriExtentTypes"
+        }
+      }
+    },
+    "editorArgumentOverride": {
+      "active": true,
+      "overrides": [
+        {
+          "argumentNames": [
+            "Rasters",
+            "Fields",
+            "Weights"
+          ],
+          "widget": {
+            "path": "esri/dijit/RasterFunctionEditor/RFxWeightedSumTableEditor"
+          }
+        }
+      ]
+    }
+  },
+  "ElevationVoidFillFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.DEMName}",
+        "hidden": false
+      },
+      "ShortRangeIDWRadius": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.shortRangeIDWRadiusName}",
+        "hidden": false,
+        "defaultValue": -1
+      },
+      "MaxVoidWidth": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.maxVoidWidthName}",
+        "hidden": false,
+        "defaultValue": -1
+      }
+    }
+  },
+  "ContourFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "DEM": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "SigmaGaussian": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.sigmaGaussianName}",
+        "hidden": false,
+        "defaultValue": 2.5
+      },
+      "ContourType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.contourTypeName}",
+        "hidden": false,
+        "defaultValue": 0,
+        "domain": {
+          "type": "list",
+          "enum": "esriContourTypes"
+        }
+      },
+      "ZBase": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.zBaseName}",
+        "hidden": false,
+        "defaultValue": 0
+      },
+      "NumberOfContours": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.numberOfContoursName}",
+        "hidden": false,
+        "defaultValue": 0
+      },
+      "ContourInterval": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.contourIntervalName}",
+        "hidden": false,
+        "defaultValue": 100
+      },
+      "NthContourLineInBold": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.nthContourLineInBoldName}",
+        "hidden": false,
+        "defaultValue": 5
+      },
+      "ZFactor": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.zFactorName}",
+        "hidden": false,
+        "defaultValue": 1
+      }
+    }
+  },
+  "RasterizeFeatureClassFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "FeatureClass": {
+        "required": true,
+        "dataType": "featureclass",
+        "displayName": "${rasterFunctions.rfxArgs.featureClassName}",
+        "hidden": false
+      },
+      "ClassIndexField": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.classIndexFieldName}",
+        "hidden": false,
+        "domain": {
+          "type": "fields",
+          "argumentName": "FeatureClass"
+        }
+      },
+      "ResolveOverlapMethod": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.resolveOverlapMethodName}",
+        "hidden": false,
+        "defaultValue": 0,
+        "domain": {
+          "type": "list",
+          "enum": "esriRasterizeResolveOverlapMethod"
+        }
+      }
+    }
+  },
+  "ResampleFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "ResamplingType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.resamplingTypeName}",
+        "hidden": false,
+        "defaultValue": 0,
+        "domain": {
+          "type": "list",
+          "enum": "rstResamplingTypes"
+        }
+      },
+      "InputCellsize": {
+        "required": true,
+        "dataType": "cellsize",
+        "displayName": "${rasterFunctions.rfxArgs.inputCellsizeName}",
+        "hidden": false
+      },
+      "OutputCellsize": {
+        "required": true,
+        "dataType": "cellsize",
+        "displayName": "${rasterFunctions.rfxArgs.outputCellsizeName}",
+        "hidden": false
+      }
+    }
+  },
+  "TesseledCapFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      }
+    }
+  },
+  "RegionGrowFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "PointFeatureClass": {
+        "required": true,
+        "dataType": "featureclass",
+        "displayName": "${rasterFunctions.rfxArgs.pointFeatureClassName}",
+        "hidden": false
+      },
+      "MaxGrowthRadiusField": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.maxGrowthRadiusFieldName}",
+        "hidden": false,
+        "domain": {
+          "type": "fields",
+          "argumentName": "PointFeatureClass"
+        }
+      },
+      "SimilarityThresholdField": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.similarityThresholdFieldName}",
+        "hidden": false,
+        "domain": {
+          "type": "fields",
+          "argumentName": "PointFeatureClass"
+        }
+      },
+      "FillValueField": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.fillValueFieldName}",
+        "hidden": false,
+        "domain": {
+          "type": "fields",
+          "argumentName": "PointFeatureClass"
+        }
+      }
+    }
+  },
+  "SegmentMeanShiftFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "SpectralDetail": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.spectralDetailName}",
+        "hidden": false,
+        "defaultValue": 15.5
+      },
+      "SpatialDetail": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.spatialDetailName}",
+        "hidden": false,
+        "defaultValue": 15
+      },
+      "MinNumPixelsPerSegment": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.minNumPixelsPerSegmentName}",
+        "hidden": false,
+        "defaultValue": 20
+      },
+      "BoundariesOnly": {
+        "required": true,
+        "dataType": "boolean",
+        "displayName": "${rasterFunctions.rfxArgs.boundariesOnlyName}",
+        "hidden": false,
+        "defaultValue": false
+      }
+    }
+  },
+  "StatisticsFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "StatisticsType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.statisticsTypeName}",
+        "hidden": false,
+        "defaultValue": 3,
+        "domain": {
+          "type": "list",
+          "enum": "esriFocalStatisticTypes"
+        }
+      },
+      "Rows": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.rowsName}",
+        "hidden": false,
+        "defaultValue": 3
+      },
+      "Columns": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.columnsName}",
+        "hidden": false,
+        "defaultValue": 3
+      },
+      "FillNoDataOnly": {
+        "required": true,
+        "dataType": "boolean",
+        "displayName": "${rasterFunctions.rfxArgs.fillNoDataOnlyName}",
+        "hidden": false,
+        "defaultValue": false
+      }
+    }
+  },
+  "VectorFieldFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Raster1": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.raster1Name}",
+        "hidden": false
+      },
+      "Raster2": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.raster2Name}",
+        "hidden": false
+      },
+      "InputDataType": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.inputDataTypeName}",
+        "hidden": false,
+        "defaultValue": "Unknown",
+        "domain": {
+          "type": "list",
+          "enum": "uvMagDirUnkTypes"
+        },
+        "editorStateTrigger": {
+          "active": true,
+          "triggers": [
+            {
+              "values": [
+                "Vector-MagDir"
+              ],
+              "active": [
+                "AngleReferenceSystem"
+              ],
+              "autoRevert": true
+            }
+          ]
+        }
+      },
+      "AngleReferenceSystem": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.angleReferenceSystemName}",
+        "hidden": false,
+        "defaultValue": 0,
+        "domain": {
+          "type": "list",
+          "enum": "esriAngleReferenceSystemTypes"
+        }
+      },
+      "OutputDataType": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.outputDataTypeName}",
+        "hidden": false,
+        "defaultValue": "Vector-MagDir",
+        "domain": {
+          "type": "list",
+          "enum": "uvMagDirTypes"
+        }
+      }
+    }
+  },
+  "InterpolateIrregularDataFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "PointFeatureClass": {
+        "required": true,
+        "dataType": "featureclass",
+        "dataTypeAttributes": {
+          "type": "point",
+          "hasZ": true
+        },
+        "displayName": "${rasterFunctions.rfxArgs.inputSamplePointFeatureClassName}",
+        "hidden": false
+      },
+      "ValueField": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.valueFieldName}",
+        "hidden": false,
+        "domain": {
+          "type": "fields",
+          "argumentName": "PointFeatureClass"
+        }
+      },
+      "RasterInfo": {
+        "required": true,
+        "dataType": "rasterinfo",
+        "displayName": "${rasterFunctions.rfxArgs.cellSizeName}",
+        "hidden": false
+      },
+      "InterpolationMethod": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.interpolationMethodName}",
+        "hidden": false,
+        "defaultValue": 0,
+        "domain": {
+          "type": "list",
+          "enum": "esriInterpolateIrregularDataMethods"
+        },
+        "editorValueTrigger": {
+          "active": true,
+          "triggers": [
+            {
+              "values": [
+                0
+              ],
+              "changedArgs": [
+                {"Radius": 3}
+              ]
+            },
+            {
+              "values": [
+                2, 3
+              ],
+              "changedArgs": [
+                {"Radius": 0.5}
+              ]
+            },
+            {
+              "values": [
+                4
+              ],
+              "changedArgs": [
+                {"Radius": 9}
+              ]
+            }
+          ]
+        }
+      },
+      "Radius": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.radiusName}",
+        "hidden": false,
+        "defaultValue": 0
+      }
+    },
+    "editorArgumentOverride": {
+      "active": true,
+      "overrides": [
+        {
+          "argumentNames": [
+            "RasterInfo"
+          ],
+          "widget": {
+            "path": "esri/dijit/RasterFunctionEditor/RFxRasterInfoCellSizeEditor"
+          }
+        }
+      ]
+    }
+  },
+  "ReflectanceFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "RadianceGainValues": {
+        "required": true,
+        "dataType": "doublearray",
+        "displayName": "${rasterFunctions.rfxArgs.radianceGainValuesName}",
+        "hidden": false
+      },
+      "RadianceBiasValues": {
+        "required": true,
+        "dataType": "doublearray",
+        "displayName": "${rasterFunctions.rfxArgs.radianceBiasValuesName}",
+        "hidden": false
+      },
+      "ReflectanceGainValues": {
+        "required": true,
+        "dataType": "doublearray",
+        "displayName": "${rasterFunctions.rfxArgs.reflectedGainValuesName}",
+        "hidden": false
+      },
+      "ReflectanceBiasValues": {
+        "required": true,
+        "dataType": "doublearray",
+        "displayName": "${rasterFunctions.rfxArgs.reflectedBiasValuesName}",
+        "hidden": false
+      },
+      "SunElevation": {
+        "required": true,
+        "order": 1000,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.sunElevationName}",
+        "hidden": false,
+        "defaultValue": 0
+      },
+      "Albedo": {
+        "required": true,
+        "order": 1001,
+        "dataType": "boolean",
+        "displayName": "${rasterFunctions.rfxArgs.albedoName}",
+        "hidden": false,
+        "defaultValue": false
+      },
+      "ScaleFactor": {
+        "required": true,
+        "order": 1001,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.scaleFactorName}",
+        "hidden": false,
+        "defaultValue": 2147483647
+      },
+      "Offset": {
+        "required": true,
+        "order": 1001,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.offsetName}",
+        "hidden": false,
+        "defaultValue": 2147483647
+      }
+    }
+  },
+  "ThresholdFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "ThresholdType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.thresholdTypeName}",
+        "hidden": true,
+        "defaultValue": 1,
+        "domain": {
+          "type": "list",
+          "enum": "esriRasterThresholdTypes"
+        }
+      },
+      "Thresholds": {
+        "required": true,
+        "dataType": "doublearray",
+        "displayName": "${rasterFunctions.rfxArgs.thresholdsName}",
+        "hidden": true
+      }
+    }
+  },
+  "ArgStatisticsFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Rasters": {
+        "required": true,
+        "dataType": "rasterarray",
+        "displayName": "${rasterFunctions.rfxArgs.rastersName}",
+        "hidden": false
+      },
+      "ArgStatisticsType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.methodName}",
+        "hidden": false,
+        "defaultValue": 0,
+        "domain": {
+          "type": "list",
+          "enum": "esriArgStatisticsTypes"
+        },
+        "editorStateTrigger": {
+          "active": true,
+          "triggers": [
+            {
+              "values": [
+                0
+              ],
+              "active": [
+                "UndefinedClass"
+              ],
+              "inactive": [
+                "MinValue,MaxValue"
+              ],
+              "autoRevert": true
+            },
+            {
+              "values": [
+                1
+              ],
+              "active": [
+                "UndefinedClass"
+              ],
+              "inactive": [
+                "MinValue,MaxValue"
+              ],
+              "autoRevert": true
+            },
+            {
+              "values": [
+                2
+              ],
+              "active": [
+                ""
+              ],
+              "inactive": [
+                "UndefinedClass",
+                "MinValue",
+                "MaxValue"
+              ],
+              "autoRevert": true
+            },
+            {
+              "values": [
+                3
+              ],
+              "active": [
+                "MinValue",
+                "MaxValue"
+              ],
+              "inactive": [
+                "UndefinedClass"
+              ],
+              "autoRevert": true
+            }
+          ]
+        }
+      },
+      "UndefinedClass": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.undefinedClassName}",
+        "hidden": false,
+        "defaultValue": 100
+      },
+      "MinValue": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.minValueName}",
+        "hidden": false,
+        "defaultValue": 1
+      },
+      "MaxValue": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.maxValueName}",
+        "hidden": false,
+        "defaultValue": 1
+      }
+    }
+  },
+  "ArithmeticFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false,
+        "allowScalar": true
+      },
+      "Raster2": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.raster2Name}",
+        "hidden": false,
+        "allowScalar": true
+      },
+      "Operation": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.operationName}",
+        "hidden": false,
+        "defaultValue": 1,
+        "domain": {
+          "type": "list",
+          "enum": "esriRasterArithmeticOperations"
+        }
+      },
+      "CellsizeType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.cellsizeTypeName}",
+        "hidden": false,
+        "defaultValue": 2,
+        "domain": {
+          "type": "list",
+          "enum": "esriCellsizeTypes"
+        }
+      },
+      "ExtentType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.extentTypeName}",
+        "hidden": false,
+        "defaultValue": 1,
+        "domain": {
+          "type": "list",
+          "enum": "esriExtentTypes"
+        }
+      }
+    }
+  },
+  "ClipFunction": {
+    "description": "",
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "ClippingType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.clippingTypeName}",
+        "hidden": false,
+        "defaultValue": 1,
+        "domain": {
+          "type": "list",
+          "enum": "esriRasterClippingTypes"
+        }
+      },
+      "ClippingRaster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.clippingGeometryName}",
+        "hidden": false
+      },
+      "ClippingGeometry": {
+        "required": true,
+        "dataType": "geometry",
+        "displayName": "${rasterFunctions.rfxArgs.clippingGeometryName}",
+        "hidden": false
+      },
+      "Extent": {
+        "required": true,
+        "dataType": "extent",
+        "displayName": "${rasterFunctions.rfxArgs.extentName}",
+        "hidden": false
+      },
+      "UseInputFeatureGeometry": {
+        "required": true,
+        "dataType": "boolean",
+        "displayName": "${rasterFunctions.rfxArgs.useInputFeatureGeometryName}",
+        "hidden": false
+      }
+    },
+    "editorArgumentOverride": {
+      "active": true,
+      "overrides": [
+        {
+          "argumentNames": [
+            "ClippingRaster",
+            "ClippingGeometry",
+            "Extent"
+          ],
+          "widget": {
+            "path": "esri/dijit/RasterFunctionEditor/RFxClippingGeometry"
+          }
+        }
+      ]
+    }
+  },
+  "RemapFunction": {
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "UseTable": {
+        "required": true,
+        "dataType": "boolean",
+        "hidden": false,
+        "displayName": "${rasterFunctions.rfxArgs.remapDefinitionTypeName}",
+        "editorStateTrigger": {
+          "active": true,
+          "triggers": [
+            {
+              "autoRevert": true,
+              "values": [
+                true
+              ],
+              "active": [
+                "Table",
+                "InputField",
+                "OutputField",
+                "InputMaxField",
+                "RemapTableType"
+              ],
+              "inactive": [
+                "InputRanges",
+                "OutputValues",
+                "NoDataRanges"
+              ]
+            }
+          ]
+        },
+        "domain": {
+          "type": "list",
+          "enum": "remapDefinitionTypes"
+        }
+      },
+      "InputRanges": {
+        "required": true,
+        "dataType": "doublearray",
+        "displayName": "${rasterFunctions.rfxArgs.inputRangeName}",
+        "hidden": false
+      },
+      "OutputValues": {
+        "required": true,
+        "dataType": "doublearray",
+        "hidden": false
+      },
+      "OutputRanges": {
+        "required": true,
+        "dataType": "doublearray",
+        "displayName": "${rasterFunctions.rfxArgs.outputValuesName}",
+        "hidden": false
+      },
+      "NoDataRanges": {
+        "required": true,
+        "dataType": "doublearray",
+        "displayName": "${rasterFunctions.rfxArgs.noDataRangeName}",
+        "hidden": false
+      },
+      "Table": {
+        "required": true,
+        "dataType": "table",
+        "displayName": "${rasterFunctions.rfxArgs.remapsName}",
+        "hidden": true
+      },
+      "InputField": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.inputFieldName}",
+        "hidden": true
+      },
+      "OutputField": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.outputFieldName}",
+        "hidden": true
+      },
+      "InputMaxField": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.inputMaxFieldName}",
+        "hidden": true
+      },
+      "RemapTableType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.remapTableTypeName}",
+        "hidden": true,
+        "defaultValue": 1,
+        "domain": {
+          "type": "list",
+          "enum": "remapTableTypes"
+        }
+      },
+      "AllowUnmatched": {
+        "required": true,
+        "dataType": "boolean",
+        "displayName": "${rasterFunctions.rfxArgs.allowUnmatchedName}",
+        "hidden": false
+      }
+    },
+    "editorArgumentOverride": {
+      "active": true,
+      "overrides": [
+        {
+          "argumentNames": [
+            "InputRanges",
+            "OutputValues",
+            "NoDataRanges"
+          ],
+          "widget": {
+            "path": "esri/dijit/RasterFunctionEditor/RFxRemapGrid"
+          }
+        }
+      ]
+    }
+  },
+  "NDVIFunction": {
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "VisibleBandID": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.visibleBandIDName}",
+        "hidden": false,
+        "domain": {
+          "type": "bandIndex",
+          "argumentName": "Raster"
+        }
+      },
+      "InfraredBandID": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.infraredBandIDName}",
+        "hidden": false,
+        "domain": {
+          "type": "bandIndex",
+          "argumentName": "Raster"
+        }
+      },
+      "ScientificOutput": {
+        "required": true,
+        "dataType": "boolean",
+        "displayName": "${rasterFunctions.rfxArgs.scientificOutputName}",
+        "hidden": false
+      }
+    }
+  },
+  "BandArithmeticFunction": {
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "Method": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.methodName}",
+        "hidden": false,
+        "defaultValue": 1,
+        "domain": {
+          "type": "list",
+          "enum": "bandArithmeticMethods"
+        }
+      },
+      "BandIndexes": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.bandIndexesName}",
+        "hidden": false
+      }
+    }
+  },
+  "ConstantFunction": {
+    "rasterFunctionArguments": {
+      "Constant": {
+        "required": true,
+        "dataType": "doublearray",
+        "displayName": "${rasterFunctions.rfxArgs.constantName}",
+        "hidden": false,
+        "defaultValue": [1]
+      },
+      "RasterInfo": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.rasterInfoName}",
+        "hidden": false
+      },
+      "Statistics": {
+        "required": false,
+        "dataType": "rasterstatisticsarray",
+        "displayName": "${rasterFunctions.rfxArgs.statisticsName}",
+        "hidden": true
+      }
+    }
+  },
+  "CostAllocation": {
+    "rasterFunctionArguments": {
+      "ToolName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "CostAllocation_sa"
+      },
+      "PrimaryInputParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "in_source_data"
+      },
+      "OutputRasterParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "out_allocation_raster"
+      },
+      "in_source_data": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.sourceDataName}",
+        "hidden": false
+      },
+      "source_field": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.sourceFieldName}",
+        "hidden": false,
+        "domain": {
+          "type": "fields",
+          "argumentName": "in_source_data"
+        }
+      },
+      "in_cost_raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.costRasterName}",
+        "hidden": false
+      },
+      "maximum_distance": {
+        "required": false,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.maxDistanceName}",
+        "hidden": false
+      },
+      "in_value_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.valueRasterName}",
+        "hidden": false
+      },
+      "source_cost_multiplier": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.costMultiplierName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_start_cost": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.startCostName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_resistance_rate": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.accumCostResistanceRateName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_capacity": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.capacityName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_direction": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.travelDirectionName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "list",
+              "enum": "gpsaTravelDirections"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "CostBackLink": {
+    "rasterFunctionArguments": {
+      "ToolName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "CostBackLink_sa"
+      },
+      "PrimaryInputParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "in_source_data"
+      },
+      "OutputRasterParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "out_backlink_raster"
+      },
+      "in_source_data": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.sourceDataName}",
+        "hidden": false
+      },
+      "in_cost_raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.costRasterName}",
+        "hidden": false
+      },
+      "maximum_distance": {
+        "required": false,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.maxDistanceName}",
+        "hidden": false
+      },
+      "source_cost_multiplier": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.costMultiplierName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_start_cost": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.startCostName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_resistance_rate": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.accumCostResistanceRateName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_capacity": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.capacityName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_direction": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.travelDirectionName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [
+            {
+              "type": "list",
+              "enum": "gpsaTravelDirections"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "CostDistance": {
+    "rasterFunctionArguments": {
+      "ToolName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "CostDistance_sa"
+      },
+      "PrimaryInputParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "in_source_data"
+      },
+      "OutputRasterParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "out_distance_raster"
+      },
+      "in_source_data": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.sourceDataName}",
+        "hidden": false
+      },
+      "in_cost_raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.costRasterName}",
+        "hidden": false
+      },
+      "maximum_distance": {
+        "required": false,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.maxDistanceName}",
+        "hidden": false
+      },
+      "source_cost_multiplier": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.costMultiplierName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_start_cost": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.startCostName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_resistance_rate": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.accumCostResistanceRateName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_capacity": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.capacityName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_direction": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.travelDirectionName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "list",
+              "enum": "gpsaTravelDirections"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      }
+    }
+  },
+    "CostPath": {
+    "rasterFunctionArguments": {
+      "ToolName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "CostPath_sa"
+      },
+      "PrimaryInputParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "in_destination_data"
+      },
+      "OutputRasterParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "out_raster"
+      },
+      "in_destination_data": {
+        "required": true,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.destinationDataName}",
+        "hidden": false
+      },
+      "destination_field": {
+        "required": false,
+        "dataType": "string",
+        "displayName":"${rasterFunctions.rfxArgs.destinationFieldName}",
+        "hidden": false,
+        "domain": {
+          "type": "fields",
+          "argumentName": "in_destination_data"
+        }
+      },
+      "in_cost_distance_raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.costDistanceRaster}",
+        "hidden": false
+      },
+      "in_cost_backlink_raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.costBacklinkRaster}",
+        "hidden": false
+      },
+      "path_type": {
+        "required": false,
+        "dataType": "string",
+        "displayName":"${rasterFunctions.rfxArgs.pathTypeName}",
+        "hidden": false,
+        "defaultValue": "EACH_CELL",
+        "domain": {
+          "type": "list",
+          "enum": "gpsaLeastCostPathTypes"
+        }
+      }
+    }
+  },
+  "EucAllocation": {
+    "rasterFunctionArguments": {
+      "ToolName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "EucAllocation_sa"
+      },
+      "PrimaryInputParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "in_source_data"
+      },
+      "OutputRasterParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "out_allocation_raster"
+      },
+      "in_source_data": {
+        "required": false,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.sourceDataName}",
+        "hidden": false
+      },
+      "source_field": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.sourceFieldName}",
+        "hidden": false,
+        "domain": {
+          "type": "fields",
+          "argumentName": "in_source_data"
+        }
+      },
+      "in_barrier_data": {
+        "required": false,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.barrierDataName}",
+        "hidden": false
+      },
+      "maximum_distance": {
+        "required": false,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.maxDistanceName}",
+        "hidden": false
+      },
+      "in_value_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.valueRasterName}",
+        "hidden": false
+      },
+      "cell_size": {
+        "required": false,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.cellSizeName}",
+        "hidden": false
+      },
+      "distance_method" : {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.distanceMethodName}",
+        "hidden": false,
+        "defaultValue": "PLANAR",
+        "domain": {
+          "type": "list",
+          "enum": "gpsaDistanceMethods"
+        }
+      }
+    }
+  },
+  "PathDistance": {
+    "rasterFunctionArguments": {
+      "ToolName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "PathDistance_sa"
+      },
+      "PrimaryInputParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "in_source_data"
+      },
+      "OutputRasterParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "out_distance_raster"
+      },
+      "in_source_data": {
+        "required": true,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.sourceDataName}",
+        "hidden": false
+      },
+      "in_cost_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.costRasterName}",
+        "hidden": false
+      },
+      "in_surface_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.surfaceRasterName}",
+        "hidden": false
+      },
+      "in_horizontal_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.horizontalRaster}",
+        "hidden": false
+      },
+      "horizontal_factor": {
+        "required": false,
+        "dataType": "string",
+        "displayName":"${rasterFunctions.rfxArgs.horizontalFactor}",
+        "hidden": false
+      },
+      "in_vertical_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.verticalRaster}",
+        "hidden": false
+      },
+      "vertical_factor": {
+        "required": false,
+        "dataType": "string",
+        "displayName":"${rasterFunctions.rfxArgs.verticalFactor}",
+        "hidden": false
+      },
+      "maximum_distance": {
+        "required": false,
+        "dataType": "double",
+        "displayName":"${rasterFunctions.rfxArgs.maxDistanceName}",
+        "hidden": false
+      },
+      "source_cost_multiplier": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.costMultiplierName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_start_cost": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.startCostName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_resistance_rate": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.accumCostResistanceRateName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_capacity": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.capacityName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_direction": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.travelDirectionName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "list",
+              "enum": "gpsaTravelDirections"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "PathBackLink": {
+    "rasterFunctionArguments": {
+      "ToolName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "PathBackLink_sa"
+      },
+      "PrimaryInputParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "in_source_data"
+      },
+      "OutputRasterParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "out_backlink_raster"
+      },
+      "in_source_data": {
+        "required": true,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.sourceDataName}",
+        "hidden": false
+      },
+      "in_cost_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.costRasterName}",
+        "hidden": false
+      },
+      "in_surface_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.surfaceRasterName}",
+        "hidden": false
+      },
+      "in_horizontal_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.horizontalRaster}",
+        "hidden": false
+      },
+      "horizontal_factor": {
+        "required": false,
+        "dataType": "string",
+        "displayName":"${rasterFunctions.rfxArgs.horizontalFactor}",
+        "hidden": false
+      },
+      "in_vertical_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.verticalRaster}",
+        "hidden": false
+      },
+      "vertical_factor": {
+        "required": false,
+        "dataType": "string",
+        "displayName":"${rasterFunctions.rfxArgs.verticalFactor}",
+        "hidden": false
+      },
+      "maximum_distance": {
+        "required": false,
+        "dataType": "double",
+        "displayName":"${rasterFunctions.rfxArgs.maxDistanceName}",
+        "hidden": false
+      },
+      "source_cost_multiplier": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.costMultiplierName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_start_cost": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.startCostName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_resistance_rate": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.accumCostResistanceRateName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_capacity": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.capacityName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_direction": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.travelDirectionName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "list",
+              "enum": "gpsaTravelDirections"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "PathAllocation": {
+    "rasterFunctionArguments": {
+      "ToolName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "PathAllocation_sa"
+      },
+      "PrimaryInputParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "in_source_data"
+      },
+      "OutputRasterParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "out_distance_raster"
+      },
+      "in_source_data": {
+        "required": true,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.sourceDataName}",
+        "hidden": false
+      },
+      "in_cost_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.costRasterName}",
+        "hidden": false
+      },
+      "in_surface_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.surfaceRasterName}",
+        "hidden": false
+      },
+      "in_horizontal_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.horizontalRaster}",
+        "hidden": false
+      },
+      "horizontal_factor": {
+        "required": false,
+        "dataType": "string",
+        "displayName":"${rasterFunctions.rfxArgs.horizontalFactor}",
+        "hidden": false
+      },
+      "in_vertical_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.verticalRaster}",
+        "hidden": false
+      },
+      "vertical_factor": {
+        "required": false,
+        "dataType": "string",
+        "displayName":"${rasterFunctions.rfxArgs.verticalFactor}",
+        "hidden": false
+      },
+      "maximum_distance": {
+        "required": false,
+        "dataType": "double",
+        "displayName":"${rasterFunctions.rfxArgs.maxDistanceName}",
+        "hidden": false
+      },
+      "in_value_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.valueRasterName}",
+        "hidden": false
+      },
+      "source_field": {
+        "required": false,
+        "dataType": "string",
+        "displayName":"${rasterFunctions.rfxArgs.sourceFieldName}",
+        "hidden": false,
+        "domain": {
+          "type": "fields",
+          "argumentName": "in_source_data"
+        }
+      },
+      "source_cost_multiplier": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.costMultiplierName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_start_cost": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.startCostName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_resistance_rate": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.accumCostResistanceRateName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_capacity": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.capacityName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_direction": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.travelDirectionName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "list",
+              "enum": "gpsaTravelDirections"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "EucDistance": {
+    "rasterFunctionArguments": {
+      "ToolName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "EucDistance_sa"
+      },
+      "PrimaryInputParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "in_source_data"
+      },
+      "OutputRasterParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "out_distance_raster"
+      },
+      "in_source_data": {
+        "required": false,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.sourceDataName}",
+        "hidden": false
+      },
+      "in_barrier_data": {
+        "required": false,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.barrierDataName}",
+        "hidden": false
+      },
+      "maximum_distance": {
+        "required": false,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.maxDistanceName}",
+        "hidden": false
+      },
+      "cell_size": {
+        "required": false,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.cellSizeName}",
+        "hidden": false
+      },
+      "distance_method": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.distanceMethodName}",
+        "hidden": false,
+        "defaultValue": "PLANAR",
+        "domain": {
+          "type": "list",
+          "enum": "gpsaDistanceMethods"
+        }
+      }
+    }
+  },
+  "EucDirection": {
+    "rasterFunctionArguments": {
+      "ToolName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "EucDirection_sa"
+      },
+      "PrimaryInputParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "in_source_data"
+      },
+      "OutputRasterParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "out_direction_raster"
+      },
+      "in_source_data": {
+        "required": false,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.sourceDataName}",
+        "hidden": false
+      },
+      "in_barrier_data": {
+        "required": false,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.barrierDataName}",
+        "hidden": false
+      },
+      "maximum_distance": {
+        "required": false,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.maxDistanceName}",
+        "hidden": false
+      },
+      "cell_size": {
+        "required": false,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.cellSizeName}",
+        "hidden": false
+      },
+      "distance_method": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.distanceMethodName}",
+        "hidden": false,
+        "defaultValue": "PLANAR",
+        "domain": {
+          "type": "list",
+          "enum": "gpsaDistanceMethods"
+        }
+      }
+    }
+  },
+  "KernelDensity": {
+    "rasterFunctionArguments": {
+      "ToolName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "KernelDensity_sa"
+      },
+      "PrimaryInputParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "in_features"
+      },
+      "OutputRasterParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "out_raster"
+      },
+      "RasterInfo": {
+        "required": true,
+        "dataType": "rasterinfo",
+        "hidden": true,
+        "defaultValue": {
+          "pixelType": 9,
+          "bandCount": 1
+        }
+      },
+      "in_features": {
+        "required": true,
+        "dataType": "featureclass",
+        "displayName": "${rasterFunctions.rfxArgs.featureClassName}",
+        "hidden": false
+      },
+      "population_field": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.populationFieldName}",
+        "defaultValue": "NONE",
+        "hidden": false,
+        "domain": {
+          "type": "fields",
+          "argumentName": "in_features",
+          "otherOptions": {
+            "NONE": "${rasterFunctions.enumLabels.none}"
+          }
+        }
+      },
+      "cell_size": {
+        "required": false,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.cellSizeName}",
+        "hidden": false
+      },
+      "search_radius": {
+        "required": false,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.radiusName}",
+        "hidden": false
+      },
+      "area_unit_scale_factor": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.areaUnitsName}",
+        "hidden": false,
+        "defaultValue": "SQUARE_MAP_UNITS",
+        "domain": {
+          "type": "list",
+          "enum": "gpsaKernelDensityAreaUnitTypes"
+        }
+      },
+      "out_cell_values": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.outputValueTypeName}",
+        "hidden": false,
+        "defaultValue": "DENSITIES",
+        "domain": {
+          "type": "list",
+          "enum": "gpsaKernelDensityOutValTypes"
+        }
+      },
+      "method": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.methodName}",
+        "hidden": false,
+        "defaultValue": "PLANAR",
+        "domain": {
+          "type": "list",
+          "enum": "gpsaKernelDensityMethods"
+        }
+      }
+    }
+  },
+  "ShortestPath": {
+    "rasterFunctionArguments": {
+      "ToolName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "ShortestPath"
+      },
+      "PrimaryInputParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "in_source_data"
+      },
+      "OutputRasterParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "out_path_raster"
+      },
+      "in_source_data": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.sourceDataName}",
+        "hidden": false
+      },
+      "in_destination_data": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.destinationDataName}",
+        "hidden": false
+      },
+      "destination_field": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.destinationFieldName}",
+        "hidden": false,
+        "domain": {
+          "type": "fields",
+          "argumentName": "in_destination_data"
+        }
+      },
+      "in_cost_raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.costRasterName}",
+        "hidden": false
+      },
+      "path_type": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.pathTypeName}",
+        "hidden": false,
+        "domain": {
+          "type": "list",
+          "enum": "gpsaLeastCostPathTypes"
+        }
+      },
+      "maximum_distance": {
+        "required": false,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.maxDistanceName}",
+        "hidden": false
+      },
+      "source_cost_multiplier": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.costMultiplierName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_start_cost": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.startCostName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_resistance_rate": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.accumCostResistanceRateName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_capacity": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.capacityName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      },
+      "source_direction": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.travelDirectionName}",
+        "hidden": false,
+        "categoryRefId": "rfxArgCat_SourceCharacteristics",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "list",
+              "enum": "gpsaTravelDirections"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_source_data"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "Viewshed2": {
+    "rasterFunctionArguments": {
+      "ToolName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "Viewshed2_sa"
+      },
+      "PrimaryInputParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "in_raster"
+      },
+      "OutputRasterParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "out_raster"
+      },
+      "in_raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "in_observer_features": {
+        "required": true,
+        "dataType": "featureclass",
+        "displayName": "${rasterFunctions.rfxArgs.observerFeaturesName}",
+        "hidden": false
+      },
+      "analysis_method": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.analysisMethodName}",
+        "hidden": false,
+        "defaultValue": "ALL_SIGHTLINES",
+        "domain": {
+          "type": "list",
+          "enum": "gpsaViewshedAnalysisMethods"
+        },
+        "categoryRefId": "rfxArgCat_ViewshedParameters"
+      },
+      "analysis_type": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.analysisTypeName}",
+        "hidden": false,
+        "defaultValue": "FREQUENCY",
+        "domain": {
+          "type": "list",
+          "enum": "gpsaViewshedAnalysisTypes"
+        },
+        "categoryRefId": "rfxArgCat_ViewshedParameters"
+      },
+      "vertical_error": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.verticalErrorName}",
+        "hidden": false,
+        "defaultValue": "0 Meters",
+        "domain": {
+          "type": "linearUnit",
+          "enum": "gpsaLinearUnitTypes"
+        },
+        "categoryRefId": "rfxArgCat_ViewshedParameters"
+      },
+      "refractivity_coefficient": {
+        "required": false,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.refractivityCoefficientName}",
+        "hidden": false,
+        "defaultValue": 0.13,
+        "categoryRefId": "rfxArgCat_ViewshedParameters"
+      },
+      "surface_offset": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.surfaceOffsetName}",
+        "hidden": false,
+        "defaultValue": "0 Meters",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "linearUnit",
+              "enum": "gpsaLinearUnitTypes"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_observer_features"
+            }
+          ]
+        },
+        "categoryRefId": "rfxArgCat_ObserverParameters"
+      },
+      "observer_elevation": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.observerElevationName}",
+        "hidden": false,
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "linearUnit",
+              "enum": "gpsaLinearUnitTypes"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_observer_features"
+            }
+          ]
+        },
+        "categoryRefId": "rfxArgCat_ObserverParameters"
+      },
+      "observer_offset": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.observerOffsetName}",
+        "hidden": false,
+        "defaultValue": "1 Meters",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "linearUnit",
+              "enum": "gpsaLinearUnitTypes"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_observer_features"
+            }
+          ]
+        },
+        "categoryRefId": "rfxArgCat_ObserverParameters"
+      },
+      "inner_radius": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.innerRadiusName}",
+        "hidden": false,
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "linearUnit",
+              "enum": "gpsaLinearUnitTypes"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_observer_features"
+            }
+          ]
+        },
+        "categoryRefId": "rfxArgCat_ObserverParameters"
+      },
+      "inner_radius_is_3d": {
+        "required": false,
+        "dataType": "boolean",
+        "displayName": "${rasterFunctions.rfxArgs.innerRadiusIs3DDistanceName}",
+        "hidden": false,
+        "defaultValue": false,
+        "categoryRefId": "rfxArgCat_ObserverParameters"
+      },
+      "outer_radius": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.outerRadiusName}",
+        "hidden": false,
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "linearUnit",
+              "enum": "gpsaLinearUnitTypes"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_observer_features"
+            }
+          ]
+        },
+        "categoryRefId": "rfxArgCat_ObserverParameters"
+      },
+      "outer_radius_is_3d": {
+        "required": false,
+        "dataType": "boolean",
+        "displayName": "${rasterFunctions.rfxArgs.outerRadiusIs3DDistanceName}",
+        "hidden": false,
+        "defaultValue": false,
+        "categoryRefId": "rfxArgCat_ObserverParameters"
+      },
+      "horizontal_start_angle": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.horizontalStartAngleName}",
+        "hidden": false,
+        "defaultValue": "0",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_observer_features"
+            }
+          ]
+        },
+        "categoryRefId": "rfxArgCat_ObserverParameters"
+      },
+      "horizontal_end_angle": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.horizontalEndAngleName}",
+        "hidden": false,
+        "defaultValue": "360",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_observer_features"
+            }
+          ]
+        },
+        "categoryRefId": "rfxArgCat_ObserverParameters"
+      },
+      "vertical_upper_angle": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.verticalUpperAngleName}",
+        "hidden": false,
+        "defaultValue": "90",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_observer_features"
+            }
+          ]
+        },
+        "categoryRefId": "rfxArgCat_ObserverParameters"
+      },
+      "vertical_lower_angle": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.verticalLowerAngleName}",
+        "hidden": false,
+        "defaultValue": "-90",
+        "domain": {
+          "type": "switchable",
+          "attributes": [{
+              "type": "number"
+            },
+            {
+              "type": "field",
+              "argumentName": "in_observer_features"
+            }
+          ]
+        },
+        "categoryRefId": "rfxArgCat_ObserverParameters"
+      }
+    }
+  },
+  "ZonalStatistics": {
+    "rasterFunctionArguments": {
+      "ToolName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "ZonalStatistics_sa"
+      },
+      "PrimaryInputParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "in_zone_data"
+      },
+      "OutputRasterParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "out_raster"
+      },
+      "in_zone_data": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.zoneDataName}",
+        "hidden": false
+      },
+      "zone_field": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.zoneFieldName}",
+        "hidden": false,
+        "domain": {
+          "type": "fields",
+          "argumentName": "in_zone_data"
+        }
+      },
+      "in_value_raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.valueRasterName}",
+        "hidden": false
+      },
+      "statistics_type": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.statisticsTypeName}",
+        "hidden": false,
+        "defaultValue": "MEAN",
+        "domain": {
+          "type": "list",
+          "enum": "gpsaZonalStatisticsTypes"
+        }
+      },
+      "ignore_nodata": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.ignoreNoDataName}",
+        "hidden": false,
+        "defaultValue": "DATA",
+        "domain": {
+          "type": "list",
+          "enum": "gpsaIgnoreNoData"
+        }
+      }
+    }
+  },
+  "HeatIndex": {
+    "rasterFunctionArguments": {
+      "PythonModule": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true
+      },
+      "ClassName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true
+      },
+      "temperature": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.temperatureRasterName}",
+        "hidden": false
+      },
+      "units": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.inTemperatureUnitsName}",
+        "hidden": false,
+        "defaultValue": "Fahrenheit",
+        "domain": {
+          "type": "list",
+          "enum": "pyStdTemperatureUnitTypes"
+        }
+      },
+      "rh": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.relativeHumidityRasterName}",
+        "hidden": false
+      },
+      "outunits": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.outHeatIndexTemperatureUnitsName}",
+        "hidden": false,
+        "defaultValue": "Fahrenheit",
+        "domain": {
+          "type": "list",
+          "enum": "pyStdTemperatureUnitTypes"
+        }
+      }
+    }
+  },
+  "Windchill": {
+    "rasterFunctionArguments": {
+      "PythonModule": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true
+      },
+      "ClassName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true
+      },
+      "temperature": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.temperatureRasterName}",
+        "hidden": false
+      },
+      "tunits": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.inTemperatureUnitsName}",
+        "hidden": false,
+        "defaultValue": "Fahrenheit",
+        "domain": {
+          "type": "list",
+          "enum": "pyStdTemperatureUnitTypes"
+        }
+      },
+      "ws": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.windSpeedRasterName}",
+        "hidden": false
+      },
+      "wunits": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.inWindSpeedUnitsName}",
+        "hidden": false,
+        "defaultValue": "mph",
+        "domain": {
+          "type": "list",
+          "enum": "pyStdWindspeedUnitTypes"
+        }
+      },
+      "ounits": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.outWindChillTemperatureUnitsName}",
+        "hidden": false,
+        "defaultValue": "Fahrenheit",
+        "domain": {
+          "type": "list",
+          "enum": "pyStdTemperatureUnitTypes"
+        }
+      }
+    }
+  },
+  "KeyMetadata": {
+    "rasterFunctionArguments": {
+      "PythonModule": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true
+      },
+      "ClassName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true
+      },
+      "raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "property": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.propertyName}",
+        "hidden": false
+      },
+      "value": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.valueName}",
+        "hidden": false
+      },
+      "bands": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.bandNamesName}",
+        "hidden": false
+      },
+      "json": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.jsonName}",
+        "hidden": false
+      }
+    }
+  },
+  "RasterizeAttributes": {
+    "rasterFunctionArguments": {
+      "PythonModule": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true
+      },
+      "ClassName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true
+      },
+      "vraster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.valueRasterName}",
+        "hidden": false
+      },
+      "zraster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.zoneDataName}",
+        "hidden": false
+      },
+      "ztable": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.zoneTableName}",
+        "hidden": false
+      },
+      "zid": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.zoneFieldName}",
+        "hidden": false
+      },
+      "attribs": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.attributeFieldNames}",
+        "hidden": false
+      },
+      "background": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.backgroundName}",
+        "hidden": false
+      },
+      "where": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.whereClauseName}",
+        "hidden": false
+      }
+    }
+  },
+  "ZonalRemap": {
+    "rasterFunctionArguments": {
+      "PythonModule": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true
+      },
+      "ClassName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true
+      },
+      "vraster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.valueRasterName}",
+        "hidden": false
+      },
+      "zraster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.zoneDataName}",
+        "hidden": false
+      },
+      "ztable": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.zoneTableName}",
+        "hidden": false
+      },
+      "zid": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.zoneFieldName}",
+        "hidden": false
+      },
+      "zmin": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.minimumValueFieldName}",
+        "hidden": false
+      },
+      "zmax": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.maximumValueFieldName}",
+        "hidden": false
+      },
+      "zval": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.outValueFieldName}",
+        "hidden": false
+      },
+      "background": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.backgroundName}",
+        "hidden": false
+      },
+      "defzval":  {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.defaultValueName}",
+        "hidden": false
+      },
+      "where": {
+        "required": true,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.whereClauseName}",
+        "hidden": false
+      }
+    }
+  },
+
+  "AspectSlope": {
+    "rasterFunctionArguments": {
+      "PythonModule": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true
+      },
+      "ClassName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true
+      },
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "zf": {
+        "required": true,
+        "displayName": "${rasterFunctions.rfxArgs.zFactorName}",
+        "hidden": false,
+        "dataType": "double"
+      }
+    }
+  },
+
+  "LocalFunction": {
+    "rasterFunctionArguments": {
+      "Rasters": {
+        "required": true,
+        "dataType": "rasterarray",
+        "displayName": "${rasterFunctions.rfxArgs.rastersName}",
+        "hidden": false,
+        "allowScalar": true,
+        "nElementsArgument": "Operation",
+        "elementInfos": [
+            {
+              "values": [78],
+              "inputArgs": [
+                {
+                  "required": true,
+                  "displayName": "${rasterFunctions.rfxArgs.trueRasterName}",
+                  "hidden": false,
+                  "allowScalar": true
+                },
+                {
+                  "required": true,
+                  "displayName": "${rasterFunctions.rfxArgs.falseRasterName}",
+                  "hidden": false,
+                  "allowScalar": true
+                },
+                {
+                  "required": true,
+                  "displayName": "${rasterFunctions.rfxArgs.raster3Name}",
+                  "hidden": false,
+                  "allowScalar": true
+                }
+              ]
+            },
+            {
+              "values": [1, 2, 3, 5, 11, 12, 14, 15, 16, 17, 19, 20, 23, 24, 28, 29, 33, 34, 44, 46, 41, 50, 61],
+              "inputArgs": [
+                {
+                  "required": true,
+                  "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+                  "hidden": false,
+                  "allowScalar": true
+                },
+                {
+                  "required": true,
+                  "displayName": "${rasterFunctions.rfxArgs.raster2Name}",
+                  "hidden": false,
+                  "allowScalar": true
+                }
+              ]
+            },
+            {
+              "values": [4, 6, 7, 8, 9, 10, 13, 18, 21, 22, 25, 26, 27, 30, 31, 32, 35, 36, 37, 45, 48, 49, 51, 52, 53, 56, 57, 59, 60],
+              "inputArgs": [
+                {
+                  "required": true,
+                  "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+                  "hidden": false,
+                  "allowScalar": true
+                }
+              ]
+            }
+          ]
+      },
+      "Operation": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.operationName}",
+        "hidden": true,
+        "domain": {
+          "type": "list",
+          "enum": "localFunctionOperations"
+        }
+      },
+      "CellsizeType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.cellsizeTypeName}",
+        "hidden": false,
+        "defaultValue": 2,
+        "domain": {
+          "type": "list",
+          "enum": "esriCellsizeTypes"
+        }
+      },
+      "ExtentType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.extentTypeName}",
+        "hidden": false,
+        "defaultValue": 1,
+        "domain": {
+          "type": "list",
+          "enum": "esriExtentTypes"
+        }
+      }
+    }
+  },
+
+  "CellStatisticsFunction": {
+    "rasterFunctionArguments": {
+      "Rasters": {
+        "required": true,
+        "dataType": "rasterarray",
+        "displayName": "${rasterFunctions.rfxArgs.rastersName}",
+        "hidden": false,
+        "allowScalar": true
+      },
+      "Operation": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.operationName}",
+        "hidden": false,
+        "domain": {
+          "type": "list",
+          "enum": "cellStatisticsTypes"
+        }
+      },
+      "CellsizeType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.cellsizeTypeName}",
+        "hidden": false,
+        "defaultValue": 2,
+        "domain": {
+          "type": "list",
+          "enum": "esriCellsizeTypes"
+        }
+      },
+      "ExtentType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.extentTypeName}",
+        "hidden": false,
+        "defaultValue": 1,
+        "domain": {
+          "type": "list",
+          "enum": "esriExtentTypes"
+        }
+      }
+    }
+  },
+
+  "SpectralConversionFunction": {
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "ConversionMatrix": {
+        "required": true,
+        "dataType": "doublearray",
+        "displayName": "${rasterFunctions.rfxArgs.conversionMatrixName}",
+        "hidden": false
+      },
+      "IsPseudoColorOutput": {
+        "required": false,
+        "dataType": "boolean",
+        "displayName": "${rasterFunctions.rfxArgs.IsPseudoColorOutputName}",
+        "hidden": false
+      }
+    },
+    "editorArgumentOverride": {
+      "active": true,
+      "overrides": [
+        {
+          "argumentNames": [
+            "ConversionMatrix"
+          ],
+          "widget": {
+            "path": "esri/dijit/RasterFunctionEditor/RFxConversionGrid"
+          }
+        }
+      ]
+    }
+  },
+
+  "Watershed": {
+    "rasterFunctionArguments": {
+      "ToolName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "Watershed_sa"
+      },
+      "PrimaryInputParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "in_flow_direction_raster"
+      },
+      "OutputRasterParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "out_raster"
+      },
+      "in_flow_direction_raster": {
+        "required": false,
+        "dataType": "raster",
+        "hidden": false,
+        "displayName": "${rasterFunctions.rfxArgs.flowDirRasterName}"
+      },
+      "in_pour_point_data": {
+        "required": false,
+        "dataType": "raster",
+        "hidden": false,
+        "displayName": "${rasterFunctions.rfxArgs.pourPointName}"
+      },
+      "pour_point_field": {
+        "required": false,
+        "dataType": "string",
+        "hidden": false,
+        "displayName": "${rasterFunctions.rfxArgs.pourPointFieldName}",
+        "domain": {
+          "type": "fields",
+          "argumentName": "in_pour_point_data"
+        }
+      }
+    }
+  },
+
+  "GeometricFunction": {
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "UseDEM": {
+        "required": true,
+        "dataType": "boolean",
+        "displayName": "${rasterFunctions.rfxArgs.methodName}",
+        "hidden": false,
+        "domain": {
+          "type": "list",
+          "enum": "geometricCorrectionMethods"
+        },
+        "editorStateTrigger": {
+          "active": true,
+          "triggers": [
+            {
+              "values": [
+                true
+              ],
+              "active": [
+                "DEM",
+                "ZFactor",
+                "ZOffset",
+                "CorrectGeoid"
+              ],
+              "inactive": [
+                "ConstantZ"
+              ],
+              "autoRevert": true
+            }
+          ]
+        }
+      },
+      "ConstantZ": {
+        "required": false,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.constantZName}",
+        "hidden": false
+      },
+      "DEM": {
+        "required": false,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.DEMName}",
+        "hidden": false
+      },
+      "ZFactor": {
+        "required": false,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.zFactorName}",
+        "hidden": false,
+        "defaultValue": 1
+      },
+      "ZOffset": {
+        "required": false,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.zOffsetName}",
+        "hidden": false,
+        "defaultValue": 0
+      },
+      "CorrectGeoid": {
+        "required": false,
+        "dataType": "boolean",
+        "displayName": "${rasterFunctions.rfxArgs.geoIdName}",
+        "hidden": false,
+        "defaultValue": false
+      }
+    }
+  },
+
+  "RadarCalibrationFunction": {
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "CalibrationType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.calibrationTypeName}",
+        "hidden": false,
+        "defaultValue": 3,
+        "domain": {
+          "type": "list",
+          "enum": "esriRadarCalibrations"
+        }
+      }
+    }
+  },
+
+  "S1RadiometricCalibrationFunction": {
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "CalibrationType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.calibrationTypeName}",
+        "hidden": false,
+        "defaultValue": 3,
+        "domain": {
+          "type": "list",
+          "enum": "esriRadarCalibrations"
+        }
+      }
+    }
+  },
+
+  "SpeckleFunction": {
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "FilterType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.filterTypeName}",
+        "hidden": false,
+        "defaultValue": 0,
+        "domain": {
+          "type": "list",
+          "enum": "esriSpeckleFilterTypes"
+        },
+        "editorStateTrigger": {
+          "active": true,
+          "triggers": [
+            {
+              "values": [
+                0
+              ],
+              "active": [
+                "NoiseModel"
+              ],
+              "inactive": [
+                
+              ],
+              "autoRevert": false
+            },
+            {
+              "values": [
+                1
+              ],
+              "active": [
+                "NLooks",
+                "DampFactor"
+              ],
+              "inactive": [
+                "NoiseModel",
+                "NoiseVar",
+                "AdditiveNoiseMean",
+                "MultiplicativeNoiseMean"
+              ],
+              "autoRevert": false
+            },
+            {
+              "values": [
+                2
+              ],
+              "active": [
+                "DampFactor"
+              ],
+              "inactive": [
+                "NoiseModel",
+                "NoiseVar",
+                "AdditiveNoiseMean",
+                "MultiplicativeNoiseMean",
+                "NLooks"
+              ],
+              "autoRevert": false
+            },
+            {
+              "values": [
+                3
+              ],
+              "active": [
+                "NLooks"
+              ],
+              "inactive": [
+                "NoiseModel",
+                "NoiseVar",
+                "AdditiveNoiseMean",
+                "MultiplicativeNoiseMean",
+                "DampFactor"
+              ],
+              "autoRevert": false
+            }
+          ]
+        }
+      },
+      "FilterSize": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.filterSizeName}",
+        "hidden": false,
+        "defaultValue": 0,
+        "domain": {
+          "type": "list",
+          "enum": "esriSpeckleFilterKernelTypes"
+        }
+      },
+      "NoiseModel": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.noiseModelName}",
+        "hidden": false,
+        "defaultValue": 0,
+        "domain": {
+          "type": "list",
+          "enum": "esriSpeckleNoiseModelTypes"
+        },
+        "editorStateTrigger": {
+          "active": true,
+          "triggers": [
+            {
+              "values": [
+                0
+              ],
+              "active": [
+                "MultiplicativeNoiseMean",
+                "NLooks"
+              ],
+              "inactive": [
+                "NoiseVar",
+                "AdditiveNoiseMean",
+                "DampFactor"
+              ],
+              "autoRevert": false
+            },
+            {
+              "values": [
+                1
+              ],
+              "active": [
+                "NoiseVar"
+              ],
+              "inactive": [
+                "AdditiveNoiseMean",
+                "MultiplicativeNoiseMean",
+                "NLooks",
+                "DampFactor"
+              ],
+              "autoRevert": false
+            },
+            {
+              "values": [
+                2
+              ],
+              "active": [
+                "NoiseVar",
+                "AdditiveNoiseMean",
+                "MultiplicativeNoiseMean"
+              ],
+              "inactive": [
+                "NLooks",
+                "DampFactor"
+              ],
+              "autoRevert": false
+            }
+          ]
+        }
+      },
+      "NoiseVar": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.noiseVarianceName}",
+        "hidden": false,
+        "defaultValue": 0.25
+      },
+      "AdditiveNoiseMean": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.additiveNoiseMeanName}",
+        "hidden": false,
+        "defaultValue": 0.0
+      },
+      "MultiplicativeNoiseMean": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.multiplicativeNoiseMeanName}",
+        "hidden": false,
+        "defaultValue": 1.0
+      },
+      "NLooks": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.numberofLooksName}",
+        "hidden": false,
+        "defaultValue": 1
+      },
+      "DampFactor": {
+        "required": true,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.dampingFactorName}",
+        "hidden": false,
+        "defaultValue": 1.0
+      }
+    }
+  },
+
+  "MosaicRastersFunction": {
+    "rasterFunctionArguments": {
+      "Rasters": {
+        "required": true,
+        "dataType": "rasterarray",
+        "displayName": "${rasterFunctions.rfxArgs.rastersName}",
+        "hidden": false
+      },
+      "MosaicType": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.operationName}",
+        "hidden": false,
+        "defaultValue": 6,
+        "domain": {
+          "type": "list",
+          "enum": "esriMosaicOperatorTypes"
+        }
+      }
+    }
+  },
+
+  "Nibble": {
+    "rasterFunctionArguments": {
+      "ToolName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "Nibble_sa"
+      },
+      "PrimaryInputParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "in_raster"
+      },
+      "OutputRasterParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "out_raster"
+      },
+      "in_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "in_mask_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.maskRasterName}",
+        "hidden": false
+      },
+      "nibble_values": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.nibbleValuesName}",
+        "hidden": false,
+        "defaultValue": "ALL_VALUES",
+        "domain": {
+          "type": "list",
+          "enum": "gpsaNibbleValues"
+        }
+      },
+      "nibble_nodata": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.nibbleNoDataName}",
+        "hidden": false,
+        "defaultValue": "PRESERVE_NODATA",
+        "domain": {
+          "type": "list",
+          "enum": "gpsaNibbleNoData"
+        }
+      },
+      "in_zone_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.zoneDataName}",
+        "hidden": false
+      }
+    }
+  },
+
+  "SwathFunction": {
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "InterpolationMethod": {
+        "required": true,
+        "dataType": "long",
+        "displayName": "${rasterFunctions.rfxArgs.interpolationMethodName}",
+        "hidden": false,
+        "defaultValue": 0,
+        "domain": {
+          "type": "list",
+          "enum": "esriSwathInterpolationMethods"
+        }
+      },
+      "RasterInfo": {
+        "required": true,
+        "dataType": "rasterinfo",
+        "displayName": "${rasterFunctions.rfxArgs.cellSizeName}",
+        "hidden": false
+      }
+    },
+    "editorArgumentOverride": {
+      "active": true,
+      "overrides": [
+        {
+          "argumentNames": [
+            "RasterInfo"
+          ],
+          "widget": {
+            "path": "esri/dijit/RasterFunctionEditor/RFxRasterInfoCellSizeEditor"
+          }
+        }
+      ]
+    }
+  },
+
+  "Fill": {
+    "rasterFunctionArguments": {
+      "ToolName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "Fill_sa"
+      },
+      "PrimaryInputParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "in_surface_raster"
+      },
+      "OutputRasterParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "out_surface_raster"
+      },
+      "in_surface_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "z_limit": {
+        "required": false,
+        "dataType": "double",
+        "displayName": "${rasterFunctions.rfxArgs.zLimitName}",
+        "hidden": false
+      }
+    }
+  },
+
+   "FlowAccumulation": {
+    "rasterFunctionArguments": {
+      "ToolName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "FlowAccumulation_sa"
+      },
+      "PrimaryInputParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "in_flow_direction_raster"
+      },
+      "OutputRasterParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "out_accumulation_raster"
+      },
+      "in_flow_direction_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "in_weight_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.weightRasterName}",
+        "hidden": false
+      },
+      "data_type": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.outputDataTypeName}",
+        "hidden": false,
+        "defaultValue": "FLOAT",
+        "domain": {
+          "type": "list",
+          "enum": "gpsaOutputDataType"
+        }
+      },
+      "flow_direction_type": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.flowDirectionTypeName}",
+        "hidden": false,
+        "defaultValue": "D8",
+        "domain": {
+          "type": "list",
+          "enum": "gpsaFlowDirectionType"
+        }
+      }
+    }
+  },
+
+   "FlowDirection": {
+    "rasterFunctionArguments": {
+      "ToolName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "FlowDirection_sa"
+      },
+      "PrimaryInputParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "in_surface_raster"
+      },
+      "OutputRasterParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "out_flow_direction_raster"
+      },
+      "in_surface_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "force_flow": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.forceEdgeName}",
+        "hidden": false,
+        "defaultValue": "NORMAL",
+        "domain": {
+          "type": "list",
+          "enum": "gpsaForceFlow"
+        }
+      },
+      "flow_direction_type": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.flowDirectionTypeName}",
+        "hidden": false,
+        "defaultValue": "D8",
+        "domain": {
+          "type": "list",
+          "enum": "gpsaFlowDirectionType"
+        }
+      }
+    }
+  },
+
+  "FlowDistance": {
+    "rasterFunctionArguments": {
+      "ToolName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "FlowDistance_sa"
+      },
+      "PrimaryInputParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "in_stream_raster"
+      },
+      "OutputRasterParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "out_raster"
+      },
+      "in_stream_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.streamRasterName}",
+        "hidden": false
+      },
+      "in_surface_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.surfaceRasterName}",
+        "hidden": false
+      },
+      "in_flow_direction_raster": {
+        "required": false,
+        "dataType": "raster",
+        "hidden": false,
+        "displayName": "${rasterFunctions.rfxArgs.flowDirRasterName}"
+      },
+      "distance_type": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.distanceTypeName}",
+        "hidden": false,
+        "defaultValue": "VERTICAL",
+        "domain": {
+          "type": "list",
+          "enum": "gpsaFlowDistanceType"
+        }
+      },
+      "flow_direction_type": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.flowDirectionTypeName}",
+        "hidden": false,
+        "defaultValue": "D8",
+        "domain": {
+          "type": "list",
+          "enum": "gpsaFlowDirectionType"
+        }
+      },
+      "statistics_type": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.statisticsTypeName}",
+        "hidden": false,
+        "defaultValue": "MINIMUM",
+        "domain": {
+          "type": "list",
+          "enum": "gpsaFlowDistanceStatsType"
+        }
+      }
+    }
+  },
+
+  "FlowLength": {
+    "rasterFunctionArguments": {
+      "ToolName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "FlowLength_sa"
+      },
+      "PrimaryInputParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "in_flow_direction_raster"
+      },
+      "OutputRasterParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "out_raster"
+      },
+      "in_flow_direction_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.flowDirRaster}",
+        "hidden": false
+      },
+      "direction_measurement": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.directionMeasurementName}",
+        "hidden": false,
+        "defaultValue": "DOWNSTREAM",
+        "domain": {
+          "type": "list",
+          "enum": "gpsaDirectionMeasurementType"
+        }
+      },
+      "in_weight_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.weightRasterName}",
+        "hidden": false
+      },
+      "MatchVariable": {
+        "required": false,
+        "dataType": "boolean",
+        "hidden": true
+      },
+      "UnionDimension": {
+        "required": false,
+        "dataType": "boolean",
+        "hidden": true
+      }
+    }
+  },
+
+  "Corridor": {
+    "rasterFunctionArguments": {
+      "ToolName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "Corridor_sa"
+      },
+      "PrimaryInputParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "in_distance_raster1"
+      },
+      "OutputRasterParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "out_raster"
+      },
+      "in_distance_raster1": {
+        "required": true,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.distanceRaster1}",
+        "hidden": false
+      },
+      "in_distance_raster2": {
+        "required": true,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.distanceRaster2}",
+        "hidden": false
+      }
+    }
+  },
+
+  "StreamLink": {
+    "rasterFunctionArguments": {
+      "ToolName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "StreamLink_sa"
+      },
+      "PrimaryInputParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "in_stream_raster"
+      },
+      "OutputRasterParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "out_raster"
+      },
+      "in_stream_raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.streamRaster}",
+        "hidden": false
+      },
+      "in_flow_direction_raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.flowDirRaster}",
+        "hidden": false
+      }
+    }
+  },
+
+  "StreamOrder": {
+    "rasterFunctionArguments": {
+      "ToolName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "StreamOrder_sa"
+      },
+      "PrimaryInputParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "in_stream_raster"
+      },
+      "OutputRasterParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "out_raster"
+      },
+      "in_stream_raster": {
+        "required": false,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.streamRaster}",
+        "hidden": false
+      },
+      "in_flow_direction_raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName": "${rasterFunctions.rfxArgs.flowDirRaster}",
+        "hidden": false
+      },
+      "order_method": {
+        "required": false,
+        "dataType": "string",
+        "displayName": "${rasterFunctions.rfxArgs.orderMethodName}",
+        "hidden": false,
+        "domain": {
+          "type": "list",
+          "enum": "gpsaOrderMethodType"
+        },
+        "defaultValue": "STRAHLER"
+      },
+      "MatchVariable": {
+        "required": false,
+        "dataType": "boolean",
+        "hidden": true
+      },
+      "UnionDimension": {
+        "required": false,
+        "dataType": "boolean",
+        "hidden": true
+      }
+    }
+  },
+
+    "RegionGroup": {
+    "rasterFunctionArguments": {
+      "ToolName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "RegionGroup_sa"
+      },
+      "PrimaryInputParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "in_raster"
+      },
+      "OutputRasterParameterName": {
+        "required": true,
+        "dataType": "string",
+        "hidden": true,
+        "defaultValue": "out_raster"
+      },
+      "in_raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.zoneDataName}",
+        "hidden": false
+      },
+      "number_neighbors": {
+        "required": true,
+        "dataType": "string",
+        "displayName":"${rasterFunctions.rfxArgs.numberNeighborCells}",
+        "hidden": false,
+        "domain": {
+          "type": "list",
+          "enum": "gpsaNumberNeighborCells"
+        }
+      },
+      "zone_connectivity": {
+        "required": true,
+        "dataType": "string",
+        "displayName":"${rasterFunctions.rfxArgs.zoneConnectivity}",
+        "hidden": false,
+        "domain": {
+          "type": "list",
+          "enum": "gpsaZoneConnectivity"
+        }
+      },
+      "add_link": {
+        "required": true,
+        "dataType": "string",
+        "displayName":"${rasterFunctions.rfxArgs.addLinkBehavior}",
+        "hidden": false,
+        "domain": {
+          "type": "list",
+          "enum": "gpsaAddLink"
+        }
+      },
+      "excluded_value": {
+        "required": true,
+        "dataType": "long",
+        "displayName":"${rasterFunctions.rfxArgs.excludedValue}",
+        "hidden": false
+      }
+    }
+  },
+
+  "BufferedRasterFunction": {
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      }
+    },
+    "hasArgumentsObject": true
+  },
+
+  "ColorspaceConversionFunction": {
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "ConversionType": {
+        "required": true,
+        "dataType": "long",
+        "displayName":"${rasterFunctions.rfxArgs.conversionType}",
+        "hidden": false,
+        "domain": {
+          "type": "list",
+          "enum": "colorspaceConversionTypes"
+        }
+      }
+    }
+  },
+
+  "ComplexFunction": {
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      }
+    }
+  },
+
+  "TasseledCapFunction": {
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      }
+    }
+  },
+
+  "RasterInfoFunction": {
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "RasterInfo": {
+        "required": true,
+        "dataType": "string",
+        "displayName":"${rasterFunctions.rfxArgs.rasterInfoName}",
+        "hidden": false
+      },
+      "Statistics": {
+        "required": false,
+        "dataType": "rasterstatisticsarray",
+        "displayName":"${rasterFunctions.rfxArgs.statisticsName}",
+        "hidden": true
+      },
+       "Overwrite": {
+        "required": true,
+        "dataType": "boolean",
+        "hidden": true
+      }
+    }
+  },
+
+  "RecastFunction": {
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "Arguments": {
+        "required": true,
+        "dataType": "propertyset",
+        "displayName":"${rasterFunctions.rfxArgs.overridesName}",
+        "hidden": false
+      }
+    }
+  },
+
+  "LookupFunction": {
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "Field": {
+        "required": true,
+        "dataType": "string",
+        "displayName":"${rasterFunctions.rfxArgs.fieldName}",
+        "hidden": false,
+        "domain": {
+          "type": "fields",
+          "argumentName": "Raster"
+        }
+      }
+    }
+  },
+
+  "MLClassifyFunction": {
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "SignatureFile": {
+        "required": true,
+        "dataType": "string",
+        "displayName":"${rasterFunctions.rfxArgs.signatureFileOrUrl}",
+        "hidden": false
+      }
+    }
+  },
+
+  "PansharpeningFunction": {
+    "rasterFunctionArguments": {
+      "MSImage": {
+        "required": true,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.multispectralName}",
+        "hidden": false
+      },
+      "PanImage": {
+        "required": true,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.panchromaticName}",
+        "hidden": false
+      },
+      "PansharpeningType": {
+        "required": true,
+        "dataType": "long",
+        "displayName":"${rasterFunctions.rfxArgs.pansharpeningType}",
+        "hidden": false,
+        "domain": {
+          "type": "list",
+          "enum": "pansharpeningTypes"
+        }
+      },
+      "Weights": {
+        "displayName":"${rasterFunctions.rfxArgs.weightsName}",
+        "required": true,
+        "dataType": "doublearray",
+        "hidden": false,
+        "dataTypeAttributes": {
+          "type": "bandmatrix",
+          "nBands": "Raster",
+          "cols": 4,
+          "displayNames": [
+           "${rasterFunctions.rfxArgs.redName}",
+           "${rasterFunctions.rfxArgs.greenName}",
+           "${rasterFunctions.rfxArgs.blueName}",
+           "${rasterFunctions.rfxArgs.infraredName}"
+          ]
+        }
+      },
+      "Sensor": {
+        "required": true,
+        "dataType": "string",
+        "displayName":"${rasterFunctions.rfxArgs.sensorName}",
+        "hidden": false
+      }
+    }
+  },
+
+  "ReprojectFunction": {
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "SpatialReference": {
+        "required": true,
+        "dataType": "spatialReference",
+        "displayName":"${rasterFunctions.rfxArgs.spatialReferenceName}",
+        "hidden": false
+      },
+      "XCellsize": {
+        "required": true,
+        "dataType": "double",
+        "displayName":"${rasterFunctions.rfxArgs.xCellsizeName}",
+        "hidden": false
+      },
+      "YCellsize": {
+        "required": true,
+        "dataType": "double",
+        "displayName":"${rasterFunctions.rfxArgs.yCellsizeName}",
+        "hidden": false
+      },
+      "XOrigin": {
+        "required": true,
+        "dataType": "double",
+        "displayName":"${rasterFunctions.rfxArgs.xOriginName}",
+        "hidden": false
+      },
+      "YOrigin": {
+        "required": true,
+        "dataType": "double",
+        "displayName":"${rasterFunctions.rfxArgs.yOriginName}",
+        "hidden": false
+      }
+    }
+  },
+
+  "S1ThermalNoiseRemovalFunction": {
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      }
+    }
+  },
+
+  "FocalFunction": {
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "NeighborhoodType": {
+        "required": true,
+        "dataType": "long",
+        "displayName":"${rasterFunctions.rfxArgs.neighborhoodType}",
+        "hidden": false,
+        "defaultValue": 10,
+        "domain": {
+          "type": "list",
+          "enum": "esriFocalNeighborhoodTypes"
+        },
+        "categoryRefId": "rfxArgCat_NeighborhoodSettings",
+        "editorStateTrigger": {
+          "active": true,
+          "triggers": [{
+              "values": [
+                1
+              ],
+              "active": [
+                "Width", "Height"
+              ],
+              "inactive": [
+                "Radius", "InnerRadius", "OuterRadius", "StartAngle", "EndAngle", "NeighborhoodValues"
+              ]
+            },
+            {
+              "values": [
+                2
+              ],
+              "active": [
+                "Radius"
+              ],
+              "inactive": [
+                "Width",
+                "Height",
+                "InnerRadius",
+                "OuterRadius",
+                "StartAngle",
+                "EndAngle",
+                "NeighborhoodValues"
+              ]
+            },
+            {
+              "values": [
+                3
+              ],
+              "active": [
+                "InnerRadius", "OuterRadius"
+              ],
+              "inactive": [
+                "Width", "Height", "Radius", "StartAngle", "EndAngle", "NeighborhoodValues"
+              ]
+            },
+            {
+              "values": [
+                4
+              ],
+              "active": [
+                "Radius", "StartAngle", "EndAngle"
+              ],
+              "inactive": [
+                "Width", "Height", "InnerRadius", "OuterRadius", "NeighborhoodValues"
+              ]
+            },
+            {
+              "values": [
+                5, 6
+              ],
+              "active": [
+                "Width", "Height", "NeighborhoodValues"
+              ],
+              "inactive": [
+                "Radius", "InnerRadius", "OuterRadius", "StartAngle", "EndAngle"
+              ]
+            }
+          ]
+        }
+      },
+      "Width": {
+        "required": true,
+        "dataType": "long",
+        "displayName":"${rasterFunctions.rfxArgs.widthName}",
+        "hidden": false,
+        "defaultValue": 3,
+        "categoryRefId": "rfxArgCat_NeighborhoodSettings"
+      },
+      "Height": {
+        "required": true,
+        "dataType": "long",
+        "displayName":"${rasterFunctions.rfxArgs.heightName}",
+        "hidden": false,
+        "defaultValue": 3,
+        "categoryRefId": "rfxArgCat_NeighborhoodSettings"
+      },
+      "InnerRadius": {
+        "required": true,
+        "dataType": "double",
+        "displayName":"${rasterFunctions.rfxArgs.innerRadiusName}",
+        "hidden": false,
+        "defaultValue": 1,
+        "categoryRefId": "rfxArgCat_NeighborhoodSettings"
+      },
+      "OuterRadius": {
+        "required": true,
+        "dataType": "double",
+        "displayName":"${rasterFunctions.rfxArgs.outerRadiusName}",
+        "hidden": false,
+        "defaultValue": 3,
+        "categoryRefId": "rfxArgCat_NeighborhoodSettings"
+      },
+      "Radius": {
+        "required": true,
+        "dataType": "double",
+        "displayName":"${rasterFunctions.rfxArgs.radiusName}",
+        "hidden": false,
+        "defaultValue": 3,
+        "categoryRefId": "rfxArgCat_NeighborhoodSettings"
+      },
+      "StartAngle": {
+        "required": true,
+        "dataType": "double",
+        "displayName":"${rasterFunctions.rfxArgs.startAngleName}",
+        "hidden": false,
+        "defaultValue": 3,
+        "categoryRefId": "rfxArgCat_NeighborhoodSettings"
+      },
+      "EndAngle": {
+        "required": true,
+        "dataType": "double",
+        "displayName":"${rasterFunctions.rfxArgs.endAngleName}",
+        "hidden": false,
+        "defaultValue": 3,
+        "categoryRefId": "rfxArgCat_NeighborhoodSettings"
+      },
+      "NeighborhoodValues": {
+        "required": true,
+        "dataType": "doublearray",
+        "displayName":"${rasterFunctions.rfxArgs.neighborhoodValues}",
+        "hidden": false,
+        "defaultValue": [0, 1, 0, 1, 1, 1, 0, 1, 0],
+        "categoryRefId": "rfxArgCat_NeighborhoodSettings"
+      },
+      "StatisticType": {
+        "required": true,
+        "dataType": "long",
+        "displayName":"${rasterFunctions.rfxArgs.statisticsTypeName}",
+        "hidden": false,
+        "defaultValue": 3,
+        "domain": {
+          "type": "list",
+          "enum": "esriGAFocalStatisticsTypes"
+        },
+        "categoryRefId": "rfxArgCat_FocalStatistics",
+        "editorStateTrigger": {
+          "active": true,
+          "triggers": [
+            {
+              "values": [4],
+              "active": ["Percentile"],
+              "autoRevert": true
+            }
+          ]
+        }
+      },
+      "Percentile": {
+        "required": true,
+        "dataType": "double",
+        "displayName":"${rasterFunctions.rfxArgs.percentileName}",
+        "hidden": false,
+        "defaultValue": 50,
+        "categoryRefId": "rfxArgCat_FocalStatistics"
+      },
+      "NoDataPolicy": {
+        "required": true,
+        "dataType": "boolean",
+        "displayName":"${rasterFunctions.rfxArgs.ignoreNoDataName}",
+        "hidden": false,
+        "defaultValue": true
+      }
+    },
+    "editorArgumentOverride": {
+      "active": true,
+      "overrides": [
+        {
+          "argumentNames": [
+            "NeighborhoodValues"
+          ],
+          "triggerArguments": [
+            "Width", "Height"
+          ],
+          "widget": {
+            "path": "esri/dijit/RasterFunctionEditor/RFxNeighborhoodValues"
+          }
+        }
+      ]
+    }
+  },
+
+  "TransposeBitsFunction": {
+    "rasterFunctionArguments": {
+      "Raster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.rasterName}",
+        "hidden": false
+      },
+      "ConstantFillCheck": {
+        "required": true,
+        "dataType": "boolean",
+        "displayName":"${rasterFunctions.rfxArgs.constantFillCheck}",
+        "hidden": false,
+        "domain": {
+          "type": "list",
+          "enum": "boolean"
+        },
+        "editorStateTrigger": {
+          "active": true,
+          "triggers": [{
+            "values": [
+              true
+            ],
+            "active": [
+              "ConstantFillValue"
+            ],
+            "inactive": [
+              "FillRaster"
+            ],
+            "autoRevert": true
+          }]
+        }
+      },
+      "FillRaster": {
+        "required": true,
+        "dataType": "raster",
+        "displayName":"${rasterFunctions.rfxArgs.fillRaster}",
+        "hidden": false
+      },
+      "ConstantFillValue": {
+        "required": true,
+        "dataType": "long",
+        "displayName":"${rasterFunctions.rfxArgs.constantFillValue}",
+        "hidden": false
+      },
+      "InputBitPositions": {
+        "required": true,
+        "dataType": "longarray",
+        "displayName":"${rasterFunctions.rfxArgs.inputBitPositions}",
+        "hidden": false
+      },
+      "OutputBitPositions": {
+        "required": true,
+        "dataType": "longarray",
+        "displayName":"${rasterFunctions.rfxArgs.outputBitPositions}",
+        "hidden": false
+      }
+    },
+    "editorArgumentOverride": {
+      "active": true,
+      "overrides": [
+        {
+          "argumentNames": [
+            "InputBitPositions",
+            "OutputBitPositions"
+          ],
+          "widget": {
+            "path": "esri/dijit/RasterFunctionEditor/RFxTransposeBit"
+          }
+        }
+      ]
+    }
+  },
+
+  "Sink": {
+   "rasterFunctionArguments": {
+     "ToolName": {
+       "required": true,
+       "dataType": "string",
+       "hidden": true,
+       "defaultValue": "Sink_sa"
+     },
+     "PrimaryInputParameterName": {
+       "required": true,
+       "dataType": "string",
+       "hidden": true,
+       "defaultValue": "in_flow_direction_raster"
+     },
+     "OutputRasterParameterName": {
+       "required": true,
+       "dataType": "string",
+       "hidden": true,
+       "defaultValue": "out_raster"
+     },
+     "in_flow_direction_raster": {
+       "required": true,
+       "dataType": "raster",
+       "displayName": "${rasterFunctions.rfxArgs.flowDirRaster}",
+       "hidden": false
+     },
+     "MatchVariable": {
+       "required": false,
+       "dataType": "boolean",
+       "hidden": true
+     },
+     "UnionDimension": {
+       "required": false,
+       "dataType": "boolean",
+       "hidden": true
+     }
+   }
+ },
+
+   "SnapPourPoint": {
+   "rasterFunctionArguments": {
+     "ToolName": {
+       "required": true,
+       "dataType": "string",
+       "hidden": true,
+       "defaultValue": "SnapPourPoint_sa"
+     },
+     "PrimaryInputParameterName": {
+       "required": true,
+       "dataType": "string",
+       "hidden": true,
+       "defaultValue": "in_pour_point_data"
+     },
+     "OutputRasterParameterName": {
+       "required": true,
+       "dataType": "string",
+       "hidden": true,
+       "defaultValue": "out_raster"
+     },
+     "in_pour_point_data": {
+       "required": false,
+       "dataType": "raster",
+       "displayName": "${rasterFunctions.rfxArgs.pourPointDataName}",
+       "hidden": false
+     },
+     "in_accumulation_raster": {
+       "required": false,
+       "dataType": "raster",
+       "displayName": "${rasterFunctions.rfxArgs.accumulationRasterName}",
+       "hidden": false
+     },
+     "snap_distance": {
+       "required": false,
+       "dataType": "double",
+       "displayName": "${rasterFunctions.rfxArgs.snapDistanceName}",
+       "hidden": false,
+       "defaultValue": 0
+     },
+     "pour_point_field": {
+       "required": false,
+       "dataType": "string",
+       "hidden": false,
+       "displayName": "${rasterFunctions.rfxArgs.pourPointFieldName}",
+       "domain": {
+         "type": "fields",
+         "argumentName": "in_pour_point_data"
+       }
+     },
+     "MatchVariable": {
+       "required": false,
+       "dataType": "boolean",
+       "hidden": true
+     },
+     "UnionDimension": {
+       "required": false,
+       "dataType": "boolean",
+       "hidden": true
+     }
+   }
+  }
+}

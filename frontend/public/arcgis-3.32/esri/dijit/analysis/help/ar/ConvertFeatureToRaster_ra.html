@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>تحويل معلم إلى بيانات نقطية</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="أداة تحويل معلم إلى بيانات نقطية"></h2>
+        <hr/>
+    <p>تعمل هذه الأداة على تحويل المعالم إلى مجموعة بيانات نقطية.
+    </p>
+    <p>يمكن تحويل أي تصنيف معلم يحتوي على معالم نقطية أو خطية أو مضلعة إلى مجموعة بيانات نقطية.
+    </p>
+    <p>يستخدم مركز الخلية لتحديد قيمة بيكسل البيانات النقطية الناتجة.
+    </p>
+    <p>يُحدد نوع حقل المدخلات نوع البيانات النقطية الناتجة. إذا كان الحقل عبارة عن عدد صحيح، ستكون البيانات النقطية الناتجة عدد صحيح؛ وإذا كان عبارة عن نقطة عائمة، ستكون المخرجات عبارة عن نقطة عائمة.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>اختر طبقة معالم لتحويلها</h2></div>
+        <hr/>
+        <div>
+            <p>طبقة المعلم المدخلة المراد تحويلها إلى مجموعة بيانات نقطية.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>اختر حقلاً</h2></div>
+        <hr/>
+        <div>
+            <p>اختر الحقل الذي يُستخدم لتعيين القيم إلى البيانات النقطية الناتجة.
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>حجم خلية مُخرج</h2></div>
+        <hr/>
+        <div>
+            <p>حجم الخلية ووحدة البيانات النقطية للإخراج.
+            </p>
+            <p>الوحدات المتاحة هي الميل والقدم والكيلومتر والمتر. القيمة الافتراضية هي القدم.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>اسم طبقة النتيجة</h2></div>
+        <hr/>
+        <div>
+            <p>سيتم إنشاء اسم الطبقة في  <b>المحتوى</b> وسيتم إضافته إلى الخريطة. يستند الاسم الافتراضي إلى اسم الأداة واسم الطبقة المدخلة. إذا وُجدت الطبقة بالفعل، سيطلب منك كتابة اسم آخر.
+            </p>
+            <p>يمكنك تحديد اسم مجلد في  <b>محتواي</b> حيث سيتم حفظ النتيجة باستخدام المربع المنسدل <b>حفظ النتيجة في</b>
+            </p>
+        </div>
+    </div>
+</div>
+</html>

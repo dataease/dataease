@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Generalizovaná lineární regrese (Generalized Linear Regression)</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="Diagram pracovn&iacute;ho postupu Generalizovan&aacute; line&aacute;rn&iacute; regrese (GeneralizedLinearRegression)"></h2>
+        <hr/>
+    <p>Použije metodu generalizovan&eacute; line&aacute;rn&iacute; regrese (GLR) a generuje předpovědi anebo modeluje z&aacute;vislou proměnnou v&nbsp;r&aacute;mci jej&iacute;ho vztahu k&nbsp;sadě nez&aacute;visl&yacute;ch proměnn&yacute;ch. Tento n&aacute;stroj lze použ&iacute;t k přizpůsoben&iacute; souvisl&yacute;ch (Gaussův), bin&aacute;rn&iacute;ch (logistick&yacute;ch) a četnostn&iacute;ch (Poissonův) modelů.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Typ analýzy</h2></div>
+        <hr/>
+        <div>
+            <p>Určuje provozn&iacute; režim n&aacute;stroje. N&aacute;stroj umožňuje učen&iacute; modelu pouze pro posouzen&iacute; v&yacute;konu, nebo učen&iacute; modelu a předpov&iacute;d&aacute;n&iacute; prvků. Typy předpovědi jsou n&aacute;sleduj&iacute;c&iacute;:
+                <ul>
+                    <li> <b>Přizpůsoben&iacute; modelu k posouzen&iacute; jeho v&yacute;konu</b>&mdash;Model bude přizpůsoben a použije se na vstupn&iacute; data. Použijte tuto možnost k posouzen&iacute; přesnosti va&scaron;eho modelu před generov&aacute;n&iacute;m předpověd&iacute; na nov&eacute; datov&eacute; sadě, nebo pochopen&iacute; vztahů a ovladačů va&scaron;&iacute; předpov&iacute;dan&eacute; proměnn&eacute;. V&yacute;stupem t&eacute;to možnosti bude feature služba va&scaron;ich přizpůsoben&yacute;ch dat a diagnostika modelu.
+                    </li>
+                    <li> <b>Přizpůsoben&iacute; modelu a předpov&iacute;d&aacute;n&iacute; hodnot</b>&mdash; Předpovědi nebo klasifikace budou vygenerov&aacute;ny pro vstupn&iacute; prvky a prvky předpovědi. Nez&aacute;visl&eacute; proměnn&eacute; mus&iacute; b&yacute;t uvedeny pro prvky předpovědi i prvky, kter&eacute; budou předpovězeny. V&yacute;stupem t&eacute;to možnosti bude feature služba va&scaron;eho modelu přizpůsoben&eacute;ho na va&scaron;e vstupn&iacute; data, feature služba hodnot předpovědi a diagnostika modelu.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>Přizpůsobení modelu k posouzení jeho výkonu</h2></div>
+        <hr/>
+        <div>
+            <p>Použijte tento režim, pokud chcete model přizpůsobit a prozkoumat jeho přizpůsoben&iacute;.
+            </p>
+            <p>Při t&eacute;to možnosti bude model učen za použit&iacute; vstupn&iacute; vrstvy. Použijte tuto možnost k posouzen&iacute; přesnosti va&scaron;eho modelu před generov&aacute;n&iacute;m předpověd&iacute; na nov&eacute; datov&eacute; sadě.V&yacute;stupem t&eacute;to možnosti bude diagnostika modelu použit&aacute; na model va&scaron;ich cvičn&yacute;ch dat.
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>Přizpůsobení modelu a předpovídání hodnot</h2></div>
+        <hr/>
+        <div>
+            <p>Použijte tento režim, pokud chcete model přizpůsobit, a použ&iacute;t model na datovou sadu k vygenerov&aacute;n&iacute; předpověd&iacute;.
+            </p>
+            <p>Předpovědi nebo klasifikace budou pro prvky vygenerov&aacute;ny. V&yacute;stupem t&eacute;to možnosti bude feature služba, diagnostika modelu a voliteln&aacute; tabulka důležitosti proměnn&yacute;ch.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>Vybrat vrstvu, z níž bude generován model</h2></div>
+        <hr/>
+        <div>
+            <p>Vrstva obsahuj&iacute;c&iacute; bod, linii, plochu nebo tabulkov&eacute; prvky, kter&eacute; obsahuj&iacute; z&aacute;visl&eacute; a nez&aacute;visl&eacute; proměnn&eacute;.
+            </p>
+            <p>Kromě v&yacute;běru vrstvy z&nbsp;mapy můžete tak&eacute; zvolit položku  <b>Zvolit vrstvu anal&yacute;zy</b> kter&aacute; se nach&aacute;z&iacute; v&nbsp;doln&iacute; č&aacute;sti rozbalovac&iacute; nab&iacute;dky, abyste ve sv&eacute;m obsahu mohli naj&iacute;t vrstvu prvků nebo datovou sadu sd&iacute;len&yacute;ch souborů velk&yacute;ch dat.
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>Zvolit pole k modelování</h2></div>
+        <hr/>
+        <div>
+            <p>Č&iacute;seln&eacute; pole obsahuj&iacute;c&iacute; sledovan&eacute; hodnoty, kter&eacute; budou modelov&aacute;ny, a typ hodnot, kter&eacute; modelujete. Existuj&iacute; tři typy hodnot, kter&eacute; můžete modelovat
+                <ul>
+                    <li>Souvisl&yacute;&mdash;Představuje souvisl&eacute; hodnoty. Použit&yacute; model je Gaussův, a n&aacute;stroj prov&aacute;d&iacute;  line&aacute;rn&iacute; regresi metodou nejmen&scaron;&iacute;ch čtverců.
+                    </li>
+                    <li>Bin&aacute;rn&iacute;&mdash;Představuje př&iacute;tomnost nebo nepř&iacute;tomnost hodnot. Tyto mus&iacute; b&yacute;t 1. nebo 0. Použit&yacute; model je logistick&aacute; regrese.
+                    </li>
+                    <li>Počet&mdash;Představuje diskr&eacute;tn&iacute; data a představuje ud&aacute;losti, např&iacute;klad počet trestn&yacute;ch činů, nemoci nebo dopravn&iacute; nehody. Použit&yacute; model je Poissonova regrese. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Vybrat vrstvu, pro níž budou předpovídány hodnoty</h2></div>
+        <hr/>
+        <div>
+            <p>Vrstva obsahuj&iacute;c&iacute; prvky, kter&eacute; představuj&iacute; um&iacute;stěn&iacute;, ve kter&yacute;ch maj&iacute; b&yacute;t vypoč&iacute;t&aacute;ny odhady. Každ&yacute; prvek v&nbsp;t&eacute;to datov&eacute; sadě by měl obsahovat hodnoty pro v&scaron;echny určen&eacute; nez&aacute;visl&eacute; proměnn&eacute;. Z&aacute;visl&aacute; proměnn&aacute; těchto prvků bude odhadnuta pomoc&iacute; modelu kalibrovan&eacute;ho pro data vstupn&iacute; vrstvy.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Vyberte nezávislá pole</h2></div>
+        <hr/>
+        <div>
+            <p>Jedno nebo v&iacute;ce pol&iacute; reprezentuj&iacute;c&iacute;ch nez&aacute;visl&eacute; proměnn&eacute; (pole), kter&eacute; pom&aacute;haj&iacute; předpov&iacute;dat hodnotu. Budou vidět pouze č&iacute;seln&aacute; pole.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Vybrat, jak jsou nezávislá pole spárována</h2></div>
+        <hr/>
+        <div>
+            <p>Jak budou odpov&iacute;daj&iacute;c&iacute; proměnn&eacute; ve vstupn&iacute; vrstvě upraveny na proměnn&eacute; ve vrstvě předpovědi. Pouze proměnn&eacute; použit&eacute; při generov&aacute;n&iacute; modelu budou obsaženy v tabulce. Lze použ&iacute;t pouze č&iacute;seln&eacute; hodnoty. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p> N&aacute;zev vytv&aacute;řen&eacute; vrstvy. Pokud zapisujete ArcGIS Data Store, va&scaron;e v&yacute;sledky budou uloženy v  <b>Můj obsah</b> a přid&aacute;ny na mapu. Pokud zapisujete sd&iacute;len&yacute; soubor velk&yacute;ch dat, va&scaron;e v&yacute;sledky budou uloženy ve sd&iacute;len&eacute;m souboru velk&yacute;ch dat a přid&aacute;ny do jejich manifestu.  Nebudou přid&aacute;ny na mapu. V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud vrstva již existuje, n&aacute;stroj selže.
+            </p>
+            <p>Vr&aacute;cen&eacute; v&yacute;sledky budou z&aacute;viset na typu anal&yacute;zy. Pokud přizpůsobujete model, v&yacute;sledky budou obsahovat vrstvu cvičn&yacute;ch dat přizpůsoben&yacute;ch modelu a informace o v&yacute;sledku posouzen&iacute; vyhověn&iacute; modelu.Pokud přizpůsobujete a prov&aacute;d&iacute;te předpovědi, v&yacute;sledky budou obsahovat vrstvu cvičn&yacute;ch dat přizpůsoben&yacute;ch modelu, vrstvu v&yacute;sledků předpovědi a informace o v&yacute;sledku posouzen&iacute; vyhověn&iacute; modelu.
+            </p>
+            <p>Když zapisujete do   ArcGIS Data Store  (datov&eacute; &uacute;loži&scaron;tě relačn&iacute;ch a časoprostorov&yacute;ch velk&yacute;ch dat) pomoc&iacute; rozbalovac&iacute;ho seznamu  <b>Uložit v&yacute;sledek do</b> , můžete zadat n&aacute;zev složky v <b>Můj obsah</b>, kde budou v&yacute;sledky uloženy.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

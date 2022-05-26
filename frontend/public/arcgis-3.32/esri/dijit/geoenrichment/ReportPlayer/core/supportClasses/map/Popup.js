@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/supportClasses/map/Popup",["dojo/_base/declare","esri/geometry/ScreenPoint","esri/dijit/Popup"],function(c,d,e){return c(e,{visibleWhenEmpty:!1,popupLayerId:"popupLayer",enableHighlight:function(a){this.inherited(arguments);this._forceMoveGraphic(a)},updateHighlight:function(a,b){this.inherited(arguments);this._forceMoveGraphic(a)},disableHighlight:function(a){this._highlighted&&this._highlighted.getLayer()&&this._highlighted.getLayer().remove(this._highlighted);
+this.inherited(arguments)},_forceMoveGraphic:function(a){if(this._highlighted){var b=a.getLayer(this.popupLayerId);b&&(a.graphics.remove(this._highlighted),b.add(this._highlighted))}},_setPosition:function(a){var b=this.getPlayerZoomScale()||1;return this.inherited(arguments,[new d(a.x/b,a.y/b)])},_onExtentChange:function(a,b,c){c&&1!==this.getPlayerZoomScale()&&this.hide()},getPlayerZoomScale:function(){}})});

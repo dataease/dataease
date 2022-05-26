@@ -1,0 +1,94 @@
+-------------------------------------------------------------------------------
+dojox.mdnd Experimental coordinates based moveable drag and drop.
+-------------------------------------------------------------------------------
+Version 1.1
+Release date: 09/04/2009
+-------------------------------------------------------------------------------
+Project state:
+
+[AreaManager]	beta
+[AutoScroll]	beta
+[DropIndicator]	beta
+[Movable]	beta
+[PureSource]	beta
+[adapter/DndFromDojo] experimental
+[adapter/DndToDojo] experimental
+[dropMode/DefaultDropMode] beta
+[dropMode/OverDropMode] experimental
+
+-------------------------------------------------------------------------------
+Credits
+
+Erwan Morvillez (emorvillez), 
+Jean-Jacques Patard (jjpatard), 
+Jeff Cunat (jfcunat)
+
+
+-------------------------------------------------------------------------------
+Project description
+
+Alternative Drag and Drop solution based on coordinates of drag element and
+targets instead of mouseover. It allows dragging directly the nodes (like
+dojo.dnd.Moveable) instead of an avatar (as in dojo.dnd). dojo.dnd and
+dojox.mdnd are compatible by using adapters.
+
+PureSource is just a rewrite of dojo.dnd.Source to only allow drag start and no
+drop without testing acceptance.
+
+-------------------------------------------------------------------------------
+Dependencies
+
+	require Dojo Core
+
+-------------------------------------------------------------------------------
+Installation:
+
+	checkout:
+
+	http://svn.dojotoolkit.org/src/dojox/trunk/mdnd/
+
+	and require via:
+		dojo.require("dojox.mdnd.AreaManager");
+
+-------------------------------------------------------------------------------
+Basic Usage:
+
+	dojo.require("dojox.mdnd.AreaManager");
+	dojo.require("dojox.mdnd.DropIndicator");
+	dojo.require("dojox.mdnd.dropMode.DefaultDropMode");
+			
+	var init = function(){
+		var m = dojox.mdnd.areaManager();
+		m.areaClass = "dndArea";
+		m.dragHandleClass = "dragHandle";
+		m.registerByClass();
+	};
+	
+	dojo.addOnLoad(init);
+	
+	...
+	
+	<div style="position:absolute; top:80px; left:50px;">
+	<h2>Accepts Type1 items</h2>
+	<div class="dndArea container" accept="type1">
+		<div class="dndItem" dndType="type1">
+			<div class="dragHandle">Item Type 1</div>
+			<div>
+				<p>Proin aliquet accumsan nunc. Duis nec tortor.</p>
+
+			</div>
+		</div>
+		<div class="dndItem simpleBlock" dndType="type2">
+			<div class="dragHandle">Item Type2</div>
+			<div>
+				<p>Proin aliquet accumsan nunc. Duis nec tortor.</p>
+			</div>
+		</div>
+
+	</div>
+
+	<div style="position:absolute; top:80px; left:350px;">
+		<h2>Accepts Type2 items</h2>
+		<div class="dndArea container" accept="type2">
+		</div>
+	</div>

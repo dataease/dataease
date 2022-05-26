@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Legg ved data</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="Arbeidsflytdiagram for Legg til data"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet legger til data i et eksisterende hosted geoobjektslag. Legg til data endrer det opprinnelige inndatalaget, og genererer ikke et nytt utdatalag. Du kan matche felt ut fra feltnavn og felttype, eller du kan bruke mer avanserte metoder for matching.
+    </p>
+    <p>Her f&oslash;lger noen eksempler: 
+        <ul>
+            <li>Du er ansatt i et stort forsikringsselskap som genererer m&aring;nedlige salgstall. De m&aring;nedlige dataene m&aring; samles for analyse til &aring;rsberetningen. For &aring; sette i gang analysen av salgstallene kan du bruke Legg til data for &aring; oppdatere laget &Aring;rsberetning_2018 etter hvert som de m&aring;nedlige tallene blir tilgjengelige. Ettersom du vet at organisasjonen din bruker det samme skjemaet hver m&aring;ned, kan du bruke standardmetoden for felttilordning til &aring; legge til geoobjekter effektivt ut fra feltnavn og -type.
+            </li>
+            <li>Ti milj&oslash;verngrupper samler hver inn hundretusenvis av klimam&aring;linger innenfor hvert sitt virkeomr&aring;de. Disse organisasjonene &oslash;nsker &aring; samle dataene sine for &aring; f&aring; en bedre forst&aring;else av regionale og globale m&oslash;nstre. Hver organisasjon bestemmer skjemaet for sitt datasett. Hver av dem har angitt forskjellige feltnavn for data om temperatur og vindhastighet. Gitt de forskjellige feltnavnene i de forskjellige datasettene kan felttilordning brukes til &aring; angi hvordan m&aring;linger av temperatur og vindhastighet skal legges til i de respektive feltene.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Velg laget det skal legges til i</h2></div>
+        <hr/>
+        <div>
+            <p>Tabell-, punkt-, linje- eller polygongeoobjektene som dataene blir lagt til.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>Laget du legger til i, blir endret n&aring;r verkt&oslash;yet kj&oslash;res. Forsikre deg om at du &oslash;nsker &aring; endre dette laget, f&oslash;r du g&aring;r videre.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> nederst i rullegardinlisten, for &aring; bla gjennom innholdet etter et hosted geoobjektlag.
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>Velg laget som skal legges til</h2></div>
+        <hr/>
+        <div>
+            <p>Tabell-, punkt-, linje- eller polygongeoobjektene som skal legges til i inndatalaget.
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> nederst i rullegardinlisten, for &aring; bla gjennom innholdet p&aring; et fildelingsomr&aring;de for stordata eller et geoobjektlag.
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>Legg til alle geoobjekter, eller definer et delsett (valgfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Identifiserer geoobjektene som skal legges til. Denne parameteren er valgfri.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>Velg hvordan felt skal legges til (valgfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Angir hvordan tilleggslagfeltene legges til i inndatalaget. Som standard legges alle matchende inndatafelt og tilleggsfelt til. Felt matcher hvis de har samme feltnavn og er av samme felttype. Du kan eventuelt velge hvordan felt skal matches, eller beregne Arcade-uttrykk &aring; fylle ut feltene med.
+            </p>
+            <p>Tenk deg at du for eksempel har et inndatalag med feltene  <i>field_number</i>, <i>field_string</i>, <i>date_field</i>, <i>unused_field</i>, og har lagt til et lag med feltene <i>field_string</i>, <i>field_number</i>, og <i>MY_DATE_FIELD</i>.
+                <ul>
+                    <li>Verkt&oslash;yet vil som standard matche  <i>field_number</i> i inndatalaget med <i>field_number</i> i tilleggslaget, og <i>field_string</i>  i inndatalaget med <i>field_string</i> i tilleggslaget.
+                    </li>
+                    <li>Feltene  <i>date_field</i> og <i>unused_field</i> i inndatalaget fylles som standard ut med verdien <i>null</i> fordi de ikke har noe matchende felt i tilleggslaget.
+                    </li>
+                    <li>Du kan eventuelt legge til verdier i felt som ikke ble matchet automatisk som standard. For eksempel kan  <i>date_field</i> i inndatalaget matches med tilleggsfeltet <i>MY_DATE_FIELD</i>. Hvis du vil gj&oslash;re det, bruker du rullegardinmenyen ved siden av <i>date_field</i> i den f&oslash;rste kolonnen og velger <i>MY_DATE_FIELD</i> fra rullegardinmenyen i den andre kolonnen.
+                    </li>
+                </ul>
+                 Et annet eksempel kan v&aelig;re et inndatalag som har de numeriske feltene <i>value_1</i>, <i>value_2</i>, <i>value_3</i>, og <i>my_Average</i>, og et tillagt felt med de numeriske verdiene <i>value_1</i>, <i>value_2</i>, og <i>value_3</i>.
+                <ul>
+                    <li>Som standard matches  <i>value_1</i>, <i>value_2</i>, og <i>value_3</i> og legges til.
+                    </li>
+                    <li>I tillegg til standard virkem&aring;ter kan verdier ogs&aring; beregnes for feltet  <i>my_Average</i>. Bruk flere felt og matematiske operasjoner ved &aring; velge alternativet <b>Uttrykk</b> i rullegardinmenyen i kolonnen ved siden av <i>my_Average</i> og opprette et egendefinert Arcade-uttrykk som <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

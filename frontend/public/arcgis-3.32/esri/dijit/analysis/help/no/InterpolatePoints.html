@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpoler punkter</h2><p/>
+        <h2><img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" alt="Interpoler punkter"></h2>
+        <hr/>
+    <p>   Med Interpoler punkter-verkt&oslash;yet kan du forutsi verdier p&aring; nye lokasjoner basert p&aring; m&aring;linger fra en samling punkter. Verkt&oslash;yet bruker punktdata med verdier p&aring; hvert punkt og returnerer omr&aring;der klassifisert etter predikerte verdier. Eksempel:
+        <ul>
+            <li>Et luftkvalitetsstyringsdistrikt har sensorer som m&aring;ler forurensningsniv&aring;et. Interpoler punkter kan brukes til &aring; forutsi forurensningsniv&aring;et p&aring; steder som ikke har sensorer, for eksempel steder med utsatt befolkning &ndash; f.eks. skoler eller sykehus.
+            </li>
+            <li>Forutse tungmetallkonsentrasjoner i avlinger basert p&aring; pr&oslash;ver tatt fra enkelte planter.
+            </li>
+            <li>Forutse niv&aring;et av n&aelig;ringsstoffer i jord (nitrogen, fosfor, kalium og s&aring; videre) og andre indikatorer (for eksempel elektrisk ledningsevne) for &aring; studere deres forhold til avlingsniv&aring; og &aring; benytte n&oslash;yaktige mengder gj&oslash;dsel for hver lokasjon p&aring; jordet.
+
+            </li>
+            <li>Meteorologiske bruksomr&aring;der omfatter prediksjon av temperaturer, nedb&oslash;r og tilh&oslash;rende variabler (for eksempel sur nedb&oslash;r). 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Velg punktlaget som inneholder lokasjoner med kjente verdier</h2></div>
+        <hr/>
+        <div>
+            <p>Punktlaget som skal brukes som grunnlag for interpolering.  
+
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> som du finner nederst i rullegardinlisten. Dette alternativet &aring;pner et galleri der du kan bla til og velge datasett fra ulike kilder som du vil bruke i analysen. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Velg felt som skal interpoleres</h2></div>
+        <hr/>
+        <div>
+            <p>Velg feltet som inneholder verdiene du &oslash;nsker &aring; interpolere.  
+            </p>
+        </div>
+    </div>
+    <div id="interpolateOption">
+        <div><h2>Optimaliser for</h2></div>
+        <hr/>
+        <div>
+            <p>Velg din preferanse for hastighet kontra n&oslash;yaktighet. Mer n&oslash;yaktige prediksjoner ta lengre tid &aring; beregne.
+            </p> 
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Prognosefeil</h2></div>
+        <hr/>
+        <div>
+            <p> Hvis det er merket av for dette, blir det opprettet et lag med standardfeil for interpolerte prognoser. Navnet p&aring; utdatalaget vil v&aelig;re navnet p&aring; resultatlaget med &quot;Errors&quot; tilf&oslash;yd.
+            </p>
+            <p>Standardfeil er nyttige fordi de gir informasjon om p&aring;liteligheten til de ansl&aring;tte verdiene. En enkel tommelfingerregel er at den faktiske verdien vil falle innenfor to standardfeil av den ansl&aring;tte verdien 95 prosent av tiden. La oss for eksempel anta at en ny lokasjon for en prognoseverdi p&aring; 50 med en standardfeil p&aring; 5. Det betyr at dette verkt&oslash;yets beste gjetning er at den faktiske verdien p&aring; den lokasjonen er 50, men den kan v&aelig;re s&aring; lav som 40 eller s&aring; h&oslash;y som 60. Du kan beregne dette utvalget av rimelige verdier ved &aring; multiplisere standardfeilen med 2, legge denne verdien til den ansl&aring;tte verdien for &aring; f&aring; den &oslash;vre enden av skalaen, og trekke det fra den ansl&aring;tte verdien for &aring; f&aring; den nedre enden av skalaen.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Klassifiser etter</h2></div>
+        <hr/>
+        <div>
+            <p>Velg hvordan prognoseverdiene skal klassifiseres i omr&aring;der.
+                <ul>
+                    <li>Geometrisk intervall &ndash; Arealene er basert p&aring;  klasseintervaller som har en geometrisk serie. Denne metoden sikrer at hver klasseserie har omtrent samme antall verdier innenfor hver klasse, og at endringen mellom intervallene er konsekvent.
+                    </li>
+                    <li>Like intervall &ndash; Arealene lages slik at rekken av prognoseverdier er lik for hvert areal.
+                    </li>
+                    <li>Like arealer &ndash; Arealene slik at antallet dataverdier er likt for hvert areal. Hvis dataene f.eks. har flere store verdier enn lave verdier, blir det laget flere arealer for store verdier.
+                    </li>
+                    <li>Manuell &ndash; Dette alternativet lar deg definere din egen serie med verdier for omr&aring;dene. Disse verdiene blir lagt inn i parameteren  <b>Klassegrenseverdier</b> nedenfor.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Antall klasser</h2></div>
+        <hr/>
+        <div>
+            <p>Angir antall klasser (omr&aring;de med predikerte verdier) i resultatlaget. Hver klasse definerer grenselinjene for arealer. Verdiene av disse klassene fastsettes av parameteren 
+ <b>Klassifiser etter</b> ovenfor.
+            </p>
+        </div>
+    </div>
+    <div id="classBreaks">
+        <div><h2>Klassegrenseverdier</h2></div>
+        <hr/>
+        <div>
+            <p>Angi &oslash;nskede klasseverdier atskilt med mellomrom. Hvis du f.eks. &oslash;nsker klasseknekkpunkter p&aring; verdiene 1,5, 3 og 7, skriver du inn  <code>1,5 3 7</code>. Disse verdiene definerer den &oslash;vre grensen for hver klasse, slik at antallet klasser vil v&aelig;re lik antallet angitte verdier. Omr&aring;der vil ikke bli opprettet for noen lokasjoner med ansl&aring;tte verdier som er over den h&oslash;yeste angitte grenseverdien. Du m&aring; oppgi minst to verdier og ikke flere enn 32.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Klipp ut udata til</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan enten tegne eller legge til et lag som angir omr&aring;det du vil at resultatet skal tegnes i. Hvis du f.eks. interpolere forurensningsm&aring;linger i en innsj&oslash;, kan du bruke innsj&oslash;ens grense i denne parameteren, og utdataene vil tegnes bare innenfor innsj&oslash;ens grense.
+            </p>
+        </div>
+    </div>
+    <div id="predictAtPointLayer">
+        <div><h2>Forutsi på disse lokasjonene</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan enten tegne eller legge til et lag som angir punktlokasjoner for &aring; beregne prognoseverdier. P&aring; denne m&aring;ten kan du lage prognoser for bestemte lokasjoner som er av interesse. Hvis inndatalaget for eksempel representerer m&aring;linger av forurensningsniv&aring;er, kan du bruke denne parameteren til &aring; forutsi forurensningsniv&aring;et p&aring; lokasjoner med store utsatte befolkningsgrupper, for eksempel skoler eller sykehus. Du kan deretter bruke denne informasjonen til &aring; gi anbefalinger til helsemyndigheter p&aring; disse lokasjonene.
+            </p>
+            <p>Hvis det er levert, vil dette verkt&oslash;yet produsere et punktlag med prognoser p&aring; de angitte lokasjonene. Navnet p&aring; utdatalaget vil v&aelig;re navnet p&aring; resultatlaget med &quot;Points&quot; tilf&oslash;yd.  
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis lagnavnet finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Bruk rullegardinmenyen  <b>Lagre resultat i</b> til &aring; angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatene skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,63 @@
+<tr>
+  <td colspan="3" class="optionsTd">
+    <div class="optionsClose" data-dojo-attach-point="_optionsDiv">
+      <table class="esriFormTable">
+        <tbody>
+          <tr>
+            <td colspan="2">
+                <div class="dijitTreeExpando" data-dojo-attach-event="onclick:_handleOptionsBtnClick">
+                  <label class="esriLeadingMargin2 noWrapLabel">${i18n.addBarriers}</label>
+                </div>
+            </td>
+            <td>
+                <a href="#" class='esriFloatTrailing helpIcon' esriHelpTopic="barrier_layers"></a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="esriFormTable optionsTable">
+        <tbody>
+    <!-- Point Barrier Header -->
+          <tr>
+            <td colspan="2">
+              <label class="esriLeadingMargin1 esriAnalysisStepsLabel">${i18n.pointBarrier}</label>
+            </td>                   
+          </tr>
+    <!-- Point Barrier Select Box -->
+          <tr>
+            <td colspan="3">
+              <select class="esriLeadingMargin1 longInput esriLongLabel" data-dojo-type="dijit/form/Select" data-dojo-props="required:false" data-dojo-attach-point="_pointBarrierSelect" data-dojo-attach-event="onChange:_handlePointBarrierChange">
+              </select>
+            </td>
+          </tr>
+    <!-- Line Barrier Header -->                  
+          <tr>
+            <td colspan="2">
+              <label class="esriLeadingMargin1 esriAnalysisStepsLabel">${i18n.lineBarrier}</label>
+            </td>                
+          </tr>
+    <!-- Line Barrier Select Box -->
+          <tr>
+            <td colspan="3">
+              <select class="esriLeadingMargin1 longInput esriLongLabel" data-dojo-type="dijit/form/Select" data-dojo-props="required:false" data-dojo-attach-point="_lineBarrierSelect" data-dojo-attach-event="onChange:_handleLineBarrierChange">
+              </select>
+            </td>
+          </tr>
+    <!-- Polygon Barrier Header --> 
+          <tr>
+            <td colspan="2">
+              <label class="esriLeadingMargin1 esriAnalysisStepsLabel">${i18n.polygonBarrier}</label>
+            </td>                 
+          </tr>
+    <!-- Polygon Barrier Select Box -->
+          <tr>
+            <td colspan="3">
+              <select class="esriLeadingMargin1 longInput esriLongLabel" data-dojo-type="dijit/form/Select" data-dojo-props="required:false" data-dojo-attach-point="_polygonBarrierSelect" data-dojo-attach-event="onChange:_handlePolygonBarrierChange">
+              </select>
+            </td>
+          </tr>                             
+        </tbody>
+      </table>
+    </div>
+  </td>
+</tr>

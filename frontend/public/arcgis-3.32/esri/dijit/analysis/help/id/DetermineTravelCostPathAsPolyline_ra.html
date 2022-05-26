@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Tentukan Jalur Biaya Perjalanan sebagai Polyline</h2><p/>
+        <h2><img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" alt="Alat ilustrasi Tentukan Jalur Biaya Perjalanan sebagai Polyline"></h2>
+        <hr/>
+    <p>Alat ini menghitung jalur polyline biaya terendah antara sumber dan tujuan yang diketahui.
+    </p>
+    <p>Contoh aplikasi termasuk yang berikut:
+        <ul>
+            <li>Temukan rute terbaik untuk jalan baru dalam hal biaya konstruksi.
+                
+
+            </li>
+            <li>Identifikasi jalur yang akan diambil dari beberapa lokasi pinggiran kota (sumber) ke pusat perbelanjaan terdekat (tujuan).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jika  <b>Gunakan luas peta saat ini</b> dicentang, hanya lokasi di layer input yang terlihat dalam tingkat peta saat ini yang akan dianalisis. Jika tidak dicentang, semua lokasi di kedua layer input akan dianalisis, bahkan jika mereka berada di luar batas peta saat ini.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Pilih raster atau layer sumber feature untuk menentukan dari mana jalur dimulai</h2></div>
+        <hr/>
+        <div>
+            <p>Layanan gambar atau feature service yang mengidentifikasi sel-sel dari mana jalur biaya terendah ditentukan ke tujuan paling murah.
+            </p>
+            <p>Jika input adalah layanan gambar, input terdiri dari sel-sel yang memiliki nilai yang valid (nol adalah nilai yang valid), dan sel-sel yang tersisa harus diberi NoData.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Pilih layer raster biaya perjalanan</h2></div>
+        <hr/>
+        <div>
+            <p>Sebuah raster mendefinisikan impedansi atau biaya untuk bergerak secara planimetri melalui setiap sel.
+            </p>
+            <p>Nilai di setiap lokasi sel mewakili jarak biaya-per-unit untuk bergerak melalui sel. Setiap nilai lokasi sel dikalikan dengan resolusi sel, sementara juga mengkompensasi gerakan diagonal untuk mendapatkan biaya total melewati sel.
+            </p>
+            <p>Nilai-nilai dari raster biaya dapat berupa bilangan bulat atau bilangan titik mengambang, tetapi tidak boleh negatif atau nol (Anda tidak dapat memiliki biaya negatif atau nol).
+            </p>
+        </div>
+    </div>
+    <div id="inputDestinationRasterOrFeatures">
+        <div><h2>Input Raster atau Fitur Tujuan</h2></div>
+        <hr/>
+        <div>
+            <p>Input yang mendefinisikan tujuan yang digunakan untuk menghitung jarak. Layer bisa berupa raster atau fitur.
+            </p>
+            <p>Jika input adalah layanan gambar, input terdiri dari sel-sel yang memiliki nilai yang valid (nol adalah nilai yang valid), dan sel-sel yang tersisa harus diberi NoData.
+            </p>
+        </div>
+    </div>
+    <div id="outputPolylineName">
+        <div><h2>Nama layer polyline hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Anda dapat menentukan nama folder di  <b>Konten Saya</b> tempat hasil akan disimpan menggunakan kotak drop-down <b>Simpan hasil di</b>.
+            </p>
+        </div>
+    </div>
+    <div id="pathType">
+        <div><h2>Pilih jenis jalur untuk ditentukan</h2></div>
+        <hr/>
+        <div>
+            <p>Mendefinisikan cara di mana nilai-nilai dan zona pada input data tujuan akan ditafsirkan dalam perhitungan biaya jalan.
+            </p>
+            <ul>
+                <li>Single Terbaik &mdash; Untuk semua sel atau lokasi pada data tujuan input, jalur biaya paling rendah diturunkan dari lokasi dengan minimum lintasan biaya terendah ke lokasi sumber. Ini adalah default
+                    
+
+                </li>
+                <li>Untuk Setiap Sel &mdash; Untuk setiap sel atau lokasi dengan nilai yang valid pada data tujuan input, jalur biaya terkecil ditentukan dan disimpan pada feature service output. Dengan opsi ini, setiap sel dari data tujuan input diperlakukan secara terpisah, dan jalur biaya paling rendah ditentukan untuk masing-masing dari sel.
+                    
+
+                </li>
+                <li>Untuk Setiap Zona &mdash; Untuk setiap zona pada data tujuan input, jalur biaya terkecil ditentukan dan disimpan pada feature service output. Dengan opsi ini, lintasan biaya terendah untuk setiap zona dimulai di sel atau lokasi dengan pembobotan jarak biaya terendah di zona tersebut.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
+</html>

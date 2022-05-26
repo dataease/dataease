@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Määra optimaalne sõidukulude võrk</h2><p/>
+        <h2><img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" alt="T&ouml;&ouml;vahendi M&auml;&auml;ra optimaalne s&otilde;idukulude v&otilde;rk illustratsioon"></h2>
+        <hr/>
+    <p>See t&ouml;&ouml;riist arvutab optimaalse kuluv&otilde;rgu sisendpiirkondade komplekti p&otilde;hjal.
+    </p>
+    <p>Selle t&ouml;&ouml;vahendi kasutamise &uuml;ks n&auml;ide on h&auml;daabis&otilde;idukite parima v&otilde;rgu leidmine.
+    </p>
+    <p>Kui ruut  <b>Kasuta praegust kaardi ulatust</b> on m&auml;rgitud, anal&uuml;&uuml;sitakse ainult neid sisendkihi objekte, mis on n&auml;htavad kaardi praeguses ulatuses. Kui see ruut pole m&auml;rgitud, kasutatakse anal&uuml;&uuml;si koostamisel k&otilde;iki sisendkihis olevaid objekte ka siis, kui neid pole praegu kaardil n&auml;ha.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRegionsRasterOrFeatures">
+        <div><h2>Vahemaa arvutamiseks valige objekti asukohakihi raster</h2></div>
+        <hr/>
+        <div>
+            <p>Sisendpiirkonnad, mis tuleb &uuml;hendada k&otilde;ige soodsama hinnaga v&otilde;rguga.
+            </p>
+            <p>Piirkonnad v&otilde;ib m&auml;&auml;ratleda kas pilditeenusena v&otilde;i objektiteenusena.
+            </p>
+            <p>Pilditeenuse puhul m&auml;&auml;ratletakse regioonid sama v&auml;&auml;rtusega pikslite piirnevate (k&uuml;lgnevate) r&uuml;hmadena. Igal piirkonnal peab olema unikaalne number. Pikslid, mis ei kuulu &uuml;htegi piirkonda, peavad olema vorminguga NoData. Rastri t&uuml;&uuml;p peab olema t&auml;isarv ja v&auml;&auml;rtus v&otilde;ib olla kas positiivne v&otilde;i negatiivne.
+            </p>
+            <p>Objektiteenuse puhul v&otilde;ib sisend olla punkt, joon v&otilde;i hulknurk.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Valige sõidukulude rasterkiht.</h2></div>
+        <hr/>
+        <div>
+            <p>Raster m&auml;&auml;rab takistuse v&otilde;i kulu planimeetrilisel liikumisel l&auml;bi iga piksli.
+            </p>
+            <p>Piksli iga asukoha v&auml;&auml;rtus v&auml;ljendab vahemaa &uuml;hiku maksumuse liikumisel l&auml;bi piksli. Iga piksli asukoha v&auml;&auml;rtus korrutatakse piksli resolutsiooniga, mis kompenseerib ka diagonaalliikumist, et saada l&auml;bi piksli liikumise kogukulu.
+            </p>
+            <p>Kulurastri v&auml;&auml;rtus v&otilde;ib t&auml;isarv v&otilde;i ujuva v&auml;&auml;rtusega arv, kuid ei tohi olla negatiivne v&otilde;i null (kulu ei saa olla negatiivne v&otilde;i null).
+            </p> 
+        </div>
+    </div>
+    <div id="outputOptimumNetworkName">
+        <div><h2>Tulemuseks on optimaalsed teed murdjoone kihinimega</h2></div>
+        <hr/>
+        <div>
+            <p>Selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+    <div id="outputNeighborNetworkName">
+        <div><h2>Tulemuseks on naaberteed murdjoone kihinimega</h2></div>
+        <hr/>
+        <div>
+            <p>Selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

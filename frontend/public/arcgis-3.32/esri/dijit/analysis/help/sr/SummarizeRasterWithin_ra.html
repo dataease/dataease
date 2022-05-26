@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Sumiraj raster unutar</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="Alatka Sumiraj raster unutar"></h2>
+        <hr/>
+    <p>Ova alatka sumira raster na osnovu oblasti (zona) definisanih prvim ulaznim slojem.
+    </p>
+    <p>Neki primeri primene obuhvataju sledeće:
+    </p>
+    <p>
+        <ul>
+            <li>S obzirom na dati sloj granica vododelnice i sloj granica upotrebe zemlji&scaron;ta po tipu upotrebe zemlji&scaron;ta, izračunajte ukupnu povr&scaron;inu tipa upotrebe zemlji&scaron;ta za svaku vododelnicu.
+                
+
+            </li>
+            <li>S obzirom na dati sloj sa parcelama u okrugu i sloj granica grada, sumirajte prosečnu vrednost praznih parcela unutar granica svakog grada.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Ako je opcija  <b>Koristi trenutni obuhvat mape</b> izabrana, biće sumirani samo oni geoobjekti iz ulaznog sloja i sloja za sumiranje koji su vidljivi unutar trenutnog obuhvata mape. Ako ova opcija nije potvrđena, biće sumirani svi geoobjekti u ulaznom sloju i sloju za sumiranje, čak i ako su izvan trenutnog obuhvata mape.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Odaberite sloj oblasti da biste sumirali rasterski sloj unutar definisanih granica</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj koji defini&scaron;e granice oblasti ili zona koje će biti sumirane.
+            </p>
+            <p>Sloj može da bude raster ili podatak geoobjekta. Za rastere, zone su definisane prema svim lokacijama u ulazu koje imaju istu vrednost ćelije. Oblasti ne moraju da budu susedne.
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>Odaberite polje za definisanje granica</h2></div>
+        <hr/>
+        <div>
+            <p>To je atribut sloja koji će se koristiti za definisanje granica oblasti.
+            </p>
+            <p>Na primer, pretpostavimo da prvi ulazni sloj defini&scaron;e granice jedinica upravljanja, sa atributima koji defini&scaron;u region, okrug i ID parcele svake jedinice. Takođe imate i rasterski sloj koji defini&scaron;e indeks biodiverziteta za svaku lokaciju. Sa poljem koje izaberete, možete da odlučite da izračunate prosečni biodiverzitet na lokalnim, okružnim ili regionalnim nivoima.
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>Odaberite rasterski sloj za sumiranje</h2></div>
+        <hr/>
+        <div>
+            <p>Ćelije rastera u ovom sloju će biti sumirane po oblastima (zonama) u koje upadnu.
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>Odaberite statistiku za izračunavanje</h2></div>
+        <hr/>
+        <div>
+            <p>Kada izaberete sloj za sumiranje, možete opciono da izračunate statistiku bilo kog numeričkog atributa tačaka, linija ili oblasti unutar sloja ulazne oblasti.
+            </p>
+            <p>Dostupni tipovi statistike kada je odabrano polje celobrojno su prosek, većina, maksimum, srednja vrednost, minimum, manjina, opseg, standardna devijacija, zbir i raznovrsnost.
+            </p>
+            <p>Ako je polje sa pokretnim zarezom, opcije su prosek, maksimum, minimum, opseg, standardna devijacija i zbir.
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>Ignoriši nedostajuće vrednosti u izračunavanju</h2></div>
+        <hr/>
+        <div>
+            <p>Ako odaberete da ignori&scaron;ete vrednosti koje nedostaju, za određivanje izlazne vrednosti za tu oblast će se koristiti samo ćelije koje imaju vrednost u sloju koji treba da se sumira. U suprotnom, ako bilo gde u oblasti nedostaju vrednosti, smatra se da nema dovoljno informacija za vr&scaron;enje statističkih izračunavanja za sve ćelije u toj zoni i ta oblast će na izlazu dobiti vrednost null (bez podataka).
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p>Naziv sloja koji će biti kreiran u  <b>Mom sadržaju</b> i dodat mapi. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako sloj već postoji, bićete upitani da unesete drugi naziv.
+            </p>
+            <p>Možete da navedete ime fascikle u  <b>Mom sadržaju</b> gde će rezultat biti sačuvan kori&scaron;ćenjem padajućeg polja <b>Sačuvaj rezultat u</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

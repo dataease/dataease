@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Ekstrahiraj raster</h2><p/>
+        <h2><img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" alt="Orodje Ekstrahiraj raster za Portal"></h2>
+        <hr/>
+    <p>To orodje lahko pripne raster k meji, bodisi k pravokotnemu območju ali k obliki, ki jo interaktivno določite na zaslonu. Izsekate lahko na obseg območja, ki je trenutno prikazano na va&scaron;i karti, ali na &scaron;tudijsko območje, določeno s poligonom.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izberi vhodne podatke za ekstrahiranje</h2></div>
+        <hr/>
+        <div>
+            <p>Vhodni sloj za izsek.
+            </p>
+        </div>
+    </div>
+    <div id="clippingGeometry">
+        <div><h2>Določi geometrijo izrezovanja</h2></div>
+        <hr/>
+        <div>
+            <p>Izberite tip obsega, ki ga želite uporabiti pri rezanju geometrije sloja:
+
+                <ul>
+                    <li>Uporabi trenutni obseg &ndash; trenutni obseg karte se bo uporabljal za izsek sloja z rezultati. To je privzeto.
+                        
+
+                    </li>
+                    <li>Izberi &scaron;tudijsko območje &ndash; omogoča vam možnost izbire, ali bodo rezultati prikazali območje znotraj obsega geometrije ali območje zunaj obsega geometrije. Če izberete možnost  <b>Podatki znotraj geometrije</b>, bo odstranjeno slikovje zunaj obsegov. Če izberete možnost <b>Podatki zunaj geometrije</b> bo odstranjeno slikovje znotraj obsegov. Prav tako lahko določite geometrijo izseka s pomočjo orodja za risanje.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p>Ime sloja, ki bo ustvarjen v odseku  <b>Moja vsebina</b> in dodan na karto. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, bo od vas zahtevano, da vnesete drugo ime.
+            </p>
+            <p>Lahko navedete ime mape v  <b>Moji vsebini</b>, kjer bo rezultat shranjen s pomočjo spustnega menija <b>Shrani rezultat v</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

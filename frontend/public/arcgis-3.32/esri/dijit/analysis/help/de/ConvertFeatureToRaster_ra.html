@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Feature in Raster konvertieren</h2><p/>
+        <h2><img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" alt="Werkzeug &quot;Feature in Raster konvertieren&quot;"></h2>
+        <hr/>
+    <p>Mit diesem Werkzeug werden Features in ein Raster-Dataset konvertiert.
+    </p>
+    <p>Jede Feature-Class mit Punkt-, Linien- oder Polygon-Features kann in ein Raster-Dataset konvertiert werden.
+    </p>
+    <p>Anhand des Zellenmittelpunktes wird der Wert des Ausgabe-Raster-Pixels ausgew&auml;hlt.
+    </p>
+    <p>Der Typ des Ausgabe-Rasters wird anhand des Eingabefeldtyps bestimmt. Wenn das Eingabefeld ganzzahlig ist, ist das Ausgabe-Raster ebenfalls ganzzahlig; wenn es vom Typ &quot;Gleitkomma&quot; ist, weist die Ausgabe auch den Typ &quot;Gleitkomma&quot; auf.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Zu konvertierenden Layer auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Der Eingabe-Feature-Layer, der in ein Raster-Dataset konvertiert werden soll.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Feld auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>W&auml;hlen Sie das Feld aus, das verwendet wird, um dem Ausgabe-Raster Werte zuzuweisen.
+            </p> 
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Ausgabe-Zellengröße</h2></div>
+        <hr/>
+        <div>
+            <p>Die Zellengr&ouml;&szlig;e und Einheit f&uuml;r die Ausgabe-Raster.
+            </p>
+            <p>Die verf&uuml;gbaren Einheiten lauten Meilen, Fu&szlig;, Kilometer und Meter. Standardm&auml;&szlig;ig wird Fu&szlig; verwendet.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p>Der Name des Layers, der in  <b>Eigene Inhalte</b> erstellt und der Karte hinzugef&uuml;gt wird. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, werden Sie aufgefordert, einen anderen Namen einzugeben.
+            </p>
+            <p>Sie k&ouml;nnen den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis &uuml;ber das Dropdown-Feld <b>Ergebnis speichern in</b> gespeichert wird.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

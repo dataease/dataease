@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/supportClasses/map/StaticMap",["dojo/_base/declare","dojo/Evented","esri/dijit/geoenrichment/Deferred","dojo/dom-construct","dojo/dom-style"],function(e,f,g,d,b){return e(f,{_mapImageInfo:null,_mapImage:null,loaded:!1,updating:!1,error:!1,constructor:function(h,a){this._mapImageInfo=h;this._mapImage=d.create("img",{"class":"esriGEAbsoluteStretched"},a);b.set(this._mapImage,{width:b.get(a,"width")+"px",height:b.get(a,"height")+"px"});b.set(a,"position",
+"relative")},load:function(){function b(b){a.error=!0;b&&console.log(b);a.destroy();c.resolve()}var a=this,c=new g;if(!this._mapImageInfo.url)return b(Error("No URL specified.")),c.promise;this._mapImage.onload=function(){a.loaded=!0;a._mapImage.onload=a._mapImage.onerror=null;c.resolve()};this._mapImage.onerror=function(d){a._mapImage.onload=a._mapImage.onerror=null;0===a._mapImageInfo.url.indexOf("data:application/json")?(a.loaded=!0,c.resolve()):b(d)};this._mapImage.src=this._mapImageInfo.url;
+return c.promise},destroy:function(){d.destroy(this._mapImage)}})});

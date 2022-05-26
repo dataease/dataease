@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Nustatyti kelionės sąnaudų maršrutą kaip poliliniją</h2><p/>
+        <h2><img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" alt="Įrankio Nustatyti kelionės sąnaudų mar&scaron;rutą kaip poliliniją iliustracija"></h2>
+        <hr/>
+    <p>&Scaron;is įrankis skaičiuoja mažiausių sąnaudų polilinijų mar&scaron;rutą tarp pradinių ta&scaron;kų ir žinomų tikslinių vietų.
+    </p>
+    <p>Taikymo pavyzdžiai:
+        <ul>
+            <li>Raskite geriausią mar&scaron;rutą naujam keliui pagal kelio tiesimo i&scaron;laidas.
+                
+
+            </li>
+            <li>Nustatykite tinkamiausią kelią nuo kelių priemiesčio vietų (&scaron;altinio) iki artimiausio prekybos centro (paskirties vietos).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jei  <b>Naudoti esamą žemėlapio aprėptį</b> pažymėta, bus analizuojamos tik tos įvesties sluoksnių padėtys, kurios patenka į esamo žemėlapio aprėptį Jei nepažymėta, bus analizuojamos visos padėtys abiejuose įvesties sluoksniuose, net jei jos nepatenka į esamą žemėlapio aprėptį.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Pasirinkite rastro arba elementų šaltinio sluoksnį, iš kurių norite nustatyti maršrutus</h2></div>
+        <hr/>
+        <div>
+            <p>Vaizdų arba elementų paslauga, kuri nustato gardeles, i&scaron; kurių nustatytas mažiausiai kainuojantis mar&scaron;rutas iki pigiausios paskirties vietos.
+            </p>
+            <p>Jei įvestis yra vaizdų paslauga, įvestį sudaro nulines reik&scaron;mes (nulis yra tinkama reik&scaron;mė) turinčios gardelės, o likusios gardelės turi būti pažymėtos kaip be duomenų.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Pasirinkite kelionės sąnaudų rastrinį sluoksnį.</h2></div>
+        <hr/>
+        <div>
+            <p>Rastras, apibrėžiantis planimetri&scaron;ko judėjimo per kiekvieną gardelę sąnaudas.
+            </p>
+            <p>Kiekvienos gardelės padėties reik&scaron;mė atspindi sąnaudos vienetui atstumą judant per gardelę. Kiekvienos gardelės padėties reik&scaron;mė dauginama i&scaron; gardelės skiriamosios gebos, kompensuojant už judėjimą įstrižai, ir gaunama bendrųjų sąnaudų kertant gardelę suma.
+            </p>
+            <p>Sąnaudų rastro reik&scaron;mės gali būti sveikieji skaičiai arba skaičiai su slankiuoju kableliu, tačiau ne neigiamos ir ne nulinės reik&scaron;mės (sąnaudos negali būti neigiamos arba nulinės).
+            </p>
+        </div>
+    </div>
+    <div id="inputDestinationRasterOrFeatures">
+        <div><h2>Įvesties paskirties rastras arba elementai</h2></div>
+        <hr/>
+        <div>
+            <p>Įvestis, apibrėžianti paskirties vietas, naudojamas skaičiuojant atstumą. Sluoksnį gali sudaryti rastriniai arba elementų duomenys.
+            </p>
+            <p>Jei įvestis yra vaizdų paslauga, įvestį sudaro nulines reik&scaron;mes (nulis yra tinkama reik&scaron;mė) turinčios gardelės, o likusios gardelės turi būti pažymėtos kaip be duomenų.
+            </p>
+        </div>
+    </div>
+    <div id="outputPolylineName">
+        <div><h2>Rezultatų polilinijų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Sluoksnio, kuris bus sukurtas puslapyje  <b>Turinys</b> ir įtrauktas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau egzistuoja, būsite papra&scaron;yti pateikti kitą pavadinimą.
+            </p>
+            <p>Galite nurodyti aplanko  <b>Turinyje</b>, kuriame rezultatai bus įra&scaron;yti naudojant i&scaron;&scaron;okantįjį meniu <b>Rezultatą įra&scaron;yti į</b>, pavadinimą.
+            </p>
+        </div>
+    </div>
+    <div id="pathType">
+        <div><h2>Pasirinkite, kokių tipų maršrutus nustatyti</h2></div>
+        <hr/>
+        <div>
+            <p>Nustato būdą, pagal kurį skaičiuojant mar&scaron;rutų kainas bus interpretuojamos įvesties paskirties vietų duomenų reik&scaron;mės ir zonos.
+            </p>
+            <ul>
+                <li>Geriausias atskiras elementas &ndash; i&scaron; visų įvesties paskirties vietos duomenų gardelių ir vietų rastas mažiausias sąnaudas turintis mar&scaron;rutas, gautas i&scaron; padėties, kurioje mažiausiai mažiausių sąnaudos mar&scaron;rutų iki &scaron;altinio padėties. Tai numatytasis nustatymas.
+                    
+
+                </li>
+                <li>Kiekvienai gardelei &ndash; kiekvienai gardelei arba padėčiai su tinkamomis reik&scaron;mėmis įvesties paskirties vietos duomenyse nustatomas ir i&scaron;vesties elementų paslaugoje įra&scaron;omas mažiausių sąnaudų mar&scaron;rutas. Naudojant &scaron;ią parinktį, kiekviena įvesties paskirties vietos duomenų gardelė apdorojama atskirai ir kiekvienai i&scaron; jų nustatomas mažiausių sąnaudų mar&scaron;rutas.
+                    
+
+                </li>
+                <li>Kiekvienai zonai &ndash; kiekvienai zonai įvesties paskirties vietos duomenyse nustatomas ir i&scaron;vesties elementų paslaugoje įra&scaron;omas mažiausių sąnaudų mar&scaron;rutas. Naudojant &scaron;ią parinktį, kiekvienai zonai skirtas mažiausios kainos mar&scaron;rutas prasideda gardelėje arba vietoje su mažiausių sąnaudų atstumo svoriu zonoje.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Rezumat în interior</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Rezumat &icirc;n"></h2>
+        <hr/>
+    <p>Acest instrument găseşte obiecte spaţiale (şi porţiuni de obiecte spaţiale) care se &icirc;nscriu &icirc;n graniţele suprafeţelor din primul strat tematic de intrare.  De exemplu:
+        <ul>
+            <li>Av&acirc;nd un strat tematic de graniţe de cumpănă de ape şi un strat tematic cu graniţe de utilizare a terenurilor &icirc;n funcţie de tipul utilizărilor, calculaţi suprafaţa totală pentru fiecare tip de utilizare a terenului pentru fiecare cumpănă de ape. 
+            </li>
+            <li>Av&acirc;nd un strat tematic de parcele dintr-un judeţ şi un strat tematic de limite ale localităţilor, rezumaţi valoarea medie a parcelelor libere dintre graniţele fiecărei localităţi.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Dacă se bifează  <b>Utilizare extindere curentă hartă</b>, vor fi analizate numai acele obiecte spaţiale din stratul tematic de intrare şi din stratul tematic de sumarizat care sunt vizibile din extinderea curentă a hărţii.  Dacă nu se bifează, vor fi analizate toate obiectele spaţiale at&acirc;t din stratul tematic de intrare, c&acirc;t şi din stratul tematic de analizat, chiar dacă acestea se află &icirc;n afara extinderii curente a hărţii.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Alegeţi stratul tematic de suprafeţe care va rezuma celelalte obiecte spaţiale între graniţele sale</h2></div>
+        <hr/>
+        <div>
+            <p>Stratul tematic de suprafeţe care va fi utilizat pentru a rezuma obiectele spaţiale care se &icirc;ncadrează &icirc;ntre graniţele sale. 
+            </p>
+            <p>Puteţi alege &icirc;ntre un strat tematic de suprafeţe pe care &icirc;l furnizaţi şi coşuri care sunt generate atunci c&acirc;nd rulează instrumentul.   Atunci c&acirc;nd sunt generate coşuri, pentru  <b>Pătrat</b>, numărul şi unităţile specificate determină &icirc;nălţimea şi lungimea pătratului. Pentru <b>Hexagon</b>, numărul şi unităţile specificate determină distanţa dintre laturi paralele.
+            </p>
+            <p>Pe l&acirc;ngă alegerea unui strat tematic din harta dvs., puteţi selecta  <b>Alegere strat tematic de analiză</b>, care se găseşte &icirc;n partea de jos a listei derulante. Această opțiune deschide o galerie &icirc;n care puteți răsfoi și selecta seturi de date din diferite surse pentru a le utiliza &icirc;n analiza dvs. 
+            </p>
+        </div>
+    </div>
+    <div id="Summarize">
+        <div><h2>Alegere strat tematic pentru rezumat</h2></div>
+        <hr/>
+        <div>
+            <p>Obiectele spaţiale din acest strat tematic, care se &icirc;ncadrează &icirc;n graniţele obiectelor spaţiale din stratul tematic de intrare de mai sus vor fi sumarizate. 
+            </p>
+            <p>Pe l&acirc;ngă alegerea unui strat tematic din harta dvs., puteţi selecta  <b>Alegere strat tematic de analiză</b>, care se găseşte &icirc;n partea de jos a listei derulante. Această opțiune deschide o galerie &icirc;n care puteți răsfoi și selecta seturi de date din diferite surse pentru a le utiliza &icirc;n analiza dvs. 
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPoint">
+        <div><h2>Adăugare statistică din stratul tematic care va fi rezumat</h2></div>
+        <hr/>
+        <div>
+            <p>Opţional, puteţi calcula statistici pentru atributele numerice ale punctelor care se &icirc;ncadrează &icirc;n graniţele obiectelor spaţiale. 
+            </p>
+            <p>Caseta de validare  <b>Număr de puncte</b>, dacă este bifată, va calcula numărul total de puncte din fiecare suprafaţă cu graniţe.  &Icirc;n plus, puteţi calcula statistici pentru atributele numerice ale punctelor care se &icirc;ncadrează &icirc;n graniţele fiecărei suprafeţe.
+            </p>
+            <ul>
+                <li> <b>Sumă</b>&mdash;Valoarea totală pentru c&acirc;mpul specificat.
+                </li>
+                <li> <b>Medie</b>&mdash;Media pentru c&acirc;mpul specificat.
+                </li>
+                <li> <b>Minim</b>&mdash;Cea mai mică valoare pentru c&acirc;mpul specificat.
+                </li>
+                <li> <b>Maxim</b>&mdash;Cea mai mare valoare pentru c&acirc;mpul specificat.
+                </li>
+                <li> <b>Abatere standard</b>&mdash;Abaterea standard a valorilor din c&acirc;mpul specificat.
+                </li>
+            </ul>
+            
+            <p>Dacă stratul tematic de rezumat nu are niciun c&acirc;mp de numere, statisticile suplimentare nu vor fi disponibile.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsLine">
+        <div><h2>Adăugare statistică din</h2></div>
+        <hr/>
+        <div>
+            <p>Opţional, puteţi calcula statistici pentru ca atributele numerice ale liniilor să fie sumarizate. 
+            </p>
+            <p>Caseta de validare  <b>Lungimea totală a liniilor din</b>, dacă este bifată, va calcula lungimea totală a liniilor din fiecare suprafaţă cu graniţe.  &Icirc;n plus, puteţi calcula statistici pentru atributele numerice ale liniilor care se &icirc;ncadrează &icirc;n graniţele fiecărei suprafeţe.
+            </p>
+            <ul>
+                <li> <b>Sumă</b>&mdash;Valoarea totală pentru c&acirc;mpul specificat.
+                </li>
+                <li> <b>Medie</b>&mdash;Media pentru c&acirc;mpul specificat.
+                </li>
+                <li> <b>Minim</b>&mdash;Cea mai mică valoare pentru c&acirc;mpul specificat.
+                </li>
+                <li> <b>Maxim</b>&mdash;Cea mai mare valoare pentru c&acirc;mpul specificat.
+                </li>
+                <li> <b>Abatere standard</b>&mdash;Abaterea standard a valorilor din c&acirc;mpul specificat.
+                </li>
+            </ul>
+            
+            <p>Dacă stratul tematic de rezumat nu are niciun c&acirc;mp de numere, statisticile suplimentare nu vor fi disponibile.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsPolygon">
+        <div><h2>Adăugare statistică din</h2></div>
+        <hr/>
+        <div>
+            <p>Opţional, puteţi calcula statistici pentru ca atributele numerice ale suprafeţelor să fie sumarizate. 
+            </p>
+            <p>Caseta de validare  <b>&Icirc;nsumare suprafaţă utiliz&acirc;nd</b>, dacă este bifată, va calcula suprafaţa totală a obiectelor spaţiale care se află &icirc;n fiecare suprafaţă cu graniţe a primului strat tematic de intrare.  &Icirc;n plus, puteţi calcula statistici pentru atributele numerice ale obiectelor spaţiale care se &icirc;ncadrează &icirc;n graniţele fiecărei suprafeţe.
+            </p>
+            <ul>
+                <li> <b>Sumă</b>&mdash;Valoarea totală pentru c&acirc;mpul specificat.
+                </li>
+                <li> <b>Medie</b>&mdash;Media pentru c&acirc;mpul specificat.
+                </li>
+                <li> <b>Minim</b>&mdash;Cea mai mică valoare pentru c&acirc;mpul specificat.
+                </li>
+                <li> <b>Maxim</b>&mdash;Cea mai mare valoare pentru c&acirc;mpul specificat.
+                </li>
+                <li> <b>Abatere standard</b>&mdash;Abaterea standard a valorilor din c&acirc;mpul specificat.
+                </li>
+            </ul>
+            
+            <p>Dacă stratul tematic de rezumat nu are niciun c&acirc;mp de numere, statisticile suplimentare nu vor fi disponibile.
+            </p>
+        </div>
+    </div>
+    <div id="StatisticsNoLayer">
+        <div><h2>Adăugare statistică din</h2></div>
+        <hr/>
+        <div>
+            <p>După ce alegeţi un strat tematic pentru a fi sumarizat, opţional, puteţi calcula statistici pentru oricare dintre atributele numerice ale punctelor, liniilor sau suprafeţelor din stratul tematic de suprafeţe de intrare. 
+            </p>
+            <ul>
+                <li> <b>Sumă</b>&mdash;Valoarea totală pentru c&acirc;mpul specificat
+                </li>
+                <li> <b>Medie</b>&mdash;Media pentru c&acirc;mpul specificat
+                </li>
+                <li> <b>Minim</b>&mdash;Cea mai mică valoare din c&acirc;mpul specificat
+                </li>
+                <li> <b>Maxim</b>&mdash;Cea mai mare valoare pentru c&acirc;mpul specificat
+                </li>
+                <li> <b>Abatere standard</b>&mdash;Abaterea standard a valorilor din c&acirc;mpul specificat
+                </li>
+            </ul>
+            
+            <p>&Icirc;n funcţie de tipurile de obiecte spaţiale pe care le rezumaţi, puteţi calcula numărul total de puncte, lungimea totală a liniilor sau suprafaţa totală.
+            </p>
+            <p>Dacă stratul tematic de rezumat nu are niciun c&acirc;mp de numere, statisticile suplimentare nu vor fi disponibile.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Alegere câmp după care să se facă gruparea</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este un atribut al obiectelor spaţiale rezultate după  <b>Sumarizare</b>, pe care &icirc;l puteţi utiliza pentru a calcula statistici separate pentru fiecare valoare de atribut unică. De exemplu, să presupunem că stratul tematic de intrare conţine graniţe de oraşe, iar obiectele spaţiale rezumate sunt parcele.  Unul dintre atributele parcelelor este <i>Status</i> care conține două valori: LIBER și OCUPAT. Pentru a calcula suprafaţa totală a parcelelor libere şi ocupate din interiorul graniţelor oraşelor, utilizaţi <i>Status</i> ca grup după atribut. Statistica pentru fiecare punct &icirc;mpreună cu numărul de obiecte spaţiale din interiorul graniţelor fiecărei suprafeţe vor fi afişate &icirc;n fereastra pop-up a stratului tematic rezultat.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Adăugare minoritate, majoritate</h2></div>
+        <hr/>
+        <div>
+            <p>Această casetă de selectare este activată c&acirc;nd alegeţi un c&acirc;mp după care să efectuaţi gruparea. Dacă doriţi să aflaţi ce valori de atribute din fiecare grup reprezintă minoritatea (cele mai puţin frecvente) sau majoritatea (cele mai frecvente) din interiorul primului strat tematic de intrare, selectaţi  <b>Adăugare minoritate, majoritate</b>.   C&acirc;nd selectaţi <b>Adăugare minoritate, majoritate</b>, &icirc;n stratul tematic rezultat sunt adăugate două c&acirc;mpuri noi.   Dacă selectaţi şi opţiunea <b>Adăugare procentaje</b>, &icirc;n stratul tematic rezultat sunt adăugate &icirc;ncă două c&acirc;mpuri, conţin&acirc;nd procentajele valorilor de atribute aflate &icirc;n minoritate şi majoritate &icirc;n fiecare grup.
+            </p>
+            <ul>
+                <li>&Icirc;n cazul &icirc;n care creaţi un rezumat al punctelor, valorile aflate &icirc;n minoritate şi majoritate sunt calculate pe baza numărului de puncte din interiorul fiecărei graniţe din stratul tematic de suprafeţe de intrare.  
+                </li>
+                <li>&Icirc;n cazul &icirc;n care creaţi un rezumat al liniilor, valorile aflate &icirc;n minoritate şi majoritate sunt calculate pe baza lungimii liniilor din interiorul fiecărei graniţe din stratul tematic de suprafeţe de intrare.  
+                </li>
+                <li>&Icirc;n cazul &icirc;n care creaţi un rezumat al suprafeţelor, valorile aflate &icirc;n minoritate şi majoritate sunt calculate pe baza ariei suprafeţelor din interiorul fiecărei graniţe din stratul tematic de suprafeţe de intrare.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Adăugare procente</h2></div>
+        <hr/>
+        <div>
+            <p>Această casetă de selectare este activată c&acirc;nd alegeţi un c&acirc;mp după care să efectuaţi gruparea.    Selectați  <b>Adăugare procentaje</b> dacă doriți să aflați procentajul fiecărei valori de atribut din fiecare grup. &Icirc;n tabelul de rezultate este adăugat un nou c&acirc;mp care conţine procentajele fiecărei valori de atribut din fiecare grup. Dacă este bifată și opțiunea <b>Adăugare minoritate, majoritate</b>, &icirc;n stratul tematic rezultat sunt adăugate &icirc;ncă două c&acirc;mpuri cu procentajele valorilor de atribute aflate &icirc;n minoritate și majoritate &icirc;n fiecare grup.
+            </p>
+        </div>
+    </div>
+    <div id="ResultLayerName">
+        <div><h2>Nume strat tematic rezultat</h2></div>
+        <hr/>
+        <div>
+            <p>Acesta este numele stratului tematic care va fi creat &icirc;n  <b>Resursele mele</b> și adăugat &icirc;n hartă.  Numele implicit se bazează pe numele instrumentului și numele stratului tematic de intrare. Dacă numele stratului tematic rezultat există deja, vi se va solicita să furnizați un alt nume.
+            </p>
+            <p>Utiliz&acirc;nd meniul derul&acirc;nd  <b>Salvare rezultat &icirc;n</b>, puteți specifica numele unui director din <b>Resursele mele</b> &icirc;n care va fi salvat rezultatul.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

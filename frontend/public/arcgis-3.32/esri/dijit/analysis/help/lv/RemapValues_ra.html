@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Pārkartēt vērtības</h2><p/>
+        <h2><img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" alt="Portāla rīks Pārkartēt vērtības"></h2>
+        <hr/>
+    <p>&Scaron;is rīks ļauj mainīt vai pārklasificēt rastra datu pikseļu vērtības. Pikseļu vērtības tiek pārkartētas, norādot pikseļu vērtību diapazonu, kas jākartē pie izvades pikseļu vērtības. Izvades pikseļu vērtība var būt derīga vērtība vai NoData vērtība, kas ir pikseļi, ar kuriem nav piesaistīta zināma vērtība.
+    </p>
+    <p>Ja ir atzīmēta opcija  <b>Lietot pa&scaron;reizējo kartes pārklājumu</b>, tiks pārkartētas tikai pa&scaron;reizējā kartes pārklājumā redzamās &scaron;ūnas. Ja opcija nav atzīmēta, tiks apstrādātas visas rastra &scaron;ūnas; arī tās, kas atrodas ārpus pa&scaron;reizējā kartes pārklājuma.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Ievades dati</h2></div>
+        <hr/>
+        <div>
+            <p>Tiks pārkartētas ievades datu vērtības.
+            </p>
+        </div>
+    </div>
+    <div id="RemapList">
+        <div><h2>Pārkartēt pikseļu vērtības uz jaunām vērtībām</h2></div>
+        <hr/>
+        <div>
+            <p>Ievadiet vērtību diapazonu, norādot minimālo un maksimālo vērtību, un pie&scaron;ķiriet norādītajam diapazonam izvades vērtību vai NoData vērtību.
+            </p>
+            <p>Lai pārkartētu jaunu vērtību diapazonu, noklik&scaron;ķiniet uz  <b>Pievienot</b>, tādējādi pievienojot jaunu rindu. Noklik&scaron;ķiniet uz katras vērtības, lai rediģētu tabulu atbilsto&scaron;i nepiecie&scaron;amajiem diapazoniem un pārkartētajai vērtībai. Norādot vērtību diapazonus, tiek izmantoti divas nozīmīgas kārtulas:
+                <ul>
+                    <li>Minimālā diapazona vērtība ir iekļaujo&scaron;a un maksimālā vērtība ir izslēdzo&scaron;a.
+                    </li>
+                    <li>Tabulas rindas tiek apstrādātas virzienā no aug&scaron;as uz leju.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Turpmākajā tabulā ir redzams, ka minimālā vērtība ir iekļauta izvadē, savukārt maksimālā vērtība nav iekļauta izvadē.
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>20
+                    </p>
+                </td>
+                <td>
+                    <p>10-19
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+                <td>
+                    <p>51
+                    </p>
+                </td>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Ir nozīmīga arī tabulā norādīto diapazonu secība. Tabulas aug&scaron;ējā rinda tiek apstrādāta vispirms, pēc tam tiek apstrādāta nākamā rinda. Divās turpmākajās tabulās ir redzams, kā vienādi vērtību diapazoni rada at&scaron;ķirīgus rezultātus tabulas rindu secības dēļ.
+            </p> 
+            <p>Tālāk eso&scaron;ajā tabulā ir parādītas izvades vērtības, kad pirmā kolonna tiek skaitliski sakārtota.
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1-14
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>15-29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30-39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Tālāk eso&scaron;ajā tabulā ir parādīts, kā at&scaron;ķirīga rindu kārto&scaron;ana rada at&scaron;ķirīgas izvades vērtības.
+            </p> 
+            <table border="1">
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>10-29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1&ndash;9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30-39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Abas kārtulas tiek izmantotas, lai pārkārtotu vērtības. Tā kā katra rinda tiek apstrādāta virzienā no aug&scaron;as uz leju, &scaron;īm vērtībām izvades noteik&scaron;anā ir prioritāte, pat tad, ja tiek izmantoti vienādi diapazoni.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slānis jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Mapes nosaukumu var norādīt mapē  <b>Mans saturs,</b> kur rezultāts tiks saglabāts, izmantojot nolaižamo lodziņu <b>Saglabāt rezultātu</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

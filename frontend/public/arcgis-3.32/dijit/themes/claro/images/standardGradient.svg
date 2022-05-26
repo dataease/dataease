@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<!--
+	Source file for standardGradient.png, which is used by IE7-9 for light-to-dark gradient of many widgets.
+	Compile to png with batik, gimp, or online tool ex: http://www.fileformat.info/convert/image/svg2raster.htm
+
+	Output should match CSS gradient from .standard-gradient() mixin in variables.css.
+	It is however an approximation, since generated
+	output has a constant height, rather than matching the height of each node.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 1 1" preserveAspectRatio="none">
+	<defs>
+		<linearGradient id="gradient" gradientUnits="objectBoundingBox" x1="0%" y1="0%" x2="0%" y2="100%">
+			<stop offset="0%" stop-color="#ffffff" stop-opacity="0.7"/>
+			<stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+		</linearGradient>
+	</defs>
+	<rect x="0" y="0" width="1" height="1" fill="url(#gradient)"/>
+</svg>

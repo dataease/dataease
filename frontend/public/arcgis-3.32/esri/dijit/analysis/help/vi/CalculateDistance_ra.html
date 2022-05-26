@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Tính toán Khoảng cách</h2><p/>
+        <h2><img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" alt="T&iacute;nh to&aacute;n Khoảng c&aacute;ch"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y x&aacute;c định khoảng c&aacute;ch Euclid, hướng v&agrave; sự ph&acirc;n bổ từ một nguồn hoặc tập hợp nguồn.
+    </p>
+    <p>C&aacute;c ứng dụng v&iacute; dụ bao gồm c&acirc;u trả lời cho c&aacute;c c&acirc;u hỏi như sau:
+
+        <ul>
+            <li>Khoảng c&aacute;ch tới thị x&atilde; gần nhất l&agrave; bao nhi&ecirc;u?
+                
+
+            </li>
+            <li>Khoảng c&aacute;ch tới đường gần nhất l&agrave; bao nhi&ecirc;u?
+                
+
+            </li>
+            <li>Khoảng c&aacute;ch tới nguồn nước gần nhất l&agrave; bao nhi&ecirc;u?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Nếu chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b>, th&igrave; chỉ c&aacute;c đối tượng nh&igrave;n thấy được trong lớp đầu v&agrave;o v&agrave; trong phạm vi bản đồ hiện tại mới được ph&acirc;n t&iacute;ch. Nếu bỏ chọn, tất cả đối tượng trong lớp đầu v&agrave;o sẽ được ph&acirc;n t&iacute;ch, ngay cả khi ch&uacute;ng nằm ngo&agrave;i phạm vi hiển thị của bản đồ hiện tại.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Chọn raster của lớp vị trí đối tượng để tính toán khoảng cách tới</h2></div>
+        <hr/>
+        <div>
+            <p>Lớp x&aacute;c định nguồn m&agrave; khoảng c&aacute;ch sẽ được t&iacute;nh to&aacute;n theo đ&oacute;. Lớp c&oacute; thể l&agrave; một dịch vụ h&igrave;nh ảnh hoặc dịch vụ đối tượng.
+            </p>
+            <p>Đối với dịch vụ h&igrave;nh ảnh, loại đầu v&agrave;o c&oacute; thể l&agrave; số nguy&ecirc;n hoặc điểm nổi.
+            </p>
+            <p>Đối với dịch vụ đối tượng, đầu v&agrave;o c&oacute; thể l&agrave; điểm, đường hoặc đa gi&aacute;c.
+            </p>
+        </div>
+    </div>
+    <div id="maximumDistance">
+        <div><h2>Khoảng cách tối đa để tính toán</h2></div>
+        <hr/>
+        <div>
+            <p>Khoảng c&aacute;ch tối đa cần t&iacute;nh to&aacute;n. V&iacute; dụ: nếu bạn cung cấp gi&aacute; trị bằng 10.000 m&eacute;t, khoảng c&aacute;ch Euclid sẽ được t&iacute;nh từ vị tr&iacute; nguồn ra đến gi&aacute; trị đ&oacute; (khoảng c&aacute;ch).
+            </p>
+            <p>Nếu kh&ocirc;ng c&oacute; gi&aacute; trị n&agrave;o, khoảng c&aacute;ch sẽ được t&iacute;nh ra đến phạm vi quy định.
+            </p>
+            <p>C&aacute;c đơn vị c&oacute; sẵn l&agrave; Kil&ocirc;m&eacute;t, M&eacute;t, Dặm v&agrave; Feet.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Kích cỡ Ô Đầu ra</h2></div>
+        <hr/>
+        <div>
+            <p>K&iacute;ch thước cell v&agrave; đơn vị cho c&aacute;c raster đầu ra.
+            </p>
+            <p>Đơn vị c&oacute; thể l&agrave; kil&ocirc;m&eacute;t, m&eacute;t, dặm hoặc feet.
+            </p>
+        </div>
+    </div>
+    <div id="outputDistanceName">
+        <div><h2>Tên lớp khoảng cách kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>T&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. T&ecirc;n mặc định dựa v&agrave;o t&ecirc;n c&ocirc;ng cụ v&agrave; t&ecirc;n lớp đầu v&agrave;o. Nếu lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n kh&aacute;c.
+            </p>
+            <p>Bạn c&oacute; thể chỉ định t&ecirc;n của một thư mục trong  <b>Nội dung của t&ocirc;i</b> m&agrave; tại đ&oacute; kết quả sẽ được lưu bằng c&aacute;ch sử dụng hộp xổ xuống <b>Lưu kết quả v&agrave;o</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputDirectionName">
+        <div><h2>Tên lớp hướng kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>T&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của t&ocirc;i</b>. Bạn phải đặt một t&ecirc;n hiện chưa c&oacute; trong <b>Nội dung của t&ocirc;i</b>.
+            </p>
+            <p>Bạn c&oacute; thể chỉ định t&ecirc;n của một thư mục trong  <b>Nội dung của t&ocirc;i</b> m&agrave; tại đ&oacute; kết quả sẽ được lưu bằng c&aacute;ch sử dụng hộp xổ xuống <b>Lưu kết quả v&agrave;o</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputAllocationName">
+        <div><h2>Tên lớp Phân bổ Kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>T&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của t&ocirc;i</b>. Bạn phải đặt một t&ecirc;n hiện chưa c&oacute; trong <b>Nội dung của t&ocirc;i</b>.
+            </p>
+            <p>Bạn c&oacute; thể chỉ định t&ecirc;n của một thư mục trong  <b>Nội dung của t&ocirc;i</b> m&agrave; tại đ&oacute; kết quả sẽ được lưu bằng c&aacute;ch sử dụng hộp xổ xuống <b>Lưu kết quả v&agrave;o</b>.
+            </p>
+        </div>
+    </div>
+    <div id="allocationField">
+        <div><h2>Chọn trường phân bổ</h2></div>
+        <hr/>
+        <div>
+            <p>Một trường tr&ecirc;n lớp nguồn đầu v&agrave;o chứa c&aacute;c gi&aacute; trị x&aacute;c định một nguồn. Đ&oacute; c&oacute; thể l&agrave; một số nguy&ecirc;n hoặc trường chuỗi của bộ dữ liệu nguồn.
+            </p>
+            <p>Mặc định l&agrave;  <i>Value</i>. Nếu sử dụng một dịch vụ đối tượng v&agrave; kh&ocirc;ng c&oacute; trường <i>Value</i>, th&igrave; số nguy&ecirc;n hoặc trường chuỗi đầu ti&ecirc;n c&oacute; sẵn sẽ được sử dụng. Nếu kh&ocirc;ng c&oacute; trường hợp lệ tồn tại, th&igrave; trường ObjectID (v&iacute; dụ: OID hoặc FID, t&ugrave;y thuộc v&agrave;o loại đầu v&agrave;o đối tượng) sẽ được sử dụng.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

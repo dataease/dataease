@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/charts/_ChartEventSupport",["dojo/_base/declare","./utils/builder/ChartPlots","./utils/ChartTypes","./level/LevelLineBuilder"],function(c,e,g,f){return c(null,{showLevelLine:!0,_levelLineBuilder:null,_addPlotEventListeners:function(){var a=this;this.chart&&g.hasAxis(this._currentChartType)&&(this._levelLineBuilder=this._levelLineBuilder||this.showLevelLine&&new f({lineContainerNode:this.domNode}),e.getWorkingPlots(this.chart).forEach(function(c,e){this.chart.connectToPlot(c,
+function(b){if(b.shape&&b.shape.shape&&b.shape.rawNode){var c=b.type,f=b.shape.rawNode,h=0===e?a._currentChartType:a._getComparisonChartType(),d=!1,k=!g.isXAxisVertical(a._currentChartType);a._currentVisualProperties.renderColumnBarsInOppositeDirections?(d=a.chart.series.filter(function(a){return b.run.plot===a.plot}),d=d.indexOf(b.run)>=d.length/2):d=b.y<a._currentVisualProperties.yAxis.baseLineValue;a._levelLineBuilder&&a._levelLineBuilder.supportsLevelLine(h)&&("onmouseout"===c?a._levelLineBuilder.hideLevelLine():
+"onmouseover"===c&&a._levelLineBuilder.showLevelLine(a.chart,f,h,k,d))}})},this))}})});

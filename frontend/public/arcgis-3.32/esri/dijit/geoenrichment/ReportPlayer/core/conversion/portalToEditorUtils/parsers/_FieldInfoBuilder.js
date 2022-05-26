@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/conversion/portalToEditorUtils/parsers/_FieldInfoBuilder",["../../../supportClasses/templateJsonUtils/fieldInfo/FieldInfoBuilder","dojo/i18n!esri/nls/jsapi"],function(e,f){f=f.geoenrichment.dijit.ReportPlayer.ReportPlayer;return{getCalculatorOrScriptFieldInfo:function(c,d,a){if(!c)return null;if(d.variableProvider.isPlayerOnly&&!d.useVariableProviderToCollectOnly){var b=d.variableProvider.toCalculator(c);if(!b)return console.log("Can't create a dummy calculator for \x3d\x3e "+
+c),null;a=a||{};a.calculatorName=b.variable.calculatorName;c=e.createFieldInfoFromCalculator(b,d.variableProvider,a);c.name=b.variable.fieldName;c.templateName=b.variable.templateName;return c}var b=d.queryMetaDataFunc(c),g=c.substr(0,c.indexOf("."));a=a||{};a.calculatorName=g;if(b)return b.isScript?e.createFieldInfoFromScript(b,d.variableProvider,a):e.createFieldInfoFromCalculator(b,d.variableProvider,a);a=e.createFieldInfoFromMissingVariable(c);d.variableProvider.isPlayerOnly&&(b=d.variableProvider.toCalculator(c),
+a.alias=b&&b.variable.alias);a.alias=a.alias?a.alias+" ("+f.missingVariable+")":f.missingVariable;return a}}});

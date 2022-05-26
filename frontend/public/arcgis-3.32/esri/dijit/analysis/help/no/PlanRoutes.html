@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Planlegg ruter</h2><p/>
+        <h2><img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" alt="Planlegg ruter"></h2>
+        <hr/>
+    <p>Planlegg ruter finner ut hvordan du effektivt deler oppgaver blant en mobil arbeidsstyrke.
+    </p>
+    <p>Du gir verkt&oslash;yet med et sett med stoppesteder og antallet biler som tilgjengelige for &aring; bes&oslash;ke disse stoppestedene. Verkt&oslash;yet tildeler stoppestedene til biler og returnerer ruter som viser hvordan hvert kj&oslash;ret&oslash;y kan n&aring; sine tildelte stoppesteder p&aring; kortest mulig tid.
+    </p>
+    <p>Med Planlegg ruter kan mobil arbeidskraft n&aring; flere arbeidssteder p&aring; kortere tid, noe som &oslash;ker produktiviteten og forbedrer kundeservicen.
+        <ul>
+            <li>Kontroller boliger, restauranter eller byggeplasser
+                
+
+            </li>
+            <li>Tilby reparasjon, installasjon eller tekniske tjenester
+            </li>
+            <li>Lever varer og sm&aring; pakker
+            </li>
+            <li>Foreta salgssamtaler
+            </li>
+            <li>Transporter folk fra hjemmet til et arrangement
+            </li>
+        </ul>
+        
+    </p>
+    <p>Resultat av Planlegg ruter omfatter et lag som viser stoppestedenes som er kodet til rutene de er tilordnet, et lag med ruter som viser den korteste veien for &aring; bes&oslash;ke de tilordnede stoppestedene, eventuelle stoppesteder som ikke kan n&aring;s, og et lag med stoppesteder som ikke er tilordnet. 
+    </p>
+    <p>Hvis det er merket av for  <b>Bruk gjeldende kartutstrekning</b>, er det kun geoobjektene som vises i gjeldende kartutstrekning, som blir tatt med i analysen. Hvis det ikke er merket av for dette alternativet, vurderes alle geoobjektene i inndatalaget, selv om de befinner seg utenfor gjeldende kartutstrekning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="stopsLayer">
+        <div><h2>Velg punktlaget med stoppene som skal besøkes</h2></div>
+        <hr/>
+        <div>
+            <p>Velg laget med punkt som rutene (eller kj&oslash;ret&oslash;yene) skal bes&oslash;ke. Disse punktene blir tilordnede eller utilordnede stopp i utdataene. 
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> som du finner nederst i rullegardinlisten. Dette alternativet &aring;pner et galleri der du kan bla til og velge datasett fra ulike kilder som du vil bruke i analysen. 
+            </p>
+            <p>Verkt&oslash;yet st&oslash;tter opptil 2&nbsp;000 geoobjekter som inndata .
+            </p>
+        </div>
+    </div>
+    <div id="travelMode">
+        <div><h2>Reisemodus for ruter</h2></div>
+        <hr/>
+        <div>
+            <p>Velg &oslash;nsket reisem&aring;te. Rutene som genereres f&oslash;lger veier og gangstier og tar hensyn til gjeldende regler for bil og lastebil, for eksempel enveiskj&oslash;rte gater og steder der det ikke er lov &aring; snu. Tilgjengelige reisem&aring;ter defineres av administratoren i organisasjonen.  
+            </p>
+        </div>
+    </div>
+    <div id="startLayer">
+        <div><h2>Ruter begynner ved stopp</h2></div>
+        <hr/>
+        <div>
+            <p>Angi hvor og n&aring;r bilene starter p&aring; sine ruter.
+            </p>
+            <p>Med Planlegg ruter kan du angi &eacute;n eller flere startlokasjoner for bilene dine.
+            </p>
+            <p>N&aring;r &eacute;n punktlokasjon er angitt, kj&oslash;rer alle biler fra det punktet uavhengig av om det er snakk om ett eller flere kj&oslash;ret&oslash;yer. Du kan velge et punktlag med ett punkt eller legge til et punkt p&aring; kartet ved &aring; velge  <b>Legg til punkt p&aring; kartet</b>, klikke p&aring; redigeringsknappen ved siden av og s&aring; klikke p&aring; kartet. 
+            </p>
+            <p>N&aring;r flere lokasjoner er angitt, m&aring; hver bil knyttes til sitt eget punkt. Antallet biler m&aring; samsvare med antall punkter i laget. Velg et lag med flere punkter, og angi et felt som unikt identifiserer de enkelte rutene, bilene eller sj&aring;f&oslash;rer i  <b>Rute-ID</b>-feltet i rullegardinlisten.
+            </p>
+            <p>Starttidspunktet er det samme for alle ruter. Tidssonen for starttidspunktet er den samme som den tidssonen hvor startpunktet eller punktene er plassert i, s&aring; s&oslash;rg for at den tiden du angir, er lokal tid. La oss f.eks. anta at du er i Pacific Standard Time (UTC-8.00), og bilene du ruter er stasjonert i Mountain Standard Time (UTC-7.00). Hvis
+klokken for &oslash;yeblikket er 9.30 PST (10.30 MST), og kj&oslash;ret&oslash;yene m&aring; starte p&aring; rutene om 30 minutter, b&oslash;r du sette starttiden til kl. 11.00. 
+            </p>
+            <p>Hvis bilene starter fra forskjellige tidssoner, kan ikke starttidspunktet v&aelig;re samtidig, de blir i stedet forskj&oslash;vet. Hvis en rute for eksempel starter fra et punkt i PST og en annen rute starter fra MST, og du skriver inn 11.00 som starttid, vil ruten i PST starte kl. 11.00 PST og ruten i MST starte kl. 11.00 MST &ndash; en times forskjell.
+            </p>
+        </div>
+    </div>
+    <div id="endLayer">
+        <div><h2>Ruter avsluttes ved stopp</h2></div>
+        <hr/>
+        <div>
+            <p>Angi hvor bilene avslutter sine ruter.
+            </p>
+            <p>Du kan konfigurere rutene slik at de avsluttes p&aring; en av tre lokasjoner: 
+                <ul>
+                    <li>Samme lokasjon som ruten begynte p&aring;, uansett om de startet p&aring; ett eller flere lokasjoner
+                    </li>
+                    <li>&Eacute;n enkelt lokasjon
+                    </li>
+                    <li>Mange lokasjoner, dvs. ett sluttpunkt for hver rute
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Kryss av ved  <b>G&aring; tilbake til start</b> hvis bilene starter og avslutter rutene sine p&aring; samme lokasjon.
+            </p>
+            <p>Hvis du vil rute alle biler til et felles sluttpunkt annet som er noe annet enn startpunktet, fjerner du krysset ved  <b>G&aring; tilbake til start</b> og legger til et punkt p&aring; kartet eller velger et lag som inneholder n&oslash;yaktig ett punkt.
+            </p>
+            <p>Hvis du vil at rutene skal avsluttes p&aring; unike lokasjoner, fjerner du krysset ved  <b>G&aring; tilbake til start</b> og velg et lag som inneholder flere enn ett punkt. Antallet biler m&aring; samsvare med antall punkter i det valgte laget. Velg et felt som unikt identifiserer de enkelte rutene, bilene eller sj&aring;f&oslash;rer i <b>Rute-ID-feltet</b> i rullegardinlisten. Dersom bilene starter p&aring; flere lokasjoner og avslutter p&aring; flere lokasjoner, m&aring; rute-IDene for start- og sluttidslagene samsvare.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Velg hindringslag</h2></div>
+        <hr/>
+        <div>
+            <p> Ett eller flere geoobjekter som fungerer som midlertidige begrensninger (hindringer) under transport p&aring; de underliggende gatene. Du kan angi hindringer ved hjelp av punkt-, linje- eller polygongeoobjekter.
+            </p>
+            <p>En punkthindring kan v&aelig;re et veltet tre, en ulykke, en kraftledning som er falt ned, eller andre ting som blokkerer trafikken helt p&aring; et bestemt sted i gaten. Gaten er ikke stengt for trafikk, men det er ikke mulig &aring; passere hindringen. Du kan angi opptil 250 geoobjekter som fungerer som punkthindringer.
+            </p>
+            <p>En linjehindring hindrer trafikk der hindringen krysser gatene. En linjehindring kan for eksempel v&aelig;re en parade eller protestmarsj som blokkerer trafikken over flere gatesegmenter. Hvis antallet gategeoobjekter som krysses av alle linjehindringene overstiger 500, returnerer verkt&oslash;yet en feil.
+            </p>
+            <p>En polygonhindring hindrer trafikk der polygonet krysser gatene. Denne typen hindring kan for eksempel brukes til &aring; modellere oversv&oslash;mte omr&aring;der som dekker deler av gatenettet og gj&oslash;r det umulig &aring; ferdes p&aring; gatene. Hvis antallet gategeoobjekter som krysses av alle polygonhindringene overstiger 2000, returnerer verkt&oslash;yet en feil.
+            </p>
+        </div>
+    </div>
+    <div id="routeCount">
+        <div><h2>Maksimum antall kjøretøy å opprette ruter for</h2></div>
+        <hr/>
+        <div>
+            <p>Angi antallet biler som er tilgjengelige for &aring; bes&oslash;ke disse stoppestedene. Verkt&oslash;yet st&oslash;tter opptil  100 biler. 
+            </p>
+            <p>Verkt&oslash;yet kan kanskje finne en l&oslash;sning som bruker f&aelig;rre biler enn antallet du har angitt her, avhengig av det totale antallet stoppesteder, hvor mange stopp per kj&oslash;ret&oslash;y du tillater, hvor langt stoppestedene er fra hverandre, tidsbruken p&aring; hvert stoppested, og eventuelle grenser du setter p&aring; den totale rutetiden per bil.
+            </p>
+        </div>
+    </div>
+    <div id="maxStopsPerRoute">
+        <div><h2>Maksimum antall stopp per kjøretøy</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er en av to parametere som balanserer den totale arbeidsbelastningen p&aring; rutene. Du kan angi en verdi p&aring; mellom 1 og  200. 
+            </p>
+            <p>Ved &aring; senke det maksimale antallet stopp som kan tildeles hver bil, er det mer sannsynlig at bilene f&aring;r et likt antall stoppesteder tilordnet. Dette bidrar til &aring; balansere arbeidsbelastningen blant sj&aring;f&oslash;rene. Ulempen er imidlertid at det kan f&oslash;re til en l&oslash;sning som er mindre effektiv.
+            </p>
+            <p>Ved &aring; &oslash;ke antallet stopp per kj&oslash;ret&oslash;y, har verkt&oslash;yet mer frihet til &aring; finne mer effektive l&oslash;sninger, men arbeidsmengden kan imidlertid bli ujevnt fordelt blant sj&aring;f&oslash;rer og kj&oslash;ret&oslash;yer. Merk at du kan balansere arbeidsbelastningen etter tid i tillegg til antall stopp ved &aring; angi en verdi for parameteren  <b>Begrens total rutetid per bil</b>.
+            </p>
+            <p>De f&oslash;lgende eksemplene viser virkningen av &aring; begrense det maksimale antallet stopp pr. bil eller den totale tiden pr. kj&oslash;ret&oslash;y. I alle eksemplene er det seks stoppesteder og to ruter som starter p&aring; samme lokasjon.
+            </p>
+            <table border="1">
+            <tr>
+                <td> <img src="../images/GUID-820BDC1E-97CB-457F-9235-7105D274AFEB-web.png" alt="Balanserte stoppesteder og reisetider">
+                </td>
+                <td>
+                    <p>Balanserte reisetider og stoppesteder per rute:
+                    </p>
+                    <p>Stoppestedene er mer eller mindre jevnt spredt fra hverandre, s&aring; ved &aring; stille inn maksimalt antall stopp per bil for &aring; fordele arbeidsmengden jevnt, resultater i ruter som har omtrent samme varighet.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-813F72FE-500D-4A4D-A030-B3450F09154B-web.png" alt="Ubalanserte rutetider">
+                </td>
+                <td>
+                    <p>Balanserte stopp per rute, men ubalanserte reisetider:
+                    </p>
+                    <p>Fem av de seks stoppene er samlet n&aelig;r startlokasjonen, men ett stopp er utenfor og krever en mye lengre kj&oslash;retur &aring; n&aring;. Hvis stoppene deles likt mellom de to rutene, for&aring;rsaker det ubalanserte reisetider.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td> <img src="../images/GUID-082615A2-7F07-49AB-92AF-C82CEB813E6F-web.png" alt="Balanserte reisetider">
+                </td>
+                <td>
+                    <p>Ubalanserte stopp per rute, men balanserte reisetider:
+                    </p>
+                    <p>Stoppene er p&aring; samme lokasjon som i forrige grafikk, men ved &aring; &oslash;ke det maksimale antallet stopp per rute og &aring; begrense total reisetid per bil, blir reisetidene balansert.
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="serviceTimeAtStops">
+        <div><h2>Tid brukt på hvert stopp</h2></div>
+        <hr/>
+        <div>
+            <p>Angi den antatte, gjennomsnittlige tiden som brukes p&aring; hvert stopp. Hvis du f.eks. planlegger en arbeidsplan for inspekt&oslash;rer, og den gjennomsnittlige inspeksjonstiden er 45 minutter, angir du  <code>45</code>.
+            </p>
+            <p>Tidsbruken ved hvert stopp antas &aring; v&aelig;re den sammen.
+            </p>
+        </div>
+    </div>
+    <div id="maxTotalRouteTime">
+        <div><h2>Begrens total rutetid per kjøretøy</h2></div>
+        <hr/>
+        <div>
+            <p>Angi den maksimale tiden som en rute b&oslash;r vare fra start til slutt. Dette inkluderer forventet reisetid og servicetid som blir brukt ved stopp langs ruten. Hvis sj&aring;f&oslash;rene ikke skal jobbe lenger enn et gitt antall timer om dagen, for eksempel &aring;tte timer, kan du angi den grensen her.
+            </p>
+            <p>Se hjelpen for  <b>Maksimalt antall stopp per bil</b> for vurderinger for balansering av arbeidsbelastning.
+            </p>
+        </div>
+    </div>
+    <div id="resultsLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; geoobjektlaget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Hvis geoobjektlaget allerede finnes, blir du bedt om &aring; oppgi et annet navn. Geoobjektlaget inneholder et lag for hvert av de f&oslash;lgende: ruter, tildelte stoppesteder og stoppesteder som ikke er tilordnet n&aring;r enkelte startsteder ikke kan kobles til noen ruter.
+            </p>
+            <p>Hvis du velger  <b>Inkluder rutelag</b>, lagres hver rute fra resultatet ogs&aring; som et rutelag. Et rutelag inneholder all informasjon for en bestemt rute, for eksempel tildelte stoppesteder langs ruten og reiseretningene. Det er praktisk &aring; opprette rutelag hvis du &oslash;nsker &aring; dele de enkelte rutene med andre medlemmer i organisasjonen eller hvis du vil modifisere rutene ytterligere ved hjelp av knappen for beskrivelser i kartvisningen. <b></b> Rutelagene bruker navnet som er oppgitt for geoobjektlaget som et prefiks, og rutenavnet som genereres som en del av analysen, blir lagt til for &aring; skape et unikt navn for hvert rutelag.
+            </p>
+            <p>Bruk rullegardinmenyen  <b>Lagre resultatet i</b> til &aring; angi navnet p&aring; en mappe i <b>Mitt innhold</b> som geoobjektlaget og rutelagene &ndash; hvis de er opprettet &ndash; vil bli lagret.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

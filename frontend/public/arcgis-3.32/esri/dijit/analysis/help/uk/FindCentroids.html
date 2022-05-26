@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Пошук центроїдів</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="Пошук центроїдів"></h2>
+        <hr/>
+    <p>Цей інструмент працює з шаром мультиточкових, лінійних або площадних об'єктів для визначення репрезентативного центру кожного об'єкта.
+    </p>
+    <p>Якщо вибрано опцію  <b>Використовувати поточний екстент карти</b>, будуть аналізуватись тільки об&rsquo;єкти у вхідному шарі мультиточок, ліній або областей, видимі в межах поточного екстенту карти. Якщо цю опцію не вибрано, будуть аналізуватись всі об'єкти у вхідному шарі, навіть якщо вони знаходяться за межами поточного екстенту карти.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Вибрати шар, об'єкти котрого використовуватимуться для генерування центроїдів</h2></div>
+        <hr/>
+        <div>
+            <p> Шар мультиточок, ліній або областей, який буде використовуватись для пошуку центроїдів.
+            </p>
+            <p>In addition to choosing a layer from your map, you can select  <b>Choose Analysis Layer</b> found at the bottom of the drop-down list. This option opens a gallery where you can browse to and select datasets from various sources to use in your analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>Показати мені вихідні місця розташування</h2></div>
+        <hr/>
+        <div>
+            <p> Коли вибрано опцію <b>В істинному центроїді</b> (за замовчуванням), вихід поверне істинне місце розташування центроїду для кожного вхідного об&rsquo;єкта. Центроїди будуть розташовані наступним чином:
+                <ul>
+                    <li>Мультиточкові об'єкти &mdash; вихідний центроїд буде розташований за середніми значеннями координат x та y всіх точок у мультиточковому об'єкті.
+                    </li>
+                    <li>Лінійні об'єкти &mdash; вихідний центроїд буде розташований за зваженими середніми значеннями координат x та y середніх точок всіх лінійних сегментів у лінійному об&rsquo;єкті. Вага базується на довжині сегменту.
+                    </li>
+                    <li>Площадні об'єкти &mdash; вихідний центроїд буде розташований в центрі області.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Коли вибрано опцію  <b>міститься у вхідних об&rsquo;єктах</b>, вихідні точкові об&rsquo;єкти будуть міститися всередині кожного вхідного об&rsquo;єкта. Результуючі точкові об&rsquo;єкти відображатимуться наступним чином:
+                <ul>
+                    <li>Мультиточкові об&rsquo;єкти &mdash; вихідний центроїд збігатиметься з однією з точок у мультиточковій групі.
+                    </li>
+                    <li>Лінійні об&rsquo;єкти &mdash; вихідний центроїд буде розташований на лінії. Якщо лінія крива, вихідний центроїд буде розташований на середній точці лінії. 
+                    </li>
+                    <li>Площадні об'єкти &mdash; вихідна точка буде розташована всередині площадного об&rsquo;єкта.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Назва результуючого шару</h2></div>
+        <hr/>
+        <div>
+            <p>Це назва шару, який буде створено в  <b>Моєму змісті</b> та додано до карти. Назва за замовчуванням базується на назві інструменту та назві вхідного шару. Якщо ім'я шару вже існує, вам буде запропоновано надати іншу назву.
+            </p>
+            <p>За допомогою розкривного меню  <b>Зберегти результат в</b> можна вказати назву папки у <b>Моєму змісті</b>, куди буде збережено результат.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

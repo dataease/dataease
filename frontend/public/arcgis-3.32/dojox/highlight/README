@@ -1,0 +1,31 @@
+-------------------------------------------------------------------------------
+dojox.highlight
+-------------------------------------------------------------------------------
+Version 1.0
+Release date: 11/25/2007
+-------------------------------------------------------------------------------
+Project state:
+beta
+-------------------------------------------------------------------------------
+Credits
+	Ivan Sagalaev (softwaremaniacs.org) Author
+	Peter Higgins (dante) Dojo port
+-------------------------------------------------------------------------------
+Project description
+
+A syntax highlighting engine for the Dojo Toolkit
+-------------------------------------------------------------------------------
+Dependencies:
+
+dojo base only.
+-------------------------------------------------------------------------------
+Documentation
+
+-------------------------------------------------------------------------------
+Installation instructions
+
+simply get the dojox/highlight folder (and dojox/highlight.js)  from the 
+dojox SVN repository, and include in your page via 
+
+dojo.require("dojox.highlight");
+

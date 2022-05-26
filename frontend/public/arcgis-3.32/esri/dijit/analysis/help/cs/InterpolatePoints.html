@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Interpolovat body (Interpolate Points)</h2><p/>
+        <h2><img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" alt="Interpolovat body"></h2>
+        <hr/>
+    <p>   N&aacute;stroj Interpolovat body v&aacute;m umožňuje odhadovat hodnoty v nov&yacute;ch m&iacute;stech na z&aacute;kladě hodnot existuj&iacute;c&iacute;ch bodů. N&aacute;stroj poč&iacute;t&aacute; s&nbsp;hodnotami v&scaron;ech zn&aacute;m&yacute;ch bodů a vytv&aacute;ř&iacute; nov&eacute; plochy klasifikovan&eacute; podle předpov&iacute;dan&yacute;ch hodnot. Např&iacute;klad
+        <ul>
+            <li>Kvalita vzduchu v&nbsp;dan&eacute;m obvodu je měřena senzory, kter&eacute; určuj&iacute; &uacute;roveň zneči&scaron;těn&iacute;. Pomoc&iacute; n&aacute;stroje Interpolovat body lze předpovědět &uacute;roveň zneči&scaron;těn&iacute; v&nbsp;m&iacute;stech, kde se senzory nenach&aacute;zej&iacute;, např&iacute;klad v&nbsp;m&iacute;stech, kde jsou lid&eacute; vice ohrožen&iacute;, jako je okol&iacute; &scaron;kol a nemocnic.
+            </li>
+            <li>Lze předpov&iacute;dat koncentrace těžk&yacute;ch kovů v&nbsp;plodin&aacute;ch na z&aacute;kladě vzorků z&nbsp;jednotliv&yacute;ch rostlin.
+            </li>
+            <li>Lze předpov&iacute;dat hodnoty živin v&nbsp;půdě (dus&iacute;k, fosfor, drasl&iacute;k atd.) a dal&scaron;&iacute; indik&aacute;tory (např. elektrickou vodivost) pro zkoum&aacute;n&iacute; jejich vlivu na &uacute;rodnost pol&iacute; a určov&aacute;n&iacute; přesn&eacute;ho množstv&iacute; hnojiva potřebn&eacute;ho pro jednotliv&eacute; č&aacute;sti pole. 
+            </li>
+            <li>Meteorologick&eacute; využit&iacute; zahrnuje předpověď teplot, sr&aacute;žek a souvisej&iacute;c&iacute;ch veličin (např. kysel&yacute; d&eacute;&scaron;ť). 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Zvolte bodovou vrstvu, která obsahuje umístění se známými hodnotami.</h2></div>
+        <hr/>
+        <div>
+            <p>Bodov&aacute; vrstva, kter&aacute; bude použita jako z&aacute;klad interpolace.  
+
+            </p>
+            <p>Vrstvu můžete vybrat ze sv&eacute; mapy nebo můžete zvolit možnost  <b>Vybrat vrstvu anal&yacute;zy</b>, kter&aacute; se nach&aacute;z&iacute; na konci rozbalovac&iacute;ho seznamu. Pomoc&iacute; t&eacute;to možnosti se otevře galerie, kde můžete proch&aacute;zet a&nbsp;vyb&iacute;rat datov&eacute; sady z&nbsp;různ&yacute;ch vrstev, kter&eacute; můžete použ&iacute;t ve sv&eacute; anal&yacute;ze. 
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Vyberte pole k interpolaci</h2></div>
+        <hr/>
+        <div>
+            <p>Zvolte pole obsahuj&iacute;c&iacute; hodnoty, kter&eacute; chcete interpolovat.  
+            </p>
+        </div>
+    </div>
+    <div id="interpolateOption">
+        <div><h2>Optimalizovat pro</h2></div>
+        <hr/>
+        <div>
+            <p>Zvolte, zda preferujete rychlost nebo přesnost. Přesněj&scaron;&iacute; předpovědi se poč&iacute;taj&iacute; d&eacute;le.
+            </p> 
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Chyby výstupního odhadu</h2></div>
+        <hr/>
+        <div>
+            <p> Pokud je toto pole za&scaron;krtnuto, bude vytvořena vrstva směrodatn&yacute;ch odchylek pro předpov&iacute;dan&eacute; oblasti.  N&aacute;zvem v&yacute;stupn&iacute; vrstvy bude n&aacute;zev v&yacute;sledn&eacute; vrstvy s připojen&yacute;m slovem 'Chyby'.
+            </p>
+            <p>Směrodatn&eacute; odchylky jsou užitečn&eacute;, protože poskytuj&iacute; informace o spolehlivosti předpov&iacute;dan&yacute;ch hodnot. Skutečn&aacute; hodnota se v&nbsp;95 procentech př&iacute;padů bude nach&aacute;zet mezi dvěma směrodatn&yacute;mi odchylkami předpov&iacute;dan&eacute; hodnoty. Př&iacute;klad: Nov&eacute; um&iacute;stěn&iacute; dostane předpov&iacute;danou hodnotu 50 se směrodatnou odchylkou 5.  To znamen&aacute;, že podle nejlep&scaron;&iacute;ho odhadu n&aacute;stroje je skutečn&aacute; hodnota na tomto um&iacute;stěn&iacute; 50, ale je re&aacute;lně možn&eacute;, že se bude pohybovat mezi 40 a 60.  Chcete-li vypoč&iacute;tat tento rozsah re&aacute;lně možn&yacute;ch hodnot, vyn&aacute;sobte směrodatnou odchylku dvěma a tuto hodnotu přičtěte k&nbsp;předpov&iacute;dan&eacute; hodnotě, č&iacute;mž zjist&iacute;te horn&iacute; hranici rozsahu. Odečten&iacute;m t&eacute;že hodnoty z&iacute;sk&aacute;te spodn&iacute; hranici rozsahu.
+            </p>
+        </div>
+    </div>
+    <div id="classificationType">
+        <div><h2>Klasifikovat podle</h2></div>
+        <hr/>
+        <div>
+            <p>Zvolte, jak budou předpov&iacute;dan&eacute; hodnoty klasifikov&aacute;ny do jednotliv&yacute;ch oblast&iacute;.
+                <ul>
+                    <li>Geometrick&yacute; interval &ndash; Oblasti jsou založeny na intervalech tř&iacute;d dan&yacute;ch geometrickou řadou. Tato metoda zaji&scaron;ťuje, aby měl každ&yacute; rozsah tř&iacute;d přibližně stejn&yacute; počet hodnot v každ&eacute; tř&iacute;dě a aby změna mezi intervaly byla konzistentn&iacute;.
+                    </li>
+                    <li>Konstantn&iacute; intervaly &ndash; Oblasti se vytvoř&iacute; tak, aby rozsah předpov&iacute;dan&yacute;ch hodnot byl stejn&yacute; pro každou oblast.
+                    </li>
+                    <li>Shodn&eacute; oblast &ndash; Oblasti jsou vytvořeny tak, aby počet datov&yacute;ch hodnot v každ&eacute; oblasti byl stejn&yacute;. Pokud maj&iacute; např&iacute;klad data v&iacute;ce vysok&yacute;ch hodnot než n&iacute;zk&yacute;ch hodnot, vytvoř&iacute; se v&iacute;ce oblast&iacute; pro vysok&eacute; hodnoty.
+                    </li>
+                    <li>Manu&aacute;ln&iacute; &ndash; Tato možnost v&aacute;m umožn&iacute; určit pro oblasti vlastn&iacute; rozsah hodnot. Tyto hodnoty budou n&iacute;že zad&aacute;ny do parametru  <b>Hraničn&iacute; hodnoty tř&iacute;dy</b>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numClasses">
+        <div><h2>Počet tříd</h2></div>
+        <hr/>
+        <div>
+            <p>Určuje počet tř&iacute;d (rozsah předpov&iacute;dan&yacute;ch hodnot) ve v&yacute;sledn&eacute; vrstvě. Každ&aacute; tř&iacute;da definuje hranici oblast&iacute;. Hodnoty těchto tř&iacute;d budou určeny v&yacute;&scaron;e uveden&yacute;m parametrem 
+ <b>Klasifikovat podle</b>.
+            </p>
+        </div>
+    </div>
+    <div id="classBreaks">
+        <div><h2>Hraniční hodnoty třídy</h2></div>
+        <hr/>
+        <div>
+            <p>Zadejte požadovan&eacute; hraničn&iacute; hodnoty tř&iacute;d oddělen&eacute; mezerami. Pokud např&iacute;klad chcete rozdělit tř&iacute;dy podle hodnot 1,5, 3 a 7, zadejte  <code>1,5 3 7</code>.  Tyto hodnoty urč&iacute; horn&iacute; hranici každ&eacute; tř&iacute;dy, takže počet tř&iacute;d bude stejn&yacute; jako počet zadan&yacute;ch hodnot. Nebudou vytvořeny ž&aacute;dn&eacute; plochy pro oblasti s&nbsp;odhadnut&yacute;mi hodnotami vy&scaron;&scaron;&iacute;mi než je nejvy&scaron;&scaron;&iacute; zlomov&aacute; hodnota. Mus&iacute;te zadat alespoň dvě hodnoty a m&eacute;ně než 32.
+            </p>
+        </div>
+    </div>
+    <div id="boundingPolygonLayer">
+        <div><h2>Oříznout výstup na</h2></div>
+        <hr/>
+        <div>
+            <p>Nakreslete nebo zadejte vrstvu definuj&iacute;c&iacute; oblast, v r&aacute;mci kter&eacute; chcete vykreslit v&yacute;sledek. Pokud např&iacute;klad interpolujete v&yacute;sledky měřen&iacute; zneči&scaron;těn&iacute; jezera, můžete v tomto parametru použ&iacute;t hranici jezera a v&yacute;stup se vykresl&iacute; pouze uvnitř jezera.
+            </p>
+        </div>
+    </div>
+    <div id="predictAtPointLayer">
+        <div><h2>Odhadnout v těchto místech</h2></div>
+        <hr/>
+        <div>
+            <p>Nakreslete nebo zadejte vrstvu určuj&iacute;c&iacute; polohu bodů pro v&yacute;počet interpolovan&yacute;ch hodnot. To v&aacute;m umožn&iacute; vytv&aacute;řet odhady v&nbsp;konkr&eacute;tn&iacute;ch m&iacute;stech. Pokud např&iacute;klad vstupn&iacute; vrstva představuje v&yacute;sledky měřen&iacute; &uacute;rovně zneči&scaron;těn&iacute;, můžete pomoc&iacute; tohoto parametru předpovědět &uacute;roveň zneči&scaron;těn&iacute; v m&iacute;stech, kde jsou lid&eacute; v&iacute;ce ohroženi, jako je okol&iacute; &scaron;kol a nemocnic.  Na z&aacute;kladě těchto informac&iacute; můžete poskytovat doporučen&iacute; odpovědn&yacute;m pracovn&iacute;kům, kteř&iacute; v&nbsp;dan&yacute;ch oblastech zodpov&iacute;daj&iacute; za zdravotnictv&iacute;.
+            </p>
+            <p>Zad&aacute;te-li lokality, n&aacute;stroj vytvoř&iacute; jako v&yacute;stup bodovou vrstvu s odhady hodnot pro tato m&iacute;sta. N&aacute;zvem v&yacute;stupn&iacute; vrstvy bude n&aacute;zev v&yacute;sledn&eacute; vrstvy s připojen&yacute;m slovem 'Body'.  
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Název výsledné vrstvy</h2></div>
+        <hr/>
+        <div>
+            <p>Toto je n&aacute;zev vrstvy, kter&aacute; se vytvoř&iacute; ve složce  <b>Můj obsah</b> a přid&aacute; do mapy.  V&yacute;choz&iacute; n&aacute;zev se ř&iacute;d&iacute; n&aacute;zvem n&aacute;stroje a n&aacute;zvem vstupn&iacute; vrstvy. Pokud n&aacute;zev vrstvy již existuje, budete pož&aacute;d&aacute;ni o zad&aacute;n&iacute; jin&eacute;ho n&aacute;zvu.
+            </p>
+            <p>V rozbalovac&iacute; nab&iacute;dce  <b>Uložit v&yacute;sledek do</b> můžete zadat n&aacute;zev složky ve složce <b>Můj obsah</b>, do kter&eacute; se m&aacute; v&yacute;sledek uložit.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

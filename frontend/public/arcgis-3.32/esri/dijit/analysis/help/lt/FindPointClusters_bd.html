@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Rasti taškų sankaupas</h2><p/>
+        <h2><img src="../images/GUID-40DA7286-67EA-4333-91C5-4CD527C21B4A-web.png" alt="Rasti ta&scaron;kų sankaupas"></h2>
+        <hr/>
+    <p>Įrankis  Rasti ta&scaron;kų sankaupas randa ta&scaron;kų elementų sankaupas juos supančioje aplinkoje (triuk&scaron;me) pagal jų pasiskirstymą erdvėje.
+    </p>
+    <p>Pavyzdžiui, nevalstybinė organizacija tyrinėja tam tikrą kenkėjų platinamą ligą. Ji turi ta&scaron;kų duomenų rinkinį i&scaron; tiriamos teritorijos su namų ūkiais, kai kurie i&scaron; jų užkrėsti, o kiti &ndash; ne. Naudodamas  Rasti ta&scaron;kų sankaupas įrankį, analitikas gali nustatyti užkrėstų namų ūkių sankaupas ir nurodyti plotą, kur reikėtų pradėti naikinti kenkėjus.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pasirinkite sluoksnį, kurio sankaupų bus ieškoma</h2></div>
+        <hr/>
+        <div>
+            <p>Ta&scaron;kinis sluoksnis, kuriame bus ie&scaron;koma sankaupų. Sluoksniai turi turėti projekcinę koordinačių sistemą arba projekcinė koordinačių sistema turi būti nustatyta naudojant  <b>Analizės aplinką</b>.
+            </p>
+            <p>Galite ne tik nurodyti sluoksnį i&scaron; žemėlapio, bet ir apačioje pasirinkti  <b>Pasirinkti analizės sluoksnį</b>, kad galėtumėte turinyje ie&scaron;koti didelių duomenų rinkinio arba elemento sluoksnio.
+            </p>
+        </div>
+    </div>
+    <div id="clusterMethod">
+        <div><h2>Pasirinkite grupavimo būdą, kurį norite naudoti</h2></div>
+        <hr/>
+        <div>
+            <p>Grupavimo būdas, kuris bus naudojamas ta&scaron;kinių elementų atskyrimui nuo aplinkinio triuk&scaron;mo. Galite pasirinkti naudoti apibrėžtą atstumą arba save koreguojantį grupavimo algoritmą.
+            </p>
+            <p>Apibrėžtas atstumas (DBSCAN) naudoja nurodytą paie&scaron;kos intervalą tankioms sankaupoms nuo retesnio triuk&scaron;mo atskirti. Apibrėžtas atstumas (DBSCAN) yra greitesnis, tačiau tinkamas tik tada, kai naudoti prieinamas labai ai&scaron;kus paie&scaron;kos intervalas, kuris gerai tinka apibrėžti visoms esamoms sankaupoms. Apibrėžtas atstumas (DBSCAN) randa pana&scaron;aus tankumo sankaupas.
+            </p>
+            <p>Save koreguojantis (HDBSCAN) metodas nereikalauja nurodyti paie&scaron;kos intervalo, tačiau trunka ilgiau. Save koreguojantis (HDBSCAN) metodas randa pana&scaron;ias ta&scaron;kų sankaupas kaip ir apibrėžto atstumo (DBSCAN), tačiau naudoja kintamus paie&scaron;kos intervalus, todėl gali aptikti nevienodo tankumo sankaupas. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Minimalus taškų skaičius, kuris bus laikomas sankaupa</h2></div>
+        <hr/>
+        <div>
+            <p>Priklausomai nuo pasirinkto grupavimo būdo, &scaron;is parametras naudojamas nevienodai:
+            </p>
+            <p>
+                <ul>
+                    <li>Apibrėžtas atstumas (DBSCAN) &ndash; nurodo elementų skaičių, kuris turi būti randamas per tam tikrą atstumą nuo ta&scaron;ko, kad būtų pradėta formuoti sankaupa. Atstumas apibrėžiamas naudojant parametrą  <b>Apriboti paie&scaron;kos intervalą iki</b>.
+                    </li>
+                    <li>Save koreguojantis (HDBSCAN) &ndash; nurodo kiekvienam ta&scaron;kui gretimų elementų skaičių (įskaitant patį ta&scaron;ką), kuris bus naudojamas skaičiuojant tankumą. &Scaron;is skaičius taip pat naudojamas kaip mažiausias sankaupos dydis, kai nustatomos sankaupos.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Apriboti paieškos intervalą iki:</h2></div>
+        <hr/>
+        <div>
+            <p>Naudojant apibrėžtą atstumą (DBSCAN), &scaron;is parametras yra atstumas, kuriame turi būti rastas  <b>minimalus ta&scaron;kų skaičius, kuris bus laikomas sankaupa</b>. &Scaron;is parametras nenaudojamas, kai pasirenkama naudoti save koreguojantį (HDBSCAN) metodą.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p> Pavadinimas sluoksnio, kuris bus sukurtas. Jei įra&scaron;ote į ArcGIS Data Store, jūsų rezultatai bus įra&scaron;yti į  <b>Turinį</b> ir įtraukti į žemėlapį. Jei įra&scaron;ote į didelių duomenų failo bendrinimą, jūsų rezultatai bus saugomi didelių duomenų failo bendrinime ir pridedami į jo deklaraciją. Jie nebus įtraukti į žemėlapį. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau yra, įrankis neveiks.
+            </p>
+            <p>Kai ra&scaron;ote į   ArcGIS Data Store  (releacinių arba erdvėlaikinių didelių duomenų saugyklą) naudodami i&scaron;&scaron;okantįjį meniu  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

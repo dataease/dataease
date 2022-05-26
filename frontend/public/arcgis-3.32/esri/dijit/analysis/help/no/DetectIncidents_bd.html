@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Identifiser hendelser</h2><p/>
+        <h2><img src="../images/GUID-E2A3AB39-5151-4972-A988-EBC91C41EB1F-web.png" alt="Identifiser hendelser"></h2>
+        <hr/>
+    <p> Dette verkt&oslash;yet fungerer med et tidsaktivert lag med punkter, linjer, polygoner eller tabeller som representerer et &oslash;yeblikk i tid. Ved &aring; bruke sekvensielt ordnede geoobjekter, kalt spor, fastsetter dette verkt&oslash;yet hvilke geoobjekter som er hendelser av interesse. Hendelser fastsettes av betingelser du angir.
+    </p>
+    <p>Verkt&oslash;yet fastsetter hvilke geoobjekter som tilh&oslash;rer et spor ved &aring; bruke et eller flere felt. Ved &aring; bruke tiden for hvert geoobjekt ordnes sporene sekvensielt, og hendelsesbetingelsen brukes. Geoobjekter som oppfyller startbetingelsen for hendelsen, merkes som en hendelse. Du kan velge &aring; bruke en sluttbetingelse for hendelse; n&aring;r sluttbetingelsen er sann, er ikke geoobjektet lenger en hendelse. Resultatene returneres med de opprinnelige geoobjektene &ndash; med nye kolonner som representerer hendelsesnavnet &ndash; og angir hvilket geoobjekt som oppfyller hendelsesbetingelsen. Du kan returnere alle opprinnelige geoobjekter eller bare geoobjektene som er hendelser.
+    </p>
+    <p>La oss for eksempel si at du har GPS-m&aring;linger av orkaner hvert 10. minutt. Hver GPS-m&aring;ling registrerer orkanens navn, lokasjon, tidspunktet for registreringen og vindhastigheten. Ved &aring; bruke disse feltene kan du opprette en hendelse der en m&aring;ling med en vindhastighet som er st&oslash;rre enn 208 km/h, er en hendelse som heter  <code>Katastrofisk</code>. Ved &aring; ikke angi en sluttbetingelse vil hendelsen slutte hvis geoobjektet ikke lenger oppfyller startbetingelsen (vindhastigheten avtar til mindre enn 208).
+    </p>
+    <p>For &aring; ta et annet eksempel kan vi si at du skal overv&aring;ke konsentrasjoner av et kjemikalium i den lokale vannforsyningen ved &aring; bruke et felt som heter  <code>Forurensningsniv&aring;</code>. Du vet at de anbefalte niv&aring;ene er mindre enn 0,01 mg/l, og at de farlige niv&aring;ene er over 0,03 mg/l. For &aring; identifisere hendelser der en verdi over 0,03 mg/l er en hendelse og forblir en hendelse til forurensningsniv&aring;ene g&aring;r tilbake til normalt igjen, oppretter du en hendelse med en startbetingelse p&aring; <code>forurensningsniv&aring; &gt; 0,03</code> og en sluttbetingelse p&aring; <code>forurensningsniv&aring; &lt; 0,01</code>. Dette vil merke en hvilken som helst sekvens der verdiene overstiger 0,03 mg/l til de g&aring;r tilbake til en verdi p&aring; mindre enn 0,01.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Velg laget du vil identifisere hendelser i</h2></div>
+        <hr/>
+        <div>
+            <p>Punktene, linjene, polygonene eller tabellene som skal brukes til &aring; finne hendelser. Inndatalaget m&aring; tidsaktiveres med geoobjekter som representerer et &oslash;yeblikk i tid, og det m&aring; ha et eller flere felt som kan brukes til &aring; identifisere spor.
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> nederst i rullegardinlisten, for &aring; bla gjennom innholdet p&aring; et fildelingsomr&aring;de for stordata eller et geoobjektlag.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Velg ett eller flere felt for å identifisere spor</h2></div>
+        <hr/>
+        <div>
+            <p>Feltene som representerer spor-ID-en. Du kan bruke et felt eller flere felt til &aring; representere unike sporverdier.
+            </p>
+            <p>Hvis du for eksempel skulle rekonstruere spor etter orkaner, kunne du ha brukt orkanens navn som sporfelt.
+            </p>
+        </div>
+    </div>
+    <div id="startConditionExpression">
+        <div><h2>Bygg et betingelsesuttrykk for å angi starten på en hendelse</h2></div>
+        <hr/>
+        <div>
+            <p>Legg til en betingelse med Expression Builder for &aring; fastsette hva en hendelse er. Hvis betingelsen du angir er sann, er geoobjektet en hendelse. Hvis du ikke angir en sluttbetingelse, slutter hendelsen n&aring;r startbetingelsen ikke lenger er sann.
+            </p>
+            <p>La oss for eksempel si at du &oslash;nsker &aring; bli varslet n&aring;r summen av feltene   <code>konsentrasjon_1</code> og <code>konsentrasjon_2</code> er st&oslash;rre enn <code>konsentrasjon_3</code>.   Du m&aring; da bruke betingelsen <code>($feature[&ldquo;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; $feature[&quot;concentration_3&quot;])</code>.
+            </p>
+            <p>Hvis du var interessert i hvordan konsentrasjonene ble endret over tid, og &oslash;nsket &aring; bli varslet n&aring;r gjeldende  <code>konsentrasjon_1</code> var h&oslash;yere enn de to foreg&aring;ende m&aring;lingene av <code>konsentrasjon_2</code>, kunne du bruke et uttrykk som <code>$feature[&quot;concentration_1&quot;] &gt;   $track.field[&quot;concentration_2&quot;].history(-3,-1)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="endConditionExpression">
+        <div><h2>Bygg et betingelsesuttrykk for å angi slutten på en hendelse (valgfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Du kan ogs&aring; legge til en betingelse med Expression Builder for &aring; fastsette slutten p&aring; en hendelse. Hvis sluttbetingelsen du angir er sann, er geoobjektet ikke lenger en hendelse. Hvis du ikke angir en sluttbetingelse, slutter hendelsen n&aring;r startbetingelsen ikke lenger er sann.    
+            </p>
+            <p>La oss for eksempel si at du vil bli varslet n&aring;r summen av feltene  <code>konsentrasjon_1</code> og <code>konsentrasjon_2</code> er st&oslash;rre enn <code>konsentrasjon_3</code>, og at du vil at hendelsen skal slutte hvis <code>konsentrasjon_4</code> er mindre enn <code>konsentrasjon_1</code>. Du m&aring; da bruke startbetingelsen <code>($feature[&quot;concentration_1&quot;] +  $feature[&quot;concentration_2&quot;]) &gt; ($join[&quot;income&quot;] * .20)</code> og sluttbetingelsen <code>($feature[&quot;concentration_4&quot;] &lt; $feature[&quot;concentration_1&quot;])</code>.
+            </p>
+            <p>Hvis du ville at en hendelse skulle avsluttes n&aring;r gjennomsnittet for gjeldende  <code>konsentrasjon_1</code> og fire foreg&aring;ende m&aring;linger var h&oslash;yere enn den f&oslash;rste m&aring;lingen, kunne du bruke et uttrykk som <code>$track.field[&quot;concentration_1&quot;].history(-5) &gt; $track.field[&quot;concentration_1&quot;].history(0)</code>.
+            </p>
+        </div>
+    </div>
+    <div id="outputMode">
+        <div><h2>Vis meg</h2></div>
+        <hr/>
+        <div>
+            <p>Alle utdatametoder vil f&oslash;ye felt til de opprinnelige geoobjektene. Det er to m&aring;ter &aring; fastsette hvilke geoobjekter som returneres:
+                <ul>
+                    <li> <b>Alle geoobjekter</b> &ndash;&nbsp;Dette er standard. Alle geoobjekter i inndataene vil bli returnert.
+                    </li>
+                    <li> <b>Bare hendelser</b> &ndash;&nbsp;Denne metoden vil bare returnere geoobjektene som er hendelser. Geoobjekter som ikke registreres som hendelser, vil ikke bli returnert.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analyser data med tidsintervaller (valgfritt)</h2></div>
+        <hr/>
+        <div>
+            <p>Angi om du vil registrere hendelser ved hjelp av tidsintervaller som segmenterer inndatageoobjektene for analyse. Hvis du bruker tidsintervaller, m&aring; du angi tidsintervallet du vil bruke, og eventuelt ogs&aring; referansetidspunktet. Hvis du ikke angir et referansetidspunkt, brukes 1.&nbsp;januar&nbsp;1970. 
+            </p>
+            <p>Hvis du for eksempel setter tidsgrensen til 1&nbsp;dag som starter kl. 09:00 1.&nbsp;januar&nbsp;1990, trunkeres hvert spor kl. 09:00 for hver dag og analyseres innenfor det segmentet. 
+            </p>
+            <p>Tidsintervaller er en rask m&aring;te &aring; akselerere tidsberegning p&aring;, ettersom det raskt oppretter mindre spor til analyse. Hvis inndeling etter et repeterende tidsintervall gir mening i analysen din, anbefales det for behandling av stordata.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; laget som opprettes. Hvis du skriver til en ArcGIS Data Store, blir resultatene dine lagret i  <b>Mitt innhold</b> og lagt til kartet. Hvis du skriver til et fildelingsomr&aring;de for stordata, blir resultatene lagret i fildelingsomr&aring;det for stordata og lagt til dets innholdsoversikt. De blir ikke lagt til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget allerede eksisterer, vil verkt&oslash;yet mislykkes.
+            </p>
+            <p>N&aring;r du skriver til  ArcGIS Data Store (fildelingsomr&aring;de for relasjons- eller geotemporale stordata) via rullegardinlisten  <b>Lagre resultat i</b>, kan du angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatet skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

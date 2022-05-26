@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Opprett vannskille</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="Opprett vannskille"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet finner nedb&oslash;rsfeltet, eller oppstr&oslash;ms tilsigsomr&aring;de, for hvert punkt i inndatalaget. 
+    </p>
+    <p>La oss for eksempel si at du har punktgeoobjekter som representerer steder med vannforurensning, og du &oslash;nsker &aring; finne sannsynlige kilder til forurensningen. Siden forurensningskilden m&aring; befinne seg oppstr&oslash;ms innenfor nedb&oslash;rsfeltet, bruker du dette verkt&oslash;yet til &aring; definere nedb&oslash;rsfeltene som inneholder forurensningskildene.
+    </p>
+    <p>Plasseringen av inndatapunktene er viktig. Hvis de ikke er plassert n&oslash;yaktig p&aring; en dreneringslinje, kan det hende de resulterende nedb&oslash;rsfeltene blir veldig sm&aring; og ikke spesielt nyttige for analysen.  <b>S&oslash;keavstand til n&aelig;rmeste drenering</b> kan brukes til &aring; justere plasseringen av analysepunktene slik at de faller n&oslash;yaktig p&aring; en dreneringslinje. Det gj&oslash;r det mulig &aring; finne nedb&oslash;rsfeltet som flyter inn i punktet som er plassert p&aring; dreneringslinjen. De justerte plasseringene som brukes til &aring; finne nedb&oslash;rsfeltene, skrives til utdatalaget &ndash;  inndatapunktene endres ikke.
+    </p>
+    <p>Resultatet er et gruppelag som inneholder to lag: nedb&oslash;rsfeltene og de justerte punktene som ble brukt til &aring; beregne nedb&oslash;rsfeltene.     
+    </p>
+    <p>De resulterende nedb&oslash;rsfeltene har de samme attributtene som inndatapunktene, i tillegg til f&oslash;lgende attributter:     
+        <ul>
+            <li> <i>PourPtID</i> &ndash;&nbsp;inneholder ID-verdien for inndatapunktet.
+            </li>
+            <li> <i>Area Square Kilometers</i> &ndash;&nbsp;inneholder arealet i kvadratkilometer for oppstr&oslash;ms nedb&oslash;rsfeltet.
+            </li>
+            <li> <i>Description</i> og <i>DataResolution</i> &ndash; &nbsp;Inneholder informasjon om de hydrologiske dataene som ble brukt til &aring; beregne sporingslinjen.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Hvis det er merket av for  <b>Bruk gjeldende kartutstrekning</b>, er det kun geoobjektene i gjeldende kartutstrekning som brukes til &aring; beregne nedb&oslash;rsfeltene. Hvis det ikke er merket av for dette alternativet, analyseres alle geoobjektene i inndatalaget, selv om de befinner seg utenfor gjeldende kartutstrekning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Punktgeoobjekter som brukes til å beregne nedbørsfelt</h2></div>
+        <hr/>
+        <div>
+            <p>Det beregnes et nedb&oslash;rsfelt (oppstr&oslash;ms tilsigsomr&aring;de) for hvert punkt.  
+            </p>
+            <p>I tillegg til &aring; velge et lag fra kartet kan du velge  <b>Velg analyselag</b> som du finner nederst i rullegardinlisten. Dette alternativet &aring;pner et galleri der du kan bla til og velge datasett fra ulike kilder som du vil bruke i analysen. 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>Søkeavstand til nærmeste drenering</h2></div>
+        <hr/>
+        <div>
+            <p>Hvis inndatapunktene befinner seg et stykke fra en dreneringslinje, blir de resulterende nedb&oslash;rsfeltene trolig veldig sm&aring; og ikke s&aelig;rlig nyttige n&aring;r du skal finne en oppstr&oslash;ms forurensningskilde. I de fleste tilfeller b&oslash;r inndatapunktene festes til den n&aelig;rmeste dreneringslinjen for &aring; finne nedb&oslash;rsfeltene som flyter til et punkt som befinner seg p&aring; dreneringslinjen. N&aring;r du skal finne n&aelig;rmeste dreneringslinje, angir du en s&oslash;keavstand. Hvis du ikke angir en s&oslash;keavstand, beregner og bruker verkt&oslash;yet en konservativ s&oslash;keavstand.  
+            </p>
+            <p>Hvis du vil bruke den n&oslash;yaktige plasseringen for inndatapunktet, angir du en s&oslash;keavstand p&aring; null.  
+            </p>
+            <p>Esri har forh&aring;ndsberegnet dreneringslinjene til analyseform&aring;l ved hjelp av standard hydrologimodeller. Hvis det ikke finnes en dreneringslinje innenfor s&oslash;keavstanden, brukes stedet som har h&oslash;yest drenering innenfor s&oslash;keavstanden.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis lagnavnet finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Bruk rullegardinmenyen  <b>Lagre resultat i</b> til &aring; angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatene skal lagres i.
+            </p>
+            <p> Det brukes ikke credits n&aring;r du kj&oslash;rer dette verkt&oslash;yet.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

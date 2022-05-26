@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>מיזוג שכבות</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="מיזוג שכבות"></h2>
+        <hr/>
+    <p>כלי זה משלב שתי שכבות ישויות ליצירת שכבת פלט אחת.    השכבות למיזוג חייבות להיות בעלות אותו סוג גיאומטריה ואותו סוג זמן.  באפשרותך לשלוט באופן שבו השדות משכבות הקלט מצורפים ומועתקים.  לדוגמה:
+        <ul>
+            <li>יש לי שלוש שכבות עבור אנגליה, ווילס וסקוטלנד וברצוני לקבל שכבה אחת של בריטניה. 
+            </li>
+            <li>יש לי 2 שכבות וכל אחת מהן מכילה פרטי חלקה עבור שטחים מוניציפליים רציפים. ברצוני לצרף אותם יחד לשכבה אחת, תוך שמירה רק של השדות שיש להם אותו שם ואותו סוג ב-2 שכבות הקלט.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>בחר שכבה</h2></div>
+        <hr/>
+        <div>
+            <p>השכבה עם ישויות הטבלה, הנקודה, הקו או האזור שאליהן שכבת הישויות השנייה תמוזג. כל השדות משכבה זו ייכללו בשכבת התוצאה.
+            </p>
+        </div>
+    </div>
+    <div id="mergeLayer">
+        <div><h2>בחר שכבה למיזוג</h2></div>
+        <hr/>
+        <div>
+            <p>שכבת הישויות למיזוג עם שכבת הקלט. השכבה למיזוג חייבת להיות בעלת אותו סוג גיאומטריה ואותו סוג זמן כמו שכבת הקלט.
+            </p>
+        </div>
+    </div>
+    <div id="mergingAttributes">
+        <div><h2>שנה שדות מיזוג</h2></div>
+        <hr/>
+        <div>
+            <p>כברירת מחדל, כל השדות משתי שכבות הקלט ייכללו בפלט. כברירת מחדל, כל השדות משתי שכבות הקלט ייכללו בפלט:
+                <ul>
+                    <li> <b>שנה שם</b> - יתבצע שינוי של שם השדה בפלט.
+                    </li>
+                    <li> <b>הסר</b> - השדה יוסר מהפלט.
+                    </li>
+                    <li> <b>התאם</b> - שמות השדות יהפכו לזהים.  ערכים של השדה מהשכבה למיזוג יועתקו לשדה הפלט המותאם.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>אם שתי השכבות מכילות שדה עם שם וסוג נתונים זהה, התוכן של שני השדות ימוזג לשדה אחד באותו שם. הדבר אינו חל על שדות שבהם נעשה שימוש באפשרות  <b>התאם</b> בפרמטר <b>שנה שדות מיזוג</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>שם שכבת התוצאה</h2></div>
+        <hr/>
+        <div>
+            <p> השם של השכבה שתיווצר.  אם אתה כותב ל- ArcGIS Data Store, התוצאות שלך יישמרו ב-<b>התוכן שלי</b> ויתווספו למפה. אם אתה כותב לקובץ שיתוף Big Data, התוצאות שלך יאוחסנו בקובץ השיתוף של Big Data ויתווספו למניפסט שלו. הם לא יתווספו למפה. שם ברירת המחדל מבוסס על שם הכלי ושם שכבת הקלט. אם השכבה כבר קיימת, הכלי ייכשל.
+            </p>
+            <p>בעת כתיב ל- ArcGIS Data Store (מאגר נתונים יחסים או מרחבי-זמני של Big Data) בעזרת התיבה הנפתחת  <b>שמור תוצאה ב</b>, באפשרותך לציין את שם התיקייה ב- <b>התוכן שלי</b> שבה התוצאה תישמר.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

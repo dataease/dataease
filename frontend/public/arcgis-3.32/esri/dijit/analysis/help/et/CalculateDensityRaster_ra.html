@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Arvuta tihedus</h2><p/>
+        <h2><img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" alt="Arvuta tihedus t&ouml;&ouml;vahend"></h2>
+        <hr/>
+    <p>Selle t&ouml;&ouml;riista abil saate punkt- v&otilde;i joonobjektidest luua tiheduskaardi, hajutades m&otilde;ne n&auml;htuse teadaolevad hulgad (esitatud punktide v&otilde;i joonte atribuutidena) &uuml;le kogu kaardi. Tulemuseks on alade kiht, mis on r&uuml;hmitatud tiheduse alusel.
+    </p>
+    <p>Sisendpunkti puhul peaks iga punkt kujutama mingi s&uuml;ndmuse v&otilde;i juhtumi asukohta ja tulemkiht kujutab juhtumite arvu mingi ala kohta. Uue asukoha k&otilde;rgem tihedus t&auml;hendab, et selle asukoha l&auml;heduses on rohkem punkte. Sageli v&otilde;ib tulemkihti pidada tulevaste s&uuml;ndmuste riskipiirkonnaks. Kui sisendpunktid kujutavad n&auml;iteks v&auml;lgul&ouml;&ouml;kide asukohti, v&otilde;ib tulemkihti pidada tulevaste v&auml;lgul&ouml;&ouml;kide riskipiirkonnaks.
+    </p>
+    <p>Joone sisendi puhul kujutab joone tiheduspind iga asukoha l&auml;heduses oleva joone koguarvu. Arvutatud tihedus kujutab joone pikkust mingi ala kohta. Kui jooned kujutavad n&auml;iteks j&otilde;gesid, kujutab tulemkiht otsinguraadiusesse j&auml;&auml;vate j&otilde;gede kogupikkust. Seda tulemust saab kasutada selleks, et tuvastada kariloomade jaoks sobivaid alasid.
+    </p>
+    <p>Seda t&ouml;&ouml;riista saab kasutada ka j&auml;rgmistel eesm&auml;rkidel:
+
+        <ul>
+            <li>Kuritegevuse tihedusega seotud kaartide loomine, et aidata politseil planeerida ressursse k&otilde;rge kuritegevusega paikadesse.
+                
+ 
+            </li>
+            <li>Maakonnas asuvate haiglate tiheduse arvutamine. Tulemkiht n&auml;itab alasid, kus haiglaid on palju ja/v&otilde;i v&auml;he ning seda teavet saab kasutada selleks, et otsustada kuhu uusi haiglaid ehitada.
+                
+ 
+            </li>
+            <li>Metsatulekahjude varasemate asukohtade p&otilde;hjal nende alade tuvastamine, kus metsatulekahju oht on suur.
+                
+ 
+            </li>
+            <li>Suurtest kiirteedest kaugel olevate kogukondade kindlakstegemine, et planeerida uute teede ehitust.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointOrLineFeatures">
+        <div><h2>Valige sisendi punkti- või joonekiht, mille põhjal tihedus arvutada</h2></div>
+        <hr/>
+        <div>
+            <p>Sisendi punkti- v&otilde;i joonekiht, mille p&otilde;hjal tiheduskiht arvutatakse.
+            </p>
+        </div>
+    </div>
+    <div id="countField">
+        <div><h2>Kasuta kogust kirjeldavat välja</h2></div>
+        <hr/>
+        <div>
+            <p>Sisestage v&auml;li, mis aitab m&auml;&auml;rata iga asukoha juhtumite arvu. Kui Teie punktid kujutavad n&auml;iteks linnu, saate linna rahvaarvu kujutavat v&auml;lja kasutada arvutusv&auml;ljana ning saadav rahvastikutiheduse kiht arvutab suurema rahvaarvuga linnade rahvastikutiheduse.
+            </p>
+            <p>Vaikimisi valiku  <b>Puudub</b> kasutamisel eeldatakse, et iga asukoht kujutab &uuml;hte arvestust.
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Otsitav vahemaa</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rake tiheduse arvutamiseks punkt- v&otilde;i joonobjektide otsimise ulatus. Kui sisestate otsinguraadiuseks n&auml;iteks 10 000 meetrit, arvutatakse v&auml;ljundkihis oleva asukoha tihedus objektide p&otilde;hjal, mis asuvad asukohast kuni 10 000 meetri kaugusel. Sellise asukoha tihedus, millest 10 000 meetri raadiuses juhtumeid ei esinenud, on 0.
+            </p>
+            <p>Kui otsingu ulatust ei m&auml;&auml;rata, arvutatakse see vaikimisi sisendobjektide asukohtade ja kogust kirjeldava v&auml;lja v&auml;&auml;rtuste p&otilde;hjal (kui arvestusv&auml;li on sisestatud)
+            </p>
+        </div>
+    </div>
+    <div id="outputAreaUnits">
+        <div><h2>Väljundi pindalaühikud</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rake v&auml;ljundi &uuml;hik. Tihedus saadakse ala ja koguarvu jagamisel ning see parameeter m&auml;&auml;rab tihedusarvutuse ala &uuml;hiku.
+            </p>
+            <p>Kasutatavad pindala&uuml;hikud on ruutmiilid, ruutjalad, ruutmeetrid ja ruutkilomeetrid.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Väljundpiksli suurus</h2></div>
+        <hr/>
+        <div>
+            <p>The cell size and unit for the output rasters.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile. Vaikimisi nimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>You can specify the name of a folder in  <b>My Content</b> where the result will be saved using the <b>Save result in</b> drop-down box.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

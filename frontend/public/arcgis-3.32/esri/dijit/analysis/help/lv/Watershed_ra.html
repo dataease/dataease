@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Ūdensšķirtne</h2><p/>
+        <h2><img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" alt="Ūdens&scaron;ķirtnes uzdevums"></h2>
+        <hr/>
+    <p>&Scaron;is rīks nosaka atbilsto&scaron;o teritoriju virs rastra &scaron;ūnu kopas.
+    </p>
+    <p>Ūdens&scaron;ķirtne ir teritorija, kas atrodas uz pacēluma, kas veicina plūsmu&nbsp;&mdash; parasti ūdens&nbsp;&mdash; uz kopēju, koncentrētu noteci. Tā var būt daļa no lielākas ūdens&scaron;ķirtnes un var arī ietvert mazākas ūdens&scaron;ķirtnes jeb apak&scaron;baseinus.
+    </p>
+    <p>Katras ūdens&scaron;ķirtnes vērtība tiks ņemta no avota vērtības ievades rastrā vai lietusgāžu punktu elementu slānī. Ja lietusgāžu punkti ir rastra datu kopa, pēc noklusējuma tiek izmantotas &scaron;ūnu vērtības. Ja lietusgāžu punkti ir punktu elementu datu kopa, vērtības tiks ņemtas no norādītā lauka.
+    </p>
+    <p>Ūdens&scaron;ķirtnes rīks atbalsta tikai D8 ievadi plūsmas virziena rastra slānī.
+    </p>
+    <p>Kā elementu datus nosakot ievades lietusgāžu punktu novietojumus, noklusējuma lauks būs pirmais pieejamais derīgais lauks. Ja nav derīgu lauku, kā noklusējums tiks izmantots lauks ObjectID (piemēram, OID vai FID).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFlowDirectionRaster">
+        <div><h2>Izvēlieties plūsmas virziena slāni</h2></div>
+        <hr/>
+        <div>
+            <p>Ievades rastrs, kas rāda plūsmas virzienu no katras &scaron;ūnas.
+            </p>
+            <p>Plūsmas virziena slānis var tikt izveidots, izmantojot rīku Plūsmas virziens vai FlowDirection uzdevumu servisā RasterAnalysisTools, kas darbojas, izmantojot noklusējuma plūsmas virziena tipu  <b>D8</b>.
+            </p>
+        </div>
+    </div>
+    <div id="inPourPointRasterOrFeatures">
+        <div><h2>Noteikt ievades lietusgāžu punktu novietojumus</h2></div>
+        <hr/>
+        <div>
+            <p>Ievades lietusgāžu punktu novietojumi.
+            </p>
+            <p>Rastram tas norāda &scaron;ūnas, virs kurām tiks noteikta atbilsto&scaron;ā teritorija vai satece. Visas &scaron;ūnas, kuru tips nav NoData, tiks izmantotas kā avota &scaron;ūnas. Punktu ievadei tas norāda novietojumus, virs kuriem tiks noteikta atbilsto&scaron;ā teritorija vai satece.
+            </p>
+        </div>
+    </div>
+    <div id="pourPointField">
+        <div><h2>Izvēlieties lietņa punkta lauku</h2></div>
+        <hr/>
+        <div>
+            <p>Izmantotais lauks, lai pie&scaron;ķirtu lietusgāžu punktu novietojumu vērtības.
+            </p>
+            <p>Ja ievades lietusgāžu punktu slānis ir rastrs, tiek izmantota vērtība. Ja tas ir elements, tiek izmantots ciparu lauks. Ja laukā ir peldo&scaron;ā punkta vērtības, tās tiks saīsinātas līdz veseliem skaitļiem.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slānis jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Mapes nosaukumu var norādīt mapē  <b>Mans saturs,</b> kur rezultāts tiks saglabāts, izmantojot nolaižamo lodziņu <b>Saglabāt rezultātu</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

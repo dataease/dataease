@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Noktaları Kümele</h2><p/>
+        <h2><img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" alt="Noktaları K&uuml;mele"></h2>
+        <hr/>
+    <p>Bu ara&ccedil;, nokta detayları katmanı ve alan detayları katmanı ile &ccedil;alışır. &Ouml;nce her bir alana hangi noktaların d&uuml;şeceğini belirler. Alan i&ccedil;indeki bu noktalar mekansal ilişkiyi belirledikten sonra, alandaki t&uuml;m noktaların istatistikleri hesaplanır ve alana atanır. En temel istatistik alan i&ccedil;indeki nokta sayısıdır, ancak diğer istatistikleri de alabilirsiniz. 
+    </p>
+    <p>&Ouml;rneğin, elinizde kahve d&uuml;kkanı konumlarının nokta detayları ve &uuml;lkelerin alan detayları var ve &uuml;lkeye g&ouml;re kahve satışlarını &ouml;zetlemek istiyorsunuz. Kahve d&uuml;kkanlarının bir  <i>TOTAL_SALES</i> &ouml;zniteliği olduğunu varsayalım, her &uuml;lkedeki t&uuml;m <i>TOTAL_SALES</i> toplamını ya da her &uuml;lkedeki minimum ya da maksimum <i>TOTAL_SALES</i> sayısını ya da her &uuml;lkedeki t&uuml;m satışların standart sapmasını elde edebilirsiniz.
+    </p>
+    <p> <b>Ge&ccedil;erli harita yayılımını kullan</b> işaretli ise, yalnızca ge&ccedil;erli harita yayılımında g&ouml;r&uuml;n&uuml;r olan girdi noktası katmanı ve alan katmanındaki detaylar analiz edilir.  İşaretli değilse, hem girdi noktası katmanı hem de alan katmanındaki t&uuml;m detaylar, ge&ccedil;erli harita yayılımının dışında olsa bile analiz edilir.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Alan olarak kümelenecek noktaları içeren katmanı seç</h2></div>
+        <hr/>
+        <div>
+            <p>Alan olarak k&uuml;melenecek nokta katmanıdır.
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;meye ek olarak, a&ccedil;ılır listenin alt kısmında bulunan  <b>Analiz Katmanı Se&ccedil;</b> se&ccedil;eneğini de se&ccedil;ebilirsiniz. Bu se&ccedil;enek, analizinizde kullanmak &uuml;zere &ccedil;eşitli kaynaklardan gelen veri k&uuml;melerine g&ouml;z atabileceğiniz ve se&ccedil;ebileceğiniz bir galeri a&ccedil;ar. 
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Kümelenme alanlarını içeren katmanı seç</h2></div>
+        <hr/>
+        <div>
+            <p>Noktaların k&uuml;melendirileceği alan katmanıdır. Bu katmanda bulunan alanların sınırları i&ccedil;ine giren t&uuml;m noktalar sayılır ve isteğe bağlı istatistik se&ccedil;imleriniz kullanılarak &ouml;zetlenir.  
+            </p>
+            <p>Kendi belirleyeceğiniz bir alan katmanı se&ccedil;ebileceğiniz gibi, ara&ccedil; &ccedil;alıştırıldığında oluşturulan kutulardan da se&ccedil;im yapabilirsiniz.   Kutu oluşturulurken  <b>Kare</b> i&ccedil;in belirtilen sayı ve birim karenin y&uuml;ksekliğini ve uzunluğunu belirler. <b>Altıgen</b> i&ccedil;in ise, belirtilen sayı ve birimler paralel kenarlar arasındaki mesafeyi belirler.
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;meye ek olarak, a&ccedil;ılır listenin alt kısmında bulunan  <b>Analiz Katmanı Se&ccedil;</b> se&ccedil;eneğini de se&ccedil;ebilirsiniz. Bu se&ccedil;enek, analizinizde kullanmak &uuml;zere &ccedil;eşitli kaynaklardan gelen veri k&uuml;melerine g&ouml;z atabileceğiniz ve se&ccedil;ebileceğiniz bir galeri a&ccedil;ar. 
+            </p>
+        </div>
+    </div>
+    <div id="KeepBoundaryNoPoints">
+        <div><h2>Noktası olmayan alanları tut</h2></div>
+        <hr/>
+        <div>
+            <p>Noktaları olmayan alanların sonu&ccedil; katmanında g&ouml;r&uuml;n&uuml;p g&ouml;r&uuml;nmeyeceğini belirler. İşaretlenmezse, noktaları olmayan alanlar sonu&ccedil; i&ccedil;inde g&ouml;r&uuml;nmez. İşaretlenirse, noktaları olmayan alanlar sonu&ccedil; i&ccedil;inde g&ouml;r&uuml;n&uuml;r.  
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>İstatistik ekle</h2></div>
+        <hr/>
+        <div>
+            <p>Giriş noktası katmanının toplam, ortalama, minimum, maksimum ve standart sapma gibi &ouml;znitelikleri hakkındaki istatistiklerini hesaplayabilirsiniz. Sonu&ccedil; katmanı hesaplanan her istatistik i&ccedil;in yeni bir &ouml;znitelik i&ccedil;erecektir. Herhangi bir sayıda istatistik, &ouml;znitelik ve istatistik se&ccedil;ilerek (yeni bir a&ccedil;ılır kutu g&ouml;r&uuml;n&uuml;r) eklenebilir.
+ 
+            </p>
+            <p>&Ouml;zetlenecek katmanın sayı alanı yoksa, ek istatistikler kullanılamaz.
+            </p>
+        </div>
+    </div>
+    <div id="GroupByField">
+        <div><h2>Gruplanacak alanları seçme kriteri</h2></div>
+        <hr/>
+        <div>
+            <p> Girdi nokta katmanında &ouml;znitelik kullanarak istatistiksel gruplar oluşturabilirsiniz. &Ouml;rneğin, komşu sınırlarla olan su&ccedil;ları bir araya getiriyorsanız, beş farklı su&ccedil; t&uuml;r&uuml;ne sahip bir <i>Crime_type</i> &ouml;zniteliğiniz olabilir. Her benzersiz su&ccedil; t&uuml;r&uuml; bir grup oluşturur ve se&ccedil;tiğiniz istatistikler her bir benzersiz <i>Crime_type</i> değeri i&ccedil;in hesaplanır. Nokta sayısının yanı sıra, her grubun istatistikleri a&ccedil;ılan sonu&ccedil; katmanında g&ouml;r&uuml;nt&uuml;lenir. Bir gruplama &ouml;zniteliği se&ccedil;tiğinizde, iki sonu&ccedil; oluşturulur: Sonu&ccedil; katmanı ve her benzersiz grubun istatistiğini i&ccedil;eren bir sonu&ccedil; tablosu.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Azınlık, çoğunluk ekle</h2></div>
+        <hr/>
+        <div>
+            <p>Gruplandırma &ouml;l&ccedil;&uuml;t&uuml; olarak bir alan belirlediğinizde bu onay kutusu etkinleştirilir. Her grupta, her sınır i&ccedil;indeki hangi &ouml;znitelik değerlerinin azınlık (en az baskın) veya &ccedil;oğunluk (en baskın) olduğunu bulmak isterseniz,  <b>Azınlık, &ccedil;oğunluk ekle</b> &ouml;ğesini se&ccedil;in. <b>Azınlık, &ccedil;oğunluk ekle</b> &ouml;ğesini se&ccedil;tiğinizde, sonu&ccedil; katmanınıza iki yeni alan eklenir.   Ayrıca <b>Y&uuml;zde ekle</b> &ouml;ğesini de se&ccedil;erseniz, her gruptaki azınlık ve &ccedil;oğunluk &ouml;znitelik değerlerinin y&uuml;zdelerini bulunduran sonu&ccedil; katmanına iki ilave alan eklenir.
+            </p>
+            <p>&Ouml;rneğin bir şehir plancısı olarak şehirdeki t&uuml;m parklarda hangi ağa&ccedil; t&uuml;rlerinin azınlıkta, hangilerinin &ccedil;oğunlukta olduğunu bulmak istediğinizde, ağa&ccedil; verilerinizi park alanlarıyla birleştirin ve bu se&ccedil;eneği işaretleyin.
+            </p>
+        </div>
+    </div>
+    <div id="PercentPoints">
+        <div><h2>Yüzde ekle</h2></div>
+        <hr/>
+        <div>
+            <p>Gruplandırma &ouml;l&ccedil;&uuml;t&uuml; olarak bir alan belirlediğinizde bu onay kutusu etkinleştirilir. Her grup i&ccedil;inde her &ouml;zniteliğin değerini bulmak istiyorsanız  <b>Y&uuml;zde ekle</b> &ouml;gesini se&ccedil;in. Her gruptaki her &ouml;znitelik değerinin y&uuml;zdesini i&ccedil;eren sonu&ccedil; tablosuna yeni bir alan eklenir. Ayrıca <b>Azınlık, &ccedil;oğunluk ekle</b> &ouml;ğesini de se&ccedil;erseniz, her gruptaki azınlık ve &ccedil;oğunluk &ouml;znitelik değerlerinin y&uuml;zdelerini bulunduran sonu&ccedil; katmanına iki ilave alan eklenir.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p>Bu,  <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adıdır.  Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman adı zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır men&uuml;s&uuml;n&uuml; kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

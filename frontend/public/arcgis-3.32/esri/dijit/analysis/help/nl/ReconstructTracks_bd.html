@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Traceringen reconstrueren</h2><p/>
+        <h2><img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" alt="Traceringen reconstrueren"></h2>
+        <hr/>
+    <p> Deze tool werkt met een tijdingeschakelde laag van punt- of gebiedsobjecten die een <code>moment</code> in de tijd vertegenwoordigen. Het bepaalt eerst welke objecten tot een tracering behoren met behulp van een identificatie. Met behulp van de tijd op elke locatie, worden de tracks op volgorde gezet en omgevormd tot een lijn of gebied die het pad van de beweging in de tijd weergeeft. Eventueel kan de input worden gebufferd door een veld, dat een gebied op elke locatie cre&euml;ert. Deze gebufferde punten of als de inputgebieden worden vervolgens samengevoegd om een track te cre&euml;ren als een gebied waarbij de breedte representatief is voor het betreffende attribuut. De resulterende tracks hebben een begin- en een eindtijd, die tijdelijk het eerste en het laatste object in een bepaalde track vertegenwoordigen. Wanneer de tracks gemaakt zijn, worden de statistieken over de inputobjecten berekend en toegekend aan de outputtracering. De meest eenvoudige statistiek is het aantal punten binnen het gebied, maar andere statistieken kunnen ook worden berekend.
+    </p>
+    <p>Objecten in tijdingeschakelde lagen kunnen worden weergegeven op twee manieren:
+        <ul>
+            <li>Direct&mdash;E&eacute;n moment in de tijd
+            </li>
+            <li>Interval&mdash;Een start- en eindtijd
+            </li>
+        </ul>
+        
+    </p>
+    <p>Stel bijvoorbeeld voor dat u GPS-metingen van orkanen hebt elke 10 minuten. Elke GPS-meting registreert de naam van de orkaan, de locatie, het tijdstip van de opname en de windsnelheid. Met deze informatie kunt u tracks cre&euml;ren voor elke orkaan met de naam voor traceringsidentificatie en traceringen voor elke orkaan worden gegenereerd. Daarnaast kunt u statistieken berekenen, zoals het gemiddelde, max. en minimale windsnelheid van elke orkaan, evenals het aantal metingen binnen elke tracks.
+    </p>
+    <p>Met behulp van hetzelfde voorbeeld kunt u uw traceringen bufferen door de windsnelheid. Dit buffert elke meting door het windsnelheidveld op die locatie en voegt de gebufferde gebieden samen, maakt een gebied dat representatief is voor de track en voor veranderingen in windsnelheid bij het verder trekken van de orkanen.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Kies de features om traceringen uit te reconstrueren</h2></div>
+        <hr/>
+        <div>
+            <p>De punt- of gebiedlaag die gereconstrueerd wordt in tracks. Voor de inputlaag moet de tijd zijn ingeschakeld met objecten die een moment in de tijd vertegenwoordigen. De kaartlaag moet in een geprojecteerd co&ouml;rdinaatsysteem of de processing ruimtelijke referentie moet worden ingesteld op een geprojecteerd co&ouml;rdinaatsysteem met behulp van de  <b>Analysis Environments</b> als een buffer wordt toegepast.
+            </p>
+            <p>Naast het kiezen van een laag van uw kaart, kunt u kiezen voor  <b>Analyselaag kiezen</b> onderaan de keuzelijst om in uw inhoud te zoeken naar een big data file share-dataset of objectlaag.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Kies een of meer velden om traceringen te identificeren</h2></div>
+        <hr/>
+        <div>
+            <p>De velden die de traceringsidentifier vertegenwoordigen. 
+            </p>
+            <p>Bijvoorbeeld als u de sporen van orkanen reconstrueert, kunt u de naam van de orkaan gebruiken als het trackveld.
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Kies te gebruiken methode om traceringen te reconstrueren</h2></div>
+        <hr/>
+        <div>
+            <p>Methode die wordt gebruikt om traceringen samen te voegen en buffers toe te passen (indien van toepassing). De  <b>Planaire</b> methode kan de resultaten sneller berekenen, maar wikkelt de traceringen niet rond de internationale datumgrens en houdt geen rekening met de daadwerkelijke vorm van de aarde bij het bufferen. De <b>Geodetische</b> methode wikkelt traceringen rond de datumgrens indien nodig en past een geodetische buffer toe om rekening te houden met de vorm van de aarde.
+            </p>
+        </div>
+    </div>
+    <div id="bufferField">
+        <div><h2>Maak een expressie om invoerfeatures op te bufferen (optioneel)</h2></div>
+        <hr/>
+        <div>
+            <p>Vergelijking gebruikt om de bufferafstand rond de invoerobjecten te berekenen. Deze vergelijking kan worden gegenereerd met behulp van de buffercalculator en basisbewerkingen zoals optellen, aftrekken, vermenigvuldigen en delen worden ondersteund. Waarden worden berekend op basis van het analyseco&ouml;rdinaatsysteem. De kaartlaag moet in een geprojecteerd co&ouml;rdinaatsysteem of de processing ruimtelijke referentie moet worden ingesteld op een geprojecteerd co&ouml;rdinaatsysteem met behulp van de  <b>Analysis Environments</b> als een buffer wordt toegepast.
+            </p>
+            <p>Een vergelijking als  <code>$feature.windspeed * 1000</code> past een buffer toe van 1000 vermenigvuldigd met het veld <i>windspeed</i>. U kunt meer dan &eacute;&eacute;n veld gebruiken in de buffercalculator.
+            </p>
+            <p> U kunt ook een trackbewuste expressie opgeven. U kunt bijvoorbeeld het totaal berekenen van veldwaarde <i>windspeed</i> voor het huidige object en vorige twee objecten met een berekening als <code>$track.field(windspeed).history(-3)</code>. Op elke locatie wordt het totaal van de huidige <i>windspeed</i>, en vorige twee metingen wordt berekend en gebufferd.
+            </p>
+        </div>
+    </div>
+    <div id="timeSplit">
+        <div><h2>Selecteer een tijd om traceringen op te splitsen (optioneel)</h2></div>
+        <hr/>
+        <div>
+            <p>Tijd gebruikt om traceringen te splitsen. Als invoerpunten of -gebieden een langere duur tussen zich hebben dan de gesplitste tijd, dan worden ze opgesplitst in verschillende tracks.
+            </p>
+            <p>Als u een tijd en afstand specificeert om op te splitsen, worden tracks gesplitst als aan &eacute;&eacute;n of beide voorwaarden is voldaan. 
+            </p>
+            <p>Stel u voor dat u puntobjecten hebt die vliegtuigvluchten voorstellen en het traceringveld is het ID van het vliegtuig. Dit toestel kan meerdere reizen maken en wordt weergegeven als &eacute;&eacute;n tracering. Als u weet dat er een pauze van 1 uur is tussen de vluchten, kunt u gebruik maken van  <code>1 uur</code> als traceringssplitsing en elke vlucht wordt dan gesplitst in een eigen tracering.
+            </p>
+        </div>
+    </div>
+    <div id="splitTracks">
+        <div><h2>Splitsen van tracks (optioneel)</h2></div>
+        <hr/>
+        <div>
+            <p>U kunt tracks op drie verschillende manieren splitsen. U kunt een combinatie van geen, alle of sommige splitsmethoden gebruiken. 
+            </p>
+            <p>Splits kunnen op de volgende manieren worden voltooid:
+                <ul>
+                    <li> <b>Gebaseerd op een afstand tussen invoeren</b>&mdash;Als invoerpunten of -gebieden een langere afstand tussen zich hebben dan de gespecificeerde afstand, dan worden ze opgesplitst in verschillende tracks. Als u bijvoorbeeld een afstand van 10 kilometer hebt opgegeven, zijn opeenvolgende punten van meer dan 10 kilometer afzonderlijke tracks.
+                    </li>
+                    <li> <b>Gebaseerd op een tijd tussen invoeren</b>&mdash;Als invoerpunten of -gebieden een langer duren dan de gespecificeerde tijd, dan worden ze opgesplitst in verschillende tracks Stel u voor dat u bijvoorbeeld puntobjecten hebt die vliegtuigvluchten voorstellen en het trackingveld is het ID van het vliegtuig. Dit toestel kan meerdere reizen maken en wordt weergegeven als &eacute;&eacute;n tracering. Als u weet dat er een pauze van 1 uur is tussen de vluchten, kunt u gebruik maken van <code>1 uur</code> als traceringssplitsing en elke vlucht wordt dan gesplitst in een eigen tracering.
+                    </li>
+                    <li> <b>Op gedefinieerde tijdsintervallen</b>&mdash;Splitsen met regelmatige intervallen, gespecificeerd door een tijdsinterval en een referentietijd. Als u geen referentietijd opgeeft, wordt 1 januari 1970 gebruikt. Als u bijvoorbeeld 1 jaar hebt opgegeven met een referentietijd van 2 februari 1990 om 10.00 uur, zou u tracks splitsen op 2 februari 1990 om 10.00 uur, 2 februari 1991 om 10.00 uur en doorgaan met intervallen van &eacute;&eacute;n jaar.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Als u meerdere splitsopties selecteert, worden tracks gesplitst als aan &eacute;&eacute;n of beide voorwaarden is voldaan. 
+            </p>
+        </div>
+    </div>
+    <div id="distanceSplit">
+        <div><h2>Selecteer een afstand om traceringen op te splitsen (optioneel)</h2></div>
+        <hr/>
+        <div>
+            <p>Afstand gebruikt om tracks te splitsen. Als invoerpunten of -gebieden een langere afstand tussen zich hebben dan de gesplitste afstand, dan worden ze opgesplitst in verschillende tracks.
+            </p>
+            <p>Als u een tijd en afstand specificeert om op te splitsen, worden tracks gesplitst als aan &eacute;&eacute;n of beide voorwaarden is voldaan. 
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Statistieken toevoegen (optioneel)</h2></div>
+        <hr/>
+        <div>
+            <p> U kunt statistieken berekenen over objecten die zijn samengevat.U kunt het volgende berekenen in numerieke velden:
+                <ul>
+                    <li>Count&mdash;Berekent het aantal niet-nulwaarden.Kan gebruikt worden op numerieke velden of strings. De telling van [nul, 0, 2] is 2.
+                    </li>
+                    <li>Som&mdash;De som van numerieke waarden in een veld. De som van [nul, nul, 3] is 3.
+                    </li>
+                    <li>Gemiddelde&mdash;Het gemiddelde van numerieke waarden. Het gemiddelde van [0, 2, nul] is 1.
+                    </li>
+                    <li>Min&mdash;De minimumwaarde van een numeriek veld. Het minimum van [0, 2, nul] is 0. 
+                    </li>
+                    <li>Max&mdash;De maximumwaarde van een numeriek veld. De maximumwaarde van [0, 2, nul] is 2.
+                    </li>
+                    <li>Bereik&mdash;Het bereik van een numeriek veld. Dit wordt berekend als de minimumwaarden afgetrokken van de maximumwaarde. Het bereik van [0, nul, 1] is 1. Het bereik van [nul, 4] is 0.
+                    </li>
+                    <li>Variantie&mdash;De variantie van een numeriek veld in een track. De variantie van [1] is nul. De variantie van [null, 1,0,1,1] is 0,25.
+                    </li>
+                    <li>Standaarddeviatie&mdash;De standaarddeviatie van een numeriek veld. De standaarddeviatie van [1] is nul. De standaarddeviatie van [null, 1,0,1,1] is 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>U kunt het volgende berekenen in numerieke velden:
+                <ul>
+                    <li>Telling&mdash;Het aantal non-nul strings.
+                    </li>
+                    <li>Elke&mdash;Deze statistiek is een willekeurig voorbeeld van een stringwaarde in het gespecificeerde veld.
+                    </li>
+                </ul>
+                Alle statistieken worden berekend op nonnull waarden. De resultaatlaag zal een nieuw veld bevatten voor elke statistiek die wordt berekend. Andere statistieken kunnen worden toegevoegd door een attribuut en statistiek te kiezen. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Kies een ArcGIS Data Store om de resultaten in op te slaan</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytic-resultaten worden opgeslagen in een datastore en weergegeven als een objectlaag in  Portal for ArcGIS. In de meeste gevallen moeten de resultaten worden opgeslagen in de spatiotemporele data store en dit is de standaardinstelling. In sommige gevallen is het opslaan van de resultaten in de relationele data-opslag een goede optie. Hier volgen redenen waarom u resultaten zou willen opslaan in een relationele data-opslag: 
+                <ul>
+                    <li>U kunt resultaten gebruiken in portaal-tot-portaal samenwerking.
+                    </li>
+                    <li>Om synchronisatiemogelijkheden met uw resultaten mogelijk te maken.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>U moet geen gebruik maken van een relationele data-store als u verwacht dat uw GeoAnalytics-resultaten toenemen en u wilt profiteren van de mogelijkheden van de spatiotemporele big data-store om grote hoeveelheden gegevens te verwerken.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p> De naam van de laag die wordt gemaakt. Als u naar een ArcGIS Data Store,  schrijft, worden uw resultaten opgeslagen in  <b>Mijn Content</b> en toegevoegd aan de kaart. Als u naar een big data file share schrijft, worden uw resultaten opgeslagen in de big data file share en toegevoegd aan het bijhorende manifest. Ze zullen niet worden toegevoegd aan de kaart. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, zal de tool falen.
+            </p>
+            <p>Wanneer u schrijft naar  ArcGIS Data Store (relationele of spatiotemporele big datastore) met behulp van de vervolgkeuzelijst  <b>Resultaat opslaan in</b>, kunt u de naam van een map opgeven in <b>Mijn Content</b>, waar het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

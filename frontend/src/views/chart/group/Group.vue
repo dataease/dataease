@@ -412,7 +412,7 @@ export default {
       renderOptions: [
         { name: 'AntV', value: 'antv' },
         { name: 'ECharts', value: 'echarts' },
-        // { name: 'HighCharts', value: 'highcharts'}
+        { name: 'HighCharts', value: 'highcharts'}
       ],
       searchPids: [], // 查询命中的pid
       filterText: '',
@@ -827,6 +827,7 @@ export default {
       view.drillFields = JSON.stringify([])
       view.extBubble = JSON.stringify([])
       this.setChartDefaultOptions(view)
+      console.log('view',view)
       const _this = this
       post('/chart/view/newOne/' + this.panelInfo.id, view, true).then(response => {
         this.closeCreateChart()
@@ -871,6 +872,7 @@ export default {
     },
 
     getTable(table) {
+      console.log("表格：",table)
       this.table = JSON.parse(JSON.stringify(table))
     },
 

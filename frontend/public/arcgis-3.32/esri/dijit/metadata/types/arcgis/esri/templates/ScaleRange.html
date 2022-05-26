@@ -1,0 +1,20 @@
+<div data-dojo-attach-point="containerNode">
+
+  <!-- scale range -->
+  <div data-dojo-type="esri/dijit/metadata/form/Element"
+    data-dojo-props="target:'scaleRange',minOccurs:0,label:'${i18nArcGIS.scaleRange.caption}'">
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'maxScale',minOccurs:0,label:'${i18nArcGIS.scaleRange.maxScale}'">
+      <div data-dojo-type="esri/dijit/metadata/form/InputNumber"
+        data-dojo-props="minValue:0,minValueIsExclusive:true,integerOnly:true,hint:'${i18nArcGIS.hints.maxScale}'">
+      </div>
+    </div>
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'minScale',minOccurs:0,label:'${i18nArcGIS.scaleRange.minScale}'">
+      <div data-dojo-type="esri/dijit/metadata/form/InputNumber"
+        data-dojo-props="minValue:0,minValueIsExclusive:true,integerOnly:true,hint:'${i18nArcGIS.hints.minScale}'">
+      </div>
+    </div>
+  </div>
+
+</div>

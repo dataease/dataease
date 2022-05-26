@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Genberegn værdier</h2><p/>
+        <h2><img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" alt="Genberegn v&aelig;rdier-v&aelig;rkt&oslash;j til Portal"></h2>
+        <hr/>
+    <p>Med dette v&aelig;rkt&oslash;j kan du &aelig;ndre eller omklassificere pixelv&aelig;rdierne for rasterdata. Pixelv&aelig;rdierne genberegnes ved at angive et omr&aring;de med pixel-v&aelig;rdier, der skal &quot;mappes&quot; til en output-pixelv&aelig;rdi. Output-pixelv&aelig;rdien kan v&aelig;re en gyldig v&aelig;rdi eller en NoData-v&aelig;rdi, hvilket betyder pixels, der ikke har en kendt tilknyttet v&aelig;rdi.
+    </p>
+    <p>Hvis feltet  <b>Brug aktuel kortudstr&aelig;kning</b> er markeret, genberegnes kun de celler, der er synlige inden for den aktuelle kortudstr&aelig;kning. Hvis markeringen fjernes, behandles alle cellerne, ogs&aring; dem, der ligger uden for den aktuelle kortudstr&aelig;kning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Inputdata</h2></div>
+        <hr/>
+        <div>
+            <p>De inputdata, der bliver genberegnet v&aelig;rdier for.
+            </p>
+        </div>
+    </div>
+    <div id="RemapList">
+        <div><h2>Genberegn pixel-værdier til nye værdier</h2></div>
+        <hr/>
+        <div>
+            <p>Du angiver et interval af v&aelig;rdier ved at angive en minimums- og en maksimumsv&aelig;rdi og ved derefter tildele en outputv&aelig;rdi eller en NoData-v&aelig;rdi til det angivne interval.
+            </p>
+            <p>Hvis du vil genberegne et nyt interval af v&aelig;rdier, skal du klikke p&aring;  <b>Tilf&oslash;j</b>, hvorved der tilf&oslash;jes en r&aelig;kke. Klik p&aring; hver v&aelig;rdi for at redigere tabellen i forhold til de intervaller og den genberegnede v&aelig;rdi, du &oslash;nsker. N&aring;r du angiver v&aelig;rdiintervaller, skal du tage to vigtige regler i anvendelse:
+                <ul>
+                    <li>Minimumsv&aelig;rdien i intervallet er inkluderende, og maksimumsv&aelig;rdien er ekskluderende.
+                    </li>
+                    <li>R&aelig;kkerne i tabellen behandles fra &oslash;verst til nederst.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Tabellen nedenfor viser, at minimumsv&aelig;rdien er inkluderet inde i outputtet, men at maksimumsv&aelig;rdien ikke er inkluderet i outputtet.
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>1-9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>20
+                    </p>
+                </td>
+                <td>
+                    <p>10-19
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+                <td>
+                    <p>51
+                    </p>
+                </td>
+                <td>
+                    <p>50
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>R&aelig;kkef&oslash;lgen af de intervaller, der er angivet i tabellen, er ogs&aring; vigtig. Den &oslash;verste r&aelig;kke i tabellen behandles f&oslash;rst, og derefter behandles r&aelig;kken nedenfor. De to tabeller nedenfor viser, hvordan de samme v&aelig;rdiintervaller vil give forskellige resultater alt efter tabelr&aelig;kkernes r&aelig;kkef&oslash;lge.
+            </p> 
+            <p>Tabellen nedenfor viser outputv&aelig;rdien, n&aring;r den f&oslash;rste kolonne sorteres numerisk:
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1-14
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>15-29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30-39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Denne tabel viser, hvordan en anden r&aelig;kkef&oslash;lge af r&aelig;kkerne give andre outputv&aelig;rdier.
+            </p> 
+            <table border="1">
+            <tr>
+                <td>
+                    <p>10
+                    </p>
+                </td>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>10-29
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>15
+                    </p>
+                </td>
+                <td>
+                    <p>1-9
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>30
+                    </p>
+                </td>
+                <td>
+                    <p>40
+                    </p>
+                </td>
+                <td>
+                    <p>30-39
+                    </p>
+                </td>
+            </tr>
+            </table>
+            <p>Begge regler anvendes til at angive en anden r&aelig;kkef&oslash;lge for v&aelig;rdierne. Da hver r&aelig;kke behandles fra &oslash;verst til nederst, f&aring;r disse v&aelig;rdier forrang ved bestemmelse af outputtet, ogs&aring; n&aring;r de samme intervaller anvendes.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; det lag, som oprettes under  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Du kan angive navnet p&aring; en mappe i  <b>Mit indhold</b>, hvor resultatet bliver gemt ved at benytte rullelisten <b>Gem resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

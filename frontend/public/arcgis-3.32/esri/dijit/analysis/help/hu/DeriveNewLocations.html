@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Új helyek származtatása</h2><p/>
+        <h2><img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" alt="&Uacute;j helyek sz&aacute;rmaztat&aacute;sa"></h2>
+        <hr/>
+    <p>Ez az eszk&ouml;z &uacute;j vektoros elemeket sz&aacute;rmaztat a minta ter&uuml;leten bel&uuml;li, &eacute;s a megfelel a megadott krit&eacute;riumok sorozat&aacute;nak. Ezek a krit&eacute;riumok alapulhatnak attrib&uacute;tumlek&eacute;rdez&eacute;seken (p&eacute;ld&aacute;ul &uuml;res parcell&aacute;kon) &eacute;s t&eacute;rbeli lek&eacute;rdez&eacute;seken (p&eacute;ld&aacute;ul &aacute;rt&eacute;rben tal&aacute;lhat&oacute; parcell&aacute;k).
+
+    </p>
+    <p>Az  <b>Aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;s haszn&aacute;lata</b> bejel&ouml;l&eacute;s&eacute;vel a program csak az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen l&aacute;that&oacute; vektoros elemeket elemzi.  Ha nincs bejel&ouml;lve, akkor az &ouml;sszes vektoros elemet elemzi, akkor is, ha azok k&iacute;v&uuml;l esnek az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="Expression">
+        <div><h2>Az alábbi kifejezés(ek)nek megfelelő, új helyek származtatása</h2></div>
+        <hr/>
+        <div>
+            <p>Kifejez&eacute;s meghat&aacute;roz&aacute;s&aacute;hoz kattintson a  <b>Kifejez&eacute;s hozz&aacute;ad&aacute;sa</b> gombra.  Megadhat t&ouml;bb kifejez&eacute;st.  A kifejez&eacute;sek megad&aacute;sa ut&aacute;n az <b>Elemz&eacute;s futtat&aacute;sa</b> gombra kattintva az eszk&ouml;z az egyes kifejez&eacute;sek szerint szűri az elemz&eacute;s r&eacute;teg vektoros elemeit.  Az eszk&ouml;z a vektoros elemek minden kifejez&eacute;snek megfelelő r&eacute;szeit az eredm&eacute;ny r&eacute;tegre &iacute;rja.
+            </p>
+            <p>A l&eacute;trehozhat&oacute; kifejez&eacute;seknek k&eacute;t alapt&iacute;pusa l&eacute;tezik: attrib&uacute;tum &eacute;s t&eacute;rbeli.  Az attrib&uacute;tum kifejez&eacute;sek mező&eacute;rt&eacute;k-lek&eacute;rdez&eacute;sek, mint p&eacute;ld&aacute;ul  <code>&bdquo;San Francisco&rdquo; nevet tartalmaz&oacute; mező</code>.  A t&eacute;rbeli kifejez&eacute;sek n&eacute;gy t&iacute;pusa:
+                <ul>
+                    <li> <b>megadott t&aacute;vols&aacute;gon bel&uuml;l</b>: egy m&aacute;sik r&eacute;teg vektoros elem&eacute;től a megadott t&aacute;vols&aacute;gon bel&uuml;l tal&aacute;lhat&oacute; vektoroselem-r&eacute;szek.  Megkeresheti p&eacute;ld&aacute;ul a Los Angeles foly&oacute;t&oacute;l 500 m&eacute;teren bel&uuml;l tal&aacute;lhat&oacute; parcellar&eacute;szeket.
+                    </li>
+                    <li> <b>teljes m&eacute;rt&eacute;kben tartalmazza</b>: a vektoros elemnek teljes m&eacute;rt&eacute;kben tartalmaznia kell egy m&aacute;sik r&eacute;tegen tal&aacute;lhat&oacute; vektoros elemet.  Megkeresheti p&eacute;ld&aacute;ul azokat a v&iacute;zgyűjtő ter&uuml;leteket, amelyek teljes m&eacute;rt&eacute;kben tartalmazz&aacute;k az ipari haszn&aacute;lati &ouml;vezetbe sorolt parcell&aacute;kat.  A parcella egyetlen r&eacute;sze sem lehet a v&iacute;zgyűjtő ter&uuml;leten k&iacute;v&uuml;l.
+                    </li>
+                    <li> <b>hat&aacute;r&aacute;n bel&uuml;l van</b>: a vektoros elemet teljesen k&ouml;r&uuml;l kell vennie egy m&aacute;sik r&eacute;teg vektoros elem&eacute;nek.  Megkeresheti p&eacute;ld&aacute;ul azokat az iskolak&ouml;rzeteket, amelyek teljes m&eacute;rt&eacute;kben egy v&aacute;ros hat&aacute;r&aacute;n bel&uuml;l vannak.  Az iskolak&ouml;rzet egyetlen r&eacute;sze sem lehet a v&aacute;roshat&aacute;ron k&iacute;v&uuml;l.
+                    </li>
+                    <li> <b>metszi</b>: a vektoros elemnek vagy vektoroselem-r&eacute;szeknek &aacute;tfed&eacute;sben vagy metsz&eacute;sben kell lenni&uuml;k egy m&aacute;sik r&eacute;teg vektoros elem&eacute;vel.  Megkeresheti p&eacute;ld&aacute;ul azokat a ter&uuml;leteket egy nemzeti parkban, amelyeken t&ouml;bb tűzeset k&ouml;vetkezt&eacute;ben ki&eacute;gett a n&ouml;v&eacute;nyzet.   Az eredm&eacute;nyek nem fogj&aacute;k tartalmazni a park hat&aacute;rvonal&aacute;n k&iacute;v&uuml;li tal&aacute;lhat&oacute;, ki&eacute;gett ter&uuml;leteket.
+                    </li>
+                    <li> <b>legk&ouml;zelebbi</b>: a vektoros elemnek a legk&ouml;zelebb kell lennie egy, a m&aacute;sik r&eacute;tegben l&eacute;vő vektoros elemhez.  P&eacute;ld&aacute;ul tal&aacute;lja meg azt a z&ouml;ld ter&uuml;letet, amely a legk&ouml;zebb esik mindegyik iskol&aacute;hoz.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Mindegyik t&eacute;rbeli kifejez&eacute;shez megfelelő tagad&aacute;s is tartozik, a  <b>legk&ouml;zelebbi</b> kiv&eacute;tel&eacute;vel; <b>nincs a megadott t&aacute;vols&aacute;gon bel&uuml;l</b>, <b>nem tartalmazza nem tartalmazza teljes m&eacute;rt&eacute;kben</b>, <b>nincs a hat&aacute;r&aacute;n bel&uuml;l</b> &eacute;s <b>nem metszi</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Eredményréteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve.  Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő men&uuml;ben megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

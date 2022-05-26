@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Finn punktklynger</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="Finn punktklynger"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet finner klynger av punktgeoobjekter med omgivelsesst&oslash;y basert p&aring; deres geografiske fordeling.
+    </p>
+    <p>Hvis det er merket av for  <b>Bruk gjeldende kartutstrekning</b>, analyseres kun geoobjektene i inndatapunktlaget innenfor gjeldende kartutstrekning. Hvis det ikke er merket av for dette alternativet, analyseres alle geoobjektene i inndatapunktlaget, selv om de befinner seg utenfor gjeldende kartutstrekning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Velg laget det skal finnes klynger for</h2></div>
+        <hr/>
+        <div>
+            <p>Punktlaget der det skal finnes klynger. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Minimum antall punkt som regnes som en klynge</h2></div>
+        <hr/>
+        <div>
+            <p>Minimum antall geoobjekter som regnes som en klynge. Enhver klynge med f&aelig;rre geoobjekter enn det angitte, blir ansett som st&oslash;y. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Begrens søkeområdet til (valgfritt)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Maksimal avstand for &aring; anse geoobjekter som tilh&oslash;rende samme klynge. Hvis feltet er tomt, vil verkt&oslash;yet kj&oslash;re HDBSCAN som bruker forskjellige avstander til &aring; skille klynger av varierende tetthet fra mer spredt st&oslash;y. Hvis det er angitt en verdi, vil verkt&oslash;yet kj&oslash;re DBSCAN som bruker en bestemt avstand til &aring; skille tette klynger fra mer spredt st&oslash;y.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis lagnavnet finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Bruk rullegardinmenyen  <b>Lagre resultat i</b> til &aring; angi navnet p&aring; en mappe i <b>Mitt innhold</b> som resultatene skal lagres i.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Uopštena linearna regresija</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="Dijagram radnog toka Uop&scaron;tene linearne regresije"></h2>
+        <hr/>
+    <p>Vr&scaron;i Uop&scaron;tenu linearnu regresiju 
+(GLR) radi generisanja predviđanja ili modeliranja zavisne promenljive u pogledu njenog odnosa sa skupom opisnih promenljivih.  Ova alatka može da se koristi za uklapanje neprekidnih (Gausovih), binarnih (logističkih) i modela prebrojavanja (Poasonovih).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Tip analize</h2></div>
+        <hr/>
+        <div>
+            <p>Navodi režim rada alatke. Alatka može da se pokrene radi obučavanja modela da samo proceni performanse ili da obuči model i predvidi geoobjekte. Vrste predviđanja su sledeće:
+                <ul>
+                    <li> <b>Uklopi model radi procene performansi modela</b> &ndash; model će biti uklopljen i primenjen na ulazne podatke. Koristite ovu opciju da procenite tačnost svog modela pre generisanja predviđanja na novom skupu podataka ili da razumete odnose i pokretače va&scaron;e predviđene promenljive. Izlaz ove opcije će biti servis geoobjekata va&scaron;ih uklopljenih podataka i dijagnostika modela.
+                    </li>
+                    <li> <b>Uklopi model i predvidi vrednosti</b> &ndash; generisaće se predviđanja ili klasifikacije za ulazne geoobjekte i geoobjekte predviđanja. Opisne promenljive moraju da se unesu i za geoobjekte predviđanja i za geoobjekte koje treba predvideti. Izlaz ove opcije će biti servis geoobjekata va&scaron;eg modela uklopljenog sa ulaznim podacima, servis geoobjekata predviđenih vrednosti i dijagnostika modela.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>Uklopi model radi procene performansi modela</h2></div>
+        <hr/>
+        <div>
+            <p>Koristite ovaj režim ako želite da uklopite model i ispitate uklapanje.
+            </p>
+            <p>Sa ovim izborom, model će biti obučen kori&scaron;ćenjem ulaznog sloja. Koristite ovu opciju da procenite tačnost svog modela pre generisanja predviđanja na novom skupu podataka. Ova opcija će dati dijagnostiku modela i primeniti model na va&scaron;e podatke za obuku.
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>Uklopi model i predvidi vrednosti</h2></div>
+        <hr/>
+        <div>
+            <p>Koristite ovaj režim ako želite da uklopite model i primenite model na skup podataka radi generisanja predviđanja.
+            </p>
+            <p>Generisaće se predviđanja ili klasifikacije za geoobjekte. Izlaz ove opcije će biti servis geoobjekata, dijagnostika modela i opciona tabela promenljive važnosti.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>Odaberite sloj iz koga želite da generišete model</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj koji sadrži tačkaste, linijske, geoobjekte oblasti ili tabelarne geoobjekte koji sadrže zavisne ili opisne promenljive.
+            </p>
+            <p>Kao dodatak odabiru sloja iz mape, možete da odaberete  <b>Izaberi sloj za analizu</b> na dnu padajuće liste da biste potražili deljeni skup podataka za datoteke sa velikim podacima ili sloj geoobjekta u svojim sadržajima.
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>Odaberite polje za modelovanje</h2></div>
+        <hr/>
+        <div>
+            <p>Numeričko polje koje sadrži vrednosti opservacije koje treba modelovati i vrstu vrednosti koju modelujete. Postoje tri vrste vrednosti koje možete da modelujete
+                <ul>
+                    <li>Neprekidna &ndash; predstavlja neprekidne vrednosti. Model koji se koristi je Gausov, a alatka vr&scaron;i običnu regresiju najmanjih kvadrata.
+                    </li>
+                    <li>Binarna &ndash; predstavlja prisustvo ili odsustvo vrednosti. To moraju biti jedinice i nule. Model koji se koristi je Logistička regresija.
+                    </li>
+                    <li>Prebrojavanje &ndash; predstavlja diskretne događaje, na primer, broj kriminalnih dela, incidente bolesti ili saobraćajne nezgode. Model koji se koristi je Poasonova regresija. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Odaberite sloj za predviđanje vrednosti</h2></div>
+        <hr/>
+        <div>
+            <p>Sloj sa geoobjektima koji predstavljaju lokacije gde bi trebalo izračunati procene. Svaki geoobjekat u ovom skupu podataka bi trebalo da sadrži vrednosti za sve navedene opisne promenljive. Zavisna promenljiva za ove geoobjekte će se proceniti pomoću modela koji je kalibrisan za ulazni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Odaberite opisna polja</h2></div>
+        <hr/>
+        <div>
+            <p>Jedno ili vi&scaron;e polja koja predstavljaju opisne promenljive (polja) koje pomažu u predviđanju vrednosti. Samo će numeričke vrednosti biti vidljive.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Odaberite kako će se podudarati opisna polja</h2></div>
+        <hr/>
+        <div>
+            <p>Kako će se odgovarajuće promenljive u ulaznom sloju podudarati sa promenljivima u sloju predviđanja. U tabelu će biti uključene samo promenljive koje se koriste za generisanje modela. Mogu se koristiti samo numeričke vrednosti. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p> Ime sloja koji će se kreirati. Ako vr&scaron;ite upis u ArcGIS Data Store, va&scaron;i rezultati će se čuvati u  <b>Mom sadržaju</b> i biće dodati na mapu. Ako vr&scaron;ite upis u deljeni resurs za datoteke sa velikim podacima, va&scaron;i rezultati će se čuvati u deljenom resursu za datoteke sa velikim podacima i biti dodati u njegov manifest. On neće biti dodat na mapu. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako sloj već postoji, alatka će otkazati.
+            </p>
+            <p>Vraćeni rezultati će zavisiti od tipa analize. Ako uklapate radi procene uklapanja modela, rezultati će sadržati sloj ulaznih podataka koji je uklopljen sa modelom i informacije o rezultatu procene uklapanja modela. Ako uklapate i predviđate, rezultati će sadržati sloj ulaznih podataka koji je uklopljen sa modelom, sloj predviđenih rezultata i informacije o rezultatu procene uklapanja modela.
+            </p>
+            <p>Prilikom upisa u  ArcGIS Data Store (skladi&scaron;te relacionih ili prostorno-vremenskih velikih podataka) koristeći padajuće polje  <b>Sačuvaj rezultat u</b>, možete da navedete ime fascikle u <b>Mom sadržaju</b> gde će rezultat biti sačuvan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Vízgyűjtő területek létrehozása</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="V&iacute;zgyűjtő ter&uuml;letek l&eacute;trehoz&aacute;sa"></h2>
+        <hr/>
+    <p>Ez az eszk&ouml;z meghat&aacute;rozza a v&iacute;zgyűjtő vagy a kifoly&aacute;si pont feletti ter&uuml;letet a bemenő r&eacute;teg egyes pontjaira vonatkoztatva. 
+    </p>
+    <p>Tegy&uuml;k fel p&eacute;ld&aacute;ul, hogy v&iacute;zzel terjedő szennyeződ&eacute;s helyeinek megfelelő, pontszerű vektor elemek birtok&aacute;ban szeretn&eacute; megkeresni a szennyez&eacute;s val&oacute;sz&iacute;nűs&iacute;thető forr&aacute;sait. Mivel a szennyez&eacute;s forr&aacute;s&aacute;nak valahol az adott pontt&oacute;l foly&aacute;sir&aacute;nyban ellent&eacute;tesen, a v&iacute;zgyűjtő ter&uuml;leten kell lennie, az eszk&ouml;z seg&iacute;ts&eacute;g&eacute;vel meghat&aacute;rozhatja a szennyeződ&eacute;s forr&aacute;s&aacute;t tartalmaz&oacute; v&iacute;zgyűjtő ter&uuml;leteket.
+    </p>
+    <p>Fontos a bemenő pontok helye.  Ha a v&iacute;zgyűjtő ter&uuml;letek nem pontosan valamelyik lefoly&aacute;si h&aacute;l&oacute;zaton tal&aacute;lhat&oacute;k, akkor előfordulhat, hogy az eredm&eacute;ny&uuml;l kapott v&iacute;zgyűjtők nagyon kicsik &eacute;s az elemz&eacute;shez haszn&aacute;lhatatlanok lesznek.  A  <b>T&aacute;vols&aacute;g keres&eacute;se a legk&ouml;zelebbi lefoly&aacute;si h&aacute;l&oacute;zathoz</b> haszn&aacute;lat&aacute;val a bemenő pontok hely&eacute;t &uacute;gy m&oacute;dos&iacute;thatja, hogy pontosan egy lefoly&aacute;si h&aacute;l&oacute;zat vonalvezet&eacute;s&eacute;re essenek, hogy meg lehessen keresni a v&iacute;zgyűjtő ter&uuml;letet, ahonnan a v&iacute;z a lefoly&aacute;si h&aacute;l&oacute;zat vonalvezet&eacute;s&eacute;n tal&aacute;lhat&oacute; pontra folyik.  Az eszk&ouml;z a v&iacute;zgyűjtő ter&uuml;letek keres&eacute;s&eacute;hez haszn&aacute;lt, m&oacute;dos&iacute;tott helyeket a kimenő r&eacute;tegre &iacute;rja &ndash; a bemenő pontok nem m&oacute;dosulnak.
+    </p>
+    <p>Az eredm&eacute;ny egy r&eacute;tegcsoport lesz, amely k&eacute;t r&eacute;tegből &aacute;ll: a v&iacute;zgyűjtő ter&uuml;letekből &eacute;s a v&iacute;zgyűjtő ter&uuml;letek kisz&aacute;m&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt, igaz&iacute;tott pontokb&oacute;l.     
+    </p>
+    <p>Az eredm&eacute;nyk&eacute;nt kapott v&iacute;zgyűjtő ter&uuml;letek rendelkeznek a bemenő pontok &ouml;sszes attrib&uacute;tum&aacute;val, tov&aacute;bb&aacute; az al&aacute;bbi attrib&uacute;tumokkal:     
+        <ul>
+            <li> <i>PourPtID</i> &ndash; a bemenő kifoly&aacute;si pont azonos&iacute;t&oacute; &eacute;rt&eacute;k&eacute;t tartalmazza
+            </li>
+            <li> <i>Area Square Kilometers</i> &ndash; a kifoly&aacute;si pont feletti v&iacute;zgyűjtő ter&uuml;let n&eacute;gyzetkilom&eacute;terben megadott ter&uuml;let&eacute;t tartalmazza
+            </li>
+            <li> <i>Description</i> &eacute;s <i>DataResolution</i> &ndash; a nyomvonalk&ouml;vet&eacute;s kisz&aacute;m&iacute;t&aacute;s&aacute;hoz haszn&aacute;lt hidrol&oacute;giai adatokkal kapcsolatos inform&aacute;ci&oacute;t tartalmazza
+            </li>
+        </ul>
+        
+    </p>
+    <p>Az  <b>Aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;s</b> bejel&ouml;l&eacute;s&eacute;vel a program csak az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen tal&aacute;lhat&oacute; vektoros elemeket haszn&aacute;lja a v&iacute;zgyűjtők kisz&aacute;m&iacute;t&aacute;s&aacute;hoz.  Ha nincs bejel&ouml;lve, akkor a bemenő r&eacute;teg &ouml;sszes vektoros elem&eacute;t elemzi, akkor is, ha azok k&iacute;v&uuml;l esnek az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>A vízgyűjtő területek kiszámításához használandó pontként ábrázolt vektoros elemek</h2></div>
+        <hr/>
+        <div>
+            <p>Az eszk&ouml;z kisz&aacute;m&iacute;tja a v&iacute;zgyűjtő ter&uuml;letet (a kifoly&aacute;si pontt&oacute;l felfel&eacute; elhelyezkedő &ouml;sszefoly&aacute;si ter&uuml;letet) az egyes pontokra vonatkoztatva.  
+            </p>
+            <p>A t&eacute;rk&eacute;p egy r&eacute;teg&eacute;nek kiv&aacute;laszt&aacute;sa mellett v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n tal&aacute;lhat&oacute;  <b>Elemz&eacute;si r&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is. Ennek a lehetős&eacute;gnek a v&aacute;laszt&aacute;sakor egy gal&eacute;ria ny&iacute;lik meg, amelyben k&uuml;l&ouml;nb&ouml;ző forr&aacute;sokb&oacute;l sz&aacute;rmaz&oacute; adathalmazok k&ouml;z&uuml;l v&aacute;logathat, &eacute;s ezeket felhaszn&aacute;lhatja az elemz&eacute;s&eacute;ben. 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>Távolság keresése a legközelebbi lefolyási hálózathoz</h2></div>
+        <hr/>
+        <div>
+            <p>Ha a bemenő pontok egy lefoly&aacute;si h&aacute;l&oacute;zat vonalvezet&eacute;s&eacute;től t&aacute;vol tal&aacute;lhat&oacute;k, akkor az eredm&eacute;nyk&eacute;nt kapott v&iacute;zgyűjtő ter&uuml;letek val&oacute;sz&iacute;nűleg nagyon kicsik lesznek, &eacute;s nem lesznek t&uacute;l hasznosak az elemz&eacute;shez, p&eacute;ld&aacute;ul a felv&iacute;zi szennyező forr&aacute;s meghat&aacute;roz&aacute;s&aacute;hoz.  A lefoly&aacute;si h&aacute;l&oacute;zat vonalvezet&eacute;s&eacute;n tal&aacute;lhat&oacute; kifoly&aacute;si pontba lefoly&oacute; v&iacute;zgyűjtő ter&uuml;letek keres&eacute;s&eacute;hez t&ouml;bbnyire c&eacute;lszerű a bemenő pontot a legk&ouml;zelebbi v&iacute;zh&aacute;l&oacute;zat vonalvezet&eacute;s&eacute;hez illeszteni.  A legk&ouml;zelebbi lefoly&aacute;si h&aacute;l&oacute;zat vonalvezet&eacute;s&eacute;nek megkeres&eacute;s&eacute;hez adjon meg egy keres&eacute;si t&aacute;vols&aacute;got.  Ha nem ad meg keres&eacute;si t&aacute;vols&aacute;got, az eszk&ouml;z k&ouml;r&uuml;ltekintően kisz&aacute;m&iacute;t egy keres&eacute;si t&aacute;vols&aacute;got, &eacute;s ezt haszn&aacute;lja.  
+            </p>
+            <p>A bemenő pont pontos hely&eacute;nek haszn&aacute;lat&aacute;hoz adjon meg nulla keres&eacute;si t&aacute;vols&aacute;got.  
+            </p>
+            <p>Az Esri standard hidrol&oacute;giai modellek alapj&aacute;n előre kisz&aacute;m&iacute;totta a lefoly&aacute;si h&aacute;l&oacute;zatok vonalvezet&eacute;s&eacute;t elemz&eacute;si c&eacute;lokra.  Ha nem tal&aacute;lhat&oacute; lefoly&aacute;si h&aacute;l&oacute;zat a keres&eacute;si t&aacute;vols&aacute;gon bel&uuml;l, akkor azt a helyet haszn&aacute;lja a keres&eacute;si t&aacute;vols&aacute;gon bel&uuml;l, ahol a legnagyobb mennyis&eacute;gű v&iacute;z gy&uuml;lekezik &ouml;ssze.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve.  Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő men&uuml;ben megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+            <p> Ennek az eszk&ouml;znek a futtat&aacute;sa nem haszn&aacute;l fel kreditet.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

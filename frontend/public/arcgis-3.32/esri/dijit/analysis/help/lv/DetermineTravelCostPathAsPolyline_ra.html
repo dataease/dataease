@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Noteikt pārvietošanas izmaksu ceļu kā polilīniju</h2><p/>
+        <h2><img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" alt="Rīka Noteikt ceļo&scaron;anas izmaksu ceļu kā polilīniju ilustrācija"></h2>
+        <hr/>
+    <p>&Scaron;is rīks aprēķina minimālo izmaksu polilīniju ceļu starp avotiem un zināmiem galamērķiem.
+    </p>
+    <p>Tālāk sniegti daži lietojuma piemēri:
+        <ul>
+            <li>Atrodiet labāko mar&scaron;rutu jaunam ceļam, ņemot vērā būvniecības izmaksas.
+                
+
+            </li>
+            <li>Identificējiet ceļu no vairākām atra&scaron;anās vietām piepilsētās (avoti) līdz tuvākajam lielveikalam (galamērķis).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Ja ir atzīmēta opcija  <b>Lietot pa&scaron;reizējo kartes pārklājumu</b>, tiks analizēti tikai pa&scaron;reizējā kartes pārklājumā redzamie novietojumi ievades slāņos. Ja &scaron;ī opcija nav atzīmēta, tiks analizēti visi novietojumi abos ievades slāņos, arī tad, ja tie atrodas ārpus pa&scaron;reizējā pārklājuma.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputSourceRasterOrFeatures">
+        <div><h2>Izvēlēties rastra vai elementu avota slāni, no kura noteikt ceļus</h2></div>
+        <hr/>
+        <div>
+            <p>Attēlu vai elementu serviss, kas identificē &scaron;ūnas, no kurām tiek noteikts zemāko izmaksu ceļ&scaron; līdz vislētākajai atra&scaron;anās vietai.
+            </p>
+            <p>Ja ievade ir attēlu serviss, tā sastāv no &scaron;ūnām ar derīgām vērtībām (nulle ir derīga vērtība), un atliku&scaron;ajām &scaron;ūnām ir jābūt pie&scaron;ķirtam atribūtam NoData.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Izvēlēties ceļošanas izmaksu rastra slāni</h2></div>
+        <hr/>
+        <div>
+            <p>Rastrs, kas nosaka pretestību vai izmaksas, lai planimetriski pārvietotos caur katru &scaron;ūnu.
+            </p>
+            <p>Vērtība katras &scaron;ūnas atra&scaron;anās vietā raksturo attālumu izmaksām uz vienu vienību, pārvietojoties cauri &scaron;ūnai. Katra &scaron;ūnas novietojuma vērtība tiek reizināta ar &scaron;ūnas iz&scaron;ķirtspēju, vienlaikus kompensējot diagonālo pārvieto&scaron;anos, lai iegūtu kopējās &scaron;ūnas &scaron;ķērso&scaron;anas izmaksas.
+            </p>
+            <p>Izmaksu rastra vērtības var būt vesels skaitlis vai peldo&scaron;ais punkts, bet tās nevar būt negatīvas vai ar nulles vērtību (jums nevar būt negatīvas vai nulles izmaksas).
+            </p>
+        </div>
+    </div>
+    <div id="inputDestinationRasterOrFeatures">
+        <div><h2>Ievadīt galamērķa rastru vai elementus</h2></div>
+        <hr/>
+        <div>
+            <p>Ievade, kas definē attāluma aprēķinā&scaron;anā izmantotos galamērķus. Slānis var būt rastra vai elementu dati.
+            </p>
+            <p>Ja ievade ir attēlu serviss, tā sastāv no &scaron;ūnām ar derīgām vērtībām (nulle ir derīga vērtība), un atliku&scaron;ajām &scaron;ūnām ir jābūt pie&scaron;ķirtam atribūtam NoData.
+            </p>
+        </div>
+    </div>
+    <div id="outputPolylineName">
+        <div><h2>Rezultātu polilīnijas slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slānis jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Mapes nosaukumu var norādīt mapē  <b>Mans saturs,</b> kur rezultāts tiks saglabāts, izmantojot nolaižamo lodziņu <b>Saglabāt rezultātu</b>.
+            </p>
+        </div>
+    </div>
+    <div id="pathType">
+        <div><h2>Izvēlēties noteicamo ceļu tipu</h2></div>
+        <hr/>
+        <div>
+            <p>Nosaka veidu, kādā tiks interpretētas ievades galamērķa datu vērtības un zonas izmaksu ceļu aprēķinos.
+            </p>
+            <ul>
+                <li>Viens labākais&nbsp;&mdash; visām ievades galamērķa datu &scaron;ūnām un atra&scaron;anās vietām minimālo izmaksu ceļ&scaron; tiek atvasināts no atra&scaron;anās vietas ar minimālo zemāko izmaksu ceļu līdz avota novietojumam. Tā ir noklusējuma vērtība
+                    
+
+                </li>
+                <li>Uz katru &scaron;ūnu&nbsp;&mdash; katrai &scaron;ūnai vai novietojumam ar derīgām ievades galamērķa vērtībām zemāko izmaksu ceļ&scaron; tiek noteikts un saglabāts izvades elementu servisā. Izmantojot &scaron;o opciju, katra no ievades galamērķa datu &scaron;ūnām tiek apstrādāta atsevi&scaron;ķi, un katrai tiek noteikts zemāko izmaksu ceļ&scaron;.
+                    
+
+                </li>
+                <li>Uz katru zonu&nbsp;&mdash; katrai ievades galamērķa datu zonai zemāko izmaksu ceļ&scaron; tiek noteikts un saglabāts izvades elementu servisā. Izmantojot &scaron;o opciju, zemāko izmaksu ceļ&scaron; katrai zonai sākas &scaron;ūnā vai novietojumā ar viszemāko izmaksu attāluma svaru &scaron;ajā zonā.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
+</html>

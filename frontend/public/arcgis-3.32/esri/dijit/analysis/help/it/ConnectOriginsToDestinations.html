@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Connetti Origini a Destinazioni</h2><p/>
+        <h2><img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" alt="Connetti Origini a Destinazioni"></h2>
+        <hr/>
+    <p>Connetti Origini a Destinazioni consente di misurare il tempo di percorrenza o la distanza tra coppie di punti. Lo strumento segnala distanze in linea retta; distanze e durata dei tragitti calcolate in base alla modalit&agrave; di viaggio (a piedi o in auto). Questo strumento consente di effettuare le seguenti attivit&agrave;:
+    </p>
+    <p>
+        <ul>
+            <li>Calcolare la distanza totale o il tempo che i pendolari impiegano nel tragitto da casa al lavoro.
+            </li>
+            <li>Misurare la distanza percorsa dai clienti per effettuare acquisti presso un negozio specifico. Ottenere informazioni per definire la propria posizione nel mercato, in particolare nel caso di campagne pubblicitarie mirate o della scelta di siti per l'apertura di nuovi negozi.
+            </li>
+            <li>Calcolare il chilometraggio previsto per la flotta di veicoli. In seguito, eseguire lo strumento Riepiloga entro per ottenere il chilometraggio per provincia o per altra regione.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Specificando i punti di partenza e di arrivo, si otterr&agrave; un layer contenente le linee dell'itinerario, incluse le misurazioni, tra le coppie di origini e destinazioni. 
+    </p>
+    <p>Se si seleziona  <b>Usa estensione mappa corrente</b>, nell'analisi verranno considerate solo le feature visibili nell'estensione mappa corrente.  Se questa opzione &egrave; deselezionata, vengono considerate tutte le feature presenti nel layer di input, anche se sono esterne all'estensione mappa corrente.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="originsLayer">
+        <div><h2>Scegli il layer puntuale che rappresenta le posizioni di origine</h2></div>
+        <hr/>
+        <div>
+            <p>Scegliere il layer puntuale che rappresenta l'origine o le origini. Lo strumento supporta fino a  5.000 origini e  5.000 destinazioni. </p>
+            <p>Se si sceglie un layer contenente una sola origine, questa verr&agrave; utilizzata per connettere tutte le destinazioni.
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> in fondo all'elenco a discesa. Con questa opzione si apre una galleria in cui &egrave; possibile individuare e selezionare dataset di varie fonti da utilizzare nell'analisi. 
+            </p>
+        </div>
+    </div>
+    <div id="destinationsLayer">
+        <div><h2>Scegliere il layer delle destinazioni</h2></div>
+        <hr/>
+        <div>
+            <p>Scegliere il layer che rappresenta la destinazione o le destinazioni a cui connettere le origini. Lo strumento supporta fino a  5.000 origini e  5.000 destinazioni. </p>
+            <p>Se si sceglie un layer contenente una sola destinazione, questa verr&agrave; utilizzata per connettere tutte le origini. 
+            </p>
+            <p>Se invece &egrave; presente una sola origine ma pi&ugrave; destinazioni, lo strumento connetter&agrave; l'origine a ciascuna destinazione.
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> in fondo all'elenco a discesa. Con questa opzione si apre una galleria in cui &egrave; possibile individuare e selezionare dataset di varie fonti da utilizzare nell'analisi. 
+            </p>
+            <p> Se sono presenti pi&ugrave; origini e pi&ugrave; destinazioni, sar&agrave; necessario disporre di due campi che descrivono le coppie origine-destinazione: <b>Campo ID in origini</b> e <b>Campo ID corrispondente in destinazioni</b>. Lo strumento connette le coppie origine-destinazione durante l'analisi. Si immagini ad esempio di disporre di due origini il cui campo ID &egrave; <code>Rosie</code> e <code>Harold</code> e di due destinazioni con gli stessi ID. L'origine <code>Rosie</code> verr&agrave; connessa alla destinazione <code>Rosie</code>, mentre l'origine <code>Harold</code> verr&agrave; connessa alla destinazione <code>Harold</code>. Non vengono effettuate altre connessioni o misurazioni.
+            </p>
+            <p>Se vi sono numeri uguali nelle origini e nelle destinazioni, i valori ID devono essere univoci in ciascun layer; ad esempio nel layer delle destinazioni non possono esistere due valori  <code>Rosie</code>. Per creare le coppie, i valori nei layer di origine e destinazione devono essere perfettamente identici: <code>Harold</code> non verr&agrave; infatti connesso a un ID <code>Harodl</code> contenente un errore di ortografia. 
+            </p>
+            <p>Lo strumento supporta inoltre la connessione di ogni origine a pi&ugrave; di una destinazione, o di ogni destinazione a pi&ugrave; di un'origine. In tal caso, sar&agrave; comunque necessario avere due campi che includano la descrizione delle coppie origine-destinazione. Tuttavia, solo uno dei layer (o quello di origine o quello di destinazione) deve avere valori ID univoci.
+            </p>
+        </div>
+    </div>
+    <div id="measurementType">
+        <div><h2>Misura</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Scegliere se connettere le origini alle destinazioni individuando la distanza in linea retta o una modalit&agrave; di viaggio. Gli itinerari di output seguiranno le strade o i passaggi pedonali, rispettando le norme stradali vigenti come, ad esempio, le strade a senso unico e le svolte non consentite in auto o con il camion. Le modalit&agrave; di viaggio disponibili sono determinate dall'amministratore dell'organizzazione.  
+            </p>
+            <p>Quando si sceglie  <b>Tempo di guida</b>, <b>Tempo di guida in aree non urbane</b>, o <b>Tempo di guida in camion</b> vi sono diverse opzioni per misurare il tempo di guida.
+                <ul>
+                    <li>
+                        <p>Deselezionare  <b>Usa traffico</b> per individuare gli itinerari pi&ugrave; rapidi sulla base di velocit&agrave; fisse.
+                        </p>
+                        <p>Si tratta dell'opzione da scegliere se si desidera ottenere una misurazione del tempo di guida generica e non una calcolata utilizzando condizioni di traffico variabili per un'ora di partenza specifica.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Selezionare  <b>Usa traffico</b> per trovare gli itinerari pi&ugrave; veloci in base a un orario di partenza specifico e a condizioni di traffico variabili. Inoltre, selezionando l'opzione <b>Traffico in tempo reale</b>, l'orario di partenza dai punti di origine viene impostato sull'ora corrente e le velocit&agrave; di traffico corrente e previsto in futuro fanno riferimento a sensori e feed per creare gli itinerari. Le velocit&agrave; di traffico previsto vengono calcolate facendo riferimento a velocit&agrave; di traffico in tempo reale, velocit&agrave; storiche ed eventi correnti (ad esempio condizioni meteorologiche). Le velocit&agrave; di traffico sono previste con 12 ore di anticipo, quindi &egrave; possibile spostare il cursore per impostare l'orario di partenza fino a  12 ore in avanti. </p>
+                        <p>Utilizzare queste impostazioni del traffico in tempo reale per individuare i tempi di percorrenza partendo adesso, tra un'ora da adesso e cos&igrave; via.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Se si seleziona  <b>Usa traffico</b> e quindi <b>Traffico basato su condizioni tipiche per</b> giorno e ora, lo strumento individua gli itinerari pi&ugrave; veloci basati su medie storiche delle velocit&agrave;, per ogni intervallo di cinque minuti in una settimana standard. Nei risultati &egrave; incluso il traffico, ma non &egrave; inclusa l'influenza delle condizioni di traffico e degli eventi correnti che possono variare in modo significativo rispetto alla norma.
+                        </p>
+                        <p>&Egrave; possibile utilizzare queste impostazioni del traffico storico per rispondere ad esempio alla domanda &quot;Quanto tempo &egrave; necessario in genere per raggiungere queste destinazioni se si parte alle 11.30 di mercoled&igrave;?&quot;.
+                        </p>
+                        <p>L'orario impostato fa riferimento al fuso orario in cui si trovano i punti di origine. Pertanto, se si imposta l'orario alle 8:00 e si dispone di due punti di origine, uno nella citt&agrave; di New York e l'altro a Los Angeles, i percorsi verranno generati considerando rispettivamente le 8:00 come orario di partenza nel fuso orario orientale e le 8:00 nel fuso orario del Pacifico.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Si noti che quando una vettura si allontana dal punto di origine, il tempo passa e le condizioni di traffico cambiano. Lo strumento Connetti Origini a Destinazioni tiene conto di queste variazioni quando si seleziona  <b>Usa traffico</b>; tuttavia, tale funzione non &egrave; supportata per tutte le regioni. Fare clic sul collegamento <b>Visualizza disponibilit&agrave;</b> sullo strumento per scoprire se la funzione &egrave; supportata nella propria area di studio.
+            </p>
+            <p> <b>Tempo di guida in camion</b> pu&ograve; utilizzare velocit&agrave; di viaggio dinamiche basate sul traffico ma che non eccedano i limiti di velocit&agrave; consentiti per i camion. Per esempio, se la velocit&agrave; dinamica basata sul traffico in tempo reale in una determinata strada &egrave; di 65 miglia per ora, ma il limite di velocit&agrave; del camion per quella strada &egrave; di 55 miglia per ora, il calcolo utilizzer&agrave; 55 miglia per ora per quella strada.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Seleziona i layer delle barriere</h2></div>
+        <hr/>
+        <div>
+            <p> Una o pi&ugrave; feature che agiscono come restrizioni temporanee (barriere) mentre si viaggia sulle strade sottostanti. &Egrave; possibile specificare le barriere utilizzando feature puntuali, lineari o poligonali.
+            </p>
+            <p>Una barriera puntuale pu&ograve; essere un albero caduto, un incidente, una linea elettrica fuori uso o qualsiasi elemento che blocchi completamente il traffico in un punto specifico sulla strada. &Egrave; possibile viaggiare sulla strada ma non &egrave; possibile attraversare la barriera. &Egrave; possibile specificare fino a 250 feature affinch&eacute; fungano da barriere puntuali.
+            </p>
+            <p>Una barriera lineare impedisce di viaggiare lungo il perimetro di intersezione tra la barriera e le strade. Per esempio, tramite una barriera lineare, &egrave; possibile creare un corteo o una protesta in grado di bloccare il traffico interessando vari segmenti di strade. Se il numero di feature di strade che si intersecano con tutte le barriere lineari supera il numero 500, lo strumento restituir&agrave; un errore.
+            </p>
+            <p>Una barriera poligonale impedisce di viaggiare all&rsquo;interno di tutta l&rsquo;area di intersezione tra il poligono e le strade. &Egrave; possibile utilizzare questo tipo di barriera per creare alluvioni che coprano aree di rete di strade, rendendo impossibile la circolazione stradale. Se il numero di feature di strade che si intersecano con tutte le barriere poligonali supera il numero 2000, lo strumento restituir&agrave; un errore.
+            </p>
+        </div>
+    </div>
+    <div id="routeShape">
+        <div><h2>Forma del percorso</h2></div>
+        <hr/>
+        <div>
+            <p>Scegliere la forma del percorso che collega ogni origine alla sua destinazione durante la modalit&agrave; di viaggio:
+            </p>
+            <ul>
+                <li> <b>Seguire le strade</b>: la forma si basa sulla rete di strade sottostante. &Egrave; consigliabile scegliere questa opzione per generare percorsi tra origini e destinazioni.
+                </li>
+                <li> <b>Linea retta</b>: la forma &egrave; una linea retta che collega la coppia origine-destinazione. &Egrave; consigliabile scegliere questa opzione per generare diagrammi a ragno o linee preferite (ad esempio, per mostrare quali negozi stanno visitando i clienti).
+                </li>
+            </ul>
+            
+            <p>Il miglior percorso tra un'origine e la sua destinazione corrispondente viene calcolato sempre basandosi sulla modalit&agrave; di viaggio, indipendentemente da quale forma di percorso viene scelta.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Nome del Feature Layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa. Se il Feature Layer esiste gi&agrave;, verr&agrave; chiesto di fornire un altro nome. Il Feature Layer conterr&agrave; un layer per ciascuno dei seguenti elementi: itinerari, origini non assegnate e destinazioni non assegnate quando alcune origini non possono essere collegate alle rispettive destinazioni.
+            </p>
+            <p>Se si seleziona  <b>Includi layer percorso</b>, anche ogni percorso incluso nei risultati viene salvato come layer percorso. Un layer percorso include tutte le informazioni relative a un percorso specifico, ad esempio le fermate assegnate al percorso e le direzioni di viaggio. La creazione di Route Layer &egrave; utile se si desidera condividere i singoli percorsi con altri membri dell&rsquo;organizzazione oppure modificare i percorsi utilizzando il pulsante <b>Direzioni</b> in Map Viewer. I layer percorso utilizzano il nome fornito per il feature layer come prefisso, mentre il nome percorso generato nell'ambito dell'analisi viene aggiunto per creare un nome univoco per ogni layer percorso.
+            </p>
+            <p>Il numero massimo di layer percorso che &egrave; possibile creare &egrave;  1.000. Se il risultato contiene pi&ugrave; di  1.000 percorsi e l'opzione  <b>Includi layer percorso</b> &egrave; selezionata, lo strumento crea solo il feature service di output.
+            </p>
+            <p>Utilizzare il men&ugrave; a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella di <b>I miei contenuti</b> in cui salvare il feature layer e i layer percorso, se sono stati creati.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

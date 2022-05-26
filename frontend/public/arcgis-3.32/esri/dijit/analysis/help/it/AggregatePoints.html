@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Aggrega Punti</h2><p/>
+        <h2><img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" alt="Aggrega Punti"></h2>
+        <hr/>
+    <p>Questo strumento viene utilizzato con un layer di feature puntuali ed un layer di feature areali e in primo luogo determina i punti compresi in ciascuna area. Dopo aver stabilito questa relazione spaziale tra i punti compresi nell'area di analisi, le statistiche relative a tutti i punti compresi nell'area vengono calcolate ed assegnate all'area. La statistica pi&ugrave; semplice &egrave; costituita dal numero di punti compresi nell'area, tuttavia &egrave; possibile ottenere anche altre statistiche. 
+    </p>
+    <p>Si supponga, ad esempio, che siano presenti feature punto relative alla posizione dei bar e feature areale per le regioni e che si desideri riepilogare le vendite di caff&egrave; per regione. Presupponendo che ai bar sia associato l&rsquo;attributo  <i>TOTAL_SALES</i> &egrave; possibile ottenere la somma di tutti gli attributi <i>TOTAL_SALES</i> in ogni regione, il valore minimo o massimo di <i>TOTAL_SALES</i>
+ in ogni regione oppure la deviazione standard di tutte le vendite in ogni regione.
+    </p>
+    <p>Se l'opzione  <b>Usa estensione mappa corrente</b> &egrave; selezionata, verranno analizzate solo le feature nel layer puntuali di input e nel layer areale, visibili nell'estensione mappa corrente.  Se &egrave; deselezionata, verranno analizzate tutte le feature sia nel layer puntuale di input che in quello areale, anche se sono esterne all'estensione mappa corrente.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Scegli il layer contenente i punti da aggregare nelle aree</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer puntuale che verr&agrave; aggregato nelle aree.
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> in fondo all'elenco a discesa. Con questa opzione si apre una galleria in cui &egrave; possibile individuare e selezionare dataset di varie fonti da utilizzare nell'analisi. 
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Scegli il layer contenente le aree di aggregazione</h2></div>
+        <hr/>
+        <div>
+            <p>Il layer areale a cui verranno aggregati i punti. Tutti i punti compresi nei confini delle aree in questo layer verranno conteggiati e, se si desidera, verranno inclusi nel riepilogo in base alle statistiche selezionate.  
+            </p>
+            <p>&Egrave; possibile scegliere tra un layer areale fornito e i contenitori generati quando lo strumento &egrave; in esecuzione.   Quando si generano i contenitori, nel caso di  <b>Quadrato</b>, il numero e le unit&agrave; specificate determinano l'altezza e la lunghezza del quadrato. Nel caso di <b>Esagono</b>, il numero e le unit&agrave; specificate determinano la distanza tra i lati paralleli.
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> in fondo all'elenco a discesa. Con questa opzione si apre una galleria in cui &egrave; possibile individuare e selezionare dataset di varie fonti da utilizzare nell'analisi. 
+            </p>
+        </div>
+    </div>
+    <div id="KeepBoundaryNoPoints">
+        <div><h2>Mantieni le aree senza punti</h2></div>
+        <hr/>
+        <div>
+            <p>Determina se nel layer dei risultati saranno incluse anche le aree senza punti. Se l'opzione non &egrave; selezionata, le aree senza punti non verranno incluse nei risultati. Se l'opzione &egrave; selezionata, le aree senza punti verranno incluse nei risultati.  
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Aggiungi statistiche</h2></div>
+        <hr/>
+        <div>
+            <p>&Egrave; possibile calcolare le statistiche relative agli attributi del layer puntuale di input, ad esempio la somma, la media, il valore minimo, il valore massimo e la deviazione standard. Il layer dei risultati includer&agrave; un nuovo attributo per ogni statistica calcolata. &Egrave; possibile aggiungere un numero qualsiasi di statistiche scegliendo un attributo e una statistica (apparir&agrave; una nuova casella a discesa).
+ 
+            </p>
+            <p>Se il layer da riepilogare non contiene nessun campo numerico, le statistiche aggiuntive non saranno disponibili.
+            </p>
+        </div>
+    </div>
+    <div id="GroupByField">
+        <div><h2>Scegli il campo in base a cui raggruppare</h2></div>
+        <hr/>
+        <div>
+            <p> &Egrave; possibile creare gruppi statistici utilizzando un attributo nel layer puntuale di input.    Ad esempio, se si stanno aggregando i reati ai confini delle vicinanze, &egrave; possibile avere un attributo <i>Crime_type</i> con cinque diversi tipi di reato.  Ciascun tipo di reato forma un gruppo e le statistiche selezionate saranno calcolate per ogni valore univoco di <i>Crime_type</i>.  Le statistiche relative a ciascun gruppo, nonch&eacute; il conteggio dei punti, verranno visualizzate nel popup del layer dei risultati. Quando si sceglie un attributo di raggruppamento, si creano due risultati: il layer dei risultati e una tabella dei risultati che contiene le statistiche per ogni singolo gruppo.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Aggiungi minoranza, maggioranza</h2></div>
+        <hr/>
+        <div>
+            <p>Questa casella di controllo &egrave; abilitata quando si seleziona un campo in base a cui raggruppare. Se si desidera trovare i valori di attributo che in ciascun gruppo costituiscono la minoranza (meno dominanti) o la maggioranza (pi&ugrave; dominanti) in ogni confine, selezionare  <b>Aggiungi minoranza, maggioranza</b>.   Quando si seleziona <b>Aggiungi minoranza, maggioranza</b>, vengono aggiunti due nuovi campi al layer dei risultati.   Se si seleziona anche <b>Aggiungi percentuali</b>, vengono aggiunti altri due campi, al layer dei risultati, che contengono le percentuali relative ai valori degli attributi di minoranza e maggioranza all'interno di ciascun gruppo.
+            </p>
+            <p>Ad esempio, se si &egrave; un urbanista e si desidera individuare le specie arboree in minoranza e in maggioranza in tutti i parchi cittadini, aggregare i dati relativi agli alberi con quelli dei parchi e selezionare questa opzione.
+            </p>
+        </div>
+    </div>
+    <div id="PercentPoints">
+        <div><h2>Aggiungi percentuali</h2></div>
+        <hr/>
+        <div>
+            <p>Questa casella di controllo &egrave; abilitata quando si seleziona un campo in base a cui raggruppare. Selezionare  <b>Aggiungi percentuali</b> se si desidera trovare la percentuale di ogni valore di attributo in ogni gruppo.  Un nuovo campo viene aggiunto alla tabella dei risultati contenente le percentuali di ogni valore di attributo in ogni gruppo. Se si seleziona anche <b>Aggiungi minoranza, maggioranza</b>, al layer dei risultati vengono aggiunti altri due campi contenenti le percentuali relative ai valori degli attributi di minoranza e maggioranza all&rsquo;interno di ciascun gruppo.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa.  Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il nome del layer esiste gi&agrave;, verr&agrave; richiesto di fornire un altro nome.
+            </p>
+            <p>Utilizzare il men&ugrave; a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

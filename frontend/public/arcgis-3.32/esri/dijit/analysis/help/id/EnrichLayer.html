@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Perkaya Layer</h2><p/>
+        <h2><img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" alt="Perkaya Layer"></h2>
+        <hr/>
+    <p>Alat ini akan memperkaya data Anda dengan cara mengumpulkan fakta tentang orang, tempat, dan bisnis di sekitar lokasi data Anda dan memungkinkan Anda untuk menjawab pertanyaan baru tentang lokasi yang tidak dapat Anda jawab hanya menggunakan peta. Contoh: Orang-orang seperti apa yang tinggal di daerah ini? Apa yang orang-orang biasa lakukan di daerah ini? Bisnis seperti apa yang ada di daerah ini? Bisnis seperti apa yang ada di area ini?
+    </p>
+    <p>Hasilnya akan berupa layer baru yang berisi seluruh informasi demografis dan geografis dari kumpulan data yang diberikan.  Informasi baru ini ditambahkan sebagai kolom pada tabel.
+    </p>
+    <p>Jika  <b>Gunakan jangkauan peta saat ini</b> dicentang, hanya fitur di layer input tersebut yang visibel dalam jangkauan peta saat ini yang akan diperkaya.  Jika tidak dicentang, seluruh fitur pada layer input akan diperkaya, meskipun berada di luar cakupan peta saat ini.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pilih layer untuk diperkaya dengan data baru</h2></div>
+        <hr/>
+        <div>
+            <p>Titik, garis, atau layer area yang akan diperkaya dengan data atribut baru. 
+            </p>
+            <p>Selain memilih sebuah layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> yang terdapat di bagian paling bawah daftar drop-down. Opsi ini membuka galeri di mana Anda dapat menelusuri dan memilih set data dari berbagai sumber untuk digunakan dalam analisis Anda. 
+            </p>
+        </div>
+    </div>
+    <div id="DataCollection">
+        <div><h2>Variable pengayaan</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Klik  <b>Pilih Variabel</b> untuk membuka <b>Browser Data</b>. <b>Browser Data</b> membantu Anda menemukan dan memilih variabel pengayaan secara sendiri-sendiri atau bersama-sama.
+            </p>
+            <p>Suatu wilayah akan dipilih secara otomatis berdasarkan data Anda. Anda dapat memilih wilayah yang berbeda jika data Anda mencakup lebih dari satu negara. 
+            </p>
+            <p>Variabel pengayaan akan dikelompokkan menjadi kumpulan data untuk memudahkan akses.   Saat Anda memilih koleksi data, browser akan memperlihatkan beberapa variabel pengayaan yang paling populer pada koleksi tersebut.  Pada  <b>Tetap Menjelajah</b>, (Keep Browsing), juga akan memperlihatkan kategori-kategori yang ada dalam koleksi. Dalam setiap kategori, Anda dapat memilih seluruh subkategori atau mendalami satu subkategori dan memilih variabel pengayaan tunggal. Anda juga dapat menggunakan kotak pencarian untuk menemukan variabel tertentu dalam suatu kategori.
+            </p>
+            <p>Setelah Anda memilih variabel untuk dimasukkan dalam pengayaan, variabel tersebut akan dimasukkan ke dalam keranjang belanja yang berada di sudut  <b>Browser Data</b>. Gunakan keranjang belanja ini untuk mencatat jumlah variabel yang telah Anda pilih.
+            </p>
+            <p>Masing-masing variabel yang telah dipilih akan ditambahkan sebagai kolom dalam layer hasil Anda.
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Tentukan area yang akan diperkaya</h2></div>
+        <hr/>
+        <div>
+            <p>Tentukan area di sekitar titik atau garis input yang akan diperkaya dengan menggunakan jarak garis lurus atau mode perjalanan terpilih. Untuk jarak garis lurus, masukkan nilai hingga 1000 mil (1609 kilometer). Mode perjalanan dapat digunakan hanya jika layer input Anda mengandung titik. Mode perjalanan yang tersedia ditentukan oleh administrator organisasi Anda. Saat menggunakan salah satu mode perjalanan, pengukuran dilakukan sepanjang jalan atau setapak, dan patuh pada aturan yang berlaku, seperti jalan satu arah, larangan berputar, dan sebagainya. Setelah memilih mode dan metoda pengukuran, masukkan durasi atau jarak perjalanan Anda hingga 5 jam (300 menit) atau 300 mil (482,8 kilometer).
+            </p>
+            <p>Jika  <b>Munculkan hasil sebagai area sekeliling</b> dicentang, hasil yang diperoleh akan berupa fitur area yang ditentukan oleh nilai waktu atau jarak perjalanan di atas.  Jika tidak dicentang, hasil yang diperoleh akan berupa fitur titik.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p>Ini adalah nama layer yang akan dibuat di  <b>Konten Saya</b> dan ditambahkan ke peta.  Nama default ditetapkan berdasarkan nama layer input. Jika nama layer tersebut sudah ada, Anda akan diminta untuk memberi nama lain.
+            </p>
+            <p>Dengan menggunakan  <b>Simpan hasil di</b> menu drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> sebagai tempat penyimpanan hasil.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

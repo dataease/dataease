@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Generuj mozaikowania</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="Generuj mozaikowania"></h2>
+        <hr/>
+    <p>To narzędzie generuje mozaikowania w analizowanym obszarze na podstawie podanego kształtu i rozmiaru.
+    </p>
+    <p>W przypadku tego narzędzia pole wyboru  <b>Użyj zasięgu bieżącej mapy</b> jest wyłączone, ponieważ zasięg używany do generowania mozaikowania jest kontrolowany za pomocą parametru <b>Definiowanie zasięgu</b>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Wybierz kształt</h2></div>
+        <hr/>
+        <div>
+            <p>Kształt lub geometria mozaikowania, kt&oacute;re ma zostać utworzone. Dostępne kształty to:  <code>Kwadrat</code>, <code>Sześciokąt</code>, <code>Sześciokąt poprzeczny</code>, <code>Tr&oacute;jkąt</code> lub <code>Romb</code>.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Zdefiniuj analizowany obszar</h2></div>
+        <hr/>
+        <div>
+            <p>Zasięg lub obszar, kt&oacute;ry zostanie objęty mozaikowaniem. Zasięg można określić za pomocą zasięgu bieżącej mapy, zasięgu istniejącej warstwy lub interaktywnie przez narysowanie obszaru, kt&oacute;ry ma być używany jako zasięg.
+            </p>
+            <p>Jeżeli do określenia zasięgu wybrano warstwę obiektową, zostaje włączona opcja zachowania wyłącznie przecinających się mozaikowań. Jeśli to pole wyboru jest zaznaczone, w wynikowej warstwie mozaikowania zostaną wygenerowane tylko te mozaikowania, kt&oacute;re pokrywają obiekty podanej warstwy zasięgu lub się z nimi przecinają. 
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Niezaznaczone
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="Pełne pokrycie zasięgu">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Zaznaczone
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="Pokrycie obiekt&oacute;w">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>Zdefiniuj wielkość kosza, określając</h2></div>
+        <hr/>
+        <div>
+            <p>Wielkość każdej kom&oacute;rki. Wielkość kom&oacute;rki można określić, podając kwadraty jednostkowe lub odległość obliczoną przy użyciu poniższych pomiar&oacute;w, gdzie d = odległość: 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Kwadrat
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="Mozaikowanie kwadratowe">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Sześciokąt
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="Mozaikowanie sześciokątne">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Sześciokąt poprzeczny
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="Mozaikowanie sześciokąta poprzecznego">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Tr&oacute;jkąt
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="Mozaikowanie tr&oacute;jkątne">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Diament
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="Mozaikowanie rombowe">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>Nazwa warstwy wynikowej</h2></div>
+        <hr/>
+        <div>
+            <p>Jest to nazwa warstwy, kt&oacute;ra zostanie utworzona w zakładce  <b>Moje zasoby</b> i zostanie dodana do mapy. Jeśli warstwa już istnieje, wyświetlony zostanie komunikat z&nbsp;prośbą o&nbsp;podanie innej nazwy.
+            </p>
+            <p>Używając menu rozwijanego  <b>Zapisz wynik w</b>, można wskazać nazwę folderu na stronie <b>Moje zasoby</b>, w kt&oacute;rym zostanie zapisany wynik.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

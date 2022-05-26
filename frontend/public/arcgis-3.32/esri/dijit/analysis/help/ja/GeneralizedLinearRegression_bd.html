@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>一般化線形回帰分析 (Generalized Linear Regression)</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="一般化線形回帰分析 (Generalized Linear Regression) のワークフロー図"></h2>
+        <hr/>
+    <p>一般化線形回帰分析 (GLR) を実行して、予測したり、一連の説明変数との関係から従属変数をモデル化したりします。このツールを使用して、連続 (Gaussian)、バイナリ (ロジスティック)、およびカウント (ポワソン分布) のモデルを適合させることができます。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>解析タイプ</h2></div>
+        <hr/>
+        <div>
+            <p>このツールの操作モードを指定します。このツールは、パフォーマンスの評価のみを目的としてモデルをトレーニングするか、モデルをトレーニングしてフィーチャに対する予測を行うために実行できます。次の予測タイプがあります。
+                <ul>
+                    <li> <b>モデルを適合させてモデルのパフォーマンスを評価</b> - モデルが適合され、入力データに適用されます。このオプションを使用すると、新しいデータセットに対する予測を生成する前に、モデルの精度を評価したり、予測変数のリレーションシップやドライバーを理解したりできます。このオプションの出力内容は、適合されたデータのフィーチャ サービスおよびモデル診断です。
+                    </li>
+                    <li> <b>モデルを適合させて値を予測</b> - 入力フィーチャと予測フィーチャに関する予測または分類が生成されます。予測フィーチャと予測対象フィーチャの両方に説明変数を指定する必要があります。このオプションの出力内容は、入力データに適合されたモデルのフィーチャ サービス、予測された値のフィーチャ サービス、およびモデル診断です。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>モデルを適合させてモデルのパフォーマンスを評価</h2></div>
+        <hr/>
+        <div>
+            <p>このモードは、モデルを適合させ、その適合度を調べる場合に使用します。
+            </p>
+            <p>これを選択した場合は、モデルが入力レイヤーを使用してトレーニングされます。このオプションを使用すると、新しいデータセットに対する予測を生成する前に、モデルの精度を評価できます。このオプションでは、モデル診断が出力され、モデルがトレーニング データに適用されます。
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>モデルを適合させて値を予測</h2></div>
+        <hr/>
+        <div>
+            <p>このモードは、モデルを適合させ、データセットにモデルを適用して予測を生成する場合に使用します。
+            </p>
+            <p>フィーチャに関する予測または分類が生成されます。このオプションの出力内容は、フィーチャ サービス、モデル診断、および変数重要度のオプションのテーブルです。
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>モデルの生成元になるレイヤーの選択</h2></div>
+        <hr/>
+        <div>
+            <p>従属変数と説明変数が格納されるポイント、ライン、エリア、または表形式フィーチャを含むレイヤー。
+            </p>
+            <p>マップからレイヤーを選択できるだけでなく、ドロップダウン リストの下部にある  <b>[解析レイヤーの選択]</b> を選択し、ビッグ データ ファイル共有データセットまたはフィーチャ レイヤーのコンテンツを参照して選択することもできます。
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>モデル化するフィールドの選択</h2></div>
+        <hr/>
+        <div>
+            <p>モデル化する観測値とモデル化している値のタイプを含む数値フィールド。次の 3 つのタイプの値をモデル化できます。
+                <ul>
+                    <li>連続 - 連続値を表します。使用されるモデルは Gaussian で、ツールは最小二乗法 (Ordinary Least Squares) の回帰分析を実行します。
+                    </li>
+                    <li>バイナリ - 有無の値を表します。1 と 0 である必要があります。使用されるモデルは、ロジスティック回帰です。
+                    </li>
+                    <li>カウント - 不連続で、犯罪件数、病気のインシデント、交通事故などのイベントを表します。使用されるモデルは、ポワソン分布回帰です。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>値を予測するレイヤーの選択</h2></div>
+        <hr/>
+        <div>
+            <p>推定値を計算する必要がある位置を表すフィーチャを含むレイヤー。このデータセット内の各フィーチャには、指定されたすべての説明変数の値が含まれています。これらのフィーチャの従属変数は、入力レイヤーに対してキャリブレーションされたモデルを使用して推定されます。
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>説明フィールドの選択</h2></div>
+        <hr/>
+        <div>
+            <p>値の予測に役立つ説明変数 (フィールド) を表す 1 つ以上のフィールド。数値フィールドのみが表示されます。
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>説明フィールドを一致させる方法の選択</h2></div>
+        <hr/>
+        <div>
+            <p>予測レイヤー内の変数に入力レイヤー内の対応する変数を一致させる方法。モデルの生成で使用された変数のみがテーブルに含まれます。数値のみを使用できます。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>結果レイヤー名</h2></div>
+        <hr/>
+        <div>
+            <p> 作成されるレイヤーの名前。 ArcGIS Data Store に書き込んでいる場合、結果は  <b>[マイ コンテンツ]</b> に保存され、マップに追加されます。ビッグ データ ファイル共有に書き込んでいる場合、結果はビッグ データ ファイル共有に格納され、そのマニフェストに追加されます。この場合、結果はマップに追加されません。 デフォルトの名前は、ツール名と入力レイヤー名に基づいて設定されます。レイヤーがすでに存在する場合、このツールは正常に実行されません。
+            </p>
+            <p>返される結果は解析のタイプによって決まります。モデルの適合度を評価するために適合を行う場合、結果には、モデルに適合された入力データのレイヤーと、モデルの適合度を評価する結果情報が含まれます。適合と予測を行う場合、結果には、モデルに適合された入力データのレイヤー、予測された結果のレイヤー、およびモデルの適合度を評価する結果情報が含まれます。
+            </p>
+            <p> <b>[出力の保存場所]</b> ドロップダウン ボックスを使用して ArcGIS Data Store (リレーショナル データ ストアまたはビッグ データ ストア) に書き込むときは、結果が保存される  <b>[マイ コンテンツ]</b> 内のフォルダーの名前を指定できます。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

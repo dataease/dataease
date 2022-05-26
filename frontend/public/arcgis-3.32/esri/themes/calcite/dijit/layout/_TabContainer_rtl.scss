@@ -1,0 +1,39 @@
+.#{$theme-name} {
+  // Tab
+  .dijitTabContainerTopRtl .dijitTabContainerTop-tabs,
+  .dijitTabContainerBottomRtl .dijitTabContainerBottom-tabs {
+    .dijitTab {
+      margin-left: $tabs-spacing;
+      margin-right: inherit;
+    }
+  }
+  .dijitTabRtl .dijitTabCloseButton {
+    float: left;
+    margin-left: inherit;
+    margin-right: $padding-base-horizontal;
+    ;
+  }
+  // Nested tabs
+  // --------------------------------------------------
+  .dijitTabContainerNested {
+    // Top tabs
+    &.dijitTabContainerTopRtl {
+      .dijitTabContainerTop-tabs {
+        .dijitTab {
+          margin-left: $tabs-nested-spacing;
+          margin-right: inherit;
+        }
+      }
+    }
+    //Bottom tabs
+    &.dijitTabContainerBottomRtl {
+      .dijitTabContainerBottom-tabs {
+        .dijitTab {
+          margin-left: $tabs-nested-spacing;
+          margin-right: inherit;
+        }
+      }
+    }
+  }
+}
+

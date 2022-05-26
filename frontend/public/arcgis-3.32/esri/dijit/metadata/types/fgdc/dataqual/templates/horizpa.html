@@ -1,0 +1,30 @@
+<div data-dojo-attach-point="containerNode">
+
+  <div data-dojo-type="esri/dijit/metadata/form/Element"
+    data-dojo-props="target:'horizpa',minOccurs:0,
+      label:'${i18nFgdc.dataqual.horizpa.caption}'">
+      
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'horizpar',
+        label:'${i18nFgdc.dataqual.horizpa.horizpar}'">
+      <div data-dojo-type="esri/dijit/metadata/form/InputTextArea"></div>
+    </div>
+    
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'qhorizpa',minOccurs:0,maxOccurs:'unbounded',
+        label:'${i18nFgdc.dataqual.horizpa.qhorizpa.caption}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'horizpav',
+            label:'${i18nFgdc.dataqual.horizpa.qhorizpa.horizpav}'">
+          <div data-dojo-type="esri/dijit/metadata/form/InputNumber"></div>
+        </div>
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'horizpae',
+            label:'${i18nFgdc.dataqual.horizpa.qhorizpa.horizpae}'">
+          <div data-dojo-type="esri/dijit/metadata/form/InputTextArea"></div>
+        </div>
+    </div>
+
+  </div>
+  
+</div>

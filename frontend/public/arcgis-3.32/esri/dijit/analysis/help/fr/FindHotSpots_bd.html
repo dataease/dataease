@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Rechercher les points chauds</h2><p/>
+        <h2><img src="../images/GUID-6D600155-AA9B-4F02-AD8B-2E84150AB743-web.png" alt="Rechercher les points chauds"></h2>
+        <hr/>
+    <p>L'outil Rechercher les points chauds d&eacute;termine si le mod&egrave;le spatial de vos donn&eacute;es pr&eacute;sente des agr&eacute;gations statistiquement significatives. 
+        <ul>
+            <li>Vos points (d&eacute;lits, arbres ou accidents de la circulation) sont-ils r&eacute;ellement agr&eacute;g&eacute;s&nbsp;?  Comment en &ecirc;tre certain&nbsp;?
+            </li>
+            <li>Avez-vous vraiment d&eacute;couvert un point chaud statistiquement significatif ou votre carte donnerait-elle des r&eacute;sultats diff&eacute;rents en modifiant sa symbolisation&nbsp;?
+            </li>
+        </ul>
+        L'outil Rechercher les points chauds vous aide &agrave; trouver la r&eacute;ponse &agrave; ces questions en toute confiance.
+    </p>
+    <p>M&ecirc;me les mod&egrave;les spatiaux al&eacute;atoires pr&eacute;sentent un certain degr&eacute; d'agr&eacute;gation. En outre, nos yeux et notre cerveau tentent naturellement d'identifier des mod&egrave;les m&ecirc;me si aucun n'existe. Par cons&eacute;quent, il peut &ecirc;tre difficile de savoir si les mod&egrave;les de vos donn&eacute;es sont le r&eacute;sultat de processus spatiaux r&eacute;els en cours ou s'ils d&eacute;coulent simplement du hasard. C&rsquo;est pourquoi les chercheurs et les analystes utilisent des m&eacute;thodes statistiques, telles que Trouver des points chauds (Getis-Ord Gi*) pour quantifier les mod&egrave;les spatiaux. La r&eacute;alisation d'une agr&eacute;gation statistiquement significative sur vos donn&eacute;es permet d'obtenir des informations pr&eacute;cieuses. Le fait de savoir o&ugrave; et quand l'agr&eacute;gation se produit peut fournir des indications importantes sur les processus qui favorisent les mod&egrave;les auxquels vous assistez. Par exemple, savoir que le nombre de cambriolages r&eacute;sidentiels est plus &eacute;lev&eacute; dans certains quartiers constitue une information cl&eacute; si vous devez mettre en place des strat&eacute;gies de pr&eacute;vention efficaces, allouer des ressources polici&egrave;res limit&eacute;es, initier des programmes de surveillance de quartier, autoriser des enqu&ecirc;tes criminelles approfondies ou identifier des suspects potentiels.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Choisissez la couche pour laquelle les points chauds seront calculés</h2></div>
+        <hr/>
+        <div>
+            <p>La couche ponctuelle dans laquelle les points chauds et froids seront recherch&eacute;s.
+            </p>
+            <p>Cette analyse utilise des groupes et requiert un syst&egrave;me de coordonn&eacute;es projet&eacute;es. Vous pouvez d&eacute;finir le  <b>syst&egrave;me de coordonn&eacute;es de traitement</b> dans <b>Environnements d'analyse</b>. Si votre syst&egrave;me de coordonn&eacute;es de traitement n&rsquo;est pas d&eacute;fini sur un syst&egrave;me de coordonn&eacute;es projet&eacute;es, vous &ecirc;tes invit&eacute; &agrave; le configurer lorsque vous lancez <b>Run analysis (Ex&eacute;cuter l&rsquo;analyse)</b> .
+            </p>
+            <p>Outre le fait de choisir une couche de votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante pour parcourir votre contenu et rechercher une couche d&rsquo;entit&eacute;s ou un jeu de donn&eacute;es de partage de fichiers Big Data.
+            </p>
+        </div>
+    </div>
+    <div id="analysisField">
+        <div><h2>Rechercher des grappes de valeurs élevées et faibles</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Cette analyse r&eacute;pond &agrave; la question suivante&nbsp;: o&ugrave; les valeurs &eacute;lev&eacute;es et faibles s'agr&egrave;gent-elles spatialement&nbsp;?
+            </p>
+            <p>Si vos donn&eacute;es sont des points et que vous choisissez  <b>Nombre de points</b>, cet outil &eacute;value l'organisation spatiale des entit&eacute;s ponctuelles pour r&eacute;pondre &agrave; la question&nbsp;: o&ugrave; trouve-t-on les points agr&eacute;g&eacute;s de mani&egrave;re inattendue ou dispers&eacute;s de mani&egrave;re inattendue&nbsp;?
+            </p>
+            <p>Si vous choisissez un champ, cet outil &eacute;value l'organisation spatiale des valeurs associ&eacute;es &agrave; chaque entit&eacute; pour r&eacute;pondre &agrave; la question&nbsp;: o&ugrave; se trouve l'agr&eacute;gation des valeurs &eacute;lev&eacute;es et faibles&nbsp;?
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Sélectionner la taille du groupe pour l'agrégation</h2></div>
+        <hr/>
+        <div>
+            <p>La distance utilis&eacute;e pour g&eacute;n&eacute;rer les groupes carr&eacute;s qui serviront &agrave; analyser vos points en entr&eacute;e.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Rechercher les points chauds à l'aide des intervalles temporels (facultatif)</h2></div>
+        <hr/>
+        <div>
+            <p>Si le temps est activ&eacute; sur la couche de points et qu'il est de type instantan&eacute;, vous pouvez effectuer l'analyse &agrave; l'aide d'intervalles temporels.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Intervalle temporel</h2></div>
+        <hr/>
+        <div>
+            <p>Intervalle de temps utilis&eacute; pour g&eacute;n&eacute;rer des intervalles temporels. L'heure peut s'aligner sur l'heure de d&eacute;but ou de fin des donn&eacute;es en entr&eacute;e, ou sur une heure de r&eacute;f&eacute;rence sp&eacute;cifi&eacute;e.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Intervalle temporel</h2></div>
+        <hr/>
+        <div>
+            <p>Intervalle de temps utilis&eacute; pour g&eacute;n&eacute;rer des intervalles temporels. L'heure peut s'aligner sur l'heure de d&eacute;but ou de fin des donn&eacute;es en entr&eacute;e, ou sur une heure de r&eacute;f&eacute;rence sp&eacute;cifi&eacute;e.  
+            </p>
+        </div>
+    </div>
+    <div id="timeStepAlignment">
+        <div><h2>Choisir comment aligner les intervalles temporels</h2></div>
+        <hr/>
+        <div>
+            <p>Mode d'alignement des intervalles temporels. Vous pouvez aligner les intervalles temporels de trois mani&egrave;res&nbsp;:
+                <ul>
+                    <li> <b>Heure de d&eacute;but</b>&nbsp;: les intervalles temporels sont align&eacute;s sur la premi&egrave;re entit&eacute; dans le temps.
+                    </li>
+                    <li> <b>Heure de fin</b>&nbsp;: les intervalles temporels sont align&eacute;s sur la derni&egrave;re entit&eacute; dans le temps.
+                    </li>
+                    <li> <b>Heure de r&eacute;f&eacute;rence</b>&nbsp;: les intervalles temporels sont align&eacute;s sur l'heure sp&eacute;cifi&eacute;e.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Heure de référence sur laquelle aligner les intervalles temporels</h2></div>
+        <hr/>
+        <div>
+            <p>La date et l'heure utilis&eacute;es pour aligner les intervalles temporels.
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Sélectionner la taille du voisinage pour les calculs de points chauds</h2></div>
+        <hr/>
+        <div>
+            <p>La distance utilis&eacute;e pour d&eacute;terminer le voisinage utilis&eacute; pour le calcul des points chauds. Le voisinage doit &ecirc;tre de taille sup&eacute;rieure &agrave; celle du groupe pour s'assurer que chaque groupe poss&egrave;de au moins un voisin. Chaque groupe est analys&eacute; et compar&eacute; aux groupes voisins.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>Référence spatiale (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit d'un param&egrave;tre temporaire de la version pr&eacute;liminaire qui permet de d&eacute;finir la r&eacute;f&eacute;rence spatiale de traitement. De nombreux outils Big Data n&eacute;cessitent l'utilisation d'un syst&egrave;me de coordonn&eacute;es projet&eacute;es comme r&eacute;f&eacute;rence spatiale pour le traitement. Par d&eacute;faut, l'outil utilise le syst&egrave;me de coordonn&eacute;es en entr&eacute;e, mais &eacute;choue s'il s'agit d'un syst&egrave;me de coordonn&eacute;es g&eacute;ographiques. Pour d&eacute;finir un syst&egrave;me de coordonn&eacute;es projet&eacute;es, saisissez le WKID. Par exemple,  <b>Web Mercator</b> est saisi sous la forme <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Choisir une instance ArcGIS Data Store dans laquelle enregistrer les résultats</h2></div>
+        <hr/>
+        <div>
+            <p>Les r&eacute;sultats de g&eacute;oanalyse sont stock&eacute;s dans un r&eacute;pertoire de donn&eacute;es et s&rsquo;affichent en tant que couche d&rsquo;entit&eacute;s dans  Portal for ArcGIS. Dans la plupart des cas, les r&eacute;sultats doivent &ecirc;tre stock&eacute;s dans le stockage des donn&eacute;es spatio-temporelles, ce qui est le param&egrave;tre par d&eacute;faut. Dans certains cas, il peut &ecirc;tre judicieux d&rsquo;enregistrer les r&eacute;sultats dans un data store relationnel. Voici les raisons pour lesquelles stocker les r&eacute;sultats dans le data store relationnel&nbsp;: 
+                <ul>
+                    <li>Vous pouvez utiliser les r&eacute;sultats en mode de collaboration de portail &agrave; portail.
+                    </li>
+                    <li>Vous pouvez activer la synchronisation de vos r&eacute;sultats.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Vous ne devez pas utiliser le data store relationnel&nbsp;si vous pensez que vos r&eacute;sultats GeoAnalytics vont augmenter et que vous devez tirer parti des fonctionnalit&eacute;s du le data store Big Data spatio-temporel pour g&eacute;rer les grands volumes de donn&eacute;es.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la couche &agrave; cr&eacute;er. Si vous &eacute;crivez sur une instance ArcGIS Data Store, les r&eacute;sultats seront enregistr&eacute;s dans  <b>My Content (Mon contenu)</b> et ajout&eacute;s &agrave; la carte. Si vous &eacute;crivez sur un partage de fichiers Big Data, les r&eacute;sultats seront enregistr&eacute;s dans le partage de fichiers Big Data et ajout&eacute;s &agrave; son manifeste. Il ne sera pas ajout&eacute; &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, l'outil &eacute;choue.
+            </p>
+            <p>Cette couche de r&eacute;sultat vous pr&eacute;sente les grappes statistiquement significatives des valeurs &eacute;lev&eacute;es et faibles ou des nombres de points. Si le nom de la couche de r&eacute;sultats existe d&eacute;j&agrave;, vous devez renommer la couche.
+            </p>
+            <p>Lors de l&rsquo;&eacute;criture sur  ArcGIS Data Store (r&eacute;pertoire de donn&eacute;es relationnelles ou spatio-temporelles) via la zone de liste d&eacute;roulante  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>, vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> o&ugrave; le r&eacute;sultat sera enregistr&eacute;.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

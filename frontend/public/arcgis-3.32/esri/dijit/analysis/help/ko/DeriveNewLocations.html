@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>새 위치 파생(Derive New Locations)</h2><p/>
+        <h2><img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" alt="새 위치 파생"></h2>
+        <hr/>
+    <p>이 도구는 내 처리 범위에서 지정한 일련의 조건을 충족하는 새 피처를 끌어냅니다. 이러한 조건은 속성 쿼리(예시: 비어 있는 필지) 및 공간 쿼리(예시: 홍수권 내에 있는 필지)를 기반으로 할 수 있습니다.
+
+    </p>
+    <p> <b>현재 맵 범위 사용</b>을 선택한 경우 현재 맵 범위 내에 보이는 피처만 분석됩니다. 이 옵션을 선택 취소하면 현재 맵 범위가 아닌 경우에도 모든 피처가 분석됩니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="Expression">
+        <div><h2>다음 식과 일치하는 새 위치 파생</h2></div>
+        <hr/>
+        <div>
+            <p> <b>식 추가</b> 버튼을 클릭하여 식을 정의합니다.  여러 식을 추가할 수 있습니다. 식을 입력하고 <b>분석 실행</b> 버튼을 클릭하면 분석 레이어에 있는 피처가 각 식을 통해 필터링됩니다. 모든 식을 충족하는 피처 부분만 결과 레이어에 작성됩니다.
+            </p>
+            <p>생성할 수 있는 두 가지 기본 유형의 식, 즉 속성 식과 공간 식이 있습니다. 속성 식은  <code>'San Francisco'가 이름으로 있는 곳</code>과 같은 필드 값에 대한 쿼리입니다.  공간 식에는 4가지 유형이 있습니다.
+                <ul>
+                    <li> <b>거리 내에 있음</b>: 다른 레이어의 거리 내에 있는 피처 부분입니다.  예를 들어 Los Angeles 강의 500미터 내에 있는 필지 부분을 찾습니다.
+                    </li>
+                    <li> <b>완전히 포함함</b>: 피처가 다른 레이어의 피처를 모두 포함해야 합니다.  예를 들어 산업용 필지를 완전히 포함한 하천을 찾습니다. 필지의 일부가 하천 외부에 있을 수 없습니다.
+                    </li>
+                    <li> <b>완전히 포함됨(속함)</b>: 피처가 다른 레이어의 피처로 완전히 둘러싸여 있어야 합니다. 예를 들어 도시 경계 내에 완전히 속해 있는 학군을 찾습니다. 학군의 일부가 도시 경계 외부에 있을 수 없습니다.
+                    </li>
+                    <li> <b>교차</b>: 피처 또는 피처의 일부가 다른 레이어의 피처와 겹치거나 교차해야 합니다.  예를 들어 국립 공원 내에서 여러 번의 화재로 인해 소실된 식물 영역을 찾습니다. 공원 경계 외의 소실 지역은 포함되지 않습니다.
+                    </li>
+                    <li> <b>가장 인접함</b>: 피처가 다른 레이어의 피처에 가장 인접해야 합니다.  예를 들어 각 학교에 가장 가까운 녹지를 찾습니다.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>각 공간 식에는 해당하는 부정 식이 있습니다. 단,  <b>가장 인접함</b>; <b>거리 내에 없음</b>, <b>일부만 포함</b>, <b>일부만 속함</b>, <b>교차하지 않음</b>은 예외입니다.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p> <b>내 콘텐츠</b>에서 생성되어 맵에 추가되는 레이어의 이름입니다. 기본 이름은 도구 이름과 입력 레이어 이름을 기반으로 합니다. 레이어 이름이 이미 있는 경우 다른 이름을 입력하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 메뉴를 사용하여 <b>내 콘텐츠</b>에서 결과를 저장할 폴더의 이름을 지정할 수 있습니다.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

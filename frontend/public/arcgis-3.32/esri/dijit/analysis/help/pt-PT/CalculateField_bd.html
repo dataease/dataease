@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Calcular Campo</h2><p/>
+        <h2><img src="../images/GUID-059C9BE7-7B00-49C8-9917-B0EAEA3DA19D-web.png" alt="Calculate Field"></h2>
+        <hr/>
+    <p> Esta ferramenta funciona com uma camada de entrada para calcular valores para um campo novo ou existente. Construa uma express&atilde;o Arcade para calcular os valores com os quais popular os elementos.   Caso os seus dados tenham a componente temporal ativa e do tipo temporal instante, pode, opcionalmente, construir express&otilde;es com fun&ccedil;&atilde;o de trilhos ativada .
+    </p>
+    <p>Por exemplo, suponha que pretende modificar um campo existente denominado  <i>TotalSales</i>. Pretende que o campo seja representado pela soma do total de vendas de 2016 e 2017. Utilizando esses campos na express&atilde;o, poder&aacute; calcular o valor de campo como <pre>$feature[&quot;Sales2016&quot;] + $feature[&quot;Sales2017&quot;]</pre>.
+    </p>
+    <p>Recorrendo a outro exemplo, suponha que tem medi&ccedil;&otilde;es de GPS que registam o local, hora, ID de autocarro, e a velocidade dos autocarros numa cidade. Pretendemos criar um novo campo denominado  <i>SpeedFrom3</i> que faz a m&eacute;dia das &uacute;ltimas 3 medi&ccedil;&otilde;es de GPS registadas para cada elemento. Para este c&aacute;lculo, utilizar&iacute;amos um c&aacute;lculo com fun&ccedil;&atilde;o de trilhos ativada, em que o trilho &eacute; um autocarro denotado pela ID de autocarro.    O c&aacute;lculo utilizado para determinar a velocidade m&eacute;dia das 3 &uacute;ltimas etapas temporais e a atual etapa temporal &eacute; <pre>average($track.field[&quot;speed&quot;].history(-4))</pre>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Selecionar camada para a qual calcular valores de campos</h2></div>
+        <hr/>
+        <div>
+            <p>Os pontos, linhas, &aacute;reas ou tabela cujos valores de campos ser&atilde;o calculados.  
+            </p>
+            <p>Para al&eacute;m de escolher uma camada do seu mapa, pode escolher  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista pendente para navegar at&eacute; aos seus conte&uacute;dos de um conjunto de dados de partilha de ficheiros de big data ou camada de elementos.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Calcular valores de campo para o campo</h2></div>
+        <hr/>
+        <div>
+            <p>O cmapo novo ou existente que ter&aacute; valores calculados e o tipo de dados desse campo. Caso esteja a calcular valore num campo j&aacute; existente, n&atilde;o precisa de fazer corresponder o tipo de dados. 
+            </p>
+        </div>
+    </div>
+    <div id="expression">
+        <div><h2>Construir uma expressão para calcular os calores de campos</h2></div>
+        <hr/>
+        <div>
+            <p>Adicione uma express&atilde;o utilizando o builder de express&otilde;es para calcular valores de campo. 
+            </p>
+            <p>Por exemplo, suponha que pretendemos adicionar os valores de um campo denominado  <i>income</i>  e <i>bonus</i>. Para este efeito, adicione a express&atilde;o <code>$feature[&quot;income&quot;] + $feature[&quot;bonus&quot;] </code>.
+            </p>
+        </div>
+    </div>
+    <div id="trackInfo">
+        <div><h2>A expressão tem a função de trilhos ativada</h2></div>
+        <hr/>
+        <div>
+            <p>Especifique se a express&atilde;o tem a fun&ccedil;&atilde;o de trilhos ativada. Uma express&atilde;o com a fun&ccedil;&atilde;o de trilhos ativada incluir&aacute; formata&ccedil;&atilde;o como       <pre>$track.field[&quot;fieldname&quot;].history(...)</pre>. Express&otilde;es com a fun&ccedil;&atilde;o de trilhos ativada requerem campos para identificar trilhos individuais. Os trilhos podem ser compostos por pontos, linhas, &aacute;reas ou tabelas e apenas requerem que a entrada tenha um identificador de trilhos e os dados tenham a componente temporal ativada com o tipo de tempo instante.
+            </p>
+        </div>
+    </div>
+    <div id="timeBoundarySplit">
+        <div><h2>Analisar dados com intervalos de tempo</h2></div>
+        <hr/>
+        <div>
+            <p>Especifique se pretende calcular valores para os seus trilhos utilizando intervalos de tempo que ir&atilde;o segmentar as suas entradas para an&aacute;lise. Se utiliza intervalos de tempo tem de definir o intervalo de tempo que pretende utilizar, e opcionalmente definir o momento de refer&ecirc;ncia. Se n&atilde;o definir um momento de refer&ecirc;ncia ser&aacute; utilizado 1 de janeiro de 1970. 
+            </p>
+            <p>Por exemplo, se definir que o limite de tempo &eacute; de 1 dia, come&ccedil;ando &agrave;s 9:00 AM de 1 de janeiro de 1990, ent&atilde;o cada trilho ser&aacute; truncado &agrave;s 9:00 AM de cada dia e analisado dentro desse segmento. 
+            </p>
+            <p>Utilizar intervalos de tempo &eacute; uma forma r&aacute;pida de acelerar o tempo de c&aacute;lculo, visto que isso cria rapidamente trilhos mais pequenos para an&aacute;lise. Se a divis&atilde;o por um intervalo de tempo recorrente faz sentido para a sua an&aacute;lise, isso &eacute; recomendado para o processamento de big data.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p> O nome da camada que ser&aacute; criada.  Se estiver a escrever para ArcGIS Data Store, os seus resultados ser&atilde;o gravados em  <b>O Meu Conte&uacute;do</b> e adicionados ao mapa. Se estiver a escrever para uma partilha de ficheiros big data, os seus resultados ser&atilde;o guardados numa partilha de ficheiros big data e adicionados ao seu manifesto. N&atilde;o ser&atilde;o adicionados ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Caso a camada j&aacute; existe, a ferramenta ir&aacute; falhar.
+            </p>
+            <p>Ao escrever para   ArcGIS Data Store  (armazenamento relacional ou espaciotemporal de dados big data) utilizando a caixa suspensa  <b>Guardar resultado em</b> pode especificar o nome de uma pasta em <b>O Meu Conte&uacute;do</b>, onde ser&aacute; armazenado o resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

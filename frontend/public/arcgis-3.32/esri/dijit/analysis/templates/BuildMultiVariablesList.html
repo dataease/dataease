@@ -1,0 +1,46 @@
+<div class="esriAnalysis">
+    <div data-dojo-type="dijit/layout/ContentPane" style="padding:1px;width:100%;">
+      <table class="esriFormTable" style="width:100%;">
+        <tbody>
+            <tr>
+                <td colspan="2">
+                  <label>${i18n.chooseInputLayer}</label>
+                </td>
+                <td class="shortTextInput">
+                  <a href="#" class='esriFloatTrailing helpIcon' esriHelpTopic="addVariablesWindow"></a>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" style="padding-top:0;" data-dojo-attach-point="_inputLayerTd">
+                </td>
+            </tr>
+            <tr data-dojo-attach-point="_inputWarnMsgRow" style="display:none;">
+              <td colspan="3">
+                <div class="esriFormWarning esriRoundedBox" data-dojo-attach-point="_errorMessagePane" style="display:none;">
+                  <!--<a href="#" title="${i18n.close}" class="esriFloatTrailing esriAnalysisCloseIcon" data-dojo-attach-event="onclick:_handleCloseMsg"></a>-->
+                  <span data-dojo-attach-point="_bodyNode"></span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="3" style="padding-top:2em;">
+                <div class="esriLeadingMargin5 center buildMVGAddVariableCtr">
+                  <label>${i18n.addAVar}</label>
+                  <div class="esriLeadingMargin3 esri-icon-plus-circled addVariableAction" data-dojo-attach-point="_addBtn"></div>
+                </div>
+              </td>
+            </tr>
+            <tr data-dojo-attach-point="_variableWarnMsgRow" style="display:none;">
+              <td colspan="3">
+                <div class="esriFormWarning esriRoundedBox" data-dojo-attach-point="_variableErrorPane" style="display:none;">
+                  <!--<a href="#" title="${i18n.close}" class="esriFloatTrailing esriAnalysisCloseIcon" data-dojo-attach-event="onclick:_handleCloseMsg"></a>-->
+                  <span data-dojo-attach-point="_variableBodyNode"></span>
+                </div>
+              </td>
+            </tr>
+        </tbody>
+      </table>
+      <div data-dojo-attach-point="_cardContainer" class="variableListContainer">
+      </div>
+    </div>
+</div>

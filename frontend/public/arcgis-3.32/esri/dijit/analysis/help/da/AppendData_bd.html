@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Tilknyt data</h2><p/>
+        <h2><img src="../images/GUID-8C95EAE0-904A-42C4-8C3D-303E74FD6DD7-web.png" alt="Tilknyt data-workflow-diagram"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j knytter data til et eksisterende hosted vektorlag. Tilknyt data &aelig;ndrer det oprindelige inputlag og genererer ikke et nyt outputlag. Du kan matche felter baseret p&aring; feltnavn og felttype, eller du kan anvende mere avancerede matchingsmetoder.
+    </p>
+    <p>F&oslash;lgende er eksempler: 
+        <ul>
+            <li>Du er medarbejder hos et stort forsikringsselskab, der genererer salgsrapporter hver m&aring;ned. Til &aring;rsrapporten skal de m&aring;nedlige data samles og analyseres. Ved udarbejdelse af salgsanalysen kan du benytte Tilknyt data til at opdatere laget AnnualReport_2018, n&aring;r de m&aring;nedlige tal er tilg&aelig;ngelige. Da du ved, at din organisation f&oslash;lger den samme plan hver m&aring;ned, kan du bruge standardmetoden for felt-mapping til at tilf&oslash;je objekter ud fra feltnavn og -type.
+            </li>
+            <li>Ti forskellige milj&oslash;grupper samler hver is&aelig;r hundredtusindvis af klimam&aring;linger inden for deres omr&aring;de. Disse organisationer &oslash;nsker at kompilere deres data for at f&aring; en bedre forst&aring;else af regionale og globale m&oslash;nstre. Hver enkelt organisation fastl&aelig;gger skemaet for deres datas&aelig;t. De har hver is&aelig;r angivet forskellige feltnavne for temperatur- og vindhastighedsdata. Med disse forskelle mellem datas&aelig;ttene, kan felt-mapping benyttes til at angive, hvordan man tilf&oslash;jer temperatur- og vindhastighedsm&aring;linger til de respektive felter.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vælg lag, der skal tilknyttes til</h2></div>
+        <hr/>
+        <div>
+            <p>Den tabel, det punkt, den linje eller de polygon-objekter, som dataene skal knyttes til.
+            </p>
+            <table>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            <tr><td valign="baseline"><img src="../images/caution.png"></td><td valign="baseline"><h2>Caution:&ensp;</h2></td>
+            <td valign="baseline">
+                <p>Det lag du knytter data til, bliver &aelig;ndret under afviklingen af ​​v&aelig;rkt&oslash;jet. F&oslash;r du forts&aelig;tter, skal du sikre dig, at du &oslash;nsker at &aelig;ndre dette lag.
+                </p>
+            </td></tr>
+            <tr><td colspan="3"><hr size="1" noshade="noshade"></td></tr>
+            </table>
+            <p>Udover at du kan v&aelig;lge et lag i dit kort, kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten for at g&aring; til dit indhold til et hosted vektorlag.
+            </p>
+        </div>
+    </div>
+    <div id="appendLayer">
+        <div><h2>Vælg lag, der skal tilknyttes</h2></div>
+        <hr/>
+        <div>
+            <p>Den tabel, det punkt, den linje eller de polygon-objekter, der skal knyttes til inputlaget.
+            </p>
+            <p>Udover at du kan v&aelig;lge et lag i dit kort, kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten for at g&aring; til dit indhold til et big data-fildelingsdatas&aelig;t eller -vektorlag.
+            </p>
+        </div>
+    </div>
+    <div id="filter">
+        <div><h2>Tilknyt alle objekter, eller definér et undersæt (valgfrit)</h2></div>
+        <hr/>
+        <div>
+            <p>Identificerer de objekter, der skal tilknyttes. Denne parameter er valgfri.
+            </p>
+        </div>
+    </div>
+    <div id="fieldMapping">
+        <div><h2>Vælg, hvordan felter skal tilknyttes (valgfrit)</h2></div>
+        <hr/>
+        <div>
+            <p>Angiver, hvordan de tilknyttede lagfelter tilknyttes inputlaget. Som standard tilknyttes alle matchende input- og tilknytningsfelter. Felter matcher, hvis de har samme feltnavn og samme felttype. Du kan ogs&aring; v&aelig;lge, hvordan felter skal matches, eller beregne Arcade-udtryk for at udfylde feltv&aelig;rdierne.
+            </p>
+            <p>Du har f.eks. et input-lag med felterne <i>field_number</i>, <i>field_string</i>, <i>date_field</i>, <i>unused_field</i> og et tilknytningslag med felterne <i>field_string</i>, <i>field_number</i> og <i>MY_DATE_FIELD</i>.
+                <ul>
+                    <li>Som standard matcher v&aelig;rkt&oslash;jet  <i>field_number</i> i inputlaget med <i>field_number</i> i tilknytningslaget og <i>field_string</i>  i inputlaget med <i>field_string</i> i tilknytningslaget.
+                    </li>
+                    <li>Som standard bliver inputlagets  <i>date_field</i> og <i>unused_field</i> udfyldt med v&aelig;rdier p&aring; <i>null</i>, fordi de ikke har et matchende felt i tilknytningslaget.
+                    </li>
+                    <li>Du kan ogs&aring; knytte v&aelig;rdier til felter, der ikke automatisk blev matchet som standard. F.eks. kan  <i>date_field</i> i inputlaget matches til tilknytningsfeltet <i>MY_DATE_FIELD</i>. Hvis du vil g&oslash;re det, skal du bruge rullemenuen ved siden af <i>date_field</i> i den f&oslash;rste kolonne og v&aelig;lge <i>MY_DATE_FIELD</i> i rullemenuen i den anden kolonne.
+                    </li>
+                </ul>
+                 Et andet eksempel kan v&aelig;re et inputlag, der har de numeriske felter <i>value_1</i>, <i>value_2</i>, <i>value_3</i> og <i>my_Average</i>, og et tilknytningslag, der har de numeriske felter <i>value_1</i>, <i>value_2</i> og <i>value_3</i>.
+                <ul>
+                    <li>Som standard bliver  <i>value_1</i>, <i>value_2</i> og <i>value_3</i> matchet og tilknyttet.
+                    </li>
+                    <li>Ud over standardadf&aelig;rden kan der beregnes v&aelig;rdier for feltet  <i>my_Average</i>. Det g&oslash;res ved hj&aelig;lp af flere felter og matematiske operationer ved at v&aelig;lge <b>Udtryk</b> i kolonne ved siden af <i>my_Average</i> og opbygge et brugerdefineret Arcade-udtryk som f.eks. <pre>average($feature[&quot;value_1&quot;] + $feature[&quot;value_2&quot;] + $feature[&quot;value_3&quot;])</pre>.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

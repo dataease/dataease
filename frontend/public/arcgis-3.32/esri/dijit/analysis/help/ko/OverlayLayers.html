@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>레이어 중첩</h2><p/>
+        <h2><img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" alt="레이어 중첩"></h2>
+        <hr/>
+    <p>중첩은 둘 이상의 레이어를 하나의 단일 레이어로 결합합니다.여러 맵을 포개어 모든 정보를 포함하는 단일 맵을 생성하는 작업을 중첩이라고 생각하면 됩니다.중첩은 단순히 라인 작업의 병합을 의미하는 것이 아닙니다. 중첩에 참여하는 피처들의 모든 특성이 최종 결과물까지 그대로 유지됩니다.중첩은 &quot;무엇과 무엇이 겹쳐 있습니까?&quot;라는 지리학의 가장 기본적인 질문 중 하나에 대답하는 데 사용됩니다.예:
+        <ul>
+            <li>100년 홍수 지역 내에 있는 필지는 무엇입니까?(여기에서'내에 있다'는 '겹침'을 의미하는 또 다른 표현 방법)
+                  
+            </li>
+            <li>어떤 도시 내에 어떤 도로가 있습니까?
+            </li>
+            <li>토질 유형별 토지 이용 현황이 어떻습니까?
+                 
+            </li>
+            <li>버려진 군사 기지에 어떤 우물이 있습니까?
+            </li>
+        </ul>
+        
+    </p>
+    <p> <b>현재 맵 범위 사용</b>을 선택한 경우 현재 맵 범위 내에 표시된 입력 레이어와 중첩 레이어의 피처만 중첩되고,  선택하지 않은 경우 현재 맵 범위 외부에 있는 피처를 포함하여 입력 레이어와 중첩 레이어에 있는 모든 피처가 중첩됩니다.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>입력 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>중첩시킬 포인트, 라인 또는 영역 레이어입니다.
+            </p>
+            <p>맵에서 레이어를 선택하는 것 외에도 드롭다운 목록 하단에서  <b>분석 레이어를 선택</b>할 수 있습니다. 해당 옵션을 사용하면 다양한 원본에서 분석에 사용할 데이터셋을 검색하고 선택할 수 있는 갤러리가 열립니다. 
+            </p>
+        </div>
+    </div>
+    <div id="OverlayLayer">
+        <div><h2>중첩 레이어 선택</h2></div>
+        <hr/>
+        <div>
+            <p>입력 레이어에 중첩시킬 레이어입니다.  
+            </p>
+            <p>맵에서 레이어를 선택하는 것 외에도 드롭다운 목록 하단에서  <b>분석 레이어를 선택</b>할 수 있습니다. 해당 옵션을 사용하면 다양한 원본에서 분석에 사용할 데이터셋을 검색하고 선택할 수 있는 갤러리가 열립니다. 
+            </p> 
+        </div>
+    </div>
+    <div id="OverlayType">
+        <div><h2>중첩 방법 선택</h2></div>
+        <hr/>
+        <div>
+            <p>중첩 방법은 입력 레이어와 중첩 레이어가 결합되는 방식을 정의합니다.  
+
+                <ul>
+                    <li> <b>인터섹트</b> - 입력 레이어의 피처와 겹치는 중첩 레이어의 피처 또는 피처의 일부만 결과에 포함됩니다. 라인 또는 영역 피처를 교차할 때는 결과 피처 유형을 지정할 수 있습니다.
+                        <table border="1">
+                        <tr>
+                            <td>
+                                <p>포인트와 포인트
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-B456C1ED-F5A1-4F8A-A1ED-1BC35A4A8B40-web.png" alt="포인트와 포인트 입력">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-49B1A536-8426-4149-B067-5A16936E0BBC-web.png" alt="포인트와 포인트, 포인트 결과">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>포인트와 라인
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-F1E6C6C8-4F51-4063-984D-0FC8D08EB2D2-web.png" alt="포인트와 라인 입력">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-02CFAFDC-1B3C-4C4B-A58C-7B0B78BA0B56-web.png" alt="포인트와 포인트, 라인 결과">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>포인트와 영역
+
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-5EE90BD6-CC3D-4E2F-A5D0-DC57298E8416-web.png" alt="포인트와 영역 입력">
+                                </p>
+                            </td>
+                            <td> <img src="../images/GUID-5CCA360F-D4C9-43AB-8FB2-E6E62DE93BD4-web.png" alt="포인트와 영역, 포인트 결과">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>라인과 라인 
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-CF8DDF87-919D-43D5-BBB6-87F0EAC33891-web.png" alt="라인과 라인 입력">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-DDCCB226-6490-4914-B87C-299125466256-web.png" alt="라인과 라인, 포인트 결과">
+                                </p>
+                                <p> <img src="../images/GUID-CDE3AAA9-94C1-41E9-8270-229433240743-web.png" alt="라인과 라인, 라인 결과">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>라인과 영역
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-E38EB7D6-9D35-4E0D-937A-9FEC4144AF2E-web.png" alt="라인과 영역 입력">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-639F492C-BEE7-4A5F-AEBC-325B74FEC766-web.png" alt="라인과 영역, 포인트 결과">
+                                </p>
+                                <p> <img src="../images/GUID-58DF5CF6-0A56-4717-AD9C-C3BEC8EA6906-web.png" alt="라인과 영역, 라인 결과">
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>영역과 영역
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-10C2CDA7-E6C4-4323-A9FB-5FB77A258CE0-web.png" alt="영역과 영역 입력">
+                                </p>
+                            </td>
+                            <td>
+                                <p> <img src="../images/GUID-3F71AD46-A6A2-436D-8BBA-13E014BB94D0-web.png" alt="영역과 영역, 포인트 결과">
+                                </p>
+                                <p> <img src="../images/GUID-6AF62F09-6D32-4212-97C6-844580E34A22-web.png" alt="영역과 영역, 라인 결과">
+                                </p>
+                                <p> <img src="../images/GUID-4D397A0E-EF91-4ACE-9655-2483AFC2FDE2-web.png" alt="영역과 영역, 영역 결과">
+                                </p>
+                            </td>
+                        </tr>
+                        </table>
+                    </li>
+                    <li> <b>유니온</b> - 입력 레이어와 중첩 레이어의 피처가 모두 결과에 포함됩니다. 유니온 옵션은 입력 레이어와 영역 레이어 둘 다 영역 피처가 포함된 경우에만 사용할 수 있습니다.
+                    </li>
+                    <li> <b>지우기</b> - 입력 레이어의 영역과 겹치지 않는 중첩 레이어의 피처 또는 피처의 일부가 결과에 포함됩니다.  중첩 레이어에는 영역, 라인 또는 포인트 피처가 포함될 수 있습니다.
+                    </li>
+                </ul>
+                
+            </p>
+            <p> <b>현재 맵 범위 사용</b>을 선택한 경우 현재 맵 범위 내에 표시된 입력 레이어와 중첩 레이어의 피처만 중첩되고,  선택하지 않은 경우 현재 맵 범위 외부에 있는 피처를 포함하여 입력 레이어와 중첩 레이어에 있는 모든 피처가 중첩됩니다.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>결과 레이어 이름</h2></div>
+        <hr/>
+        <div>
+            <p>  <b>내 콘텐츠</b>에서 생성되어 맵에 추가되는 레이어의 이름입니다.  피처 유형(영역, 라인 또는 포인트)은 중첩 레이어와 같습니다.기본 이름은 중첩 방법과 입력 레이어 이름을 기반으로 합니다.레이어가 이미 있는 경우 다른 이름을 제공하라는 메시지가 나타납니다.
+            </p>
+            <p> <b>결과 저장:</b> 드롭다운 상자를 사용하여 <b>내 콘텐츠</b>에서 결과를 저장할 폴더의 이름을 지정할 수 있습니다.
+            </p> 
+        </div>
+    </div>
+</div>
+</html>

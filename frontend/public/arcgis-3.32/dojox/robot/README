@@ -1,0 +1,59 @@
+-------------------------------------------------------------------------------
+dojox.robot.recorder
+-------------------------------------------------------------------------------
+Version 0.1
+Release date: 2008-07-30
+-------------------------------------------------------------------------------
+Project state: experimental
+-------------------------------------------------------------------------------
+Project authors
+	Mark Hays
+-------------------------------------------------------------------------------
+Project description
+
+Writing automated test cases takes time, and DOH is no exception. You have to
+look up element ids, invent dojo.queries for elements with no id,
+figure out exactly how many pixels to move the mouse . . . the list goes on.
+
+This recorder module enables DOH test case writers to create complete DOH test
+scripts directly from their actions and input on a Web page. Simply drop the
+generated code into your test page, set a pass condition, and the test will
+repeat your actions.
+-------------------------------------------------------------------------------
+Dependencies:
+
+dojo
+-------------------------------------------------------------------------------
+Documentation
+
+See installation instructions below to prepare a test page for recording.
+
+To record a test, click in an area of the document with no dojo.stopEvents
+and press CTRL-ALT-ENTER in the main window. You will get a verification alert
+when you successfully start the recorder. Then you can interact with the Web
+page and the recorder will monitor your actions. It's usually good to record one
+test per widget instance per type of interaction (keyboard vs mouse for instance)
+you are testing.
+
+After you finish interacting with the Web page, click out of any dojo.stopEvents
+and press CTRL-ALT-ENTER again. You will see a box containing the generated source 
+code for your recording. Copy this into a dojo.addOnLoad on the same page to register 
+the test with DOH. Replace the /*Your condition here*/ text with a JS condition that
+indicates that the test passed. Again, having multiple small tests will help you
+keep the condition small. Add a doh.run() call after you register all of your tests
+to make them execute when you load the page.
+-------------------------------------------------------------------------------
+Installation instructions
+
+To ready the recorder for a particular page, add this line to your dojo.requires:
+dojo.require("dojox.robot.recorder");
+
+You can safely remove this line after you are finished recording your tests.
+-------------------------------------------------------------------------------
+Additional Notes
+
+Known limitations:
+- Content in an iframe might not report events to the recorder.
+- keyDown/keyUp events are supported by DOH, but not by the recorder.
+	If you hold a key down, it will generate lots of keyPress events instead.
+	Simply change these to one keyDown call yourself.

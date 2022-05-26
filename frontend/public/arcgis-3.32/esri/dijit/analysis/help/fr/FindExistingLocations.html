@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Identifier des emplacements existants</h2><p/>
+        <h2><img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" alt="Identifier des emplacements existants"></h2>
+        <hr/>
+    <p>Cet outil permet de s&eacute;lectionner des entit&eacute;s existantes dans votre zone d'&eacute;tude r&eacute;pondant &agrave; une s&eacute;rie de crit&egrave;res que vous d&eacute;finissez. Ces crit&egrave;res peuvent reposer sur des requ&ecirc;tes attributaires (par exemple, des parcelles vacantes) et des requ&ecirc;tes spatiales (par exemple, &agrave; moins d'un mile d'une rivi&egrave;re). 
+    </p>
+    <p>Si l'option  <b>Utiliser l'&eacute;tendue courante de la carte</b> est s&eacute;lectionn&eacute;e, seules les entit&eacute;s de la couche en entr&eacute;e qui sont visibles au sein de l'&eacute;tendue courante de la carte seront analys&eacute;es.  Si l'option n'est pas s&eacute;lectionn&eacute;e, toutes les entit&eacute;s seront analys&eacute;es, m&ecirc;me si elles se trouvent en dehors de l'&eacute;tendue courante de la carte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayers">
+        <div><h2>Choisissez la couche contenant les entités à rechercher à l'aide de requêtes attributaires et spatiales</h2></div>
+        <hr/>
+        <div>
+            <p>La couche ponctuelle, lin&eacute;aire ou surfacique pour laquelle vous recherchez des entit&eacute;s en fonction d'une combinaison de requ&ecirc;tes attributaires et spatiales sp&eacute;cifi&eacute;es ci-dessous.
+            </p>
+            <p>Outre le choix d&rsquo;une couche dans votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante. Cette option ouvre une biblioth&egrave;que qui vous permet de s&eacute;lectionner des jeux de donn&eacute;es de diff&eacute;rentes sources pour les utiliser dans votre analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="Expression">
+        <div><h2>Créer une requête pour rechercher des entités</h2></div>
+        <hr/>
+        <div>
+            <p>Cliquez sur le bouton  <b>Ajouter une expression</b> pour d&eacute;finir une expression.  Vous pouvez ajouter plusieurs expressions. Apr&egrave;s avoir entr&eacute; les expressions et cliqu&eacute; sur le bouton <b>Ex&eacute;cuter l'analyse</b>, les entit&eacute;s de votre couche en entr&eacute;e sont filtr&eacute;es &agrave; travers chaque expression.  Les d'entit&eacute;s qui respectent toutes les expressions sont &eacute;crites dans la couche r&eacute;sultat.
+            </p>
+            <p>Vous pouvez cr&eacute;er deux types d&rsquo;expressions de base&nbsp;; attributaires et spatiales. Les expressions attributaires sont des requ&ecirc;tes sur des valeurs de champs, telles que  <code>o&ugrave; le nom est 'San Francisco'</code>.  Il existe quatre types d'expressions spatiales :
+                <ul>
+                    <li> <b>&agrave; une certaine distance de</b> : l'entit&eacute; doit se trouver &agrave; une certaine distance d'une entit&eacute; dans une autre couche.  Par exemple, recherchez les parcelles qui se situent &agrave; moins de 500&nbsp;m&egrave;tres du fleuve Los Angeles.
+                    </li>
+                    <li> <b>englobe enti&egrave;rement</b> : l'entit&eacute; doit englober l'int&eacute;gralit&eacute; d'une entit&eacute; dans une autre couche.  Par exemple, recherchez les bassins qui contiennent compl&egrave;tement des parcelles destin&eacute;es &agrave; un usage industriel. Aucune partie de la parcelle ne peut se trouver en dehors du bassin versant.
+                    </li>
+                    <li> <b>compl&egrave;tement dans</b> : l'entit&eacute; doit &ecirc;tre enti&egrave;rement entour&eacute;e d'une entit&eacute; dans une autre couche.  Par exemple, recherchez les secteurs scolaires qui se trouvent compl&egrave;tement dans les limites d&rsquo;une ville. Aucune partie de la zone scolaire ne peut se trouver en dehors de la limite de la ville.
+                    </li>
+                    <li> <b>intersecte</b> : l'entit&eacute; contient une partie d'une entit&eacute; dans une autre couche.  Par exemple, recherchez les parcelles qui intersectent des rivi&egrave;res.  Toutes les parties du fleuve qui traversent la parcelle, ou qui touchent la limite de la parcelle, intersectent la parcelle.
+                    </li>
+                    <li> <b>le plus proche de</b>&nbsp;: l&rsquo;entit&eacute; doit &ecirc;tre la plus proche d&rsquo;une entit&eacute; d&rsquo;une autre couche.  Par exemple, recherchez le restaurant le plus proche de chaque h&ocirc;tel.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Chaque expression spatiale poss&egrave;de une n&eacute;gation correspondante, &agrave; l&rsquo;exception de  <b>le plus proche de</b>; <b>non dans une distance de</b>, <b>ne contient pas compl&egrave;tement</b>, <b>non compl&egrave;tement dans</b> et <b>n&rsquo;intersecte pas</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OuputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p>Il s'agit du nom de la couche qui sera cr&eacute;&eacute;e dans la page  <b>Mon contenu</b> et ajout&eacute;e &agrave; la carte.  Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si le nom de la couche existe d&eacute;j&agrave;, vous &ecirc;tes invit&eacute; &agrave; fournir un autre nom.
+            </p>
+            <p>Le menu d&eacute;roulant  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b> permet de sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> dans lequel sera enregistr&eacute; le r&eacute;sultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

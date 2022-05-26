@@ -1,0 +1,17 @@
+/* Progress Bar */
+.mblProgressBar {
+	.mblProgressBar-compat;
+}
+.mblProgressBarProgress {
+	.mblProgressBarProgress-compat;
+}
+.dj_gecko {
+	.mblProgressBar {
+		.mblProgressBar-compat-gecko;
+	}
+	.mblProgressBarProgress {
+		-moz-transition-property: width;
+		-moz-transition-duration: 0.25s;
+		.mblProgressBarProgress-compat-gecko;
+	}
+}

@@ -1,0 +1,4 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/sr/AddBarrierLayers",{addBarriers:"Izaberite slojeve barijera",pointBarrier:"Ta\u010dkaste barijere",lineBarrier:"Linijske barijere",polygonBarrier:"Poligonalne barijere",choosePointBarrier:"Odaberite sloj ta\u010dkastih barijera",chooseLineBarrier:"Odaberite sloj linijskih barijera",choosePolygonBarrier:"Odaberite sloj poligonalnih barijera",selectPointBarrier:"Izaberite ta\u010dkaste barijere",selectLineBarrier:"Izaberite linijske barijere",selectPolygonBarrier:"Izaberite poligonalne barijere"});

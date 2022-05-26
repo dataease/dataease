@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>In Data Store kopieren</h2><p/>
+        <h2><img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" alt="In Data Store kopieren"></h2>
+        <hr/>
+    <p>Dieses Werkzeug verwendet einen Eingabe-Layer und kopiert ihn in einen Data Store. Sie k&ouml;nnen Ergebnisse in  ArcGIS Data Store (Big Data Store vom Typ &quot;relational&quot; oder &quot;spatiotemporal&quot;) kopieren, sodass ein Layer in Ihrem Portal erstellt wird, oder Sie k&ouml;nnen Ergebnisse in eine Big-Data-Datei kopieren. 
+    </p>
+    <p>Sie k&ouml;nnen beispielsweise Features, die in einer  <code>Big-Data-Dateifreigabe</code> gespeichert sind, in einem <code>Data Store vom Typ &quot;relational&quot;</code> speichern und festlegen, dass nur Features innerhalb der aktuellen Kartenausdehnung kopiert werden sollen. Auf diese Weise wird ein gehosteter Feature-Service erstellt, der nur die Features enth&auml;lt, die sich innerhalb der angegebenen Kartenausdehnung befinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Zu kopierenden Layer auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Der Layer oder die Tabelle wird kopiert. 
+            </p>
+            <p>Sie k&ouml;nnen nicht nur einen Layer aus der Karte ausw&auml;hlen, sondern auch unten in der Dropdown-Liste die Option  <b>Analyse-Layer ausw&auml;hlen</b> ausw&auml;hlen, um zu Ihren Inhalten f&uuml;r ein Big-Data-Dateifreigabe-Dataset bzw. -Feature-Layer zu navigieren.
+            </p>
+        </div>
+    </div>
+    <div id="selection">
+        <div><h2>Sie können alle Features verwenden oder eine Auswahl treffen (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>Sie k&ouml;nnen auch die Auswahlschaltfl&auml;che verwenden, um die zu kopierenden Positionen zu ermitteln.
+            </p>
+        </div>
+    </div>
+    <div id="outputDataStore">
+        <div><h2>Data Store auswählen, in den kopiert werden soll</h2></div>
+        <hr/>
+        <div>
+            <p>Der Data Store, in den der Layer kopiert wird. Dieser Parameter &uuml;berschreibt die Auswahl in den  <b>Analyseumgebungen</b>. Folgende Optionen sind verf&uuml;gbar:
+                <ul>
+                    <li> <b>ArcGIS Data Store</b> ArcGIS Data Store <ul>
+                            <li> <b>Spatiotemporal</b>: Dies ist die Standardeinstellung.
+                            </li>
+                            <li> <b>Relational</b>
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li> <b>Ausgabevorlagen f&uuml;r Big-Data-Dateifreigabe</b>
+                        <ul>
+                            <li>Eine Liste der verf&uuml;gbaren Vorlagen f&uuml;r Big-Data-Dateifreigabe im Format  <b>bigDataFileShareName-templateName</b>. Vorlagen f&uuml;r Big-Data-Dateifreigabe m&uuml;ssen vor der Ausf&uuml;hrung des Werkzeugs konfiguriert werden.
+                            </li>
+                        </ul>
+                        
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p> Der Name des Layers, der erstellt wird.  Wenn Sie in einen ArcGIS Data Store schreiben, werden Ihre Ergebnisse in  <b>Eigene Inhalte</b> gespeichert und der Karte hinzugef&uuml;gt. Wenn Sie in eine Big-Data-Dateifreigabe schreiben, werden Ihre Ergebnisse in der Big-Data-Dateifreigabe gespeichert und  ihrem Manifest hinzugef&uuml;gt. Sie werden nicht der Karte hinzugef&uuml;gt. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, kann das Werkzeug nicht ausgef&uuml;hrt werden.
+            </p>
+            <p>Wenn Sie &uuml;ber das Dropdown-Feld  <b>Ergebnis speichern in</b> in ArcGIS Data Store (Big Data Store vom Typ &quot;relational&quot; oder &quot;spatiotemporal&quot;) schreiben, k&ouml;nnen Sie den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert wird.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

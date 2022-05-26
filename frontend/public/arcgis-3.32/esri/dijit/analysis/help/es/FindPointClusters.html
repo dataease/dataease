@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Buscar clústeres de puntos</h2><p/>
+        <h2><img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" alt="Buscar cl&uacute;steres de puntos"></h2>
+        <hr/>
+    <p>Esta herramienta encuentra cl&uacute;steres de entidades de punto dentro del ruido colindante en funci&oacute;n de su distribuci&oacute;n espacial.
+    </p>
+    <p>Si se ha activado la opci&oacute;n  <b>Usar la extensi&oacute;n del mapa actual</b>, solo se analizar&aacute; la capa de puntos de entrada que est&eacute; dentro de la extensi&oacute;n de mapa actual.  Si la opci&oacute;n est&aacute; desactivada, se analizar&aacute;n todas las entidades de la capa de puntos de entrada, aunque est&eacute;n fuera de la extensi&oacute;n de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Elegir la capa cuyos clústeres se buscarán</h2></div>
+        <hr/>
+        <div>
+            <p>La capa de puntos en las que se buscar&aacute;n los cl&uacute;steres. 
+            </p>
+        </div>
+    </div>
+    <div id="minFeaturesCluster">
+        <div><h2>Número mínimo de puntos que se deben considerar como un clúster</h2></div>
+        <hr/>
+        <div>
+            <p>El n&uacute;mero m&iacute;nimo de entidades para que se considere un cl&uacute;ster.  Todo cl&uacute;ster con un n&uacute;mero de entidades menor que el indicado se considerar&aacute; ruido. 
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>Limitar el rango de búsqueda a (opcional)</h2></div>
+        <hr/>
+        <div>
+            
+            <p>La distancia m&aacute;xima dentro de la cual se considera que las entidades forman parte del mismo cl&uacute;ster.  Si se deja en blanco, la herramienta ejecutar&aacute; HDBSCAN, que utiliza distancias variables para separar cl&uacute;steres de densidades variables del ruido m&aacute;s disperso. Si se proporciona un valor, la herramienta ejecutar&aacute; DBSCAN, que utiliza una distancia especificada para separar los cl&uacute;steres densos del ruido m&aacute;s disperso.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>Este es el nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y se agregar&aacute; al mapa.  El nombre predeterminado se basa en el nombre de la herramienta y el nombre de la capa de entrada. Si el nombre de capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Con el men&uacute; desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

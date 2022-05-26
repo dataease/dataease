@@ -321,11 +321,18 @@ export const TYPE_CONFIGS = [
     icon: 'map'
   },
   /* 下面是highcharts图表类型 */
-  // {
-  //   render: 'highcharts',
-  //   category: 'chart.chart_type_distribute',
-  //   value: '3Dpie',
-  //   title: 'chart.chart_3Dpie',
-  //   icon: '3Dpie'
-  // },
+  {
+    render: 'highcharts',
+    category: 'chart.chart_type_distribute',
+    value: '3Dpie',
+    title: 'chart.chart_3Dpie',
+    icon: '3Dpie'
+  },
+  {
+    render: 'highcharts',
+    category: 'chart.chart_type_distribute',
+    value: 'arc_map',
+    title: 'chart.chart_arcgis_map',
+    icon: 'arc_map'
+  },
 ]

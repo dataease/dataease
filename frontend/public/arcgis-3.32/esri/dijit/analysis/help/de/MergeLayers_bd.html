@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Layer zusammenführen</h2><p/>
+        <h2><img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" alt="Layer zusammenf&uuml;hren"></h2>
+        <hr/>
+    <p>Dieses Werkzeug verbindet zwei Feature-Layer zu einem einzigen Ausgabe-Layer. Die zusammenzuf&uuml;hrenden Layer m&uuml;ssen denselben Geometrie- und Zeittyp aufweisen.  Sie k&ouml;nnen steuern, wie die Felder aus den Eingabe-Layern verkn&uuml;pft und kopiert werden. Beispiel:
+        <ul>
+            <li>Sie verf&uuml;gen &uuml;ber drei Layer, f&uuml;r England, Wales und Schottland, und Sie m&ouml;chten einen Layer von Gesamt-Gro&szlig;britannien erstellen. 
+            </li>
+            <li>Sie verf&uuml;gen &uuml;ber 2 Layer, die jeweils Flurst&uuml;cksinformationen f&uuml;r zusammenh&auml;ngende Stadtgebiete enthalten. Sie m&ouml;chten sie zu einem einzelnen Layer zusammenf&uuml;hren und nur die Felder beibehalten, die in den 2 Eingabe-Layern den gleichen Namen und Typ aufweisen.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Layer auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Der Layer mit tabellarischen, Punkt-, Linien- oder Fl&auml;chen-Features, zu denen der zweite Feature-Layer zusammengef&uuml;hrt wird. Alle Felder aus diesem Layer werden in den Ergebnis-Layer einbezogen.
+            </p>
+        </div>
+    </div>
+    <div id="mergeLayer">
+        <div><h2>Layer für die Zusammenführung auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Der Feature-Layer, der mit dem Eingabe-Layer zusammengef&uuml;hrt werden soll. Der zusammenzuf&uuml;hrende Layer muss denselben Feature-Typ und Zeittyp aufweisen wie der Eingabe-Layer.
+            </p>
+        </div>
+    </div>
+    <div id="mergingAttributes">
+        <div><h2>Zusammengeführte Felder ändern</h2></div>
+        <hr/>
+        <div>
+            <p>Standardm&auml;&szlig;ig werden alle Felder aus beiden Eingabe-Layern in die Ausgabe einbezogen.  Mithilfe der folgenden Optionen k&ouml;nnen Sie &auml;ndern, wie Felder aus dem Layer in die Ausgabe einbezogen werden:
+                <ul>
+                    <li> <b>Umbenennen</b>: Das Feld wird in der Ausgabe umbenannt.
+                    </li>
+                    <li> <b>Entfernen</b>: Das Feld wird aus der Ausgabe entfernt.
+                    </li>
+                    <li> <b>Abgleichen</b>: Die Feldnamen werden angeglichen.  Werte des Feldes aus dem zusammenzuf&uuml;hrenden Layer werden in das angeglichene Ausgabefeld kopiert.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Wenn die beiden Layer ein Feld mit dem gleichen Namen und Datentyp enthalten, wird der Inhalt der beiden Felder in einem Feld mit diesem Namen zusammengef&uuml;hrt. Dies gilt nicht f&uuml;r Felder, bei denen im Parameter  <b>Zusammengef&uuml;hrte Felder &auml;ndern</b> die Option <b>Abgleichen</b> verwendet wird.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p> Der Name des Layers, der erstellt wird.  Wenn Sie in einen ArcGIS Data Store schreiben, werden Ihre Ergebnisse in  <b>Eigene Inhalte</b> gespeichert und der Karte hinzugef&uuml;gt. Wenn Sie in eine Big-Data-Dateifreigabe schreiben, werden Ihre Ergebnisse in der Big-Data-Dateifreigabe gespeichert und  ihrem Manifest hinzugef&uuml;gt. Sie werden nicht der Karte hinzugef&uuml;gt. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, kann das Werkzeug nicht ausgef&uuml;hrt werden.
+            </p>
+            <p>Wenn Sie &uuml;ber das Dropdown-Feld  <b>Ergebnis speichern in</b> in ArcGIS Data Store (Big Data Store vom Typ &quot;relational&quot; oder &quot;spatiotemporal&quot;) schreiben, k&ouml;nnen Sie den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert wird.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

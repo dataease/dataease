@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Funkcija Noteikt objektus, izmantojot Deep Learning</h2><p/>
+        <h2><img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" alt="Noteikt objektus, izmantojot Deep Learning"></h2>
+        <hr/>
+    <p>&Scaron;is rīks izmanto trenētu Deep Learning modeli uz ievades rastra, lai izveidotu elementu klasi, kurā ir atrastie objekti. &Scaron;ie elementi var būt lodziņi vai laukumi ap atrastajiem objektiem vai punkti objektu centros.
+    </p>
+    <p>Ja tiek atzīmēta opcija  <b>Lietot pa&scaron;reizējo kartes pārklājumu,</b> tiks analizēts tikai rastra apgabals, kas ir redzams pa&scaron;reizējā kartes pārklājumā. Ja nav atzīmēts, viss rastrs tiks analizēts, pat ja tas atrodas ārpus pa&scaron;reizējā kartes pārklājuma.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Izvēlieties objektu noteikšanai izmantoto attēlu</h2></div>
+        <hr/>
+        <div>
+            <p>Ievades attēls, ko izmanto objektu noteik&scaron;anai.
+            </p> 
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Izvēlieties Deep Learning modeli, lai noteiktu objektus</h2></div>
+        <hr/>
+        <div>
+            <p>Ievades Deep Learning pakotnes ( <code>.dlpk</code>) vienība.
+            </p>
+            <p>Deep Learning pakotni veido Esri modeļa definīcijas JSON fails ( <code>.emd</code>), Deep Learning binārā modeļa fails, un pēc izvēles izmantojamā Python rastra funkcija.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Norādiet Deep Learning modeļa argumentus</h2></div>
+        <hr/>
+        <div>
+            <p>Funkciju argumenti tiek definēti Python raster funkciju klasē, uz kuru atsaucas ievades modelis. &Scaron;eit jūs uzskaitāt papildu Deep Learning parametrus un argumentus eksperimentiem un pilnveido&scaron;anai, piemēram, ticamības slieksni jutīguma korekcijai.
+            </p>
+            <p>Argumentu nosaukumus aizpilda Python moduļa lasī&scaron;anas rīks rastra analīzes serverī.
+            </p>
+        </div>
+    </div>
+    <div id="runNMS">
+        <div><h2>Noņemt elementu dublikātus no izvades (pēc izvēles)</h2></div>
+        <hr/>
+        <div>
+            <p>Veic nemaksimālo nomāk&scaron;anu, ja tiek identificēti dubultie objekti un tiek noņemta dublētā funkcija ar zemāku ticamības vērtību. 
+                <ul>
+                    <li>Nav atzīmēts&mdash;visi noteiktie objekti būs izvades elementu klasē. Tā ir noklusējuma vērtība.
+                        
+
+                    </li>
+                    <li>Atzīmēts&mdash;noņem konstatētos dublētos objektus.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="confidenceScoreField">
+        <div><h2>Ticamības rezultāta lauks</h2></div>
+        <hr/>
+        <div>
+            <p>Funkcionalitātes pakalpojuma lauks, kurā ir ticamības rādītājs kā izvade pēc objekta noteik&scaron;anas metodes.
+            </p>
+            <p>&Scaron;is parametrs ir nepiecie&scaron;ams, kad tiek pārbaudīts  <b>Nemaksimālās apslāpē&scaron;anas</b> parametrs.
+            </p>
+        </div>
+    </div>
+    <div id="classValueField">
+        <div><h2>Klases vērtību lauks</h2></div>
+        <hr/>
+        <div>
+            <p>Klases vērtības lauks izvades elementu servisā. Ja nav norādīts, rīks izmantos standarta klases vērtību laukus  <i>Classvalue</i> un <i>Value</i>. Ja &scaron;ie lauki nepastāv, visi elementi tiks uzskatīti par vienu un to pa&scaron;u objektu klasi.
+            </p>
+        </div>
+    </div>
+    <div id="maxOverlapRatio">
+        <div><h2>Maksimālā pārklājuma attiecība</h2></div>
+        <hr/>
+        <div>
+            <p>Maksimālā pārklā&scaron;anās proporcija divām īpa&scaron;ībām, kas pārklājas, tiek definēta kā krustpunkta apgabala attiecība pār savienojumu apgabalu. Noklusējuma vērtība ir 0.
+            </p>
+        </div>
+    </div>
+    <div id="outputObjects">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p>Slāņa nosaukums, kas tiks izveidots sadaļā  <b>Mans saturs</b> un pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja &scaron;āds slānis jau pastāv, jums tikts lūgts norādīt citu nosaukumu.
+            </p>
+            <p>Mapes nosaukumu var norādīt mapē  <b>Mans saturs,</b> kur rezultāts tiks saglabāts, izmantojot nolaižamo lodziņu <b>Saglabāt rezultātu</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

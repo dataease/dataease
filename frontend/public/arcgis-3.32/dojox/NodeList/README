@@ -1,0 +1,33 @@
+-------------------------------------------------------------------------------
+Project Name:  NodeList
+-------------------------------------------------------------------------------
+Version 0.01
+Release date: 07/20/2010
+-------------------------------------------------------------------------------
+Project state:
+        experimental
+-------------------------------------------------------------------------------
+Credits:
+       Bill Keese
+-------------------------------------------------------------------------------
+Project description
+
+This project is meant to extend NodeList with various methods.   The first is
+delegate(), similar to jQuery's delegate method (http://api.jquery.com/delegate/)
+-------------------------------------------------------------------------------
+Dependencies:
+        dojo base
+		dojo.NodeList-traverse
+-------------------------------------------------------------------------------
+Documentation
+        Documentation resides at:
+        http://api.dojotoolkit.org/NodeList
+
+-------------------------------------------------------------------------------
+Installation instructions
+
+Just dojo.require("dojox.NodeList.delegate") in your application and then
+delegate() is added as a method to NodeList.  
+
+-------------------------------------------------------------------------------
+

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Copia al Data Store</h2><p/>
+        <h2><img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" alt="Copia al Data Store"></h2>
+        <hr/>
+    <p>Aquesta eina prendr&agrave; una capa d'entrada i la copiar&agrave; en un magatzem de dades. Podeu copiar els resultats a l' ArcGIS Data Store (magatzem de dades relacional o espaciotemporal) i es crear&agrave; una capa al portal, o b&eacute; podeu copiar els resultats en un recurs compartit de fitxers de dades massives. 
+    </p>
+    <p>Per exemple, podeu copiar entitats que es trobin emmagatzemades en un  <code>recurs compartit de fitxers de dades massives</code> en un <code>magatzem de dades relacional</code> i especificar que nom&eacute;s es copi&iuml;n les entitats dins de l'extensi&oacute; de mapa actual. Aquesta acci&oacute; crear&agrave; un servei d'entitats allotjades nom&eacute;s amb les entitats dins de l'extensi&oacute; de mapa especificada.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Trieu una capa per copiar</h2></div>
+        <hr/>
+        <div>
+            <p>Capa o taula que es copiar&agrave;. 
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b> al final de la llista desplegable per cercar al vostre contingut una capa d'entitats o un dataset de recursos compartits de fitxers de dades massives.
+            </p>
+        </div>
+    </div>
+    <div id="selection">
+        <div><h2>Podeu feu servir totes les entitats o fer una selecció (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Tamb&eacute; podeu utilitzar el bot&oacute; de selecci&oacute; per identificar les ubicacions que es copiaran.
+            </p>
+        </div>
+    </div>
+    <div id="outputDataStore">
+        <div><h2>Trieu el magatzem de dades de destinació de la còpia</h2></div>
+        <hr/>
+        <div>
+            <p>Magatzem de dades on es copiar&agrave; la capa. Aquest par&agrave;metre invalidar&agrave; la selecci&oacute; d' <b>Entorns d'an&agrave;lisi</b>. Les opcions s&oacute;n les seg&uuml;ents:
+                <ul>
+                    <li> <b>ArcGIS Data Store</b> ArcGIS Data Store <ul>
+                            <li> <b>Espaciotemporal</b>: opci&oacute; per defecte.
+                            </li>
+                            <li> <b>Relacional</b>
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li> <b>Plantilles de sortida de recurs compartit de fitxers de dades massives</b>
+                        <ul>
+                            <li>Llista de plantilles de recurs compartit de fitxers de dades massives amb el format  <b>bigDataFileShareName-templateName</b>. Les plantilles de recursos compartits de fitxers de dades massives s'han de configurar abans d'executar l'eina.
+                            </li>
+                        </ul>
+                        
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la capa que es crear&agrave;.  Si esteu escrivint en un ArcGIS Data Store, els resultats es desaran a  <b>El meu contingut</b> i s'afegiran al mapa. Si esteu escrivint en un recurs compartit de fitxers de dades massives, els resultats s'emmagatzemaran en aquest recurs i s'afegiran al seu manifest. No s'afegiran al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, l'eina no funcionar&agrave;.
+            </p>
+            <p>Si escriviu a l' ArcGIS Data Store (magatzem de dades massives relacional o espaciotemporal) mitjan&ccedil;ant el quadre desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta a <b>El meu contingut</b>, on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

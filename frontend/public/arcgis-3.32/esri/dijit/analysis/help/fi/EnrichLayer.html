@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Rikasta karttataso</h2><p/>
+        <h2><img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" alt="Rikasta karttataso"></h2>
+        <hr/>
+    <p>Toiminto t&auml;ydent&auml;&auml; omaa aineistoasi lis&auml;&auml;m&auml;ll&auml; siihen tietoja aineistosi l&auml;heisyydess&auml; olevista ihmisist&auml;, paikoista ja yrityksist&auml;, ja auttaa vastaamaan sellaisiin sijainteja koskeviin kysymyksiin, joihin ei voi vastata pelkkien karttojen avulla. Esimerkki: Millaisia ihmisi&auml; alueella asuu? Mit&auml; ihmiset haluavat tehd&auml; t&auml;ll&auml; alueella? Mitk&auml; ovat heid&auml;n tapansa ja el&auml;m&auml;ntyylins&auml;? Millaisia yrityksi&auml; alueella on?
+    </p>
+    <p>Tuloksena syntyy uusi karttataso, joka sis&auml;lt&auml;&auml; m&auml;&auml;ritettyjen aineistokokoelmien kaikki v&auml;est&ouml;tiedot ja maantieteelliset tiedot. Uudet tiedot lis&auml;t&auml;&auml;n kenttin&auml; taulukkoon.
+    </p>
+    <p>Jos vaihtoehto  <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b> on valittuna, vain nykyisess&auml; karttalaajuudessa n&auml;kyv&auml;ss&auml; l&auml;ht&ouml;karttatasossa olevat kohteet rikastetaan. Jos vaihtoehtoa ei ole valittu, kaikki l&auml;ht&ouml;karttatason kohteet rikastetaan, vaikka ne eiv&auml;t ole nykyisess&auml; karttalaajuudessa.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse karttataso, joka rikastetaan uudella aineistolla</h2></div>
+        <hr/>
+        <div>
+            <p>Piste-, viiva- tai aluekarttataso, joka rikastetaan uusilla ominaisuustiedoilla. 
+            </p>
+            <p>Kartasta valittavan karttatason lis&auml;ksi voit valita alareunan avattavasta luettelosta  <b>Valitse analyysikarttataso</b> -vaihtoehdon. T&auml;m&auml; vaihtoehto avaa gallerian, jossa voit selata ja valita aineistoryhmi&auml; erilaisista l&auml;hteist&auml; ja k&auml;ytt&auml;&auml; niit&auml; analyysissa. 
+            </p>
+        </div>
+    </div>
+    <div id="DataCollection">
+        <div><h2>Rikastusmuuttujat</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Avaa  <b>Aineiston selain</b> valitsemalla <b>Valitse muuttujat</b>. <b>Aineiston selain</b> auttaa etsim&auml;&auml;n ja valitsemaan rikastusmuuttujat yksitellen tai kokoelmina.
+            </p>
+            <p>Alue valitaan automaattisesti valittujen tietojen perusteella. Voit valita toisen alueen, jos k&auml;ytt&auml;m&auml;si tiedot jakautuvat monen maan alueelle. 
+            </p>
+            <p>Rikastusmuuttujat on k&auml;yt&ouml;n helpottamiseksi j&auml;rjestetty aineistokokoelmiksi. Kun valitset aineistokokoelman, selain n&auml;ytt&auml;&auml; kokoelmasta muutamia suosituimpia rikastusmuuttujia.  <b>Jatka selaamista</b> -kohdassa on luettelo kokoelman sis&auml;lt&auml;mist&auml; luokista. Voit valita kustakin luokasta kokonaisen alaluokan tai selata alaluokkaa ja valita yksitt&auml;isi&auml; rikastusmuuttujia. Voit my&ouml;s etsi&auml; tietty&auml; muuttujaa luokan sis&auml;lt&auml; hakukent&auml;n avulla.
+            </p>
+            <p>Kun valitset rikastukseen k&auml;ytett&auml;vi&auml; muuttujia, ne lis&auml;t&auml;&auml;n  <b>Aineiston selain</b> -n&auml;kym&auml;n reunassa olevaan ostoskoriin. Ostoskorin avulla voit seurata, kuinka monta muuttujaa olet valinnut.
+            </p>
+            <p>Jokainen valittu muuttuja lis&auml;t&auml;&auml;n tulostason kent&auml;ksi.
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Määritä rikastettavat alueet</h2></div>
+        <hr/>
+        <div>
+            <p>M&auml;&auml;rit&auml; l&auml;ht&ouml;pisteiden tai -viivojen ymp&auml;rill&auml; oleva alue, jota rikastetaan suoran et&auml;isyyden tai valitun matkustustavan avulla. Jos haluat m&auml;&auml;ritt&auml;&auml; suoran et&auml;isyyden, anna arvo, joka on enint&auml;&auml;n 1&nbsp;000 mailia (1&nbsp;609 kilometri&auml;). Matkustustapoja voi k&auml;ytt&auml;&auml; vain silloin, kun l&auml;ht&ouml;karttataso sis&auml;lt&auml;&auml; pisteit&auml;. Organisaatiosi p&auml;&auml;k&auml;ytt&auml;j&auml; m&auml;&auml;ritt&auml;&auml; k&auml;ytett&auml;viss&auml; olevat matkustustavat. Kun k&auml;yt&auml;t jotain matkustustapaa, mittaukset tehd&auml;&auml;n teit&auml; tai kevyen liikenteen v&auml;yli&auml; pitkin ja niiss&auml; noudatetaan asianmukaisia s&auml;&auml;nt&ouml;j&auml;, kuten yksisuuntaisia katuja, k&auml;&auml;ntymissuuntakieltoja jne. Kun olet valinnut matkustus- ja mittaustavan, anna kesto tai et&auml;isyys, joka voi olla enint&auml;&auml;n 5 tuntia (300 minuuttia) tai 300 mailia (482,8 kilometri&auml;).
+            </p>
+            <p>Jos  <b>Palauta tulos raja-alueina</b> -vaihtoehto on valittuna, palautettu tulos sis&auml;lt&auml;&auml; edell&auml; m&auml;&auml;ritettyjen aika- tai matka-arvojen m&auml;&auml;ritt&auml;m&auml;t aluekohteet.  Jos vaihtoehtoa ei valita, palautettu tulos sis&auml;lt&auml;&auml; pistekohteita.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen tason nimi, joka luodaan kohtaan  <b>Oma sis&auml;lt&ouml;</b> ja joka lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttatason nimi on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Avattavan  <b>Tallenna tulos kohteeseen</b> -valikon avulla voit m&auml;&auml;ritt&auml;&auml; sen <b>Oma sis&auml;lt&ouml;</b> -kansion nimen, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

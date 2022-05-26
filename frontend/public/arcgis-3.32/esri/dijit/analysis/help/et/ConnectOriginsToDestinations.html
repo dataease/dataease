@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Ühenda lähtepunktid sihtpunktidega</h2><p/>
+        <h2><img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" alt="&Uuml;henda l&auml;htepunktid sihtpunktidega"></h2>
+        <hr/>
+    <p>K&auml;suga &Uuml;henda algpunktid sihtpunktidega saate m&otilde;&otilde;ta reisiaega v&otilde;i vahemaad punktipaaride vahel. T&ouml;&ouml;riist saab raporteerida linnulennu vahemaid, reisimisviisil (nt jalgsi v&otilde;i autoga) p&otilde;hinevaid vahemaid ning reisi kestust vastavalt reisimisviisile. Selle t&ouml;&ouml;riista abil saate teha j&auml;rgmist:
+    </p>
+    <p>
+        <ul>
+            <li>arvutada kodust t&ouml;&ouml;le reisimiseks kuluva koguaja ja distantsi kogupikkuse;
+            </li>
+            <li>m&otilde;&otilde;ta, kui pika maa kliendid l&auml;bi s&otilde;idavad, et teie poodi k&uuml;lastada; kasutada seda teavet oma turuosa m&auml;&auml;ratlemiseks, eriti reklaamikampaaniate sihtimisel v&otilde;i uute poodide jaoks asukohtade valimisel;
+            </li>
+            <li>arvutada oma s&otilde;idukite jaoks eeldatava l&auml;bitud vahemaa. Seej&auml;rel k&auml;ivitage t&ouml;&ouml;riist &quot;Summeeri piirides&quot;, et raporteerida kilometraaž maakonna v&otilde;i muu piirkonna kaupa.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Teil tuleb sisestada algus- ja l&otilde;pp-punkt; t&ouml;&ouml;riist tagastab kihi, mis sisaldab marsruudijooni (sh m&otilde;&otilde;detud vahemaad l&auml;htekoha ja sihtkoha punktipaaride vahel). 
+    </p>
+    <p>Kui ruut  <b>Kasuta praeguse kaardi ulatust</b> on m&auml;rgitud, siis arvestatakse anal&uuml;&uuml;sis ainult praeguses kuvaulatuses n&auml;htavaid objekte.  Kui see ruut pole m&auml;rgitud, v&otilde;etakse k&otilde;ik sisendkihis olevad objektid arvesse ka siis, kui need pole praegu kaardil n&auml;ha.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="originsLayer">
+        <div><h2>Vali lähtekohta tähistav punktikiht</h2></div>
+        <hr/>
+        <div>
+            <p>Valige l&auml;htekohta v&otilde;i l&auml;htekohti t&auml;histav punktikiht.  See t&ouml;&ouml;riist toetab kuni  5000 l&auml;htekohta ja  5000 sihtkohta. </p>
+            <p>Kui valite &uuml;he l&auml;htekohaga kihi, &uuml;henduvad sellega k&otilde;ik sihtkohad.
+            </p>
+            <p>Lisaks kaardil asuvale kihile saate valida variandi  <b>Vali anal&uuml;&uuml;sikiht</b>, mille leiate ripploendi allosast. See variant avab galerii, mida saate sirvida ja kus saate erinevatest allikatest valida anal&uuml;&uuml;sil kasutamiseks andmestikke. 
+            </p>
+        </div>
+    </div>
+    <div id="destinationsLayer">
+        <div><h2>Vali sihtkohtade kiht</h2></div>
+        <hr/>
+        <div>
+            <p>Valige kiht, kus asub sihtkoht (v&otilde;i sihtkohad), millega l&auml;htekohad peaksid &uuml;henduma. See t&ouml;&ouml;riist toetab kuni  5000 l&auml;htekohta ja  5000 sihtkohta. </p>
+            <p>Kui valite &uuml;he sihtkohaga kihi, &uuml;hendatakse selle sihtkohaga k&otilde;ik l&auml;htekohad. 
+            </p>
+            <p>Kui l&auml;htekohti on &uuml;ks ja sihtkohti mitu, &uuml;hendab t&ouml;&ouml;riist l&auml;htekoha k&otilde;igi sihtkohtadega.
+            </p>
+            <p>Lisaks kaardil asuvale kihile saate valida variandi  <b>Vali anal&uuml;&uuml;sikiht</b>, mille leiate ripploendi allosast. See variant avab galerii, mida saate sirvida ja kus saate erinevatest allikatest valida anal&uuml;&uuml;sil kasutamiseks andmestikke. 
+            </p>
+            <p> Kui l&auml;hte- ja sihtkohti on mitu, vajate kahte v&auml;lja, mis kirjeldavad l&auml;htekoha ja sihtkoha paare: <b>ID v&auml;li l&auml;htepunktide jaoks</b> ja <b>Vastava ID v&auml;li sihtkohtade jaoks</b>. T&ouml;&ouml;riist &uuml;hendab l&auml;htekoha&ndash;sihtkoha paarid anal&uuml;&uuml;si k&auml;igus. Oletagem n&auml;iteks, et Teil on kaks l&auml;htekohta, mille ID-v&auml;ljade v&auml;&auml;rtused on <code>Mari</code> ja <code>Mati</code> ja kaks samade ID-v&auml;&auml;rtustega sihtkohta. L&auml;htekoht <code>Mari</code> &uuml;hendatakse sihtkohaga <code>Mari</code> ja l&auml;htekoht <code>Mati</code> sihtkohaga <code>Mati</code>. Teisi &uuml;hendusi v&otilde;i m&otilde;&otilde;distusi ei tehta.
+            </p>
+            <p>Kui l&auml;hte- ja sihtkohti on &uuml;hepalju, peavad ID-v&auml;&auml;rtused &uuml;he kihi piirides olema unikaalsed: n&auml;iteks ei saa sihtkohtade kiht sisaldada kahte v&auml;&auml;rtust  <code>Mari</code>. Paari loomiseks peavad v&auml;&auml;rtused l&auml;hte- ja sihtkohtade kihtides t&auml;ielikult kattuma: <code>Mati</code> ei &uuml;hendu valesti kirjutatud v&auml;&auml;rtusega <code>Mait</code>. 
+            </p>
+            <p>T&ouml;&ouml;riist toetab ka iga algpunkti &uuml;hendamist rohkem kui &uuml;he sihtkohaga v&otilde;i iga sihtkoha &uuml;hendamist rohkem kui &uuml;he algpunktiga. Sellistel juhtudel peab teil siiski olema kaks v&auml;lja, mis kirjeldavad algpunkti ja sihtkoha paare. Kordumatud ID-v&auml;&auml;rtused peavad aga olema ainult &uuml;hel kihil (kas algpunktide v&otilde;i sihtkohtade kihil).
+            </p>
+        </div>
+    </div>
+    <div id="measurementType">
+        <div><h2>Mõõda</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Valige, kas soovite l&auml;htepunktid sihtpunktidega &uuml;hendada sirgjoonelise vahemaa v&otilde;i liikumisviisi kaudu. V&auml;ljundmarsruudid j&auml;rgivad teid v&otilde;i jalgteid ja v&otilde;tavad arvesse kehtivaid reegleid (nt &uuml;hesuunalised t&auml;navad v&otilde;i keelatud p&ouml;&ouml;rded autode jaoks). Lubatud reisimisviisid m&auml;&auml;rab teie asutuse administraator.  
+            </p>
+            <p>Valikute  <b>s&otilde;iduaeg</b>, <b>s&otilde;iduaeg maakohas</b>v&otilde;i <b>autoveo s&otilde;iduaeg</b>  korral saate s&otilde;iduaja m&otilde;&otilde;tmiseks mitme variandi vahel valida.
+                <ul>
+                    <li>
+                        <p>Kindlal kiirusel p&otilde;hinevate kiireimate marsruutide leidmiseks t&uuml;hjendage m&auml;rkeruut  <b>Kasuta liiklust</b>.
+                        </p>
+                        <p>Seda valikut tuleks kasutada juhul, kui soovite m&otilde;&otilde;ta &uuml;ldist s&otilde;iduaega, arvestamata liiklusolusid kindlal reisi alustamise ajal.
+                        </p>
+                    </li>
+                    <li>
+                        <p>M&auml;rkige ruut  <b>Kasuta liiklust</b>, et leida etteantud algusajal ja muutuvatel liiklusoludel p&otilde;hinevad kiireimad marsruudid. Kui valite lisaks ka variandi <b>Reaalajas liiklus</b>, m&auml;&auml;ratakse l&auml;htepunktist v&auml;ljumise ajaks praegune kellaaeg ning marsruutide koostamiseks kasutatakse nii praegust kui ka prognoositud liikluskiirust (v&otilde;ttes aluseks andurite ja andmevoogude teabe). Prognoositud liikluskiirused arvutatakse l&auml;htuvalt liikluse kiirusest reaalajas, varem m&otilde;&otilde;detud kiirustest ja muudest tingimustest (nt ilm). Liikluskiirust prognoositakse kuni 12 tundi edasi. Seega saate liugurit liigutada ja m&auml;&auml;rata v&auml;ljumisaja, mis on kuni  12 tundi edasi. </p>
+                        <p>Kasuta neid hetke liikluse seadeid, et leida s&otilde;iduajad praegu v&auml;ljudes, tunniaja p&auml;rast v&auml;ljudes jne.
+                        </p>
+                    </li>
+                    <li>
+                        <p>Kui m&auml;rgite ruudu  <b>Kasuta liiklusinfot</b> ja valite seade <b>Liiklusinfo p&otilde;hineb tavap&auml;rastel tingimustel</b> koos kindla p&auml;eva ja kellaajaga, leiab t&ouml;&ouml;riist kiireima teekonna, v&otilde;ttes aluseks varasemalt viieminutise intervalliga m&otilde;&otilde;detud keskmised kiirused tavap&auml;rasel n&auml;dalal. Tulemused sisaldavad liiklusinfot, kuid ei sisalda praeguste liiklusolude ja s&uuml;ndmuste m&otilde;ju, mis v&otilde;ib s&otilde;ltuvalt p&auml;evast oluliselt varieeruda.
+                        </p>
+                        <p>Neid ajaloolisi liikluseandmeid saate kasutada selleks, et saada vastus n&auml;iteks k&uuml;simusele, kui kaua v&otilde;tab &uuml;ldiselt aega nende konkreetsete sihtkohtadeni j&otilde;udmine, kui alustada reisi kolmap&auml;eval kell 11.30.
+                        </p>
+                        <p>Teie m&auml;&auml;ratud kellaaeg viitab konkreetsele ajav&ouml;&ouml;ndile, kus Teie l&auml;htepunktid asuvad. Kui m&auml;&auml;rate kellaaja 8:00 (hommikul) ning Teie kaks l&auml;htepunkti asuvad erinevates ajav&ouml;&ouml;ndites, siis arvestatakse vastavalt teekonna genereerimisel m&otilde;lemas erinevas ajav&ouml;&ouml;ndis v&auml;ljumiskellaaega 8:00.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Pange t&auml;hele, et kui Teie s&otilde;iduk eemaldub l&auml;htepunktist, siis aeg kulub edasi ja liiklusolud muutuvad. L&auml;htepunktide sihtpunktidega &uuml;hendamise t&ouml;&ouml;riist arvestab nende variatsioonidega, kui m&auml;rgite ruudu  <b>Kasuta liiklust</b>, kuid k&otilde;ik piirkonnad ei toeta liiklusteabe kasutamist. Kl&otilde;psake linki <b>Vaata k&auml;ttesaadavust</b>, et teada saada, kas antud funktsioon on Teie piirkonnas k&auml;ttesaadav.
+            </p>
+            <p> <b>Autoveo s&otilde;iduaeg</b> saab kasutada liiklusel p&otilde;hinevaid d&uuml;naamilisi s&otilde;idukiiruseid, kuid ainult kuni  seadusega lubatud veoauto maksimaalse s&otilde;idukiiruseni. N&auml;iteks kui reaalajas liikluses on d&uuml;naamiline kiirus t&auml;naval 60 kilomeetrit tunnis, aga veoauto lubatud s&otilde;idukiirus antud t&auml;naval on 50 kilomeetrit tunnis, kasutatakse selle t&auml;nava korral kiirust 50 kilomeetrit tunnis.
+            </p>
+        </div>
+    </div>
+    <div id="barrier_layers">
+        <div><h2>Vali piirajakihid</h2></div>
+        <hr/>
+        <div>
+            <p> &Uuml;ks v&otilde;i mitu objekti, mis toimivad allpool paiknevatel t&auml;navatel s&otilde;itmise korral ajutiste piirangute (t&otilde;ketena). Saate m&auml;&auml;rata t&otilde;kked, kasutades punkti, joone v&otilde;i hulknurga objekte.
+            </p>
+            <p>Punktt&otilde;kke abil saab modelleerida mahakukkunud puud, avariid, allakukkunud elektriliini v&otilde;i midagi muud, mis t&otilde;kestab antud t&auml;navaosal liikluse t&auml;ielikult. T&auml;naval on liiklemine lubatud, kuid mitte l&auml;bi t&otilde;kke. Punktt&otilde;ketena saate m&auml;&auml;rata kuni 250 objekti.
+            </p>
+            <p>Joont&otilde;ke keelab liiklemise igal pool, kus t&otilde;ke l&otilde;ikub t&auml;navaga. Joont&otilde;kkega saab modelleerida n&auml;iteks paraadi v&otilde;i meeleavaldust, mis t&otilde;kestab liikluse mitmel t&auml;naval&otilde;igul. Kui k&otilde;igi joont&otilde;ketega ristuvate t&auml;navaobjektide arv &uuml;letab 500, annab t&ouml;&ouml;riist veateate.
+            </p>
+            <p>Hulknurkt&otilde;ke keelab liiklemise igal pool, kus hulknurk l&otilde;ikub t&auml;navatega. Selle t&otilde;kket&uuml;&uuml;bi &uuml;heks kasutuskohaks on &uuml;leujutuste modelleerimine, kui &uuml;leujutus h&otilde;lmab t&auml;navav&otilde;rku ja muudab seal liiklemise v&otilde;imatuks. Kui k&otilde;igi hulknurkt&otilde;ketega ristuvate t&auml;navaobjektide arv &uuml;letab 2000, annab t&ouml;&ouml;riist veateate.
+            </p>
+        </div>
+    </div>
+    <div id="routeShape">
+        <div><h2>Marsruudi kuju</h2></div>
+        <hr/>
+        <div>
+            <p>Valige marsruudi jaoks selline kuju, mis &uuml;hendab iga algpunkti vastava reisimisviisi kasutamisel sihtkohaga.
+            </p>
+            <ul>
+                <li> <b>J&auml;rgi t&auml;navaid</b> &ndash; kuju p&otilde;hineb aluseks oleval t&auml;navate v&otilde;rgul. See variant sobib k&otilde;ige paremini siis, kui soovite genereerida marsruute algpunktide ja sihtkohtade vahel.
+                </li>
+                <li> <b>Sirgjoon</b> &ndash; kuju on algpunkti ja sihtkoha paari &uuml;hendav sirgjoon. See variant sobib eelk&otilde;ige siis, kui soovite genereerida &auml;mblikskeeme v&otilde;i soovite jooni (nt selleks, et n&auml;idata, milliseid kauplusi kliendid k&uuml;lastavad).
+                </li>
+            </ul>
+            
+            <p>Parim marsruut algpunkti ja sellele vastava sihtkoha vahel arvutatakse alati reisimisviisi p&otilde;hjal olenemata sellest, milline marsruudikuju valida.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Tulemkihi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Jaotises  <b>Minu sisu</b> loodava ja kaardile lisatava objektikihi nimi. Kui objektikiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi. Objektikiht sisaldab iga j&auml;rgmise &uuml;ksuse kihti: marsruudid, m&auml;&auml;ramata l&auml;htepunktid ja m&auml;&auml;ramata sihtkohad, kui m&otilde;nda l&auml;htepunkti ei saa sihtkohaga &uuml;hendada.
+            </p>
+            <p>Kui valite  <b>Kaasa marsruudikihid</b>, salvestatakse tulemuse iga marsruut marsruudikihina. Marsruudikiht sisaldab teavet konkreetse marsruudi kohta (nt marsruudile m&auml;&auml;ratud peatused ja ka teejuhised). Marsruudikihtide loomine on kasulik, kui soovite &uuml;ksikuid marsruute jagada oma ettev&otilde;tte teiste liikmetega v&otilde;i neid marsruute edaspidi muuta kaardivaaturi nupu <b>Teejuhised</b> abil. Marsruudikihid kasutavad objektikihi jaoks pandud nime eesliitena ja anal&uuml;&uuml;si osana genereeritud marsruudinimi lisatakse iga marsruudikihi jaoks kordumatu nime loomiseks.
+            </p>
+            <p>Maksimaalselt saab luua  1000 marsruudikihti. Kui tulem sisaldab enam kui  1000 marsruuti ja ruut  <b>Kaasa marsruudikihid</b> on m&auml;rgitud, loob t&ouml;&ouml;riist ainult v&auml;ljundi objektiteenuse.
+            </p>
+            <p>Rippmen&uuml;&uuml;  <b>Salvesta tulemus</b> kaudu saate m&auml;&auml;rata jaotises <b>Minu sisu</b> selle kausta nime, kuhu objektikiht ja marsruudikihid salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

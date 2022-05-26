@@ -1,0 +1,12 @@
+<div data-dojo-attach-point="containerNode">
+  <div data-dojo-type="esri/dijit/metadata/form/Element"
+    data-dojo-props="target:'resTitle',minOccurs:1,label:'${i18nArcGIS.citation.resTitle}'">
+  </div>  
+  <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+    data-dojo-props="target:'date',minOccurs:1,showHeader:false">
+    <div data-dojo-type="esri/dijit/metadata/form/OpenElement"
+      data-dojo-props="target:'pubDate',minOccurs:1,label:'${i18nArcGIS.citation.date.pubDate}'">
+      <div data-dojo-type="esri/dijit/metadata/types/arcgis/form/InputDate" data-dojo-props="allowTime:true"></div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,36 @@
+-------------------------------------------------------------------------------
+Drawing
+-------------------------------------------------------------------------------
+Version 0.1
+Release date: August 22, 2009
+-------------------------------------------------------------------------------
+Project state: alpha
+	The code is very well tested with relatively few bugs. But it is also in a
+	state where APIs and methods can still change.
+-------------------------------------------------------------------------------
+Project author
+	Mike Wilcox anm8tr AT yahoo.com
+-------------------------------------------------------------------------------
+Project description
+
+Drawing is a project that sits on top of DojoX GFX and uses SVG and VML vector
+graphics to draw and display.
+-------------------------------------------------------------------------------
+Dependencies:
+
+dojo.gfx
+-------------------------------------------------------------------------------
+Documentation
+
+http://dojotoolkit.org/reference-guide/dojox/drawing.html
+-------------------------------------------------------------------------------
+Installation instructions
+
+Grab the following from the Dojo SVN Repository:
+http://svn.dojotoolkit.org/dojo/dojox/trunk/drawing.js
+http://svn.dojotoolkit.org/dojo/dojox/trunk/drawing/*
+
+Install into the following directory structure:
+/dojox/drawing/
+
+...which should be at the same level as your Dojo checkout.

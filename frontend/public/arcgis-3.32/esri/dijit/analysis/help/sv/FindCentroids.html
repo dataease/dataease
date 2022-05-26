@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Hitta centroider</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="Hitta centroider"></h2>
+        <hr/>
+    <p>Det h&auml;r verktyget arbetar med ett lager med multipunkt-, linje- eller omr&aring;desgeoobjekt f&ouml;r att hitta den representativa mittpunkten f&ouml;r varje geoobjekt.
+    </p>
+    <p>Om  <b>Anv&auml;nd aktuell kartutbredning</b> markeras, analyseras bara de geoobjekt i indatamultipunkt-, linje- eller omr&aring;deslagret som visas i den aktuella kartutbredningen. Om alternativet inte markeras analyseras alla geoobjekt i indatalagret, &auml;ven om de ligger utanf&ouml;r den aktuella kartutbredningen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Välj lagret vars geoobjekt ska användas till att generera centroider</h2></div>
+        <hr/>
+        <div>
+            <p> Det multipunkts-, linje- eller omr&aring;deslager som ska anv&auml;ndas f&ouml;r att hitta centroider.
+            </p>
+            <p>F&ouml;rutom att v&auml;lja ett lager p&aring; din karta kan du v&auml;lja  <b>V&auml;lj analyslager</b>, som du hittar l&auml;ngst ned i listrutan. Det alternativet &ouml;ppnar ett galleri d&auml;r du kan bl&auml;ddra till och v&auml;lja dataupps&auml;ttningar fr&aring;n diverse k&auml;llor som du kan anv&auml;nda i din analys. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>Visa utdataplatser</h2></div>
+        <hr/>
+        <div>
+            <p> N&auml;r <b>vid den sanna centroiden</b> &auml;r markerat (standard), returnerar utdata den sanna positionen f&ouml;r centroiden f&ouml;r varje indatageoobjekt. Centroiderna placeras enligt f&ouml;ljande:
+                <ul>
+                    <li>Multipunktgeoobjekt &ndash; utdatacentroiden placeras vid de genomsnittliga x- och y-koordinaterna f&ouml;r alla punkter i multipunktobjektet.
+                    </li>
+                    <li>Linjegeoobjekt &ndash; utdatacentroiden placeras vid de viktade genomsnittliga x- och y-koordinaterna f&ouml;r mittpunkterna p&aring; alla linjesegment i linjeobjektet. Viktningen baseras p&aring; segmentets l&auml;ngd.
+                    </li>
+                    <li>Omr&aring;desgeoobjekt &ndash; utdatacentroiden placeras vid omr&aring;dets mittpunkt.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>N&auml;r  <b>som innesluts av indatageoobjekt</b> &auml;r markerat, innesluts utdatageoobjekten av eller ligger inuti varje indatageoobjekt. De resulterade punktgeoobjekten visas som f&ouml;ljer:
+                <ul>
+                    <li>Multipunktgeoobjekt &ndash; utdatacentroiden sammanfaller med en av punkterna i multipunktgruppen.
+                    </li>
+                    <li>Linjegeoobjekt &ndash; utdatacentroiden hamnar p&aring; linjen.  Om linjen &auml;r b&ouml;jd ligger utdata p&aring; linjens mittpunkt. 
+                    </li>
+                    <li>Omr&aring;desgeoobjekt &ndash; utdatapunkten hamnar inuti omr&aring;desgeoobjektet.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Resultatlagrets namn</h2></div>
+        <hr/>
+        <div>
+            <p>Det h&auml;r &auml;r namnet p&aring; lagret som skapas i  <b>Mitt inneh&aring;ll</b> och l&auml;ggs till i kartan. Standardnamnet baseras p&aring; verktygets namn och indatalagrets namn. Om lagernamnet redan finns uppmanas du ange ett annat namn.
+            </p>
+            <p>Om du anv&auml;nder listrutan  <b>Spara resultat i</b> kan du ange namnet p&aring; en mapp i <b>Mitt inneh&aring;ll</b> d&auml;r resultatet ska sparas.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

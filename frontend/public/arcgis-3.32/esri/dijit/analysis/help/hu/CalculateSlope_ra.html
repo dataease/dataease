@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Lejtőszögszámítás</h2><p/>
+        <h2><img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" alt="Lejtősz&ouml;gsz&aacute;m&iacute;t&aacute;s eszk&ouml;z port&aacute;lhoz"></h2>
+        <hr/>
+    <p>Ez az eszk&ouml;z egy, a bemeneti magass&aacute;gadatok lejtősz&ouml;g&eacute;t megjelen&iacute;tő felsz&iacute;nt hat&aacute;roz meg. A lejtősz&ouml;g a magass&aacute;g v&aacute;ltoz&aacute;s&aacute;nak m&eacute;rt&eacute;k&eacute;t mutatja a digit&aacute;lis magass&aacute;gmodell (DMM) egyes cell&aacute;ihoz.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Válassza ki a lejtőszögszámítás bemenő adatait</h2></div>
+        <hr/>
+        <div>
+            <p>A magass&aacute;gr&eacute;teg, amelyből a lejtősz&ouml;g sz&aacute;m&iacute;t&aacute;sa t&ouml;rt&eacute;nik.
+            </p>
+        </div>
+    </div>
+    <div id="zFactor">
+        <div><h2>Adja meg a függőleges méretskálát</h2></div>
+        <hr/>
+        <div>
+            <p>Adjon meg egy z t&eacute;nyezőt.
+            </p>
+            <p>A z t&eacute;nyező egy ar&aacute;nysz&aacute;m, amelyet a magass&aacute;g&eacute;rt&eacute;kek &aacute;tv&aacute;lt&aacute;s&aacute;hoz haszn&aacute;lunk k&eacute;t c&eacute;lb&oacute;l:
+ 
+                <ul>
+                    <li>A magass&aacute;g m&eacute;rt&eacute;kegys&eacute;g&eacute;nek (pl. m&eacute;ter vagy l&aacute;b) &aacute;tv&aacute;lt&aacute;s&aacute;hoz a r&eacute;teg v&iacute;zszintes koordin&aacute;t&aacute;inak m&eacute;rt&eacute;kegys&eacute;g&eacute;re, amely lehet l&aacute;b, m&eacute;ter vagy fok.
+                        
+  
+                    </li>
+                    <li>F&uuml;ggőleges felnagy&iacute;t&aacute;s el&eacute;r&eacute;s&eacute;hez a vizu&aacute;lis hat&aacute;s &eacute;rdek&eacute;ben.
+                        
+ 
+                    </li>
+                </ul>
+                
+            </p>
+            <table border="1">
+            <tr>
+                <td>
+                </td>
+                <td>
+                    <p>L&aacute;br&oacute;l
+                    </p>
+                </td>
+                <td>
+                    <p>M&eacute;terről
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>L&aacute;br&oacute;l
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+                <td>
+                    <p>0,3048
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>M&eacute;terről
+                    </p>
+                </td>
+                <td>
+                    <p>3,28084
+                    </p>
+                </td>
+                <td>
+                    <p>1
+                    </p>
+                </td>
+            </tr>
+            </table>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve. Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az Eredm&eacute;ny ment&eacute;si helye leg&ouml;rd&uuml;lő mezőben megadhatja a  <b>Saj&aacute;t tartalom</b>mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z <b>menti az eredm&eacute;nyt</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

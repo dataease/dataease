@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>汇总中心和离差</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="汇总中心和离差"></h2>
+        <hr/>
+    <p>该工具用于查找中心要素和方向分布。可使用该工具回答以下问题：
+        <ul>
+            <li>中心在哪里？
+            </li>
+            <li>与其他所有要素相比，哪个要素最便利？
+            </li>
+            <li>要素的分散程度、密集程度或整合程度如何？
+            </li>
+            <li>是否存在定向趋势？
+            </li>
+        </ul>
+        
+    </p>
+    <p>如果选中 <b>使用当前地图范围</b>，则仅分析当前地图范围中可见的输入图层中的要素。如果未选中，则将分析输入图层中的所有要素，包括超出当前地图范围的要素。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>请选择一个要描述的图层</h2></div>
+        <hr/>
+        <div>
+            <p>将用于查找中心要素和方向分布的点、线或面图层。
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>汇总类型</h2></div>
+        <hr/>
+        <div>
+            <p>汇总中心和离差的方法。
+            </p>
+            <ul>
+                <li>中心要素 - 标识数据库中位置最中心的要素。
+                </li>
+                <li>平均中心 - 识别一组要素的地理中心（或密度中心）。
+                </li>
+                <li>中位数中心 - 识别使数据集中要素之间的总欧氏距离达到最小的位置点。
+                </li>
+                <li>椭圆 - 创建标准差椭圆来汇总地理要素的空间特征：中心趋势、离散和方向趋势。可将椭圆大小设置为 1、2 或 3 个标准差。
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>权重依据(可选)</h2></div>
+        <hr/>
+        <div>
+            <p>根据各位置的相对重要性对它们进行加权的字段。
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>分组依据(可选)</h2></div>
+        <hr/>
+        <div>
+            <p>用于为中心要素或离散的单独计算进行要素分组的字段。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该图层名称已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>使用 <b>将结果保存在</b>下拉菜单，可以指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

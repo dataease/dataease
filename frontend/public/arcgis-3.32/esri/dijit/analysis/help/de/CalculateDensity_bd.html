@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Dichte berechnen</h2><p/>
+        <h2><img src="../images/GUID-38AD3C19-0400-4E5A-9282-BDE42F2BBFC1-web.png" alt="Dichte berechnen"></h2>
+        <hr/>
+    <p>Das Werkzeug &quot;Dichte berechnen&quot; erstellt eine Dichtekarte aus Punkt-Features, indem bekannte Mengen einiger Ph&auml;nomene (als Attribute der Punkte dargestellt) auf der Karte verteilt werden. Das Resultat ist ein Layer mit Fl&auml;chen, die von geringster bis h&ouml;chster Dichte klassifiziert sind.   
+
+    </p>
+    <p>Bei der Punkteingabe stellt jeder Punkt die Position eines Ereignisses und der Ergebnis-Layer die Anzahl der Ereignisse pro Fl&auml;cheneinheit dar. Ein h&ouml;herer Dichtewert an einer neuen Position bedeutet, dass sich mehr Punkte in der N&auml;he dieser Position befinden. In vielen F&auml;llen kann der Ergebnis-Layer als Risikoprognose f&uuml;r zuk&uuml;nftige Ereignisse interpretiert werden. Wenn die Eingabepunkte beispielsweise Positionen mit Blitzeinschl&auml;gen darstellen, kann der Ergebnis-Layer als Risikoprognose f&uuml;r zuk&uuml;nftige Blitzeinschl&auml;ge interpretiert werden.
+    </p>
+    <p>Nachfolgend finden Sie weitere Anwendungsf&auml;lle dieses Werkzeugs:
+        <ul>
+            <li>Erstellung von Kriminalit&auml;tsdichtekarten, um Polizeidienststellen bei der entsprechenden Zuteilung von Ressourcen zu unterst&uuml;tzen.
+            </li>
+            <li>Berechnen Sie die Dichte von Krankenh&auml;usern in einem Bezirk. Der Ergebnis-Layer zeigt Fl&auml;chen mit hoher und niedriger Erreichbarkeit von Krankenh&auml;usern. Anhand dieser Informationen kann entschieden werden, ob neue Krankenh&auml;user gebaut werden m&uuml;ssen.
+            </li>
+            <li>Identifikation von Fl&auml;chen, die aufgrund historischer Waldbrandstandorte ein hohes Waldbrandrisiko aufweisen.
+            </li>
+            <li>Ermittlung von Gemeinden, die weit von wichtigen Fernstra&szlig;en entfernt sind, um zu planen, wo neue Stra&szlig;en gebaut werden m&uuml;ssen.
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Einen Punkt-Layer auswählen, über den die Dichte berechnet werden soll</h2></div>
+        <hr/>
+        <div>
+            <p>Der Punkt-Layer, f&uuml;r den die Dichte berechnet werden soll.
+            </p>
+            <p>Sie k&ouml;nnen nicht nur einen Layer aus der Karte ausw&auml;hlen, sondern auch unten in der Dropdown-Liste die Option  <b>Analyse-Layer ausw&auml;hlen</b> ausw&auml;hlen, um zu Ihren Inhalten f&uuml;r ein Big-Data-Dateifreigabe-Dataset bzw. -Feature-Layer zu navigieren.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Mindestens ein Feld auswählen, für das die Dichte berechnet werden soll (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>Stellen Sie mindestens ein Feld bereit, das die Anzahl der Ereignisse an jeder Position angibt. Wenn Sie beispielsweise &uuml;ber Punkte verf&uuml;gen, die St&auml;dte darstellen, k&ouml;nnen Sie ein Feld als Z&auml;hlfeld f&uuml;r die Einwohnerzahl verwenden. Im resultierenden Bev&ouml;lkerungsdichte-Layer werden in der N&auml;he von St&auml;dten mit gr&ouml;&szlig;eren Einwohnerzahlen gr&ouml;&szlig;ere Bev&ouml;lkerungsdichten dargestellt.
+            </p>
+            <p>Die Dichte f&uuml;r die Anzahl der Eingabepunkte wird immer berechnet. Wenn kein Feld ausgew&auml;hlt wurde, wird angenommen, dass jede Position eine einzelne Anzahl darstellt.
+            </p>
+        </div>
+    </div>
+    <div id="binType">
+        <div><h2>Abschnitts-Shape auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Die Form der Abschnitte, in die die Punkte aggregiert werden und die f&uuml;r die Dichteberechnung verwendet wird.
+            </p>
+            <p>F&uuml;r Analysen, die  <b>Quadrat</b>- oder <b>hexagonale</b> Abschnitte verwenden, ist ein projiziertes Koordinatensystem erforderlich. Sie k&ouml;nnen das <b>Verarbeitungskoordinatensystem</b> in <b>Analyseumgebungen</b> festlegen. Wenn das Verarbeitungskoordinatensystem nicht auf ein projiziertes Koordinatensystem festgelegt ist, werden Sie aufgefordert, es festzulegen, wenn Sie die <b>Analyse ausf&uuml;hren</b> .
+            </p>
+        </div>
+    </div>
+    <div id="binSizing">
+        <div><h2>Die Abschnittsgröße zur Aggregation auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Die Gr&ouml;&szlig;e der generierten Abschnitte Bei einem Quadratabschnitt stellt die Gr&ouml;&szlig;e die H&ouml;he des Quadrats dar. Bei einem Sechseck stellt die Gr&ouml;&szlig;e die H&ouml;he des Sechsecks (von parallelen Seiten) dar.
+            </p>
+        </div>
+    </div>
+    <div id="weight">
+        <div><h2>Die anzuwendende Dichtegewichtung auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Der Typ der Gewichtung, die f&uuml;r die Dichteberechnung angewendet wird. Es gibt zwei Optionen:
+                <ul>
+                    <li> <b>Einheitlich</b>: Berechnet eine Magnitude pro Fl&auml;che.
+                    </li>
+                    <li> <b>Kernel</b>: Verwendet eine Kernel-Funktion, um f&uuml;r jeden Punkt eine sanft abgeschr&auml;gte Oberfl&auml;che anzupassen.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="neighborhood">
+        <div><h2>Die Nachbarschaftsgröße auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Die Gr&ouml;&szlig;e der Fl&auml;che, die zum Berechnen der Dichte verwendet wird. Die Nachbarschaftsgr&ouml;&szlig;e muss gr&ouml;&szlig;er sein als die Abschnittsgr&ouml;&szlig;e.
+            </p>
+        </div>
+    </div>
+    <div id="areaUnits">
+        <div><h2>Die Ausgabeeinheiten für die Dichte auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>Die gew&uuml;nschten Ausgabeeinheiten f&uuml;r die Dichtewerte. Basierend auf der Angabe der Standardeinheiten in Ihrem Profil wird standardm&auml;&szlig;ig Quadratkilometer oder Quadratmeilen eingestellt. Bei sehr kleinen Dichtewerten k&ouml;nnen Sie die Gr&ouml;&szlig;e der Fl&auml;cheneinheiten erh&ouml;hen (zum Beispiel Quadratkilometer statt Quadratmeter), damit gr&ouml;&szlig;ere Werte zur&uuml;ckgegeben werden. Mit den Werten wird nur das Ergebnis skaliert.  
+
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Dichte mit Zeitschritten berechnen (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>Wenn Zeiteigenschaften f&uuml;r den Eingabepunkt-Layer aktiviert und vom Typ &quot;Sofort&quot; sind, kann die Analyse mittels Zeitintervallen durchgef&uuml;hrt werden. Bei Verwendung von Zeit k&ouml;nnen drei Parameter festgelegt werden:
+                <ul>
+                    <li> <b>Zeitschrittintervall</b>
+                    </li>
+                    <li> <b>Wie h&auml;ufig der Zeitschritt wiederholt werden soll</b>
+                    </li>
+                    <li> <b>Zeit zum Ausrichten von Zeitschritten</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Wenn Sie beispielsweise &uuml;ber Daten verf&uuml;gen, die ein Jahr darstellen, und Sie f&uuml;r diese eine Analyse mit w&ouml;chentlichen Schritten durchf&uuml;hren m&ouml;chten, setzen Sie  <b>Zeitschrittintervall</b> auf <code>1 Woche</code>. 
+            </p>
+            <p>Wenn Sie beispielsweise &uuml;ber Daten verf&uuml;gen, die ein Jahr darstellen, und Sie f&uuml;r diese eine Analyse mit der ersten Woche des Monats durchf&uuml;hren m&ouml;chten, setzen Sie  <b>Zeitschrittintervall</b> auf <code>1 Woche</code>, <b>Wie h&auml;ufig der Zeitschritt wiederholt werden soll</b> auf <code>1 Monat</code> und <b>Zeit zum Ausrichten von Zeitschritten</b> auf den <code>1. Januar 12:00 Uhr</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Zeitschrittintervall</h2></div>
+        <hr/>
+        <div>
+            <p>Das Zeitintervall f&uuml;r die Erzeugung von Zeitschritten. Das  <b>Zeitschrittintervall</b> kann entweder allein oder zusammen mit dem Parameter <b>Wie h&auml;ufig der Zeitschritt wiederholt werden soll</b> oder <b>Zeit zum Ausrichten von Zeitschritten</b> verwendet werden.
+            </p>
+            <p>Wenn Sie beispielsweise Zeitschritte erstellen m&ouml;chten, die jeden Montag von 9:00 bis 10:00 Uhr stattfinden, setzen Sie  <b>Zeitschrittintervall</b> auf <code>1 Stunde</code>, <b>Wie h&auml;ufig der Zeitschritt wiederholt werden soll</b> auf <code>1 Woche</code> und <b>Zeit zum Ausrichten von Zeitschritten</b> auf <code>9:00:00 Uhr am Montag</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Wie häufig der Zeitschritt wiederholt werden soll</h2></div>
+        <hr/>
+        <div>
+            <p> Der Schritt zum Berechnen eines Zeitschritts. <b>Wie h&auml;ufig der Zeitschritt wiederholt werden soll</b> kann allein oder zusammen mit <b>Zeitschrittintervall</b>, mit <b>Bezugszeit</b> oder sowohl mit <b>Zeitschrittintervall</b> als auch mit <b>Zeit zum Ausrichten von Zeitschritten</b> verwendet werden.
+            </p>
+            <p> Wenn Sie beispielsweise Zeitschritte erstellen m&ouml;chten, die jeden Montag von 9:00 bis 10:00 Uhr stattfinden, setzen Sie <b>Zeitschrittintervall</b> auf <code>1 Stunde</code>, <b>Wie h&auml;ufig der Zeitschritt wiederholt werden soll</b> auf <code>1 Woche</code> und <b>Zeit zum Ausrichten von Zeitschritten</b> auf <code>9:00:00 Uhr am Montag</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Zeit zum Ausrichten von Zeitschritten</h2></div>
+        <hr/>
+        <div>
+            <p>Das Datum und die Uhrzeit zum Ausrichten der Zeitintervalle. Die Zeitintervalle beginnen bzw. enden an diesem Zeitpunkt. Wenn keine Bezugszeit ausgew&auml;hlt wurde, werden die Intervalle am 1. Januar 1970 ausgerichtet. 
+            </p>
+            <p> Wenn Sie beispielsweise Zeitschritte erstellen m&ouml;chten, die jeden Montag von 9:00 bis 10:00 Uhr stattfinden, setzen Sie <b>Zeitschrittintervall</b> auf <code>1 Stunde</code>, <b>Wie h&auml;ufig der Zeitschritt wiederholt werden soll</b> auf <code>1 Woche</code> und <b>Zeit zum Ausrichten von Zeitschritten</b> auf <code>9:00:00 Uhr am Montag</code>.
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (WKID)</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist ein tempor&auml;rer Parameter f&uuml;r die Vorabversion zum Festlegen des Raumbezugs f&uuml;r die Verarbeitung. Viele Big-Data-Werkzeuge erfordern die Verwendung eines projizierten Koordinatensystems als Raumbezug f&uuml;r die Verarbeitung. Das Werkzeug verwendet standardm&auml;&szlig;ig das Eingabe-Koordinatensystem, kann jedoch nicht ausgef&uuml;hrt werden, wenn es sich um ein geographisches Koordinatensystem handelt. Geben Sie zum Festlegen eines projizierten Koordinatensystems die WKID ein. Die Eingabe f&uuml;r  <b>Web Mercator</b> ist beispielsweise <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Data Store auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-Ergebnisse werden in einem Data Store gespeichert und als Feature-Layer in  Portal for ArcGIS dargestellt. In den meisten F&auml;llen sollten Ergebnisse im Data Store vom Typ &quot;spatiotemporal&quot; gespeichert werden, was gleichzeitig die Standardeinstellung ist. Manchmal empfiehlt es sich auch, Ergebnisse im Data Store vom Typ &quot;relational&quot; zu speichern. Die folgenden Gr&uuml;nde sprechen daf&uuml;r, die Ergebnisse im Data Store vom Typ &quot;relational&quot; zu speichern: 
+                <ul>
+                    <li>Sie k&ouml;nnen die Ergebnisse in portal&uuml;bergreifender Zusammenarbeit verwenden.
+                    </li>
+                    <li>Sie sind in der Lage, Synchronisierungsfunktionen mit Ihren Ergebnissen zu aktivieren.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Der Einsatz des Data Stores vom Typ &quot;relational&quot; wird nicht empfohlen, wenn abzusehen ist, dass Ihre GeoAnalytics-Ergebnisse weiter zunehmen. Nutzen Sie in diesem Fall die Funktionen des Big Data Store vom Typ &quot;spatiotemporal&quot; zur Verwaltung von gro&szlig;en Datenmengen.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p> Der Name des Layers, der erstellt wird.  Wenn Sie in einen ArcGIS Data Store schreiben, werden Ihre Ergebnisse in  <b>Eigene Inhalte</b> gespeichert und der Karte hinzugef&uuml;gt. Wenn Sie in eine Big-Data-Dateifreigabe schreiben, werden Ihre Ergebnisse in der Big-Data-Dateifreigabe gespeichert und  ihrem Manifest hinzugef&uuml;gt. Sie werden nicht der Karte hinzugef&uuml;gt. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, kann das Werkzeug nicht ausgef&uuml;hrt werden.
+            </p>
+            <p>Wenn Sie &uuml;ber das Dropdown-Feld  <b>Ergebnis speichern in</b> in ArcGIS Data Store (Big Data Store vom Typ &quot;relational&quot; oder &quot;spatiotemporal&quot;) schreiben, k&ouml;nnen Sie den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert wird.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

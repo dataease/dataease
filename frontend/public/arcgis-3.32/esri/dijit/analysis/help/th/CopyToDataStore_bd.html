@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>คัดลอกไปยังแหล่งเก็บข้อมูล</h2><p/>
+        <h2><img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" alt="คัดลอกไปยังแหล่งเก็บข้อมูล"></h2>
+        <hr/>
+    <p>เครื่องมือนี้จะให้ใส่ชั้นข้อมูลอินพุธและคัดลอกไปยัง data store คุณสามารถคัดลอกผลลัพธ์ไปยัง  ArcGIS Data Store (ที่จัดเก็บข้อมูลขนาดใหญ่เชิงสัมพันธ์หรือเชิงพื้นที่ชั่วคราว) และชั้นข้อมูลจะถูกสร้างในพอร์ทัลของคุณ หรือคุณสามารถคัดลอกผลลัพธ์ไปยังไฟล์ข้อมูลขนาดใหญ่ 
+    </p>
+    <p>ตัวอย่างเช่น คุณสามารถคัดลอกฟีเจอร์ที่ถูกเก็บไว้ใน  <code>ข้อมูลขนาดใหญ่ใช้ไฟล์ร่วมกัน </code> ไปยัง <code>เก็บข้อมูลเชิงสัมพันธ์ </code> และระบุว่ามีเพียงฟีเจอร์ในขอบเขตแผนที่ปัจจุบันเท่านั้นจะถูกคัดลอก สร้างฟีเจอร์เซอร์วิสหลักนี้กับฟีเจอร์เหล่านั้นที่อยู่ในขอบเขตแผนที่ที่กำหนด
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>เลือกชั้นที่จะคัดลอก</h2></div>
+        <hr/>
+        <div>
+            <p>ชั้นข้อมูลหรือตารานั้นที่จะคัดลอก 
+            </p>
+            <p>นอกเหนือจากการเลือกชั้นข้อมูลจากแผนที่คุณสามารถเลือก <b>เลือกชั้นข้อมูลการวิเคราะห์</b> ที่ด้านล่างของรายการแบบเลื่อนลงเพื่อเรียกดูเนื้อหาของคุณสำหรับชุดข้อมูลขนาดใหญ่หรือชั้นฟีเจอร์
+            </p>
+        </div>
+    </div>
+    <div id="selection">
+        <div><h2>คุณอาจจะใช้ฟีเจอร์ทั้งหมดหรือเลือกบางส่วน (ตัวเลือก)</h2></div>
+        <hr/>
+        <div>
+            <p>หรือใช้ปุ่มเลือกเพื่อระบุตำแหน่งที่จะคัดลอก
+            </p>
+        </div>
+    </div>
+    <div id="outputDataStore">
+        <div><h2>เลือก ที่จัดเก็บ ข้อมูลที่จะคัดลอก</h2></div>
+        <hr/>
+        <div>
+            <p>Data Store เป็นการเก็บชั้นข้อมูลที่จะถูกคัดลอกไป พารามิเตอร์นี้จะลบล้างการเลือกใน  <b>สภาพแวดล้อมการวิเคราะห์</b> ตัวเลือกที่มีดังต่อไปนี้:
+                <ul>
+                    <li> <b>ArcGIS Data Store</b> ArcGIS Data Store <ul>
+                            <li> <b>พื้นที่ชั่วคราว</b>&mdash;นี้คือค่าตั้งต้น
+                            </li>
+                            <li> <b>เชิงสัมพันธ์</b>
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li> <b>แม่แบบผลลัพธ์การแชร์ไฟล์ข้อมูลขนาดใหญ่</b>
+                        <ul>
+                            <li>รายการของแม่แบบการแชร์ไฟล์ข้อมูลขนาดใหญ่ในรูปแบบ <b>bigDataFileShareName-templateName</b>. ต้องกำหนดค่าแม่แบบการแชร์ไฟล์ข้อมูลขนาดใหญ่ก่อนเรียกใช้งานเครื่องมือ
+                            </li>
+                        </ul>
+                        
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>ชื่อของชั้นข้อมูลผลลัพธ์</h2></div>
+        <hr/>
+        <div>
+            <p> ชื่อของชั้นข้อมูลที่จะถูกสร้างขึ้น หากคุณกำลังเขียนถึง ArcGIS Data Store, ผลลัพธ์ ของคุณจะถูกบันทึกเก็บใน<b>My Content</b> และเพิ่มเข้าในแผนที่ หากคุณกำลังเขียนไปยังไฟล์แชร์ข้อมูลขนาดใหญ่, ผลลัพธ์ ของคุณจะถูกเก็บในไฟล์แชร์ข้อมูลใหญ่นั้น และเพิ่้มใน ข้อความ ที่แสดง ซึ่งจะ ไม่ถูกเพิ่มเข้าในแผนที่ ชื่อเริ่มต้นจะขึ้นอยู่กับชื่อเครื่องมือและชื่อชั้นข้อมูลอินพุต ถ้าชั้นข้อมูลมีอยู่แล้วเครื่องมือจะล้มเหลว
+            </p>
+            <p>เมื่อคุณเขียน  ArcGIS Data Store (แหล่งข้อมูลใหญ่สเปชิโอเทมโพรัลหรือเชิงสัมพันธ์) ที่ใช้เพื่อ  <b>บันทึกผลลัพธ์ในช่องแบบเลื่อนลง </b>, คุณสามารถระบุชื่อของโฟลเดอร์ใน <b>My Content</b> ซึ่งจะถูกบันทึกไว้ในโฟลเดอร์นี้
+            </p>
+        </div>
+    </div>
+</div>
+</html>

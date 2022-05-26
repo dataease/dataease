@@ -1,0 +1,33 @@
+<div data-dojo-attach-point="containerNode">
+  <div data-dojo-type="esri/dijit/metadata/form/iso/ObjectReference"
+    data-dojo-props="target:'gmd:verticalElement',minOccurs:0,maxOccurs:1,
+      label:'${i18nIso.EX_Extent.verticalElement}'">
+    <div data-dojo-type="esri/dijit/metadata/form/iso/AbstractObject"
+      data-dojo-props="target:'gmd:EX_VerticalExtent',minOccurs:0">
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'gmd:minimumValue',
+          label:'${i18nIso.EX_VerticalExtent.minimumValue}'">
+        <div data-dojo-type="esri/dijit/metadata/form/iso/GcoElement"
+          data-dojo-props="target:'gco:Real'">
+          <div data-dojo-type="esri/dijit/metadata/form/InputNumber"></div>
+        </div>
+      </div>
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'gmd:maximumValue',
+          label:'${i18nIso.EX_VerticalExtent.maximumValue}'">
+        <div data-dojo-type="esri/dijit/metadata/form/iso/GcoElement"
+          data-dojo-props="target:'gco:Real'">
+          <div data-dojo-type="esri/dijit/metadata/form/InputNumber"></div>
+        </div>
+      </div>
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'gmd:verticalCRS',
+          label:'${i18nIso.EX_VerticalExtent.verticalCRS}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Attribute"
+          data-dojo-props="target:'xlink:href',minOccurs:1,
+            label:'${i18nGemini.verticalCRS.reference}'">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

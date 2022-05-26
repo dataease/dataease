@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Geokódolási helyszínek táblázatból</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="Geok&oacute;dol&aacute;si helysz&iacute;nek t&aacute;bl&aacute;zatb&oacute;l"></h2>
+        <hr/>
+    <p>A geok&oacute;dol&aacute;ssal c&iacute;meket alak&iacute;that &aacute;t koordin&aacute;t&aacute;kk&aacute;. Ez az eszk&ouml;z egy t&aacute;bl&aacute;zatban, csv-f&aacute;jlban vagy Excel-f&aacute;jlban tal&aacute;lhat&oacute; c&iacute;meket vektoros elem r&eacute;tegg&eacute; vagy egy kimeneti f&aacute;jll&aacute; alak&iacute;thatja, amely a koordin&aacute;t&aacute;kat egy &uacute;j oszlopban tartalmazza.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>Bemeneti táblázat kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>A geok&oacute;dolni k&iacute;v&aacute;nt c&iacute;meket tartalmaz&oacute; bemeneti t&aacute;bl&aacute;zat. A bemenet lehet t&aacute;bl&aacute;zat, csv-f&aacute;jl vagy Excel-f&aacute;jl.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Locator kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>V&aacute;lassza ki a locator szolg&aacute;ltat&aacute;st, amely alapj&aacute;n a geok&oacute;dol&aacute;st v&eacute;gre k&iacute;v&aacute;nja hajtani. Ha a haszn&aacute;lni k&iacute;v&aacute;nt locator szolg&aacute;ltat&aacute;s nem szerepel a leg&ouml;rd&uuml;lő men&uuml;ben, akkor l&eacute;pjen kapcsolatba a rendszergazd&aacute;val, &eacute;s konfigur&aacute;ltassa a szolg&aacute;ltat&aacute;st k&ouml;tegelt geok&oacute;dol&aacute;shoz.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>Ország</h2></div>
+        <hr/>
+        <div>
+            <p>Ha minden c&iacute;m egy orsz&aacute;gban tal&aacute;lhat&oacute;, akkor v&aacute;lassza ki az orsz&aacute;got a legpontosabb eredm&eacute;nyek &eacute;rdek&eacute;ben. Ha nem, akkor hagyja &uuml;resen ezt a param&eacute;tert.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Adatmezők kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>A locator szolg&aacute;ltat&aacute;s elv&aacute;rja, hogy az adatok k&ouml;z&ouml;tt szerepeljenek bizonyos mezők, p&eacute;ld&aacute;ul c&iacute;m, helys&eacute;g, &aacute;llam &eacute;s ir&aacute;ny&iacute;t&oacute;sz&aacute;m. A leg&ouml;rd&uuml;lő mezők seg&iacute;ts&eacute;g&eacute;vel egyeztesse bemeneti f&aacute;jl vagy t&aacute;bl&aacute;zat adatmezőit a locator &aacute;ltal v&aacute;rtakhoz. Min&eacute;l t&ouml;bb mezőt k&eacute;pez le, ann&aacute;l pontosabbak lesznek az eredm&eacute;nyek. Ha a bemeneti t&aacute;bl&aacute;zat minden adata egy oszlopban tal&aacute;lhat&oacute;, akkor jel&ouml;lje ki az  <b>Egy mező</b> lehetős&eacute;get, &eacute;s v&aacute;lasszon ki egy adatmezőt a leg&ouml;rd&uuml;lő men&uuml;ből. Ha nem, akkor jel&ouml;lje ki a <b>T&ouml;bb mező</b> lehetős&eacute;get, &eacute;s k&eacute;pezze le a megfelelő locator mezőket a t&aacute;bl&aacute;zat t&ouml;bbmezős oszlopaira.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Kimeneti formátum kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>A kimeneti eredm&eacute;nyek form&aacute;tuma. Ha vektoros adatszolg&aacute;ltat&aacute;s l&eacute;trehoz&aacute;s&aacute;t v&aacute;lasztja, akkor a bemeneti t&aacute;bl&aacute;zat c&iacute;mei pontszerű vektoros elemk&eacute;nt ad&oacute;dnak hozz&aacute; a t&eacute;rk&eacute;phez. A CSV &eacute;s az XLS opci&oacute; v&aacute;laszt&aacute;sa eset&eacute;n a  <b>Saj&aacute;t tartalom</b> a geok&oacute;dol&aacute;si feladat eredm&eacute;nyeit tartalmaz&oacute; f&aacute;jllal eg&eacute;sz&uuml;l ki, amikor a feladat k&eacute;sz.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Kimeneti eredmény neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve.  Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő men&uuml;ben megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

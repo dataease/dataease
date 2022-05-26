@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Synthétiser les attributs</h2><p/>
+        <h2><img src="../images/GUID-F64B533F-B0BB-4519-9F31-BCF814084999-web.png" alt="Summarize Attributes (Synth&eacute;tiser les attributs) diagramme"></h2>
+        <hr/>
+    <p> Cet outil synth&eacute;tise toutes les valeurs d&rsquo;appariement dans un ou plusieurs champs et calcule les statistiques les concernant. La statistique la plus &eacute;l&eacute;mentaire est le total d'entit&eacute;s qui ont &eacute;t&eacute; synth&eacute;tis&eacute;es, mais vous pouvez &eacute;galement calculer des statistiques plus avanc&eacute;es.
+    </p>
+    <p>Supposons par exemple que des entit&eacute;s ponctuelles correspondent &agrave; l&rsquo;emplacement de points de vente avec un champ repr&eacute;sentant le nom du responsable de district ( <i>DISTRICT_MANAGER_NAME</i>), et que vous souhaitez synth&eacute;tiser les ventes de caf&eacute; par responsable. Vous pouvez sp&eacute;cifier le champ <i>DISTRICT_MANAGER_NAME</i> comme champ de fusion afin que toutes les lignes de donn&eacute;es repr&eacute;sentant chaque responsable soient synth&eacute;tis&eacute;es. Cela signifie que tous les emplacements des points de vente g&eacute;r&eacute;s par <pre>Manager1</pre> seront synth&eacute;tis&eacute;s dans une seule ligne, et que les r&eacute;sum&eacute;s statistiques seront calcul&eacute;s. Dans cet exemple, les statistiques telles que le total de points de vente et la somme de <i>TOTAL_SALES</i> pour tous les points de vente g&eacute;r&eacute;s par <pre>Manager1</pre> sont calcul&eacute;es,, ainsi que celles des autres responsables r&eacute;pertori&eacute;s dans le champ <i>DISTRICT_MANAGER_NAME (nom du responsable de district)</i>.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Choisir l'entrée à synthétiser</h2></div>
+        <hr/>
+        <div>
+            <p>La couche contenant les champs qui seront synth&eacute;tis&eacute;s.  
+            </p>
+            <p>Outre le fait de choisir une couche de votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante pour parcourir votre contenu et rechercher une couche d&rsquo;entit&eacute;s ou un jeu de donn&eacute;es de partage de fichiers Big Data.
+            </p>
+        </div>
+    </div>
+    <div id="fields">
+        <div><h2>Sélectionnez une méthode pour synthétiser les données</h2></div>
+        <hr/>
+        <div>
+            <p>Il existe deux m&eacute;thodes permettant de synth&eacute;tiser vos donn&eacute;es&nbsp;:
+                <ul>
+                    <li> <b>All features into a single feature (Toutes les entit&eacute;s en une seule)</b>&mdash;Calcule les statistiques sur toutes les entit&eacute;s.
+                    </li>
+                    <li> <b>By fields (Par champs)</b>&mdash;Regroupe les entit&eacute;s par valeurs identiques dans des champs sp&eacute;cifi&eacute;s.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Par exemple, vous disposez d&rsquo;un jeu de donn&eacute;es d&rsquo;arbres incluant des champs  <i>treetype (type d&rsquo;arbre)</i> avec les valeurs <code>Maple (&eacute;rable)</code>, <code>Fir (sapin)</code> et <code>Pine (pin)</code> et un champ <i>treeheight (hauteur d&rsquo;arbre)</i>, et vous souhaitez obtenir la hauteur d&rsquo;arbre ( <i>treeheight</i>) moyenne. Si vous synth&eacute;tisez toutes les entit&eacute;s en une seule entit&eacute;, vous obtenez la hauteur d&rsquo;arbre moyenne de tous les arbres, ce qui produira une valeur moyenne uniquement. Si vous synth&eacute;tisez les entit&eacute;s en fonction du champ <i>treeheight (hauteur d&rsquo;arbre)</i>, vous obtenez une moyenne pour les &eacute;rables, une moyenne pour les sapins et une moyenne pour les pins.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Ajouter des statistiques (facultatif)</h2></div>
+        <hr/>
+        <div>
+            <p> Vous pouvez calculer des statistiques sur des entit&eacute;s synth&eacute;tis&eacute;es. Dans les champs num&eacute;riques,  vous pouvez calculer ce qui suit&nbsp;:
+                <ul>
+                    <li>Count (Total)&nbsp;: calcule le nombre de valeurs non Null. Il peut &ecirc;tre utilis&eacute; sur des champs num&eacute;riques ou des cha&icirc;nes. Le total de [Null, 0, 2] est &eacute;gal &agrave; 2.
+                    </li>
+                    <li>Somme&nbsp;: somme des valeurs num&eacute;riques dans un champ. La somme de [Null, 0, 3] est &eacute;gale &agrave; 3.
+                    </li>
+                    <li>Moyenne&nbsp;: moyenne des valeurs num&eacute;riques. La moyenne de [0, 2, Null] est &eacute;gale &agrave; 1.
+                    </li>
+                    <li>Min&nbsp;: valeur minimale d'un champ num&eacute;rique. La valeur minimale de [0, 2, Null] est &eacute;gale &agrave; 0. 
+                    </li>
+                    <li>Max&nbsp;: valeur maximale d'un champ num&eacute;rique. La valeur maximale de [0, 2, Null] est &eacute;gale &agrave; 2.
+                    </li>
+                    <li>Plage&nbsp;: plage d'un champ num&eacute;rique. Elle est calcul&eacute;e pour correspondre aux valeurs minimales soustraites de la valeur maximale. La plage de [0, Null, 1] est &eacute;gale &agrave; 1. La plage de [Null, 4] est &eacute;gale &agrave; 0.
+                    </li>
+                    <li>Variance&nbsp;: variance d'un champ num&eacute;rique dans une piste. La variance de [1] est la valeur Null. La variance de [null, 1,0,1,1] est &eacute;gale &agrave; 0,25.
+                    </li>
+                    <li>Ecart type&nbsp;: &eacute;cart type d'un champ num&eacute;rique. L'&eacute;cart type de [1] est la valeur Null. L&rsquo;&eacute;cart type de [null, 1,0,1,1] est &eacute;gale &agrave; 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Dans les champs de type cha&icirc;ne,  vous pouvez calculer ce qui suit&nbsp;:
+                <ul>
+                    <li>Total&nbsp;: le nombre de cha&icirc;nes diff&eacute;rentes de la valeur Null.
+                    </li>
+                    <li>Tout&nbsp;: cette statistique est un &eacute;chantillon al&eacute;atoire d'une valeur de cha&icirc;ne dans le champ sp&eacute;cifi&eacute;.
+                    </li>
+                </ul>
+                Toutes les statistiques sont calcul&eacute;es sur des valeurs non nulles. La couche obtenue contient un nouveau champ pour chaque statistique calcul&eacute;e. Vous pouvez ajouter des statistiques en choisissant un attribut et une statistique. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Choisir un stockage des données</h2></div>
+        <hr/>
+        <div>
+            <p>Les r&eacute;sultats de g&eacute;oanalyse sont stock&eacute;s dans un r&eacute;pertoire de donn&eacute;es et s&rsquo;affichent en tant que couche d&rsquo;entit&eacute;s dans  Portal for ArcGIS. Dans la plupart des cas, les r&eacute;sultats doivent &ecirc;tre stock&eacute;s dans le stockage des donn&eacute;es spatio-temporelles, ce qui est le param&egrave;tre par d&eacute;faut. Dans certains cas, il peut &ecirc;tre judicieux d&rsquo;enregistrer les r&eacute;sultats dans un data store relationnel. Voici les raisons pour lesquelles stocker les r&eacute;sultats dans le data store relationnel&nbsp;: 
+                <ul>
+                    <li>Vous pouvez utiliser les r&eacute;sultats en mode de collaboration de portail &agrave; portail.
+                    </li>
+                    <li>Vous pouvez activer la synchronisation de vos r&eacute;sultats.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la couche &agrave; cr&eacute;er. Si vous &eacute;crivez sur une instance ArcGIS Data Store, les r&eacute;sultats seront enregistr&eacute;s dans  <b>My Content (Mon contenu)</b> et ajout&eacute;s &agrave; la carte. Si vous &eacute;crivez sur un partage de fichiers Big Data, les r&eacute;sultats seront enregistr&eacute;s dans le partage de fichiers Big Data et ajout&eacute;s &agrave; son manifeste. Il ne sera pas ajout&eacute; &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, l'outil &eacute;choue.
+            </p>
+            <p>Lors de l&rsquo;&eacute;criture sur  ArcGIS Data Store (r&eacute;pertoire de donn&eacute;es relationnelles ou spatio-temporelles) via la zone de liste d&eacute;roulante  <b>Save result in (Enregistrer le r&eacute;sultat dans)</b>, vous pouvez sp&eacute;cifier le nom d&rsquo;un dossier dans <b>My Content (Mon contenu)</b> o&ugrave; le r&eacute;sultat sera enregistr&eacute;.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

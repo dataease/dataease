@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Kreiraj zone bliskosti</h2><p/>
+        <h2><img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" alt="Kreiraj zone bliskosti"></h2>
+        <hr/>
+    <p>Zona bliskosti je oblast koja pokriva datu razdaljinu od tačke, linije ili geoobjekta oblasti. 
+    </p>
+    <p>Zone bliskosti se obično koriste za kreiranje oblasti koje mogu detaljnije da se analiziraju kori&scaron;ćenjem alata kao &scaron;to je Preklopanje slojeva. Na primer, ako je pitanje &bdquo;Koje zgrade se nalaze u okviru jedne milje od &scaron;kole?&ldquo;, odgovor možete da dobijete kreiranjem zone bliskosti od jedne milje oko &scaron;kole i kori&scaron;ćenjem alata Preklopanje slojeva da biste preklopili zonu bliskosti sa slojem koji sadrži planove zgrada. Krajnji rezultat je sloj onih zgrada koje se nalaze unutar rastojanja od jedne milje od &scaron;kole.  
+    </p>
+    <p>Ako je opcija  <b>Koristi trenutni obuhvat mape</b> izabrana, zone bliskosti će se kreirati samo za one geoobjekte koji su vidljivi unutar trenutnog obuhvata mape.Ako nije izabrana, zone bliskosti će se kreirati za sve geoobjekte iz ulaznog sloja, čak i ako su izvan trenutnog obuhvata mape.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Odaberite sloj koji sadrži geoobjekte za kreiranje zone bliskosti</h2></div>
+        <hr/>
+        <div>
+            <p>Tačkasti i linijski geoobjekti ili geoobjekti oblasti za koje se kreira zona bliskosti. 
+            </p>
+            <p>Pored biranja sloja sa mape, možete da selektujete  <b>Izaberi sloj za analizu</b> koji se nalazi na dnu padajuće liste. Ova opcija otvara galeriju gde možete da pregledate i birate skupove podataka iz raznih izvora za kori&scaron;ćenje u va&scaron;oj analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="BufferSize">
+        <div><h2>Unesite veličinu zone bliskosti</h2></div>
+        <hr/>
+        <div>
+            <p>Možete da unesete jednu vrednost razdaljine ili vi&scaron;e vrednosti, razdvajajući svaku vrednost razmakom. Možete i da navedete atribut iz ulaznog sloja koji sadrži vrednost razdaljine tako &scaron;to ćete da kliknete na  <b>Polje</b>.
+            </p> 
+        </div>
+    </div>
+    <div id="OptionPoint">
+        <div><h2>Opcije</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite kako želite da budu re&scaron;ene preklapajuće zone bliskosti. Za bilo koju zonu bliskosti koja je iznad druge zone bliskosti, zajedničke oblasti mogu da se zadrže (Preklopi) ili kombinuju (Svedi). Kada koristite  <b>Svedi</b>, sve zone bliskosti se svode zajedno u jedan vi&scaron;edelni geoobjekat, uklanjajući sva preklapanja.
+            </p>  
+            <p> Kada koristite vi&scaron;e razdaljina, možete da odaberete kako da predstavite razdaljinu od poslednje razdaljine zone bliskosti; na primer, ako su razdaljine 10 i 14:
+                <ul>
+                    <li>Biranje opcije  <b>Prstenovi</b> daće zone bliskosti od 0 do 10 i od 10 do 14.
+                    </li>
+                    <li>Biranje opcije  <b>Diskovi</b> daje zone bliskosti od 0 do 10 i od 0 do 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionPoly">
+        <div><h2>Opcije</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite kako želite da budu re&scaron;ene preklapajuće zone bliskosti. Za bilo koju zonu bliskosti koja je iznad druge zone bliskosti, zajedničke oblasti mogu da se zadrže (Preklopi) ili kombinuju (Svedi). Kada koristite  <b>Svedi</b>, sve zone bliskosti se svode zajedno u jedan vi&scaron;edelni geoobjekat, uklanjajući sva preklapanja.
+            </p>
+            <p>Kada kreirate jednu zonu bliskosti oko geoobjekata oblasti (jedna razdaljina je uneta), možete da odaberete da li da geoobjekat za koji se kreira zona bliskosti bude obuhvaćen u rezultujuću zonu bliskosti ili ne.
+            </p>
+            <p>Kada koristite vi&scaron;e razdaljina, možete da odaberete kako da predstavite razdaljinu od poslednje razdaljine zone bliskosti; na primer, ako su razdaljine 10 i 14:
+                <ul>
+                    <li>Biranje opcije  <b>Prstenovi</b> daće zone bliskosti od 0 do 10 i od 10 do 14.
+                    </li>
+                    <li>Biranje opcije  <b>Diskovi</b> daje zone bliskosti od 0 do 10 i od 0 do 14.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionLine">
+        <div><h2>Opcije</h2></div>
+        <hr/>
+        <div>
+            <p>Odaberite kako želite da budu re&scaron;ene preklapajuće zone bliskosti. Za bilo koju zonu bliskosti koja je iznad druge zone bliskosti, zajedničke oblasti mogu da se zadrže (Preklopi) ili kombinuju (Svedi). Kada koristite  <b>Svedi</b>, sve zone bliskosti se svode zajedno u jedan vi&scaron;edelni geoobjekat, uklanjajući sva preklapanja.
+            </p>
+            <p>Kada kreirate jednu zonu bliskosti oko linija (jedna razdaljina je uneta), možete da odaberete sa koje strane linije želite da kreirate zonu bliskosti. Obično se biraju obe strane. Levo i desno se određuju kao da pe&scaron;ačite od prve x,y koordinate linije (početna koordinata) do poslednje x,y koordinate linije (zavr&scaron;na koordinata). Biranjem leve ili desne strane obično znači da znate su linijski geoobjekti kreirani i sačuvani u određenom smeru (na primer, uzvodno ili nizvodno u rečnoj mreži). Na krajevima linija, zona bliskosti može da se zaobli (Okruglo) ili da bude prava (Ravno).
+            </p>
+            <p>Kada kreirate vi&scaron;e zona bliskosti (vi&scaron;e od jedne razdaljine), možete da odaberete kako da predstavite razdaljinu od poslednje razdaljine zone bliskosti; na primer, ako su razdaljine 10 i 14:
+                <ul>
+                    <li>Biranje opcije  <b>Prstenovi</b> daće zone bliskosti od 0 do 10 i od 10 do 14.
+                    </li>
+                    <li>Biranje opcije  <b>Diskovi</b> daje zone bliskosti od 0 do 10 i od 0 do 14.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="OptionNolayer">
+        <div><h2>Opcije</h2></div>
+        <hr/>
+        <div>
+            <p>Kada odaberete sloj za kreiranje zone bliskosti, možete da odaberete kako želite da preklapanje zona bliskosti bude re&scaron;eno. Za bilo koju zonu bliskosti koja je iznad druge zone bliskosti, zajedničke oblasti mogu da se zadrže (Preklopi) ili kombinuju (Svedi). Kada koristite  <b>Svedi</b>, sve zone bliskosti se svode zajedno u jedan vi&scaron;edelni geoobjekat, uklanjajući sva preklapanja. Pored toga, možete da navedete kako će vi&scaron;e razdaljina biti predstavljeno. Za slojeve koji sadrže linijske geoobjekte, možete da odaberete sa koje strane linije treba kreirati zonu bliskosti. Za slojeve koji sadrže slojeve oblasti, možete da odaberete da li će geoobjekat za koji se kreira zona bliskosti biti obuhvaćen ili isključen iz rezultujuće zone bliskosti.
+            </p>
+        </div>
+    </div>
+    <div id="BufferLayer">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja koji će biti kreiran u  <b>Mom sadržaju</b> i dodat na mapu. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako naziv sloja već postoji, bićete upitani da unesete drugi naziv.
+            </p>
+            <p>Koristeći padajući meni  <b>Sačuvaj rezultat u</b>, možete da navedete ime fascikle u <b>Mom sadržaju</b> u kojoj će rezultat biti sačuvan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

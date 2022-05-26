@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Punten aggregeren</h2><p/>
+        <h2><img src="../images/GUID-6C1620D9-D176-41FA-8283-833D8B1CCCFC-web.png" alt="Punten aggregeren"></h2>
+        <hr/>
+    <p>Deze tool werkt met een laag van puntobjecten en een laag van vlakobjecten. Invoergebiedobjecten kunnen van een polygoonlaag zijn of ze kunnen vierkante of zeshoekige bins zijn berekend als de tool wordt uitgevoerd. De tool bepaalt eerst welke punten binnen elk opgegeven oppervlak vallen. Nadat de ruimtelijke relatie van de punten in een oppervlak is bepaald, worden statistieken voor alle punten in het oppervlak berekend en aan het oppervlak toegewezen. De meest eenvoudige statistiek is het aantal punten binnen het oppervlak, maar u kunt ook andere statistieken opvragen. 
+
+    </p>
+    <p>Stel bijvoorbeeld dat u puntobjecten van locaties van caf&eacute;s hebt en oppervlakobjecten van provincies en u wilt de verkoop van koffie per provincie samenvatten. Stel dat de caf&eacute;s over een    <i>TOTAL_SALES</i>-attribuut beschikken, dan kunt u de som van de <i>TOTAL_SALES</i> in elke provincie opvragen of de minimale of maximale <i>TOTAL_SALES</i>
+ in elke provincie of andere statistieken zoals de telling, reeks, standaardafwijking en variantie.
+    </p>
+    <p>Deze tool kan ook werken met data die tijdingeschakeld is. Als de tijd is ingeschakeld op de invoerpunten dan zijn de tijdsplistingsopties beschikbaar. Met tijdsplitsing kunt u de punt-in-gebied relatie berekenen en kijken naar een specifieke splitsing in de tijd. U kunt bijvoorbeeld naar uurlijkse intervallen kijken, wat resulteert in outputs voor elk uur. 
+    </p>
+    <p>Stel voor een voorbeeld met tijd dat u puntobjecten had van elke transactie bij verschillende caf&eacute;s en geen gebiedslaag. De data is een jaar opgeslagen en elke transactie heeft een locatie en een tijdstempel. Ervan uitgaande dat elke transactie een  <i>TOTAL_SALES</i> attribuut heeft, kunt u de som van alle <i>TOTAL_SALES</i> krijgen binnen de ruimte en tijd van belang. Als deze transacties voor een enkele stad zijn, kunnen we gebieden genereren in rasters van 1 kilometer en kijken naar de wekelijkse tijdsplitsingen om de transacties samen te vatten in tijd en ruimte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Kies een laag met punten om in gebieden te aggregeren</h2></div>
+        <hr/>
+        <div>
+            <p>De puntlaag die in gebieden wordt geaggregeerd. Puntlagen die zijn geaggregeerd naar  <b>Vier-</b> of <b>Zeshoekige</b> bins moeten de processing ruimtelijke referentie moet worden ingesteld op een geprojecteerd co&ouml;rdinaatsysteem met behulp van de <b>Analysis Environments</b>.
+            </p>
+            <p>Naast het kiezen van een laag van uw kaart, kunt u kiezen voor  <b>Analyselaag kiezen</b> onderaan de keuzelijst om in uw inhoud te zoeken naar een big data file share-dataset of objectlaag.
+            </p>
+        </div>
+    </div>
+    <div id="inputAggregation">
+        <div><h2>Kies een oppervlaktelaag om in te agregeren</h2></div>
+        <hr/>
+        <div>
+            <p>De gebieden waar de puntlaag in wordt geaggregeerd. U kunt kiezen tussen een gebiedslaag die u verstrekt of bins die worden gegenereerd als de tool wordt uitgevoerd. Bij het genereren van bins, voor  <b>Vierkant</b> bepalen het gespecificeerde aantal en de eenheden de hoogte en de lengte van het vierkant. Voor <b>Zeskant</b> bepalen het gespecificeerde aantal en de eenheden de afstand tussen de evenwijdige zijden.
+            </p>
+            <p>Analyse d.m.v.  <b>vier-</b> of <b>zeshoekige</b> bins vereist een geprojecteerd co&ouml;rdinaatsysteem. U kunt het <b>Processing co&ouml;rdinaatsysteem</b> instellen bij <b>Analysis Environments</b>. Als uw huidige co&ouml;rdinaatsysteem niet op een geprojecteerd co&ouml;rdinaatsysteem is ingesteld, zal u gevraagd worden het in te stellen wanneer u <b>Analyse uitvoeren</b> kiest.
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Kies de gebiedslaag om in te aggregeren</h2></div>
+        <hr/>
+        <div>
+            <p>De gebiedslaag waarnaar de punten worden geaggregeerd. Punten die binnen de grenzen van gebieden in deze laag liggen, worden geteld en eventueel samengevat voor uw keuzes van statistieken. 
+            </p>
+            <p>Ofwel  <b>Bingrootte</b> voor bins of <b>Gebiedslaag</b> moet worden ingesteld.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Kies een afstand om bins te genereren en in te agregeren</h2></div>
+        <hr/>
+        <div>
+            <p>De afstand gebruikt om bins te genereren om uw invoerpunten in te aggregeren. Voor een vierkante bin vertegenwoordigt de grootte de hoogte van het vierkant. Voor een zeshoek vertegenwoordigt de grootte de hoogte van de zeskant (van evenwijdige zijden).  
+            </p>
+            <p>Ofwel  <b>Bingrootte</b> voor bins of <b>Gebiedslaag</b> moet worden ingesteld.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Aggregeren met tijdstappen (optioneel)</h2></div>
+        <hr/>
+        <div>
+            <p>Als de tijd is ingeschakeld op de invoerpuntlaag en het is van het type instant, dan kunt u analyseren met behulp van tijdstappen. Er zijn drie parameters die u kunt instellen als u tijd gebruikt:
+                <ul>
+                    <li> <b>Tijdstapinterval</b>
+                    </li>
+                    <li> <b>Hoe vaak de tijdstap herhaald wordt</b>
+                    </li>
+                    <li> <b>Tijd om de tijdstappen op uit te lijnen</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Bijvoorbeeld als  u data hebt die een periode van een jaar vertegenwoordigen en u  ze analyseren met behulp van wekelijkse stappen, stel  <b>Tijd stapinterval</b> in op <code>1 week</code>. 
+            </p>
+            <p>Als u bijvoorbeeld  data hebt die  een periode van een jaar vertegenwoordigen en u wilt ze analyseren  met behulp van de eerste week van de maand, stek  <b>Tijd stapinterval</b> in op <code>1 week</code>, <b>Hoe vaak de tijd stap te herhalen</b> op <code>1 maand</code>, en <b>Tijd op de tijdstappen uit te lijnen</b> op <code>1 januari om 12:00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Tijdstapinterval</h2></div>
+        <hr/>
+        <div>
+            <p>Tijdsinterval gebruikt voor het genereren van tijdstappen.  <b>Tijdstapinterval</b> kan alleen worden gebruikt of gebruikt met de <b>Hoe vaak wordt de tijdstap herhaald</b> of <b>Tijd om de tijdstappen op uit te lijnen</b> parameters.
+            </p>
+            <p>Bijvoorbeeld, als u tijdstappen wilt cre&euml;ren die  elke maandag plaatsvinden van 9:00 tot 10:00, stel  <b>Tijdstapinterval</b> in op <code>1 uur</code>, <b>Hoe vaak de tijdstap herhalen</b> op <code>1 week</code> en <b>Tijd om de tijdstappen uit te starten</b>om <code>9:00:00 op een maandag</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Hoe vaak de tijdstap herhaald wordt</h2></div>
+        <hr/>
+        <div>
+            <p> De stap gebruikt voor het berekenen van een tijdstap. <b>Hoe vaak wordt de tijdstap herhaald</b> kan alleen worden gebruikt, met <b>Tijdstapinterval</b> met <b>Referentietijd</b> of met beide <b>Tijdstapinterval</b> en <b>Tijd om de tijdstappen op uit te lijnen</b>.
+            </p>
+            <p> Bijvoorbeeld, als u tijdstappen wilt  cre&euml;ren die elke maandag plaatsvinden van 9:00 tot 10:00, stel <b>Tijdstapinterval</b> in op <code>1 uur</code>, <b>Hoe vaak de tijdstap herhalen</b> op <code>1 week</code> en <b>Tijd om de tijdstappen te starten om</b> to <code>9:00 op een maandag</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Tijd om tijdstappen op uit te lijnen</h2></div>
+        <hr/>
+        <div>
+            <p>De datum en tijd gebruikt om tijdsplakken op af te stemmen Tijdstap start vanaf en gaat verder terugwaarts naar deze tijd. Als er geen referentietijd wordt geselecteerd, zal de tijdstap uitlijnen op 1 januari 1970. 
+            </p>
+            <p> Bijvoorbeeld, als u tijdstappen wilt cre&euml;ren  die  elke maandag plaatsvinden van 9:00 tot 10:00, stel <b>Tijdstapinterval</b> in op <code>1 uur</code>, <b>Hoe vaak de tijdstap herhalen</b> op <code>1 week</code> en <b>Tijd om de tijdstappen uit te lijnen</b>op <code>9:00:00 op een maandag</code>.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Statistieken toevoegen (optioneel)</h2></div>
+        <hr/>
+        <div>
+            <p> U kunt statistieken berekenen over objecten die zijn samengevat.U kunt het volgende berekenen in numerieke velden:
+                <ul>
+                    <li>Count&mdash;Berekent het aantal niet-nulwaarden.Kan gebruikt worden op numerieke velden of strings. De telling van [nul, 0, 2] is 2.
+                    </li>
+                    <li>Som&mdash;De som van numerieke waarden in een veld. De som van [nul, nul, 3] is 3.
+                    </li>
+                    <li>Gemiddelde&mdash;Het gemiddelde van numerieke waarden. Het gemiddelde van [0, 2, nul] is 1.
+                    </li>
+                    <li>Min&mdash;De minimumwaarde van een numeriek veld. Het minimum van [0, 2, nul] is 0. 
+                    </li>
+                    <li>Max&mdash;De maximumwaarde van een numeriek veld. De maximumwaarde van [0, 2, nul] is 2.
+                    </li>
+                    <li>Bereik&mdash;Het bereik van een numeriek veld. Dit wordt berekend als de minimumwaarden afgetrokken van de maximumwaarde. Het bereik van [0, nul, 1] is 1. Het bereik van [nul, 4] is 0.
+                    </li>
+                    <li>Variantie&mdash;De variantie van een numeriek veld in een track. De variantie van [1] is nul. De variantie van [null, 1,0,1,1] is 0,25.
+                    </li>
+                    <li>Standaarddeviatie&mdash;De standaarddeviatie van een numeriek veld. De standaarddeviatie van [1] is nul. De standaarddeviatie van [null, 1,0,1,1] is 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>U kunt het volgende berekenen in numerieke velden:
+                <ul>
+                    <li>Telling&mdash;Het aantal non-nul strings.
+                    </li>
+                    <li>Elke&mdash;Deze statistiek is een willekeurig voorbeeld van een stringwaarde in het gespecificeerde veld.
+                    </li>
+                </ul>
+                Alle statistieken worden berekend op nonnull waarden. De resultaatlaag zal een nieuw veld bevatten voor elke statistiek die wordt berekend. Andere statistieken kunnen worden toegevoegd door een attribuut en statistiek te kiezen. 
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>Ruimtelijke referentie (wkid)</h2></div>
+        <hr/>
+        <div>
+            <p>Dit is een tijdelijke parameter voor prerelease om de verwerkende ruimtelijke referentie in te stellen. Veel big data-tools vereisen dat er een geprojecteerd co&ouml;rdinatensysteem wordt gebruikt als ruimtelijke referentie voor verwerking. Standaard gebruikt de tool het invoerco&ouml;rdinaatsysteem maar zal falen als het een geografisch co&ouml;rdinaatsysteem is. Voer de WKID in om een ​​geprojecteerd co&ouml;rdinaatsysteem in te stellen. Bijvoorbeeld  <b>Web Mercator</b> worden ingevoerd als <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Kies een ArcGIS Data Store om de resultaten in op te slaan</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytic-resultaten worden opgeslagen in een datastore en weergegeven als een objectlaag in  Portal for ArcGIS. In de meeste gevallen moeten de resultaten worden opgeslagen in de spatiotemporele data store en dit is de standaardinstelling. In sommige gevallen is het opslaan van de resultaten in de relationele data-opslag een goede optie. Hier volgen redenen waarom u resultaten zou willen opslaan in een relationele data-opslag: 
+                <ul>
+                    <li>U kunt resultaten gebruiken in portaal-tot-portaal samenwerking.
+                    </li>
+                    <li>Om synchronisatiemogelijkheden met uw resultaten mogelijk te maken.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>U moet geen gebruik maken van een relationele data-store als u verwacht dat uw GeoAnalytics-resultaten toenemen en u wilt profiteren van de mogelijkheden van de spatiotemporele big data-store om grote hoeveelheden gegevens te verwerken.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p> De naam van de laag die wordt gemaakt. Als u naar een ArcGIS Data Store,  schrijft, worden uw resultaten opgeslagen in  <b>Mijn Content</b> en toegevoegd aan de kaart. Als u naar een big data file share schrijft, worden uw resultaten opgeslagen in de big data file share en toegevoegd aan het bijhorende manifest. Ze zullen niet worden toegevoegd aan de kaart. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, zal de tool falen.
+            </p>
+            <p>Wanneer u schrijft naar  ArcGIS Data Store (relationele of spatiotemporele big datastore) met behulp van de vervolgkeuzelijst  <b>Resultaat opslaan in</b>, kunt u de naam van een map opgeven in <b>Mijn Content</b>, waar het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,38 @@
+<div class="esriMeasurement">
+  <div dojoType='dijit.layout.ContentPane' class='esriMeasurementButtonContainer'>
+    <div dojoType='dijit.form.ToggleButton' baseClass='esriButton' dojoAttachPoint='_areaButton' iconClass='areaIcon' showLabel='false' dojoAttachEvent='onClick:_areaButtonToggle'></div>
+    <div dojoType='dijit.form.ToggleButton' baseClass='esriButton' dojoAttachPoint='_distanceButton' iconClass='distanceIcon' showLabel='false' dojoAttachEvent='onClick:_distanceButtonToggle'></div>
+    <div dojoType='dijit.form.ToggleButton' baseClass='esriButton' dojoAttachPoint='_locationButton' iconClass='locationIcon' showLabel='false' dojoAttachEvent='onClick:_locationButtonToggle'></div>
+    <div class="esriMeasurementSeparator">|</div>
+    <button dojoType='dijit.form.DropDownButton' baseClass='esriToggleButton' dojoAttachPoint='_unitDropDown' label='unit' value='unit' style='visibility:hidden;'></button>
+  </div>
+  <div dojoType='dijit.layout.ContentPane' dojoAttachPoint='resultLabel' class='resultLabel esriMeasurementResultLabel'></div>
+  <div dojoType='dijit.layout.ContentPane' dojoAttachPoint='resultValueContainer' align='leading' class="esriMeasurementResultValue">
+    <div dojoType='dijit.layout.ContentPane' dojoAttachPoint='resultValue' class='result'>&nbsp;</div>
+  </div>
+  <div dojoType='dijit.layout.ContentPane' dojoAttachPoint='resultTable' align='leading' class="resultTable esriMeasurementTableContainer" style="display:none;">
+    <table class="esriMeasurementResultTable">
+      <tr>
+        <td class="esriMeasurementTableHeader" colspan="2">${_NLS_Lat}</td><td class="esriMeasurementTableHeader">${_NLS_Lon}</td>
+      </tr>
+      <tr class="esriMeasurementTableRow" dojoAttachPoint="_mouseRow">
+        <td dojoAttachPoint="mouseCell"></td>
+        <td class="esriMeasurementTableCell">
+          <span dojoAttachPoint="mouseLatitude" dir='ltr'></span>
+        </td>
+        <td class="esriMeasurementTableCell">
+          <span dojoAttachPoint="mouseLongitude" dir='ltr'></span>
+        </td>
+      </tr>
+      <tr class="esriMeasurementTableRow">
+        <td dojoAttachPoint="pinCell"></td>
+        <td class="esriMeasurementTableCell">
+          <span dojoAttachPoint="markerLatitude" dir='ltr'></span>
+        </td>
+        <td class="esriMeasurementTableCell">
+          <span dojoAttachPoint="markerLongitude" dir='ltr'></span>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

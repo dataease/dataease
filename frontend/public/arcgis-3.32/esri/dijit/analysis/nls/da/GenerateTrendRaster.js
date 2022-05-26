@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/da/GenerateTrendRaster",{toolDefine:"Generer tendensraster",outputLayerName:"${layername}_trend",dimensionLabel:"V\u00e6lg den dimension, som variablernes tendens analyseres langs",variablesLabel:"V\u00e6lg en eller flere variabler for at analysere tendens",variablesListLabel:"Variabler [Dimension Info] (beskrivelse)",trendLineTypeLabel:"V\u00e6lg den type linje, der passer til variablerne langs en dimension",linear:"Line\u00e6r",harmonic:"Harmonisk",polynomial:"Polynomial",
+frequencyLabel:"Angiv frekvenstallet for den harmoniske tendenstilpasning",polynomialOrderLabel:"Angiv tallet for den polynomiske r\u00e6kkef\u00f8lge for tendenstilpasningen",ignoreNodataLabel:"Ignor\u00e9r manglende v\u00e6rdier i beregning",ignore:"Ignor\u00e9r",analysisLayerLabel:"V\u00e6lg et flerdimensionalt billedlag for at analysere tendens",itemDescription:"Analysebilledtjeneste genereret ud fra Generer tendensraster",itemTags:"Rasteranalyseresultat, Generer tendensraster, ${layername}",
+itemSnippet:"Analysebilledtjeneste genereret ud fra Generer tendensraster"});

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Határok összeolvasztása</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Hat&aacute;rok &ouml;sszeolvaszt&aacute;sa"></h2>
+        <hr/>
+    <p>Az egym&aacute;st &aacute;tfedő vagy k&ouml;z&ouml;s hat&aacute;rvonalon osztoz&oacute; ter&uuml;letek &ouml;sszeillesztve egyetlen ter&uuml;letet alkotnak.    
+    </p>
+    <p>Az &ouml;sszeolvasztani k&iacute;v&aacute;nt hat&aacute;rvonalakat egy mező meghat&aacute;roz&aacute;s&aacute;val szab&aacute;lyozhatja. Ha p&eacute;ld&aacute;ul van egy megy&eacute;ket tartalmaz&oacute; r&eacute;tege, &eacute;s mindegyik megy&eacute;nek van  <i>State_Name</i> attrib&uacute;tuma, akkor a <i>State_Name</i> attrib&uacute;tum haszn&aacute;lat&aacute;val &ouml;sszeolvaszthatja a hat&aacute;rokat.  A szomsz&eacute;dos megy&eacute;k azonos <i>State_Name</i> &eacute;rt&eacute;k eset&eacute;n &ouml;sszeilleszthetők.  A v&eacute;geredm&eacute;ny egy &aacute;llamhat&aacute;rokat tartalmaz&oacute; r&eacute;teg.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Terület réteg kiválasztása a határvonalak összeolvasztásához</h2></div>
+        <hr/>
+        <div>
+            <p>A ter&uuml;let vektoros elemeket tartalmaz&oacute;, &ouml;sszeolvasztand&oacute; r&eacute;teg. 
+            </p>
+            <p>A t&eacute;rk&eacute;p egy r&eacute;teg&eacute;nek kiv&aacute;laszt&aacute;sa mellett v&aacute;laszthatja a leg&ouml;rd&uuml;lő lista alj&aacute;n tal&aacute;lhat&oacute;  <b>Elemz&eacute;si r&eacute;teg kiv&aacute;laszt&aacute;sa</b> lehetős&eacute;get is. Ennek a lehetős&eacute;gnek a v&aacute;laszt&aacute;sakor egy gal&eacute;ria ny&iacute;lik meg, amelyben k&uuml;l&ouml;nb&ouml;ző forr&aacute;sokb&oacute;l sz&aacute;rmaz&oacute; adathalmazok k&ouml;z&uuml;l v&aacute;logathat, &eacute;s ezeket felhaszn&aacute;lhatja az elemz&eacute;s&eacute;ben. 
+            </p>
+        </div>
+    </div>
+    <div id="DissolveFields">
+        <div><h2>Összeolvasztási módszer kiválasztása</h2></div>
+        <hr/>
+        <div>
+            <p>A ter&uuml;let vektoros elemek egyes&iacute;t&eacute;s&eacute;hez k&eacute;t m&oacute;dszer k&ouml;z&uuml;l v&aacute;laszthat:
+                <ul>
+                    <li> <b>Egym&aacute;st &aacute;tfedő vagy szomsz&eacute;dos ter&uuml;letek</b> &ndash; k&eacute;t vagy t&ouml;bb, egym&aacute;st &aacute;tfedő hat&aacute;rvonalakkal rendelkező ter&uuml;let &ouml;sszevon&aacute;sra ker&uuml;l.  Ezenk&iacute;v&uuml;l a szomsz&eacute;dos (azaz k&ouml;z&ouml;s hat&aacute;rvonalon osztoz&oacute;) ter&uuml;letek &ouml;sszeolvadnak egy ter&uuml;lett&eacute;.
+                    </li>
+                    <li> <b>Azonos mező&eacute;rt&eacute;kű ter&uuml;letek</b> &ndash; Az egym&aacute;st &aacute;tfedő vagy k&ouml;z&ouml;s hat&aacute;rvonalon osztoz&oacute; ter&uuml;letek &ouml;sszevon&aacute;sra ker&uuml;lnek, amennyiben azonos a mező&eacute;rt&eacute;k&uuml;k.
+                        <p>Ha p&eacute;ld&aacute;ul van egy megy&eacute;ket tartalmaz&oacute; r&eacute;tege, &eacute;s mindegyik megy&eacute;nek van  <i>State_Name</i> mezője, akkor a <i>State_Name</i> mező haszn&aacute;lat&aacute;val &ouml;sszeolvaszthatja a hat&aacute;rokat.  A szomsz&eacute;dos megy&eacute;k azonos <i>State_Name</i> &eacute;rt&eacute;k eset&eacute;n &ouml;sszeilleszthetők.  A v&eacute;geredm&eacute;ny egy &aacute;llamhat&aacute;rokat tartalmaz&oacute; r&eacute;teg.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>If  <b>Use current map extent</b> is checked, only the features in the input layer that are visible within the current map extent will be dissolved.  Ha nincs bejel&ouml;lve, akkor a bemenő r&eacute;teg &ouml;sszes vektoros elem&eacute;t &ouml;sszeolvasztja, akkor is, ha azok k&iacute;v&uuml;l esnek az aktu&aacute;lis t&eacute;rk&eacute;p kiterjed&eacute;sen.
+            </p>
+        </div>
+    </div>
+    <div id="multiPartFeatures">
+        <div><h2>Csoportosított vektoros elemek létrehozása</h2></div>
+        <hr/>
+        <div>
+            <p>Az ArcGIS-ben előfordulhat, hogy egyn&eacute;l t&ouml;bb r&eacute;szből &aacute;ll&oacute; helyek vagy dolgok digit&aacute;lis &aacute;br&aacute;zol&aacute;sa egyetlen vektoros elemk&eacute;nt van defini&aacute;lva, mivel egyetlen attrib&uacute;tumk&eacute;szletre hivatkozik. Az &aacute;llamok r&eacute;teg&eacute;ben p&eacute;ld&aacute;ul Hawaii &aacute;llam csoportos&iacute;tott vektoros elemnek tekinthető, mivel a k&uuml;l&ouml;n&aacute;ll&oacute; geometriai r&eacute;szei egyetlen &aacute;llamnak minős&uuml;lnek. Ez a logikai param&eacute;ter k&eacute;t be&aacute;ll&iacute;t&aacute;si lehetős&eacute;get k&iacute;n&aacute;l:
+                <ul>
+                    <li>Igaz (kijel&ouml;lt): a kimeneti szolg&aacute;ltat&aacute;s csoportos&iacute;tott vektoros elemeket tartalmazhat.
+                    </li>
+                    <li>Hamis (kijel&ouml;letlen): a kimeneti szolg&aacute;ltat&aacute;s csak egyedileg azonos&iacute;tott vektoros elemeket tartalmaz, &eacute;s minden r&eacute;szhez k&uuml;l&ouml;n&aacute;ll&oacute; vektoros elemek lesznek l&eacute;trehozva.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Statisztika hozzáadása</h2></div>
+        <hr/>
+        <div>
+            <p>Ter&uuml;letek egyes&iacute;t&eacute;sekor &ouml;sszegezheti az attrib&uacute;tumaikat.  Ha p&eacute;ld&aacute;ul  <i>State_Name</i> alapj&aacute;n megy&eacute;k k&ouml;z&ouml;tti hat&aacute;rvonalat olvaszt &ouml;ssze, &eacute;s az egyes megy&eacute;k rendelkeznek <i>Population</i> mezővel, akkor <i>Population</i> &ouml;sszeget sz&aacute;molhat az &aacute;llamra vonatkoztatva.
+            </p>
+            <p>Az al&aacute;bbi fajt&aacute;j&uacute; statisztikai sz&aacute;m&iacute;t&aacute;sok &eacute;rhetők el:
+            </p>
+            <ul>
+                <li> <b>&Ouml;sszeg</b> &ndash; a megadott mező &ouml;sszes&iacute;tett &eacute;rt&eacute;k&eacute;nek hozz&aacute;ad&aacute;sa
+                    
+
+                </li>
+                <li> <b>&Aacute;tlag</b> &ndash; kisz&aacute;m&iacute;tja a megadott mező &aacute;tlag&aacute;t vagy k&ouml;z&eacute;p&eacute;rt&eacute;k&eacute;t
+                    
+
+                </li>
+                <li> <b>Minimum</b> &ndash; megkeresi a megadott mezőh&ouml;z tartoz&oacute; bejegyz&eacute;sek legkisebb &eacute;rt&eacute;k&eacute;t
+                    
+
+                </li>
+                <li> <b>Maximum</b> &ndash; megkeresi a megadott mezőh&ouml;z tartoz&oacute; bejegyz&eacute;sek legnagyobb &eacute;rt&eacute;k&eacute;t
+                    
+
+                </li>
+                <li> <b>Standard elt&eacute;r&eacute;s</b> &ndash; megkeresi a megadott mező &eacute;rt&eacute;keinek standard elt&eacute;r&eacute;s&eacute;t
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Eredmény réteg neve</h2></div>
+        <hr/>
+        <div>
+            <p>A  <b>Saj&aacute;t tartalom</b> alatt l&eacute;trej&ouml;vő &eacute;s a t&eacute;rk&eacute;phez hozz&aacute;adott r&eacute;teg neve.  Az alap&eacute;rtelmezett n&eacute;v az eszk&ouml;z nev&eacute;től &eacute;s a bemenő r&eacute;teg nev&eacute;től f&uuml;gg. Ha a r&eacute;teg m&aacute;r l&eacute;tezik, akkor a program megk&eacute;ri, hogy adjon meg egy m&aacute;sik nevet.
+            </p>
+            <p>Az  <b>Eredm&eacute;ny ment&eacute;si helye</b> leg&ouml;rd&uuml;lő men&uuml;ben megadhatja a <b>Saj&aacute;t tartalom</b> mapp&aacute;j&aacute;nak nev&eacute;t, ahov&aacute; az eszk&ouml;z menti az eredm&eacute;nyt.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

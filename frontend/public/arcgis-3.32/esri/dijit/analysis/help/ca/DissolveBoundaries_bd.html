@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Dissol els límits</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Dissol els l&iacute;mits"></h2>
+        <hr/>
+    <p>Les &agrave;rees que se superposen o comparteixen un l&iacute;mit o un valor d'atribut com&uacute; es fusionen per formar una sola &agrave;rea.
+    </p>
+    <p>Podeu especificar un camp per controlar quins l&iacute;mits es fusionen. Per exemple, si teniu una capa de comtats i cada comtat t&eacute; un atribut  <pre>State_Name</pre>, podeu dissoldre els l&iacute;mits mitjan&ccedil;ant l'atribut <pre>State_Name</pre>.  Els comtats es fusionaran si tenen el mateix valor de <pre>State_Name</pre>.  El resultat &eacute;s una capa de l&iacute;mits d'estat.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Trieu la capa d'àrees de la qual es dissoldran els límits</h2></div>
+        <hr/>
+        <div>
+            <p>Capa que cont&eacute; les entitats d'&agrave;rees que es dissoldran. 
+            </p>
+            <p>A banda de triar una capa del mapa, podeu seleccionar  <b>Trieu la capa d'an&agrave;lisi</b> al final de la llista desplegable per cercar al vostre contingut una capa d'entitats o un dataset de recursos compartits de fitxers de dades massives.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveFields">
+        <div><h2>Trieu el mètode de dissolució</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica el m&egrave;tode utilitzat per dissoldre els camps.
+            </p>
+            <p>Podeu triar entre dos m&egrave;todes per fusionar les entitats d'&agrave;rees:
+                <ul>
+                    <li> <b>&Agrave;rees superposades o adjacents</b>: si hi ha dues o m&eacute;s &agrave;rees amb l&iacute;mits que se superposen, es fusionaran en una sola &agrave;rea.  Les &agrave;rees adjacents (&eacute;s a dir, les que comparteixen un l&iacute;mit) tamb&eacute; es fusionaran en una sola &agrave;rea.
+                    </li>
+                    <li> <b>&Agrave;rees amb el mateix valor de camp</b>: dues o m&eacute;s &agrave;rees es fusionaran en una sola &agrave;rea si tenen el mateix valor de camp.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Crea entitats multipart</h2></div>
+        <hr/>
+        <div>
+            <p>Una entitat multipart &eacute;s una representaci&oacute; d'un lloc o una cosa que t&eacute; m&eacute;s d'una part, per&ograve; que es defineix com una sola entitat perqu&egrave; fa refer&egrave;ncia a un conjunt d'atributs. En una capa d'estats, per exemple, Hawaii podria considerar-se una entitat multipart perqu&egrave; les seves parts geom&egrave;triques individuals estan classificades com a un &uacute;nic estat.
+            </p>
+            <p> <b>Crea entitats multipart</b> ofereix dues opcions:
+                <ul>
+                    <li>Cert (activat): el servei de sortida pot contenir entitats multipart.
+                    </li>
+                    <li>Fals (desactivat): el servei de sortida nom&eacute;s contindr&agrave; entitats d'una part i es crearan entitats individuals per a cada part. Aquesta &eacute;s l'opci&oacute; per defecte.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Afegeix estadístiques (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Quan es fusionen &agrave;rees, podeu resumir-ne els valors d'atributs amb estad&iacute;stiques significatives.  Per exemple, si dissoleu els l&iacute;mits entre comtats en funci&oacute; de l'element  <pre>State_Name</pre> i cada comtat t&eacute; un camp <i>Population</i>, podeu calcular la suma de <pre>Population</pre> de l'estat.
+            </p>
+            <p> Podeu calcular les estad&iacute;stiques sobre les entitats que s'han resumit. Als camps num&egrave;rics, podeu calcular el seg&uuml;ent:
+                <ul>
+                    <li>Recompte: calcula el nombre de valors no nuls. Es pot utilitzar a les cadenes o als camps num&egrave;rics. El recompte de [nul, 0, 2] &eacute;s 2.
+                    </li>
+                    <li>Suma: suma dels valors num&egrave;rics d'un camp. La suma de [nul, nul, 3] &eacute;s 3.
+                    </li>
+                    <li>Mitjana: mitjana dels valors num&egrave;rics. La mitjana de [0, 2, nul] &eacute;s 1.
+                    </li>
+                    <li>M&iacute;nim: valor m&iacute;nim d'un camp num&egrave;ric. El m&iacute;nim de [0, 2, nul] &eacute;s 0. 
+                    </li>
+                    <li>M&agrave;xim: valor m&agrave;xim d'un camp num&egrave;ric. El valor m&agrave;xim de [0, 2, nul] &eacute;s 2.
+                    </li>
+                    <li>Interval: interval d'un camp num&egrave;ric. Es calcula com els valors m&iacute;nims restats del m&agrave;xim. L'interval de [0, nul, 1] &eacute;s 1. L'interval de [nul, 4] &eacute;s 0.
+                    </li>
+                    <li>Vari&agrave;ncia: vari&agrave;ncia d'un camp num&egrave;ric en un recorregut. La vari&agrave;ncia de [1] &eacute;s nul. La vari&agrave;ncia de [nul, 1,0,1,1] &eacute;s 0,25.
+                    </li>
+                    <li>Desviaci&oacute; est&agrave;ndard: desviaci&oacute; est&agrave;ndard d'un camp num&egrave;ric. La desviaci&oacute; est&agrave;ndard de [1] &eacute;s nul. La desviaci&oacute; est&agrave;ndard de [nul, 1,0,1,1] &eacute;s 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Als camps num&egrave;rics, podeu calcular el seg&uuml;ent:
+                <ul>
+                    <li>Recompte: nombre de cadenes no nul&middot;les.
+                    </li>
+                    <li>Qualsevol: aquesta estad&iacute;stica &eacute;s una mostra aleat&ograve;ria del valor d'una cadena al camp especificat.
+                    </li>
+                </ul>
+                Totes les estad&iacute;stiques es calcularan sobre valors no nuls. La capa resultant contindr&agrave; un camp nou per a cada estad&iacute;stica calculada. Per afegir qualsevol nombre d'estad&iacute;stiques, podeu triar un atribut i una estad&iacute;stica. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la capa de resultats</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la capa que es crear&agrave;.  Si esteu escrivint en un ArcGIS Data Store, els resultats es desaran a  <b>El meu contingut</b> i s'afegiran al mapa. Si esteu escrivint en un recurs compartit de fitxers de dades massives, els resultats s'emmagatzemaran en aquest recurs i s'afegiran al seu manifest. No s'afegiran al mapa. El nom per defecte es basa en el nom de l'eina i el de la capa d'entrada. Si la capa ja existeix, l'eina no funcionar&agrave;.
+            </p>
+            <p>Si escriviu a l' ArcGIS Data Store (magatzem de dades massives relacional o espaciotemporal) mitjan&ccedil;ant el quadre desplegable  <b>Desa el resultat a</b>, podeu especificar el nom d'una carpeta a <b>El meu contingut</b>, on es desar&agrave; el resultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

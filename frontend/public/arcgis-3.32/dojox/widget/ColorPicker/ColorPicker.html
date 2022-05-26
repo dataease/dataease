@@ -1,0 +1,72 @@
+<table class="dojoxColorPicker" dojoAttachEvent="onkeypress: _handleKey" cellpadding="0" cellspacing="0" role="presentation">
+	<tr>
+		<td valign="top" class="dojoxColorPickerRightPad">
+			<div class="dojoxColorPickerBox">
+				<!-- Forcing ABS in style attr due to dojo DND issue with not picking it up form the class. -->
+				<img title="${saturationPickerTitle}" alt="${saturationPickerTitle}" class="dojoxColorPickerPoint" src="${_pickerPointer}" tabIndex="0" dojoAttachPoint="cursorNode" style="position: absolute; top: 0px; left: 0px;">
+				<img role="presentation" alt="" dojoAttachPoint="colorUnderlay" dojoAttachEvent="onclick: _setPoint, onmousedown: _stopDrag" class="dojoxColorPickerUnderlay" src="${_underlay}" ondragstart="return false">
+			</div>
+		</td>
+		<td valign="top" class="dojoxColorPickerRightPad">
+			<div class="dojoxHuePicker">
+				<!-- Forcing ABS in style attr due to dojo DND issue with not picking it up form the class. -->
+				<img dojoAttachPoint="hueCursorNode" tabIndex="0" class="dojoxHuePickerPoint" title="${huePickerTitle}" alt="${huePickerTitle}" src="${_huePickerPointer}" style="position: absolute; top: 0px; left: 0px;">
+				<div class="dojoxHuePickerUnderlay" dojoAttachPoint="hueNode">
+				    <img role="presentation" alt="" dojoAttachEvent="onclick: _setHuePoint, onmousedown: _stopDrag" src="${_hueUnderlay}">
+				</div>
+			</div>
+		</td>
+		<td valign="top">
+			<table cellpadding="0" cellspacing="0" role="presentation">
+				<tr>
+					<td valign="top" class="dojoxColorPickerPreviewContainer">
+						<table cellpadding="0" cellspacing="0" role="presentation">
+							<tr>
+								<td valign="top" class="dojoxColorPickerRightPad">
+									<div dojoAttachPoint="previewNode" class="dojoxColorPickerPreview"></div>
+								</td>
+								<td valign="top">
+									<div dojoAttachPoint="safePreviewNode" class="dojoxColorPickerWebSafePreview"></div>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td valign="bottom">
+						<table class="dojoxColorPickerOptional" cellpadding="0" cellspacing="0" role="presentation">
+							<tr>
+								<td>
+									<div class="dijitInline dojoxColorPickerRgb" dojoAttachPoint="rgbNode">
+										<table cellpadding="1" cellspacing="1" role="presentation">
+										<tr><td><label for="${_uId}_r">${redLabel}</label></td><td><input id="${_uId}_r" dojoAttachPoint="Rval" size="1" dojoAttachEvent="onchange: _colorInputChange"></td></tr>
+										<tr><td><label for="${_uId}_g">${greenLabel}</label></td><td><input id="${_uId}_g" dojoAttachPoint="Gval" size="1" dojoAttachEvent="onchange: _colorInputChange"></td></tr>
+										<tr><td><label for="${_uId}_b">${blueLabel}</label></td><td><input id="${_uId}_b" dojoAttachPoint="Bval" size="1" dojoAttachEvent="onchange: _colorInputChange"></td></tr>
+										</table>
+									</div>
+								</td>
+								<td>
+									<div class="dijitInline dojoxColorPickerHsv" dojoAttachPoint="hsvNode">
+										<table cellpadding="1" cellspacing="1" role="presentation">
+										<tr><td><label for="${_uId}_h">${hueLabel}</label></td><td><input id="${_uId}_h" dojoAttachPoint="Hval"size="1" dojoAttachEvent="onchange: _colorInputChange"> ${degLabel}</td></tr>
+										<tr><td><label for="${_uId}_s">${saturationLabel}</label></td><td><input id="${_uId}_s" dojoAttachPoint="Sval" size="1" dojoAttachEvent="onchange: _colorInputChange"> ${percentSign}</td></tr>
+										<tr><td><label for="${_uId}_v">${valueLabel}</label></td><td><input id="${_uId}_v" dojoAttachPoint="Vval" size="1" dojoAttachEvent="onchange: _colorInputChange"> ${percentSign}</td></tr>
+										</table>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2">
+									<div class="dojoxColorPickerHex" dojoAttachPoint="hexNode" aria-live="polite">	
+										<label for="${_uId}_hex">&nbsp;${hexLabel}&nbsp;</label><input id="${_uId}_hex" dojoAttachPoint="hexCode, focusNode, valueNode" size="6" class="dojoxColorPickerHexCode" dojoAttachEvent="onchange: _colorInputChange">
+									</div>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+

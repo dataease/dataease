@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>แยกข้อมูล</h2><p/>
+        <h2><img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" alt="สร้างข้อมูล"></h2>
+        <hr/>
+    <p>เครื่องมือนี้ คุณสามารถเลือกและดาวน์โหลดข้อมูลจากพื้นที่ที่สนใจ ชั้นข้อมูลที่คุณเลือกนี้สามารถเพิ่มเป็นไฟล์ ZIP, CSV หรือ KMZ ได้
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="InputLayers">
+        <div><h2>ชั้นข้อมูลที่ต้องการแตกข้อมูล</h2></div>
+        <hr/>
+        <div>
+            <p>มีชั้นข้อมูลในหน้าเนื้อหาของคุณที่คุณสามารถแยกฟีเจอร์ได้ ชั้นข้อมูลที่ถูกตรวจสอบนั้นถูกแบ่งข้อมูลและรวมผลลัพธ์อยู่ในไฟล์ประเภท ZIP หรือ CSV
+            </p>
+            <p>เพื่อให้ชั้นข้อมูลที่ปรากฏในรายการที่สร้างข้อมูล คุณต้องเป็นเจ้าของข้อมูลหรือได้รับการอนุญาตจากเจ้าของให้สามารถนำข้อมูลออกได้ เพื่อสั่งเปิดข้อมูล ส่งออกข้อมูลของคุณ: 
+                <ul>
+                    <li>เปิดรายละเอียดของรายการของข้อมูล
+                    </li>
+                    <li>คลิ๊กที่แท๊ป  <b>ตั้งค่า</b>
+                    </li>
+                    <li>เลื่อนเมาส์ลงที่ <b>เส่งข้อมูลออก</b>
+                    </li>
+                    <li>ตรวจสอบ <b>การส่งออกข้อมูลในรูปแบบที่แตกต่าง</b>. คลิ๊ก <b>บันทึก</b>เมื่อทำงานเสร็จ
+                    </li>
+                </ul>
+                
+            </p>
+            <p>ถ้าชั้นข้อมูลที่คุณวิเคราะห์มีไฟล์แนบ ไฟล์แนบเหล่านั้นจะถูกนำออกมาได้เมื่อข้อมูลผลลัพธ์เป็นฐานข้อมูล geodatabase แบบไฟล์ และ  <b>การตัดข้อมูล</b> ไม่ถูกเลือกไว้
+            </p>
+        </div>
+    </div>
+    <div id="AreaOfInterest">
+        <div><h2>พื้นที่ศึกษา</h2></div>
+        <hr/>
+        <div>
+            <p>พื้นที่ที่กำหนด โดยฟีเจอร์จะรวมอยู่ในไฟล์ผลลัพธ์เป็นไฟล์ ZIP หรือ CSV. คุณสามารถเลือกข้อมูลจาก:
+                <ul>
+                    <li>ขอบเขตแผนที่ปัจจุบันที่มองเห็นได้ ( <b>เหมือนกับหน้าจอที่ปรากฎ</b>).
+                    </li>
+                    <li>หนึ่งในชั้นข้อมูลจากตารางเนื้อหาของคุณ หากชั้นข้อมูลที่เลือกไว้เป็นฟีเจอร์จุดหรือเส้น จะมีการใช้ขอบเขตของชั้นข้อมูลเป็นพื้นที่การศึกษา
+                    </li>
+                    <li>วาดพื้นที่เพื่อใช้เป็นพื้นที่ศึกษา
+                    </li>
+                </ul>
+                 ข้อมูลทั้งหมดที่อยู่ภายในขอบเขตของแผนที่จะถูกนำออกมาก สำหรับฟีเจอร์ใดที่ข้ามหรือซ้อนทับภายในขอบเขตของแผนที่สมบูรณ์ หรือไม่อยู่ภายในพื้นที่โดยสมบูรณ์  คุณมี 2 ตัวเลือก:
+                <ul>
+                    <li> <b>เลือกชิ้นข้อมูล</b>&mdash;ข้อมูลทั้งหมดที่ข้ามขอบเขตพื้นที่ศึกษา จะถูกสร้าง
+                    </li>
+                    <li> <b>ตัดชิ้นข้อมูล</b>&mdash;เฉพาะข้อมูลที่อยู่ในพื้นที่ศึกษาเท่านั้น จะถูกสร้างขึ้นมา
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputFormat">
+        <div><h2>นามสกุลข้อมูลผลลัพธ์</h2></div>
+        <hr/>
+        <div>
+            <p>ฟอร์แม็ตของข้อมูลจะถูกแยก เมื่อนำข้อมูลเส้นหรือพื้นที่ออกไปเป็นไฟล์ CSV ข้อมูลฟีเจอร์ที่ไม่ใช่เชิงพื้นที่เท่านั้นที่จะถูกแยก เมื่อนำออกข้อมูลแบบจุด ทั้งข้อมูลคุณลักษณะแบบเชิงพื้นที่และไม่เชิงพื้นที่ จะถูกแยก  
+            </p>
+            <p>ข้อมูลที่ดึงออกมาจะใช้การฉายภาพ Web Mercator 1984 สำหรับไฟล์ CSV  <i>Lat</i> และฟิลด์ <i>Long</i> จะถูกรวมเข้ากับข้อมูลที่มีพิกัดใน Web Mercator 1984
+            </p> 
+            <p>รองรับรูปแบบเอาต์พุตต่อไปนี้:
+                <ul>
+                    <li>แยกแต่ละค่าด้วยเครื่องหมายจุลภาค (CSV)&mdash; <code>.csv</code> หรือ <code>.zip</code>
+                    </li>
+                    <li>ไฟล์ฐานข้อมูลภูมิศาสตร์&mdash; <code>.zip</code>
+                    </li>
+                    <li>สัญลักษณ์ทางภาษา Keyhole (KML)&mdash; <code>.kmz</code> หรือ <code>.zip</code>
+                    </li>
+                    <li>Shapefile&mdash; <code>.zip</code>
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>ชื่อไฟล์ผลลัพธ์</h2></div>
+        <hr/>
+        <div>
+            <p>นี่คือชื่อของรายการที่ถูกเพิ่มใน  <b>เนื้อหาของฉัน</b> ชื่อไอเท็ม จะอิงตามการเลือก <b>รูปแบบผลลัพธ์</b> ถ้าไอเท็มนี้มีอยู่แล้ว คุณจะถูกถามให้ตั้งชื่อใหม่
+            </p>
+            <p>ใช้  <b>บันทึกผลลัพธ์ใน</b> รายการตัวเลือก เพื่อระบุชื่อของโฟล์เดอร์ใน <b>เนื้อหาของฉัน</b> เมื่อบันทึกผล
+            </p>
+        </div>
+    </div>
+</div>
+</html>

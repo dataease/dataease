@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Monitorar Vegetação</h2><p/>
+        <h2><img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" alt="Ferramenta Monitorar Vegeta&ccedil;&atilde;o do Portal"></h2>
+        <hr/>
+    <p>Esta ferramenta executa uma opera&ccedil;&atilde;o aritm&eacute;tica nas bandas de uma camada de raster de m&uacute;ltiplas bandas para revelar informa&ccedil;&otilde;es de cobertura da vegeta&ccedil;&atilde;o da &aacute;rea de estudo.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Selecionar os dados de entrada</h2></div>
+        <hr/>
+        <div>
+            <p>Escolha a camada de raster de m&uacute;ltiplas bandas. Tenha certeza que o raster de entrada tem as bandas apropriadas dispon&iacute;veis.
+            </p> 
+        </div>
+    </div>
+    <div id="vegetationIndexType">
+        <div><h2>Escolher método para monitorar vegetação</h2></div>
+        <hr/>
+        <div>
+            <p>Escolha o m&eacute;todo criar a camada de &iacute;ndice da vegeta&ccedil;&atilde;o. Os diferentes &iacute;ndices de vegeta&ccedil;&atilde;o podem ajudar a destacar determinadas fei&ccedil;&otilde;es ou reduzir v&aacute;rios ru&iacute;dos.
+            </p>
+            <ul>
+                <li>Global Environmental Monitoring Index &mdash; 
+GEMI &eacute; um &iacute;ndice de vegeta&ccedil;&atilde;o n&atilde;o-linear para monitoramento ambiental global a partir de imagens de sat&eacute;lite. &Eacute; semelhante ao NDVI, mas &eacute; menos sens&iacute;vel aos efeitos atmosf&eacute;ricos. Ele &eacute; afetado pelo solo bruto; portanto, n&atilde;o &eacute; recomendado para uso em &aacute;reas de vegeta&ccedil;&atilde;o escassa ou moderadamente densa.
+
+                </li>
+                <li>Green Vegetation Index - Landsat TM &mdash; 
+O GVI estava originalmente projetado de imagens Landsat MSS, mas foi modificado para utilizar com imagens Landsat TM. Tamb&eacute;m &eacute; conhecido como o &iacute;ndice de vegeta&ccedil;&atilde;o verde de Tasseled Cap da Landsat TM. Este &iacute;ndice de monitoramento tamb&eacute;m pode ser utilizado com imagens cujas bandas compartilham as mesmas caracter&iacute;sticas espectrais.
+
+                </li>
+                <li>Modified Soil Adjusted Vegetation Index &mdash; 
+MSAVI2 &eacute; um &iacute;ndice de vegeta&ccedil;&atilde;o que tenta minimizar influ&ecirc;ncias do solo bruto do m&eacute;todo SAVI.
+
+                </li>
+                <li>Normalized Difference Vegetation Index  &mdash; 
+NDVI &eacute; um &iacute;ndice padronizado permitindo a voc&ecirc; gerar uma imagem exibindo biomassa relativa, verde. Este &iacute;ndice aproveita o contraste das caracter&iacute;sticas de duas bandas de um conjunto de dados raster multiespectral: absor&ccedil;&otilde;es de pigmento da clorofila na banda vermelha e a alta refletividade de materiais vegetais na banda de infravermelho pr&oacute;ximo (NIR).
+
+                </li>
+                <li>Perpendicular Vegetation Index &mdash; 
+PVI &eacute; semelhante a um &iacute;ndice de vegeta&ccedil;&atilde;o por diferen&ccedil;a; por&eacute;m, &eacute; sens&iacute;vel &agrave;s varia&ccedil;&otilde;es atmosf&eacute;ricas. Ao utilizar este m&eacute;todo para comparar diferentes imagens, ele deve ser utilizado em imagens que foram atmosfericamente corrigidas. Estas informa&ccedil;&otilde;es podem ser fornecidas por seu fornecedor de dados.
+
+                </li>
+                <li>Soil-Adjusted Vegetation Index &mdash; 
+SAVI &eacute; um &iacute;ndice de vegeta&ccedil;&atilde;o que tenta minimizar influ&ecirc;ncias de brilho do solo utilizando um fator de corre&ccedil;&atilde;o de brilho do solo. Isto &eacute; normalmente utilizado em regi&otilde;es &aacute;ridas onde a cobertura vegetativa &eacute; baixa.
+
+                </li>
+                <li>Sultan's Formula &mdash; 
+O processo da F&oacute;rmula de Sultan obt&eacute;m uma imagem de 8 bits de seis bandas e aplica um algoritmo espec&iacute;fico para produzir uma imagem de 8 bits de tr&ecirc;s bandas. A imagem resultante destaca forma&ccedil;&otilde;es de rochas denominadas ofiolitos em litorais. Esta f&oacute;rmula foi projetada com base nas bandas TM e ETM de uma cena do Landsat 5 ou 7.
+
+                </li>
+                <li>Transformed Soil-Adjusted Vegetation Index &mdash; 
+SAVI-Transformado &eacute; um &iacute;ndice de vegeta&ccedil;&atilde;o que tenta minimizar influ&ecirc;ncias de brilho do solo assumindo que a linha de superf&iacute;cie tem uma declividade arbitr&aacute;ria e intercepta.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bandIndexes">
+        <div><h2>Especificar índices das bandas NIR e Red</h2></div>
+        <hr/>
+        <div>
+            <p>Especifique os &iacute;ndices de banda das bandas vermelhas e (NIR).
+            </p>
+            <p>Cada sensor de sat&eacute;lite e c&acirc;mera a&eacute;rea capturam informa&ccedil;&otilde;es que s&atilde;o divididas em &iacute;ndices de banda. Cada &iacute;ndice de banda cont&eacute;m as informa&ccedil;&otilde;es para uma parte espec&iacute;fica do espectro eletromagn&eacute;tico. Este m&eacute;todo de monitoramento da vegeta&ccedil;&atilde;o exige que voc&ecirc; especifique o &iacute;ndice de banda que capturou os comprimentos de onda vermelho e NIR.
+            </p>
+        </div>
+    </div>
+    <div id="slopeOfSoilLine">
+        <div><h2>Declividade da linha de superfície</h2></div>
+        <hr/>
+        <div>
+            <p>A declividade da linha de superf&iacute;cie. A declividade &eacute; a rela&ccedil;&atilde;o linear aproximada entre as bandas NIR e Vermelha no gr&aacute;fico de dispers&atilde;o.
+            </p>
+            <p>Este par&acirc;metro &eacute; v&aacute;lido somente para o m&eacute;todo de &Iacute;ndice de Vegeta&ccedil;&atilde;o Ajustado ao Solo Transformado.
+            </p>
+        </div>
+    </div>
+    <div id="interceptOfSoilLine">
+        <div><h2>Interceptar</h2></div>
+        <hr/>
+        <div>
+            <p>O valor do NIR quando o valor de reflex&atilde;o da banda vermelha (Vermelho) for 0 para as linhas do solo em particular.
+            </p>
+            <p> <code>(a = NIR - sRed)</code> , quando Vermelho &eacute; 0.
+            </p> 
+            <p>Este par&acirc;metro &eacute; v&aacute;lido somente para o m&eacute;todo de &Iacute;ndice de Vegeta&ccedil;&atilde;o Ajustado ao Solo Transformado.
+            </p>
+        </div>
+    </div>
+    <div id="greenVegetativeCover">
+        <div><h2>Quantidade da cobertura de vegetação verde</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica a quantia de cobertura de vegeta&ccedil;&atilde;o verde, que &eacute; exigido pelo m&eacute;todo de SAVI.
+            </p>
+            <p>Os valores v&aacute;lidos s&atilde;o como seguem: 
+
+                <ul>
+                    <li>1 = &Aacute;reas sem cobertura de vegeta&ccedil;&atilde;o verde
+                        
+ 
+                    </li>
+                    <li>0.5 = &Aacute;reas com cobertura de vegeta&ccedil;&atilde;o verde moderada
+                        
+ 
+                    </li>
+                    <li>0 = &Aacute;reas com cobertura de vegeta&ccedil;&atilde;o verde alta
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="adjustmentFactor">
+        <div><h2>Fator de ajuste</h2></div>
+        <hr/>
+        <div>
+            <p>Especifica o fator de ajuste para ajudar minimizar o efeito do solo, que &eacute; exigido pelo m&eacute;todo &Iacute;ndice de Vegeta&ccedil;&atilde;o Ajustado ao Solo Transformado. O valor padr&atilde;o &eacute; 0.08.
+            </p>
+            <p>Um valor baixo significa que voc&ecirc; est&aacute; ignorando o efeito do solo. Um valor alto significa que o solo afetar&aacute; seu resultado.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>O nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se a camada j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>Voc&ecirc; pode especificar o nome de uma pasta em  <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo utilizando a caixa suspensa <b>Salvar resultados em</b> .
+            </p>
+        </div>
+    </div>
+</div>
+</html>

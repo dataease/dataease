@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Join delle Feature</h2><p/>
+        <h2><img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" alt="Join delle feature"></h2>
+        <hr/>
+    <p>Join delle feature combina due layer e unisce gli attributi da una feature a un'altra in base a relazioni spaziali o di attributi. Questo strumento determina tutte le feature di input che soddisfano determinate condizioni di join e aggiunge il layer di join al layer di destinazione. 
+    </p>
+    <p>Lo strumento Join delle feature pu&ograve; essere applicato a punti, linee e tabelle. Un join spaziale richiede che i dati abbiano una geometria. 
+    </p>
+    <p>Se si seleziona  <b>Usa estensione mappa corrente</b>, vengono analizzate solo le feature visibili all'interno dell'estensione mappa corrente.  Se questa opzione &egrave; deselezionata, verranno analizzate tutte le feature sia nel Target Layer che nel Join Layer, anche se sono esterne all'estensione mappa corrente.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="targetLayer">
+        <div><h2>Scegliere il layer di destinazione</h2></div>
+        <hr/>
+        <div>
+            <p>Layer di destinazione alla cui tabella verranno aggiunti gli attributi derivanti dal layer di join.
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> in fondo all'elenco a discesa. Con questa opzione si apre una galleria in cui &egrave; possibile individuare e selezionare dataset di varie fonti da utilizzare nell'analisi. 
+            </p> 
+        </div>
+    </div>
+    <div id="joinLayer">
+        <div><h2>Scegli il layer a cui aggiungere il layer di destinazione</h2></div>
+        <hr/>
+        <div>
+            <p>Layer di join con gli attributi che verr&agrave; aggiunto al layer di destinazione.
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> in fondo all'elenco a discesa. Con questa opzione si apre una galleria in cui &egrave; possibile individuare e selezionare dataset di varie fonti da utilizzare nell'analisi. 
+            </p>
+        </div>
+    </div>
+    <div id="joinType">
+        <div><h2>Selezionare il tipo o i tipi di join</h2></div>
+        <hr/>
+        <div>
+            <p>&Egrave; possibile applicare un join spaziale, un join di attributi o una combinazione di entrambi. 
+                <ul>
+                    <li> <b>Spaziale</b>: utilizza una relazione spaziale specifica per unire le feature. Ci&ograve; richiede che entrambi i layer abbiano una geometria.
+                    </li>
+                    <li> <b>Attributo</b>: unisce le feature in base a campi uguali.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>
+            </p>
+        </div>
+    </div>
+    <div id="spatialRelationship">
+        <div><h2>Scegli una relazione spaziale</h2></div>
+        <hr/>
+        <div>
+            <p>La relazione spaziale che determiner&agrave; se le feature sono unite tra di loro. Le relazioni disponibili dipenderanno dal tipo di geometria (punto, linea, aree) che verr&agrave; utilizzata come feature di input. Le relazioni disponibili includono le seguenti:
+                <ul>
+                    <li> <b>Identico</b>: le feature nel layer di destinazione saranno abbinate se sono uguali alle feature nel layer di join.
+                    </li>
+                    <li> <b>Interseca</b>: le feature nel layer di destinazione saranno abbinate se intersecano le feature nel layer di join.
+                    </li>
+                    <li> <b>Contiene completamente</b>: le feature saranno abbinate se le feature nel layer di destinazione contengono completamente le feature nel layer di join.
+                    </li>
+                    <li> <b>Completamente all'interno di</b>: le feature saranno abbinate se le feature nel layer di destinazione sono completamente all'interno delle feature nel layer di join.
+                    </li>
+                    <li> <b>Entro una distanza di</b>: le feature nel layer di destinazione saranno abbinate se si trovano entro la distanza specificata dalle feature nel layer di join.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="attributeRelationship">
+        <div><h2>Join attributo</h2></div>
+        <hr/>
+        <div>
+            <p>Relazione di attributi che determiner&agrave; se le feature sono unite tra di loro. Le feature vengono abbinate se i valori dei campi nel Join Layer sono uguali ai valori dei campi nel Target Layer. 
+            </p>
+            <p>Ad esempio, si supponga di avere un layer geografico regionale con indirizzi di abitazioni (incluso un campo denominato  <i>ZIP</i>) e un dataset tabulare di dati demografici relativi alla salute in base al codice postale (un campo denominato <i>HEALTHZIP</i>). &Egrave; possibile unire il dataset relativo alla salute ai dati sugli edifici residenziali abbinando il campo <i>ZIP</i> al campo <i>HEALTHZIP</i>.Come risultato si otterr&agrave; un layer di edifici residenziali con i dati sulla salute corrispondenti.
+            </p>
+        </div>
+    </div>
+    <div id="joinOperation">
+        <div><h2>Scegli operazione Join</h2></div>
+        <hr/>
+        <div>
+            <p>Determina in che modo verranno gestiti i layer di join e di destinazione se pi&ugrave; feature nel layer di join presentano la stessa relazione con il layer di destinazione. Di seguito sono riportate le due operazioni di join tra cui scegliere:
+                <ul>
+                    <li> <b>Join uno a uno</b>: questa opzione unisce le feature nel layer di target in una singola feature nel layer di join. La maniera in cui le feature vengono unite, viene determinata dal parametro <b>Aggiungi statistiche</b> o dal parametro <b>Specifica quale record mantenere</b>. Se viene utilizzato <b>Aggiungi statistiche</b>, tutte le feature unite corrispondenti verranno riepilogate per ogni feature nel layer di destinazione. Il conteggio di feature unite verr&agrave; aggiunto per impostazione predefinita. Se viene utilizzato <b>Specifica quale record mantenere</b>, &egrave; possibile scegliere di mantenere il primo record corrispondente (predefinito) o di mantenere un record corrispondente basato su un&rsquo;espressione. Un&rsquo;espressione pu&ograve; utilizzare un campo numerico (opzione per il record pi&ugrave; grande o pi&ugrave; piccolo) o un campo data (opzione per il pi&ugrave; recente o per il pi&ugrave; datato).
+                    </li>
+                    <li> <b>Join uno a molti</b>: questa opzione unisce tutte le feature corrispondenti nel Join Layer al Target Layer.  Il layer risultati conterr&agrave; pi&ugrave; record della feature di destinazione.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Si supponga, ad esempio, di voler trovare i supermercati situati a meno di 5 km da un mercato contadino.   In questo caso, il layer nel quale verr&agrave; eseguito il join ha una sola feature che rappresenta un mercato contadino, mentre le feature di join rappresentano i negozi di alimentari che hanno degli attributi, come le vendite annuali totali. Utilizzando lo strumento  <b>Join delle feature</b>, sono stati trovati cinque negozi di alimentari che soddisfano i criteri. Se si specifica l'opzione <b>Join uno a molti</b>, come risultato si otterranno cinque feature nel risultato e ciascuna riga rappresenta il mercato contadino e un supermercato. Se si specifica una relazione <b>Join uno a uno</b> e si seleziona una statistica, come risultato si otterranno una feature che rappresenta il mercato contadino e informazioni riepilogative dei supermercati, come il conteggio (5) e altre statistiche facoltative, ad esempio la somma delle vendite annuali.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Aggiungi statistiche (facoltativo)</h2></div>
+        <hr/>
+        <div>
+            <p>Se &egrave; stata selezionata l'opzione  <b>Join uno a uno</b>, per campi numerici, &egrave; possibile riepilogare e calcolare le statistiche sulle feature unite.   Per impostazione predefinita, il conteggio di feature di join corrispondenti verr&agrave; calcolato e aggiunto al layer risultati.  Se si sceglie di non aggiungere statistiche aggiuntive, la prima feature corrispondente nel layer di join verr&agrave; unita alla prima feature corrispondente ne layer di destinazione.   &Egrave; possibile calcolare una o pi&ugrave; delle opzioni seguenti:
+            </p>
+            <ul>
+                <li>Somma
+                </li>
+                <li>Minimo
+                </li>
+                <li>Massimo
+                </li>
+                <li>Media
+                </li>
+                <li>Deviazione standard
+                </li>
+            </ul>
+            
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa.  Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il nome del layer esiste gi&agrave;, verr&agrave; richiesto di fornire un altro nome.
+            </p>
+            <p>Utilizzare il men&ugrave; a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+        </div>
+    </div>
+    <div id="isView">
+        <div><h2>Crea i risultati come vista di feature layer hosted</h2></div>
+        <hr/>
+        <div>
+            <p> La creazione dei risultati come una vista del feature layer hosted permette di mantenere i dati sempre aggiornati mentre i dati origine cambiano. Le viste feature layer hosted che contengono join saranno di sola lettura e non consumeranno crediti per analisi e memorizzazione.
+            </p>
+            <p>&Egrave; possibile creare una vista del feature layer hosted dai risultati dell&rsquo;analisi se vengono rispettate le seguenti condizioni:
+                <ul>
+                    <li>Si &egrave; proprietari di entrambi i layer.
+                    </li>
+                    <li>Entrambi i layer sono feature layer hosted.
+                    </li>
+                    <li>Si sta avviando un join basato su attributi.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

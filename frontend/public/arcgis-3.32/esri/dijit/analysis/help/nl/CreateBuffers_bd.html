@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Buffers maken</h2><p/>
+        <h2><img src="../images/GUID-6E648C49-37F9-4673-82D5-DB646921A828-web.png" alt="Buffers maken"></h2>
+        <hr/>
+    <p>Een buffer is een gebied dat een bepaalde afstand vanaf een punt-, lijn- of gebiedsobject dekt. 
+    </p>
+    <p>Buffers worden doorgaans gebruikt om gebieden te maken die verder kunnen worden geanalyseerd met andere tools. Als de vraag bijvoorbeeld luidt &quot;Welke gebouwen bevinden zich binnen anderhalve kilometer van de school?&quot;, dan kunt u het antwoord vinden door een buffer van anderhalve kilometer rond de school te maken en boven op de buffer de laag te plaatsen die voetafdrukken van gebouwen bevat. Het eindresultaat is een laag met de gebouwen die zich binnen anderhalve kilometer van de school bevinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Kies laag om buffer op toe te passen</h2></div>
+        <hr/>
+        <div>
+            <p>De punt-, lijn- of gebiedsobjecten om te bufferen. De invoerlagen moeten in een geprojecteerd co&ouml;rdinaatsysteem of de processing ruimtelijke referentie moet worden ingesteld op een geprojecteerd co&ouml;rdinaatsysteem met behulp van de  <b>Analysis Environments</b>.
+            </p>
+            <p>Naast het kiezen van een laag van uw kaart, kunt u kiezen voor  <b>Analyselaag kiezen</b> onderaan de keuzelijst om in uw inhoud te zoeken naar een big data file share-dataset of objectlaag.
+            </p>
+        </div>
+    </div>
+    <div id="bufferType">
+        <div><h2>Selecteer het type buffer om toe te passen</h2></div>
+        <hr/>
+        <div>
+            <p>Er zijn drie manieren om de grootte van de buffer voor uw invoerobjecten op te geven: 
+                <ul>
+                    <li>Geef een afstand op die wordt toegepast op alle objecten.
+                    </li>
+                    <li>Geef een veld op de invoerlaag op die de afstandswaarde bevat. U kunt een stringveld of een numeriek veld gebruiken. Indien een lineaire eenheid niet is gedefinieerd, worden de eenheden van de ruimtelijke referentie gebruikt. Als u gebruik maakt van een geografisch co&ouml;rdinaatsysteem, wordt aangenomen dat het veld zonder eenheden in meters is. 
+                    </li>
+                    <li>Bouw een expressie met meerdere velden en wiskundige operators. Bijvoorbeeld, om 10 keer de waarde van een veld met de naam  <i>wind_speed</i> te bufferen, voegt u de expressie <i>$feature[&quot;wind_speed&quot;] x 10</i>toe.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Selecteer de buffermethode</h2></div>
+        <hr/>
+        <div>
+            <p>U kunt ervoor kiezen om een  <b>Planaire</b> methode of een <b>Geodetische</b> methode te gebruiken. De <b>Planaire</b> methode kan sneller zijn en is geschikt voor lokale analyse van geprojecteerde data. De <b>Geodetische</b> methode is geschikt voor grote oppervlakken en alle geografische co&ouml;rdinaatsystemen.
+            </p>
+        </div>
+    </div>
+    <div id="dissolveOption">
+        <div><h2>Selecteer het type aggregatiemethode</h2></div>
+        <hr/>
+        <div>
+            <p>Opties om de oplosmethode te specificeren. Als een oplosmethode wordt gekozen, krijgt u de optie om multipart of single-part gebieden te maken en kunt u statistieken berekenen op basis van de beschikbare velden.
+                <ul>
+                    <li> <b>Alle</b>&mdash;Alle objecten worden opgelost. Als multipart objecten zijn toegestaan, zullen alle objecten worden opgelost in een enkel object. Als multipart niet is toegestaan, zullen objecten naast elkaar of elkaar overlappend worden opgelost.
+                    </li>
+                    <li> <b>Velden</b>&mdash;Velden die hetzelfde opgegeven veld delen of opgegeven veldcombinatie worden opgelost. Als multipart objecten zijn toegestaan, zullen alle objecten met hetzelfde veld worden opgelost in een enkel object. Als multipart niet is toegestaan, zullen objecten naast elkaar of elkaar overlappend met dezelfde veldwaarde worden opgelost.
+                    </li>
+                    <li> <b>Geen</b>&mdash;Er worden geen objecten opgelost. Dit is de standaardinstelling.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="multipart">
+        <div><h2>Objecten met meerdere delen toestaan</h2></div>
+        <hr/>
+        <div>
+            <p>Optie om te specificeren of uw resultaat zal bestaan ​​uit objecten van &eacute;&eacute;n deel of meerdere delen. 
+
+            </p>
+            <p>
+                <ul>
+                    <li>Aangevinkt&mdash;De resultaten van uw analyse bevatten objecten uit meerdere delen.   
+                    </li>
+                    <li>Niet aangevinkt&mdash;De resultaten van uw analyse bevatten objecten uit &eacute;&eacute;n deel. Dit is standaard.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Statistieken toevoegen (optioneel)</h2></div>
+        <hr/>
+        <div>
+            <p> U kunt statistieken berekenen over objecten die zijn samengevat.U kunt het volgende berekenen in numerieke velden:
+                <ul>
+                    <li>Count&mdash;Berekent het aantal niet-nulwaarden.Kan gebruikt worden op numerieke velden of strings. De telling van [nul, 0, 2] is 2.
+                    </li>
+                    <li>Som&mdash;De som van numerieke waarden in een veld. De som van [nul, nul, 3] is 3.
+                    </li>
+                    <li>Gemiddelde&mdash;Het gemiddelde van numerieke waarden. Het gemiddelde van [0, 2, nul] is 1.
+                    </li>
+                    <li>Min&mdash;De minimumwaarde van een numeriek veld. Het minimum van [0, 2, nul] is 0. 
+                    </li>
+                    <li>Max&mdash;De maximumwaarde van een numeriek veld. De maximumwaarde van [0, 2, nul] is 2.
+                    </li>
+                    <li>Bereik&mdash;Het bereik van een numeriek veld. Dit wordt berekend als de minimumwaarden afgetrokken van de maximumwaarde. Het bereik van [0, nul, 1] is 1. Het bereik van [nul, 4] is 0.
+                    </li>
+                    <li>Variantie&mdash;De variantie van een numeriek veld in een track. De variantie van [1] is nul. De variantie van [null, 1,0,1,1] is 0,25.
+                    </li>
+                    <li>Standaarddeviatie&mdash;De standaarddeviatie van een numeriek veld. De standaarddeviatie van [1] is nul. De standaarddeviatie van [null, 1,0,1,1] is 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>U kunt het volgende berekenen in numerieke velden:
+                <ul>
+                    <li>Telling&mdash;Het aantal non-nul strings.
+                    </li>
+                    <li>Elke&mdash;Deze statistiek is een willekeurig voorbeeld van een stringwaarde in het gespecificeerde veld.
+                    </li>
+                </ul>
+                Alle statistieken worden berekend op nonnull waarden. De resultaatlaag zal een nieuw veld bevatten voor elke statistiek die wordt berekend. Andere statistieken kunnen worden toegevoegd door een attribuut en statistiek te kiezen. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Kies een ArcGIS Data Store om de resultaten in op te slaan</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytic-resultaten worden opgeslagen in een datastore en weergegeven als een objectlaag in  Portal for ArcGIS. In de meeste gevallen moeten de resultaten worden opgeslagen in de spatiotemporele data store en dit is de standaardinstelling. In sommige gevallen is het opslaan van de resultaten in de relationele data-opslag een goede optie. Hier volgen redenen waarom u resultaten zou willen opslaan in een relationele data-opslag: 
+                <ul>
+                    <li>U kunt resultaten gebruiken in portaal-tot-portaal samenwerking.
+                    </li>
+                    <li>Om synchronisatiemogelijkheden met uw resultaten mogelijk te maken.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>U moet geen gebruik maken van een relationele data-store als u verwacht dat uw GeoAnalytics-resultaten toenemen en u wilt profiteren van de mogelijkheden van de spatiotemporele big data-store om grote hoeveelheden gegevens te verwerken.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p> De naam van de laag die wordt gemaakt. Als u naar een ArcGIS Data Store,  schrijft, worden uw resultaten opgeslagen in  <b>Mijn Content</b> en toegevoegd aan de kaart. Als u naar een big data file share schrijft, worden uw resultaten opgeslagen in de big data file share en toegevoegd aan het bijhorende manifest. Ze zullen niet worden toegevoegd aan de kaart. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, zal de tool falen.
+            </p>
+            <p>Wanneer u schrijft naar  ArcGIS Data Store (relationele of spatiotemporele big datastore) met behulp van de vervolgkeuzelijst  <b>Resultaat opslaan in</b>, kunt u de naam van een map opgeven in <b>Mijn Content</b>, waar het resultaat wordt opgeslagen.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

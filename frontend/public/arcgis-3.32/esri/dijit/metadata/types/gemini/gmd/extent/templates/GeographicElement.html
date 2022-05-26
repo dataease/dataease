@@ -1,0 +1,61 @@
+<div data-dojo-attach-point="containerNode">
+  <div data-dojo-type="esri/dijit/metadata/form/iso/ObjectReference"
+    data-dojo-props="target:'gmd:geographicElement',minOccurs:1,maxOccurs:'unbounded',
+      label:'${i18nIso.EX_Extent.geographicElement}',
+      matchTopNode: [
+        {
+           qPath: 'gmd:EX_GeographicBoundingBox',
+          qValue: null,
+          qMode: 'must'
+        }  
+      ]">
+    <div data-dojo-type="esri/dijit/metadata/form/iso/AbstractObject"
+      data-dojo-props="target:'gmd:EX_GeographicBoundingBox',minOccurs:0">
+      <div class="gxeGeoExtentSection">
+        <div class="gxeGeoExtentCoordinates">
+          <div data-dojo-type="esri/dijit/metadata/form/Element"
+            data-dojo-props="target:'gmd:westBoundLongitude',
+              label:'${i18nIso.EX_GeographicBoundingBox.westBoundLongitude}'">
+            <div data-dojo-type="esri/dijit/metadata/form/iso/GcoElement"
+              data-dojo-props="target:'gco:Decimal',value:-180">
+              <div data-dojo-type="esri/dijit/metadata/form/InputNumber"
+                data-dojo-props="hint:'${i18nBase.hints.longitude}'">
+                <div data-dojo-type="esri/dijit/metadata/form/iso/GeoExtentTool"
+                  data-dojo-props="label:'${i18nBase.geoExtent.button}'"></div>
+              </div>
+            </div>
+          </div>
+          <div data-dojo-type="esri/dijit/metadata/form/Element"
+            data-dojo-props="target:'gmd:eastBoundLongitude',
+              label:'${i18nIso.EX_GeographicBoundingBox.eastBoundLongitude}'">
+            <div data-dojo-type="esri/dijit/metadata/form/iso/GcoElement"
+              data-dojo-props="target:'gco:Decimal',value:180">
+              <div data-dojo-type="esri/dijit/metadata/form/InputNumber"
+                data-dojo-props="hint:'${i18nBase.hints.longitude}'"></div>
+            </div>
+          </div>
+          <div data-dojo-type="esri/dijit/metadata/form/Element"
+            data-dojo-props="target:'gmd:southBoundLatitude',
+              label:'${i18nIso.EX_GeographicBoundingBox.southBoundLatitude}'">
+            <div data-dojo-type="esri/dijit/metadata/form/iso/GcoElement"
+              data-dojo-props="target:'gco:Decimal',value:-90">
+              <div data-dojo-type="esri/dijit/metadata/form/InputNumber"
+                data-dojo-props="hint:'${i18nBase.hints.latitude}'"></div>
+            </div>
+          </div>
+          <div data-dojo-type="esri/dijit/metadata/form/Element"
+            data-dojo-props="target:'gmd:northBoundLatitude',
+              label:'${i18nIso.EX_GeographicBoundingBox.northBoundLatitude}'">
+            <div data-dojo-type="esri/dijit/metadata/form/iso/GcoElement"
+              data-dojo-props="target:'gco:Decimal',value:90">
+              <div data-dojo-type="esri/dijit/metadata/form/InputNumber"
+                data-dojo-props="hint:'${i18nBase.hints.latitude}'"></div>
+            </div>
+          </div>
+        </div>
+        <div class="gxeGeoExtentViewSection gxeViewOnly"></div>
+        <div class="gxeGeoExtentBottom"></div>
+      </div>
+    </div>
+  </div>
+</div>

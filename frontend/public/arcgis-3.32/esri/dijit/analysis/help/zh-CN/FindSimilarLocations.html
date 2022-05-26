@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>查找相似位置</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="查找相似位置"></h2>
+        <hr/>
+    <p>根据您所指定的条件，&ldquo;查找相似位置&rdquo;工具将测量候选搜索图层中的位置与一个或多个参考位置之间的相似性。该工具可回答诸如以下的问题：
+        <ul>
+            <li>根据客户资料，哪些商店与绩效最佳的商店最为相似？
+            </li>
+            <li>基于遭受最严重疾病的村庄所具有的各项特征，其他哪些村庄有较高的风险？
+            </li>
+        </ul>
+        要回答此类问题，应提供参考位置、候选搜索位置和表示匹配条件的字段。第一个输入图层应包含参考位置或基准位置。例如，这可能是包含绩效最佳的商店或遭受最严重疾病的村庄所在的图层。然后指定包含候选搜索位置的图层。这可能是所有商店或所有其他村庄。最后，标识出一个或多个用来测量相似性的字段。随后，&ldquo;查找相似位置&rdquo;工具将在所有已选字段中，按候选搜索位置与参考位置之间的相近程度，为所有候选搜索位置划分等级。
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>选择包含参考位置的图层</h2></div>
+        <hr/>
+        <div>
+            <p>包含待匹配参考位置的点图层、线图层或区域图层。
+            </p>
+            <p>除了从地图选择图层，您也可以选择下拉列表底部的 <b>选择分析图层</b>。此选项将打开一个库，您可以在其中浏览并选择各种来源的数据集以用于分析。 
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>您可以使用所有位置或进行选择</h2></div>
+        <hr/>
+        <div>
+            <p>如有必要，请使用选择按钮标识参考位置。例如，如果输入图层包含所有位置（参考位置以及候选搜索位置），则需要使用其中一个选择工具来标识参考位置。如果创建两个独立的图层，其中一个包含参考位置而另一个包含所有候选搜索位置，则不需要进行选择。
+            </p>
+            <p>如果存在多个参考位置，则通过对每个用于分析相似性的字段求平均值来创建单个位置。
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>在以下图层中搜索相似的位置</h2></div>
+        <hr/>
+        <div>
+            <p>从最相似到最不相似为此图层中的候选搜索位置划分等级。相似性基于在指定字段中每个位置与参考位置之间的相近程度。
+            </p>
+            <p>除了从地图选择图层，您也可以选择下拉列表底部的 <b>选择分析图层</b>。此选项将打开一个库，您可以在其中浏览并选择各种来源的数据集以用于分析。 
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>相似性依据</h2></div>
+        <hr/>
+        <div>
+            <p>所选字段将成为用于评估相似性的条件。例如，如果选择人口和收入字段，则具有最低（最佳）等级的候选搜索位置将是那些与参考位置具有相似人口和收入值的位置。
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>显示</h2></div>
+        <hr/>
+        <div>
+            <p>您可以查看从最相似到最不相似排序的所有候选搜索位置，或指定想要查看的结果数。
+                <ul>
+                    <li> <b>从最相似到最不相似的所有位置</b> - 候选搜索图层中的所有要素都会按等级顺序包括在结果图层
+                    </li>
+                    <li> <b>返回的位置数量</b> - 确定应包括在结果图层中的最相似候选位置的数量。默认输入为 1。
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>为在 <b>我的内容</b>中创建并添加到地图中的图层命名。该结果图层将包含参考位置和指定的已划分等级的候选搜索位置的数量。如果结果图层名称已存在，则系统会要求您重命名该图层。
+            </p>
+            <p>使用 <b>将结果保存在</b>下拉框，可以指定 <b>我的内容</b>中的文件夹的名称，结果将保存到该文件夹中。
+            </p>  
+        </div>
+    </div>
+</div>
+</html>

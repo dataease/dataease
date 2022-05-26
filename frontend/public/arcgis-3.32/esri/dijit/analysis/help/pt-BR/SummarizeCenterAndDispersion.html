@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Resumir Centro e Dispersão</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="Resumir Centro e Dispers&atilde;o"></h2>
+        <hr/>
+    <p>Esta ferramenta localiza fei&ccedil;&otilde;es centrais e distribui&ccedil;&otilde;es direcionais.
+Pode ser utilizado para responder perguntas como:
+        <ul>
+            <li>Onde est&aacute; o centro?
+            </li>
+            <li>Qual fei&ccedil;&atilde;o &eacute; a mais acess&iacute;vel de todas as outras fei&ccedil;&otilde;es?
+            </li>
+            <li>Qu&atilde;o dispersa, compacta ou integrada s&atilde;o as fei&ccedil;&otilde;es?
+            </li>
+            <li>H&aacute; tend&ecirc;ncias direcionais?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Se  <b>Utilizar uma extens&atilde;o de mapa atual</b> estiver selecionada, somente as fei&ccedil;&otilde;es na camada de entrada vis&iacute;veis dentro da extens&atilde;o de mapa atual ser&atilde;o analisadas. Se n&atilde;o selecionada, todas as fei&ccedil;&otilde;es na camada de entrada ser&atilde;o analisadas, mesmo que estiverem fora da extens&atilde;o de mapa atual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Escolha uma camada para ser descrita</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de ponto, linha ou &aacute;rea que ser&aacute; utilizada para localizar fei&ccedil;&otilde;es centrais e distribui&ccedil;&otilde;es direcionais.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>Tipos de resumos</h2></div>
+        <hr/>
+        <div>
+            <p>O m&eacute;todo para resumir centro e dispers&atilde;o. 
+            </p>
+            <ul>
+                <li>Fei&ccedil;&atilde;o central - Identifica a fei&ccedil;&atilde;o localizada centralmente em um conjunto de dados.
+                </li>
+                <li>Centro m&eacute;dio - Identifica o centro geogr&aacute;fico (ou o centro de concentra&ccedil;&atilde;o) para um conjunto de fei&ccedil;&otilde;es.
+                </li>
+                <li>Centro mediano - Identifica a posi&ccedil;&atilde;o que minimiza a dist&acirc;ncia Euclidiana global para as fei&ccedil;&otilde;es em um conjunto de dados.
+                </li>
+                <li>Elipse - Cria elipse de desvio padr&atilde;o para resumir as caracter&iacute;sticas espaciais de fei&ccedil;&otilde;es geogr&aacute;ficas: propens&atilde;o central, dispers&atilde;o e tend&ecirc;ncias direcionais. As elipses podem ser de tamanhos como desvio padr&atilde;o 1, 2 ou 3.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>Ponderado por (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>O campo utilizado para localiza&ccedil;&otilde;es ponderadas de acordo com sua import&acirc;ncia relativa. 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>Agrupar por (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Campo utilizado para agrupar fei&ccedil;&otilde;es para separar c&aacute;lculos da fei&ccedil;&otilde;es centrais e dispers&otilde;es. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa.  O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se o nome da camada j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Salvar resultado em</b>, &eacute; poss&iacute;vel especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

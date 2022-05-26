@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Reconstruir recorridos</h2><p/>
+        <h2><img src="../images/GUID-80807DB7-0CA7-4FD8-9702-B4486285D4FC-web.png" alt="Reconstruir recorridos"></h2>
+        <hr/>
+    <p> Esta herramienta trabaja con una capa con la funci&oacute;n de tiempo habilitada de entidades de puntos o de &aacute;rea que representan un <code>instante</code> en el tiempo.   Primero determina qu&eacute; entidades pertenecen a un recorrido utilizando un identificador. Utilizando el tiempo en cada ubicaci&oacute;n, los recorridos se ordenan secuencialmente y se transforman en una l&iacute;nea o &aacute;rea que representa la ruta del movimiento en el tiempo. Opcionalmente, se puede crear una zona de influencia de la entrada mediante un campo, que crear&aacute; un &aacute;rea en cada ubicaci&oacute;n. Estos puntos con zona de influencia o &aacute;reas de entrada se unen a continuaci&oacute;n secuencialmente para crear un recorrido como &aacute;rea all&iacute; donde el ancho represente el atributo de inter&eacute;s. Los recorridos resultantes tendr&aacute;n un tiempo de inicio y finalizaci&oacute;n, que representar&aacute;n, temporalmente, la primera y la &uacute;ltima entidad en una determinada recorrido. Cuando se crean los recorridos, se calculan estad&iacute;sticas sobre las entidades de entrada y se asignan al recorrido de salida. La estad&iacute;stica m&aacute;s b&aacute;sica es el recuento de puntos dentro del &aacute;rea, pero se pueden calcular tambi&eacute;n otras estad&iacute;sticas.
+    </p>
+    <p>Las entidades en capas con la funci&oacute;n de tiempo habilitada se pueden representar de una de estas dos formas:
+        <ul>
+            <li>Instante: un &uacute;nico momento en el tiempo
+            </li>
+            <li>Intervalo: un tiempo de inicio y finalizaci&oacute;n
+            </li>
+        </ul>
+        
+    </p>
+    <p>Por ejemplo, supongamos que tiene mediciones de GPS de huracanes cada 10 minutos. Cada medici&oacute;n de GPS registra el nombre, la ubicaci&oacute;n, la hora de registro y la velocidad del viento del hurac&aacute;n. Con esta informaci&oacute;n, podr&iacute;a crear recorridos para cada hurac&aacute;n utilizando el nombre para la identificaci&oacute;n del recorrido, y se crear&iacute;an recorridos para cada hurac&aacute;n. Adem&aacute;s, podr&iacute;a calcular estad&iacute;sticas como, por ejemplo, la velocidad del viento media, m&aacute;xima y m&iacute;nima de cada hurac&aacute;n, o el recuento de mediciones dentro de cada recorrido.
+    </p>
+    <p>Siguiendo con el mismo ejemplo, podr&iacute;a crear una zona de influencia de los recorridos por la velocidad del viento. De este modo se crear&iacute;a una zona de influencia de cada medici&oacute;n por el campo de velocidad del viento en esa ubicaci&oacute;n y se unir&iacute;an las &aacute;reas con zona de influencia, as&iacute; se crear&iacute;a un &aacute;rea que representar&iacute;a la ruta del recorrido, as&iacute; como los cambios en la velocidad del viento a medida que evolucionan los huracanes.   
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Elija las entidades de las que reconstruir recorrido</h2></div>
+        <hr/>
+        <div>
+            <p>La capa de puntos o &aacute;rea que se reconstruir&aacute; en recorridos. La capa de entrada debe ser una capa con tiempo habilitado que represente un instante en el tiempo. La capa debe estar en un sistema de coordenadas proyectado o la referencia espacial de procesamiento debe estar definida en un sistema de coordenadas proyectado mediante  <b>Entornos de an&aacute;lisis</b> si se aplica una zona de influencia.
+            </p>
+            <p>Adem&aacute;s de elegir una capa en el mapa, puede elegir  <b>Elegir capa de an&aacute;lisis</b> en la parte inferior de la lista desplegable para examinar el contenido del dataset o la capa de entidades de un recurso compartido de archivos de big data.
+            </p>
+        </div>
+    </div>
+    <div id="trackFields">
+        <div><h2>Elegir uno o varios campos para identificar recorridos</h2></div>
+        <hr/>
+        <div>
+            <p>Los campos que representan el identificador del recorrido. 
+            </p>
+            <p>A modo de ejemplo, si estuviera reconstruyendo recorridos de huracanes, podr&iacute;a utilizar el nombre del hurac&aacute;n como el campo del recorrido.
+            </p>
+        </div>
+    </div>
+    <div id="method">
+        <div><h2>Elegir el método utilizado para reconstruir los recorridos</h2></div>
+        <hr/>
+        <div>
+            <p>M&eacute;todo utilizado para unir recorridos y aplicar la zona de influencia (si procede). El m&eacute;todo  <b>Planar</b> permite calcular los resultados m&aacute;s r&aacute;pidamente, pero no ajustar&aacute; los recorridos alrededor de la l&iacute;nea internacional de cambio de fecha o no representar&aacute; la forma real de la Tierra a la hora de crear la zona de influencia. El m&eacute;todo <b>Geod&eacute;sico</b> ajustar&aacute; los recorridos alrededor de la l&iacute;nea de cambio de fecha en caso necesario y aplicar&aacute; una zona de influencia geod&eacute;sica para representar la forma de la Tierra.
+            </p>
+        </div>
+    </div>
+    <div id="bufferField">
+        <div><h2>Cree una expresión con la que crear zonas de influencia de entidades de entrada (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Ecuaci&oacute;n utilizada para calcular la distancia de zona de influencia alrededor de entidades de entrada. Esta ecuaci&oacute;n se puede generar utilizando la calculadora de zonas de influencia y tambi&eacute;n se admiten operaciones b&aacute;sicas como, por ejemplo, sumar, restar, multiplicar y dividir. Los valores se calculan utilizando el sistema de coordenadas de an&aacute;lisis. La capa debe estar en un sistema de coordenadas proyectado o la referencia espacial de procesamiento debe estar definida en un sistema de coordenadas proyectado mediante  <b>Entornos de an&aacute;lisis</b> si se aplica una zona de influencia.
+            </p>
+            <p>Una ecuaci&oacute;n del tipo  <code>$feature.windspeed * 1000</code> aplicar&iacute;a una zona de influencia de 1.000 multiplicada por el campo <i>windspeed</i>. Puede utilizar m&aacute;s de un campo en la calculadora de zonas de influencia.
+            </p>
+            <p> Tambi&eacute;n puede especificar una expresi&oacute;n que realice seguimiento. Por ejemplo, podr&iacute;a calcular la suma el valor de campo <i>windspeed</i> para la entidad actual y las dos entidades anteriores con una ecuaci&oacute;n como, por ejemplo, <code>$track.field(windspeed).history(-3)</code>. En cada ubicaci&oacute;n, se calcular&iacute;a la suma del valor actual de <i>windspeed</i> y de las dos mediciones anteriores y se le aplicar&iacute;a una zona de influencia.
+            </p>
+        </div>
+    </div>
+    <div id="timeSplit">
+        <div><h2>Seleccionar un intervalo de tiempo para dividir los recorridos (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Tiempo utilizado para dividir recorridos. Si los puntos o &aacute;reas de entrada tienen una duraci&oacute;n superior entre ellos a la divisi&oacute;n del tiempo, se dividir&aacute;n en diferentes recorridos.
+            </p>
+            <p>Si especifica una divisi&oacute;n de tiempo y otra de distancia, los recorridos se dividir&aacute;n cuando se cumplan una o ambas condiciones. 
+            </p>
+            <p>Supongamos que tiene entidades de puntos que representan vuelos de aeronaves donde el campo de recorrido es el Id. de la aeronave. Esta aeronave podr&iacute;a realizar varios viajes y se representar&iacute;a como un recorrido.  Si supiera que existe un descanso de 1 hora entre los vuelos, podr&iacute;a utilizar  <code>1 hora</code> como valor para la divisi&oacute;n del recorrido y cada vuelo se dividir&iacute;a entre su propio recorrido.
+            </p>
+        </div>
+    </div>
+    <div id="splitTracks">
+        <div><h2>Dividir recorridos (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Puede dividir recorridos con tres m&eacute;todos distintos. Puede no usar ning&uacute;n m&eacute;todo de divisi&oacute;n, o bien utilizar todos o algunos de ellos. 
+            </p>
+            <p>Las divisiones se pueden completar de las siguientes maneras:
+                <ul>
+                    <li> <b>En funci&oacute;n de la distancia entre entradas</b>: si los puntos o &aacute;reas de entrada tienen una distancia entre ellos m&aacute;s amplia que la distancia especificada, se dividir&aacute;n en diferentes recorridos. Por ejemplo, si especific&oacute; una distancia de 10 kil&oacute;metros, los puntos secuenciales mayores que 10 kil&oacute;metros ser&iacute;an recorridos separados.
+                    </li>
+                    <li> <b>En funci&oacute;n del tiempo entre entradas</b>: si los puntos o &aacute;reas de entrada tienen una duraci&oacute;n superior entre ellos a la divisi&oacute;n del tiempo, se dividir&aacute;n en diferentes recorridos. Por ejemplo, si tuviera entidades de puntos que representan vuelos de aeronaves, donde el campo de recorrido es el Id. de la aeronave, esta aeronave podr&iacute;a realizar varios viajes y se representar&iacute;a como un recorrido.  Si supiera que existe un descanso de 1 hora entre los vuelos, podr&iacute;a utilizar <code>1 hora</code> como valor para la divisi&oacute;n del recorrido y cada vuelo se dividir&iacute;a entre su propio recorrido.
+                    </li>
+                    <li> <b>A intervalos de tiempo definidos</b>: se divide utilizando intervalos regulares, especificados por un intervalo de tiempo y un tiempo de referencia. Si no especifica ning&uacute;n tiempo de referencia, se utilizar&aacute; el 1 de enero de 1970. Por ejemplo, si especific&oacute; 1 a&ntilde;o con el 2 de febrero de 1990 a las 10:00 como tiempo de referencia, dividir&iacute;a los recorridos el 2 de febrero de 1990 a las 10:00, el 2 de febrero de 1991 a las 10:00, y as&iacute; sucesivamente en intervalos de un a&ntilde;o.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Si especifica varias opciones de divisi&oacute;n, los recorridos se dividir&aacute;n cuando se cumplan una o varias condiciones. 
+            </p>
+        </div>
+    </div>
+    <div id="distanceSplit">
+        <div><h2>Seleccionar una distancia entre la que dividir los recorridos (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p>Distancia utilizada para dividir recorridos. Si los puntos o &aacute;reas de entrada tienen una distancia entre ellos m&aacute;s amplia que la divisi&oacute;n de la distancia, se dividir&aacute;n en diferentes recorridos.
+            </p>
+            <p>Si especifica una divisi&oacute;n de tiempo y otra de distancia, los recorridos se dividir&aacute;n cuando se cumplan una o ambas condiciones. 
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Agregar estadísticas (opcional)</h2></div>
+        <hr/>
+        <div>
+            <p> Puede calcular estad&iacute;sticas sobre las entidades resumidas. Puede calcular lo siguiente en los campos num&eacute;ricos:
+                <ul>
+                    <li>Recuento: calcula el n&uacute;mero de valores no nulos. Se puede usar en campos num&eacute;ricos o cadenas de caracteres. El recuento de [nulo, 0, 2] es 2.
+                    </li>
+                    <li>Suma: la suma de valores num&eacute;ricos en un campo. La suma de [nulo, nulo, 3] es 3.
+                    </li>
+                    <li>Media: la media de valores num&eacute;ricos. La media de [0, 2, nulo] es 1.
+                    </li>
+                    <li>M&iacute;n: el valor m&iacute;nimo de un campo num&eacute;rico. El m&iacute;nimo de [0, 2, nulo] es 0. 
+                    </li>
+                    <li>M&aacute;x: el valor m&aacute;ximo de un campo num&eacute;rico. El m&aacute;ximo de [0, 2, nulo] es 2.
+                    </li>
+                    <li>Rango: el rango de un campo num&eacute;rico. Se calcula como los valores m&iacute;nimos restados del valor m&aacute;ximo. El rango de [0, nulo, 1] es 1. El rango de [nulo, 4] es 0.
+                    </li>
+                    <li>Varianza: la varianza de un campo num&eacute;rico en un recorrido. La varianza de [1] es nulo. La varianza de [nulo, 1,0,1,1] es 0,25.
+                    </li>
+                    <li>Desviaci&oacute;n est&aacute;ndar: la desviaci&oacute;n est&aacute;ndar de un campo num&eacute;rico. La desviaci&oacute;n est&aacute;ndar de [1] es nulo. La desviaci&oacute;n est&aacute;ndar de [nulo, 1,0,1,1] es 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Puede calcular lo siguiente en los campos de cadena de caracteres:
+                <ul>
+                    <li>Recuento: el n&uacute;mero de cadenas de caracteres no nulas.
+                    </li>
+                    <li>Cualquiera: esta estad&iacute;stica es una muestra aleatoria del valor de una cadena de caracteres en el campo especificado.
+                    </li>
+                </ul>
+                Todas las estad&iacute;sticas se calculan sobre valores no nulos. La capa resultante contendr&aacute; un nuevo campo para cada estad&iacute;stica calculada. Se puede agregar cualquier n&uacute;mero de estad&iacute;sticas eligiendo un atributo y una estad&iacute;stica. 
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Seleccionar un ArcGIS Data Store en el que guardar los resultados</h2></div>
+        <hr/>
+        <div>
+            <p>Los resultados de GeoAnalytics se almacenan en un data store y se exponen como capa de entidades en  Portal for ArcGIS. En la mayor&iacute;a de los casos, conviene almacenar los resultados en el almac&eacute;n de datos espaciotemporal y este es el predeterminado. En algunos casos, guardar los resultados en el data store relacional es una buena opci&oacute;n. A continuaci&oacute;n, se exponen motivos por los que guardar los resultados en el data store relacional es una buena idea: 
+                <ul>
+                    <li>Puede usar los resultados en una colaboraci&oacute;n de portal a portal.
+                    </li>
+                    <li>Puede habilitar capacidades de sincronizaci&oacute;n con sus resultados.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Conviene no usar el data store relacional si espera que los resultados de GeoAnalytics aumenten y necesita aprovechar las capacidades del big data store espaciotemporal para manejar grandes cantidades de datos.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p> El nombre de la capa que se crear&aacute;.  Si escribe en un ArcGIS Data Store, sus resultados se guardar&aacute;n en  <b>Mi contenido</b> y se agregar&aacute;n al mapa. Si escribe en un recurso compartido de archivos de big data, sus resultados se almacenar&aacute;n en el recurso compartido de archivos de big data y se agregar&aacute;n a su manifiesto. No se agregar&aacute;n al mapa. El nombre predeterminado se basa en el nombre de la herramienta y en el nombre de la capa de entrada. Si la capa ya existe, la herramienta fallar&aacute;.
+            </p>
+            <p>Cuando escriba en  ArcGIS Data Store (big data store espaciotemporal o relacional) con el cuadro desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

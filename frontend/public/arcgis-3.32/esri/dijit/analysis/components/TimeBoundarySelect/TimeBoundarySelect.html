@@ -1,0 +1,46 @@
+<div data-dojo-type="dijit/form/Form" data-dojo-attach-point="_form" readOnly="true">
+  <table class="" style="height:100%;width:100%;" cellpadding="5px" cellspacing="5px">
+    <tbody>
+      <tr>
+        <td colspan="3">
+          <label class="${cssClass.timeIntervalLabel}" data-dojo-attach-point="_timeIntervalLabel">
+            ${i18n.timeInterval}
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding-right:0;padding-bottom:0;width:50%;">
+          <input type="text" data-dojo-type="dijit/form/NumberTextBox" data-dojo-attach-event="onChange:_handleTimIntervalChange" data-dojo-props="constraints:{min:1,places:0},intermediateChanges:true,missingMessage:'${i18n.distanceMsg}'" data-dojo-attach-point="_timeBoundarySplitValue" class="${cssClass.timeBoundaryValue}"  style="width:75%;"/>
+        </td>
+        <td colspan="2" style="padding-left:0.25em;padding-bottom:0;width:50%;">
+          <select class="${cssClass.timeBoundaryUnitSelect}" data-dojo-type="dijit/form/Select" data-dojo-attach-event="onChange:_handleTimeIntervalUnitChange" data-dojo-attach-point="_timeBoundarySplitUnitSelect" style="width:80%;table-layout:fixed;">
+            <option value="Seconds">${i18n.seconds}</option>
+            <option value="Minutes">${i18n.minutes}</option>
+            <option value="Hours">${i18n.hours}</option>
+            <option value="Days">${i18n.days}</option>
+            <option value="Weeks">${i18n.weeks}</option>
+            <option value="Months">${i18n.months}</option>
+            <option value="Years">${i18n.years}</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3">
+          <label class="${cssClass.timeAlignLabel}" data-dojo-attach-point="_timeAlignLabel">
+            ${i18n.timeAlign}
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding-right:0;width:50%;padding-bottom:1em;">
+          <input class="${cssClass.timeRefDateSelect}" data-dojo-props="required:false" data-dojo-type="dijit/form/DateTextBox" data-dojo-attach-point="_timeBdryRefDay" style="width:75%;">
+          </input>
+        </td>
+        <td colpsan="2" style="padding-left:0.25em;width:50%;padding-bottom:1em;">
+          <input  type="text" data-dojo-type="dijit/form/TimeTextBox" data-dojo-props="required:false,intermediateChanges:true,constraints:{formatLength:'short',selector:'time'}"  data-dojo-attach-point="_timeBdryRefTime" data-dojo-attach-event="onChange:_handleRefTimeChange" style="margin-top:0;width:80%">
+          </input>
+      </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

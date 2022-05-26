@@ -1,0 +1,23 @@
+<div class="dijitCalendarDayLabels" style="left: 0px;" dojoAttachPoint="dayContainer">
+	<div dojoAttachPoint="header">
+		<div dojoAttachPoint="monthAndYearHeader">
+			<span dojoAttachPoint="monthLabelNode" class="dojoxCalendarMonthLabelNode"></span>
+			<span dojoAttachPoint="headerComma" class="dojoxCalendarComma">,</span>
+			<span dojoAttachPoint="yearLabelNode" class="dojoxCalendarDayYearLabel"></span>
+		</div>
+	</div>
+	<table cellspacing="0" cellpadding="0" border="0" style="margin: auto;">
+		<thead>
+			<tr>
+				<td class="dijitCalendarDayLabelTemplate"><div class="dijitCalendarDayLabel"></div></td>
+			</tr>
+		</thead>
+		<tbody dojoAttachEvent="onclick: _onDayClick">
+			<tr class="dijitCalendarWeekTemplate">
+				<td class="dojoxCalendarNextMonth dijitCalendarDateTemplate">
+					<div class="dijitCalendarDateLabel"></div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

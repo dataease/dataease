@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Konvertuoti rastrą į elementus</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="Įrankis, skirtas konvertuoti rastrą į elementus"></h2>
+        <hr/>
+    <p>&Scaron;is įrankis konvertuoja rastrą į elementų rinkinį kaip ta&scaron;kus, linijas arba plotus.
+    </p>
+    <p>Parametras  <b>Pasirinkite lauką</b> suteikia galimybę pasirinkti, kuris įvesties rastrinių duomenų rinkinio atributo laukas taps i&scaron;vesties elementų klasės atributu. &Scaron;is parametras galimas tik sveikųjų skaičių rastrams, kurie susijusioje lentelėje turi papildomų atributų.
+    </p>
+    <p>Įvesties rastro gardelės gali būti bet kokio dydžio.
+    </p>
+    <p>Sveikojo skaičiaus rastrai gali būti konvertuojami į ta&scaron;kinius, linijinius ar plotinius elementus, o rastrus su slankiuoju kableliu galima konvertuoti tik į ta&scaron;kinius elementus.
+    </p>
+    <p>Jei parinktis  <b>Naudoti esamą žemėlapio aprėptį</b> pažymėta, bus konvertuojamos tik dabartinėje žemėlapio aprėptyje matomos rastro gardelės. Jei parinktis nepažymėta, bus konvertuojamos visos rastrinio sluoksnio gardelės, net jei jos nepatenka į dabartinę žemėlapio aprėptį. Atkreipkite į tai dėmesį, jei rastrinis sluoksnis yra didelis arba labai didelės rai&scaron;kos.
+    </p>
+    <p>&Scaron;io įrankio panaudojimo atvejai:
+ 
+        <ul>
+            <li>Sukurkite plotinius elementus i&scaron; žemės naudojimo klasifikacijos rastro.
+                
+ 
+            </li>
+            <li>DEM nurodyti srautai gali būti konvertuoti į linijinius elementus.
+                
+
+            </li>
+            <li>DEM galima konvertuoti į ta&scaron;kinius elementus, kurie gali būti naudojami ne rastru pagrįstoje darbų eigoje.
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Pasirinkite rastrinį sluoksnį, kurį norite konvertuoti</h2></div>
+        <hr/>
+        <div>
+            <p>Rastrinis įvesties sluoksnis bus konvertuotas į elementų sluoksnius.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Pasirinkite lauką</h2></div>
+        <hr/>
+        <div>
+            <p>Užpildykite lauką, kuriame nurodoma, kuri reik&scaron;mė bus naudojama konvertuojant.
+            </p>
+            <p>Tai gali būti bet koks sveikasis skaičius arba tekstinė reik&scaron;mė.
+            </p>
+            <p>Laukai, kuriuose nurodytos reik&scaron;mės su slankiaisiais kableliais, gali būti naudojami tik jei konvertuojama į ta&scaron;kų rinkinį.
+            </p>
+            <p>Pagal numatytuosius nustatymus naudojamas laukas  <i>Value</i>, kuriame pateikiama kiekvienos rastro gardelės reik&scaron;mė.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Pasirinkite išvesties tipą</h2></div>
+        <hr/>
+        <div>
+            <p>Pasirinkite vieną i&scaron; i&scaron;vesties tipų: ta&scaron;ką, liniją ar plotą.
+            </p>
+            <ul>
+                <li>Ta&scaron;kas &ndash; rastras bus konvertuotas į ta&scaron;kų rinkinį.
+                    
+ 
+                </li>
+                <li>Linija &ndash; rastras bus konvertuotas į linijinių elementų rinkinį.
+                    
+ 
+                </li>
+                <li>Plotas &ndash; rastras bus konvertuotas į plotinių elementų rinkinį.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>Supaprastinkite linijas arba plotus</h2></div>
+        <hr/>
+        <div>
+            <p>Nurodykite, ar elementus reikia supaprastinti.
+            </p>
+            <p>Jei &scaron;i parinktis pažymėta (numatytasis nustatymas), linijiniai ar plotiniai elementai bus supaprastinti ir rezultatas bus labiau apibendrintas. Jei &scaron;i parinktis nepažymėta, linijiniai elementai atitiks rastrinių duomenų rinkinio gardelių ribas.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Sluoksnio, kuris bus sukurtas puslapyje  <b>Turinys</b> ir įtrauktas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau egzistuoja, būsite papra&scaron;yti pateikti kitą pavadinimą.
+            </p>
+            <p>Galite nurodyti aplanko  <b>Turinyje</b>, kuriame rezultatai bus įra&scaron;yti naudojant i&scaron;&scaron;okantįjį meniu <b>Rezultatą įra&scaron;yti į</b>, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

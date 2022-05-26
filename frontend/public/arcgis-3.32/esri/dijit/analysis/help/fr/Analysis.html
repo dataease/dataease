@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="aoToolbox">
+        <p>La bo&icirc;te &agrave; outils Analyse des entit&eacute;s contient un certain nombre d'outils que vous pouvez utiliser.  Ces t&acirc;ches sont organis&eacute;es ci-dessous en cat&eacute;gories&nbsp;: les cat&eacute;gories sont simplement des groupes logiques et n'affectent en aucune fa&ccedil;on la mani&egrave;re dont vous acc&eacute;dez aux t&acirc;ches ou les utilisez.
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="largesize">
+        <h2>Synthétiser les données</h2>
+        <hr/>
+        <p>Ces outils permettent de calculer les nombres totaux, les longueurs, les surfaces et les statistiques descriptives &eacute;l&eacute;mentaires des entit&eacute;s, ainsi que leurs attributs, au sein des surfaces ou &agrave; proximit&eacute; d'autres entit&eacute;s.
+            <ul>
+                <li> <b>Agr&eacute;ger les points</b> permet de calculer des statistiques concernant les points qui se trouvent au sein de surfaces sp&eacute;cifi&eacute;es.
+                </li>
+                <li> <b>Entit&eacute;s jointes</b> transf&egrave;re les attributs d'une couche ou table vers une autre en fonction des relations spatiales et attributaires.
+                </li>
+                <li> <b>Synth&eacute;tiser - A proximit&eacute;</b> permet de calculer des statistiques des entit&eacute;s et de leurs attributs qui se trouvent au sein d'une distance sp&eacute;cifi&eacute;e.
+                </li>
+                <li> <b>Synth&eacute;tiser - A l'int&eacute;rieur</b> permet de calculer des statistiques des entit&eacute;s surfaciques et de leurs attributs qui se superposent.
+                </li>
+                <li> <b>Summarize Center and Dispersion (Synth&eacute;tiser le centre et la dispersion)</b> permet de calculer les entit&eacute;s centrales et les distributions directionnelles.
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="AggregatePointsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Agréger des points</h2></td>
+                    <td>
+                    <img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" class="titleImage" alt="Agr&eacute;ger les points">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>A l'aide d'une couche d'entit&eacute;s ponctuelles et d'une couche d'entit&eacute;s surfaciques, cet outil d&eacute;termine les points qui se trouvent dans chaque surface et calcule les statistiques concernant tous les points au sein de chaque surface. Par exemple&nbsp;:
+                <ul>
+                    <li>Etant donn&eacute; les emplacements des points des d&eacute;lits, comptabilise le nombre de d&eacute;lits par comt&eacute; ou autre secteur administratif.
+                    </li>
+                    <li>Recherche les revenus les plus &eacute;lev&eacute;s et les plus faibles des franchises par &eacute;tat.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="JoinFeaturesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Joindre les entités</h2></td>
+                    <td>
+                    <img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" class="titleImage" alt="Joindre des entit&eacute;s">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Entit&eacute;s jointes transf&egrave;re les attributs d'une couche ou table vers une autre en fonction des relations spatiales et attributaires. Par exemple&nbsp;:
+                <ul>
+                    <li>Ajoutez des informations d&eacute;mographiques ou de limites communes &agrave; vos donn&eacute;es d'incident.
+                    </li>
+                    <li>Identifiez les ressources les plus proches d'un emplacement connu.
+                    </li>
+                    <li>D&eacute;terminez le nombre de r&eacute;sidences situ&eacute;es au sein des zones inondables.
+                    </li>
+                    <li>Identifiez les habitats communs &agrave; diff&eacute;rentes esp&egrave;ces sauvages.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeNearbyTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Synthétiser - A proximité</h2></td>
+                    <td>
+                    <img src="../images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" class="titleImage" alt="Synth&eacute;tiser - A proximit&eacute;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Recherche les entit&eacute;s qui se trouvent &agrave; une distance donn&eacute;e des entit&eacute;s dans la couche en entr&eacute;e.   La distance peut &ecirc;tre mesur&eacute;e le long de lignes droites ou de chemins praticables d'un mode de d&eacute;placement.  Les statistiques sont ensuite calcul&eacute;es pour les entit&eacute;s &agrave; proximit&eacute;. Par exemple&nbsp;:
+                <ul>
+                    <li>Calcule la population totale qui se trouve &agrave; moins de cinq minutes d'un nouvel emplacement sugg&eacute;r&eacute; de magasin.
+                    </li>
+                    <li>Calcule le nombre de bretelles d'acc&egrave;s d'autoroute qui se trouvent &agrave; moins de cinq minutes d'un nouvel emplacement sugg&eacute;r&eacute; de magasin afin de mesurer l'accessibilit&eacute; du magasin.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Synthétiser - A l’intérieur</h2></td>
+                    <td>
+                    <img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" class="titleImage" alt="Synth&eacute;tiser - A l&rsquo;int&eacute;rieur">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Recherche les surfaces (et les parties de surfaces) qui recouvrent deux couches et calcule les statistiques concernant le chevauchement. Par exemple&nbsp;:
+                <ul>
+                    <li>En prenant une couche de zones de bassin versant et une couche de zones d'utilisation du sol par type d'utilisation du sol, calculez la superficie totale du type d'utilisation du sol pour chaque bassin versant. 
+                    </li>
+                    <li>En prenant une couche de parcelles dans un comt&eacute; et une couche de limites de ville, r&eacute;sumez la valeur moyenne des parcelles vacantes au sein de chaque ville.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeCenterAndDispersionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Synthétiser le centre et la dispersion</h2></td>
+                    <td>
+                    <img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" class="titleImage" alt="Synth&eacute;tiser le centre et la dispersion">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Cet outil utilise les entit&eacute;s ponctuelles pour calculer l&rsquo;entit&eacute; centrale, le centre moyen, le centre m&eacute;dian ou l&rsquo;ellipse (distribution). Par exemple&nbsp;:
+                <ul>
+                    <li>Dans le cadre d&rsquo;une couche de centro&iuml;des de groupes d&rsquo;&icirc;lots, l&rsquo;entit&eacute; centrale pond&eacute;r&eacute;e par la population permet d&rsquo;identifier quelle partie de la ville est la plus accessible pour un centre d&eacute;di&eacute; aux arts de la sc&egrave;ne.
+                    </li>
+                    <li>Dans le cadre d&rsquo;observations de wapitis au sein d&rsquo;un parc sur plusieurs ann&eacute;es, le centre moyen permet d&rsquo;identifier les lieux de rassemblement des wapitis en &eacute;t&eacute; comme en hiver.
+                    </li>
+                    <li>En consid&eacute;rant une couche d&rsquo;incendies, le centre m&eacute;dian permet de mesure la tendance centrale des incidents non affect&eacute;e par les points aberrants en p&eacute;riph&eacute;rie.
+                    </li>
+                    <li>Pour une couche de captages d&rsquo;eaux souterraines, une ellipse permet de d&eacute;terminer le mode de propagation d&rsquo;un contaminant.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="EnrichLocationsCategory" class="regularsize">
+        <h2>Enrichissement de données</h2>
+        <hr/>
+        <p>Ces outils vous permettent d'explorer les caract&eacute;ristiques des surfaces. Des donn&eacute;es d&eacute;mographiques et des statistiques d&eacute;taill&eacute;es sont renvoy&eacute;es pour les surfaces choisies. 
+            <ul>
+                <li> <b>Enrichir la couche</b> permet d'extraire des informations sur les gens, les lieux et les commerces dans une surface sp&eacute;cifique ou dans une distance ou un temps de trajet s&eacute;lectionn&eacute; par rapport &agrave; un lieu.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="EnrichLayerTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Enrichir la couche</h2></td>
+                    <td>
+                    <img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" class="titleImage" alt="Enrichir la couche">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Extrait des informations sur les gens, les lieux et les commerces dans une surface sp&eacute;cifique ou dans une distance ou un temps de trajet s&eacute;lectionn&eacute; par rapport &agrave; un lieu.
+
+            </p>
+            <br/>
+        </div>
+    <div id="FindLocationsCategory" class="largesize">
+        <h2>Rechercher des emplacements</h2>
+        <hr/>
+        <p>Ces outils sont utilis&eacute;s pour identifier ou cr&eacute;er les entit&eacute;s qui r&eacute;pondent aux crit&egrave;res que vous sp&eacute;cifiez.  Le type de crit&egrave;re d&eacute;pendra de l&rsquo;outil que vous utilisez. Par exemple, vos crit&egrave;res peuvent reposer sur des requ&ecirc;tes spatiales ou attributaires, des zones visibles &agrave; partir d&rsquo;une hauteur sp&eacute;cifi&eacute;e, des zones en aval pour des points de drainage sp&eacute;cifiques ou des dur&eacute;es de trajet dans des conditions de circulation sp&eacute;cifiques.
+            <ul>
+                <li> <b>Choisir les meilleures ressources</b> choisit les emplacements les mieux adapt&eacute;s aux ressources en allouant des emplacements qui pr&eacute;sentent une demande pour ces ressources de mani&egrave;re &agrave; remplir un objectif donn&eacute;.
+                </li>
+                <li> <b>Cr&eacute;er un champ de vision</b> cr&eacute;e des zones visibles d'apr&egrave;s les emplacements que vous sp&eacute;cifiez.
+                </li>
+                <li> <b>Cr&eacute;er des bassins versants</b> cr&eacute;e des zones de captation d'apr&egrave;s les emplacements que vous sp&eacute;cifiez.
+                </li>
+                <li> <b>D&eacute;river de nouveaux emplacements</b> permet de cr&eacute;er de nouvelles surfaces &agrave; partir d'emplacements de votre zone d'&eacute;tude r&eacute;pondant &agrave; une s&eacute;rie de crit&egrave;res.
+                </li>
+                <li> <b>Find Centroids (Rechercher les centro&iuml;des)</b> recherche le centre repr&eacute;sentatif (centro&iuml;de) pour les entit&eacute;s en entr&eacute;e.
+                </li>
+                <li> <b>Identifier des emplacements existants</b> permet de rechercher des surfaces existantes r&eacute;pondant &agrave; une s&eacute;rie de crit&egrave;res dans une couche.
+                </li>
+                <li>L'outil  <b>Rechercher des emplacements similaires</b> recherche les emplacements les plus similaires &agrave; un ou plusieurs emplacements de r&eacute;f&eacute;rence, sur la base des crit&egrave;res que vous d&eacute;finissez.
+                </li>
+                <li class="PortalOnly"> <b>Geocode Locations from Table (G&eacute;ocoder des emplacements &agrave; partir d&rsquo;une table)</b> convertit les adresses d&rsquo;une table en coordonn&eacute;es. 
+                </li>
+                <li> <b>Parcours aval</b> d&eacute;termine les chemins des flux vers l'aval &agrave; partir des emplacements que vous sp&eacute;cifiez.
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="ChooseBestFacilitiesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Choisir les meilleures ressources</h2></td>
+                    <td>
+                    <img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" class="titleImage" alt="Choisir les meilleures ressources">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Choisit les emplacements les mieux adapt&eacute;s aux ressources en allouant des emplacements dont la demande porte sur ces ressources de mani&egrave;re &agrave; remplir un objectif donn&eacute;.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Créer un champ de vision</h2></td>
+                    <td>
+                    <img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" class="titleImage" alt="Cr&eacute;er un champ de vision">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Cr&eacute;e des zones visibles d'apr&egrave;s les emplacements que vous sp&eacute;cifiez.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateWatershedsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Créer des bassins versants</h2></td>
+                    <td>
+                    <img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" class="titleImage" alt="Cr&eacute;er des bassins versants">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Cr&eacute;e des zones de captation d'apr&egrave;s les emplacements que vous sp&eacute;cifiez.
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveNewLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Dériver de nouveaux emplacements</h2></td>
+                    <td>
+                    <img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" class="titleImage" alt="D&eacute;river de nouveaux emplacements">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Permet de cr&eacute;er de nouvelles entit&eacute;s dans votre zone d'&eacute;tude r&eacute;pondant &agrave; une s&eacute;rie de crit&egrave;res que vous d&eacute;finissez. Ces crit&egrave;res peuvent reposer sur des requ&ecirc;tes attributaires (par exemple, des parcelles vacantes) et des requ&ecirc;tes spatiales (par exemple, &agrave; moins d'un mile d'une rivi&egrave;re). 
+            </p>
+            <br/>
+        </div>
+        <div id="FindCentroidsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Find Centroids (Rechercher des centroïdes)</h2></td>
+                    <td>
+                    <img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" class="titleImage" alt="Find Centroids (Rechercher des centro&iuml;des)">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Recherche le centre repr&eacute;sentatif (centro&iuml;de) pour chaque entit&eacute; multi-points, lin&eacute;aire ou surfacique en entr&eacute;e.
+            </p>
+            <br/>
+        </div>
+        <div id="FindExistingLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Identifier des emplacements existants</h2></td>
+                    <td>
+                    <img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" class="titleImage" alt="Identifier des emplacements existants">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Permet de s&eacute;lectionner des entit&eacute;s existantes dans votre zone d'&eacute;tude r&eacute;pondant &agrave; une s&eacute;rie de crit&egrave;res que vous d&eacute;finissez. Ces crit&egrave;res peuvent reposer sur des requ&ecirc;tes attributaires (par exemple, des parcelles vacantes) et des requ&ecirc;tes spatiales (par exemple, &agrave; moins d'un mile d'une rivi&egrave;re). 
+            </p>
+            <br/>
+        </div>
+        <div id="GeocodeLocationsfromTableTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Géocoder des emplacements à partir d'une table</h2></td>
+                    <td>
+                    <img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" class="titleImage" alt="G&eacute;ocoder des emplacements &agrave; partir d'une table">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Convertit des adresses en coordonn&eacute;es. Utilisez cet outil sur les adresses d'une feuille de calcul Excel ou d'un fichier CSV.
+            </p>
+            <br/>
+        </div>
+        <div id="FindSimilarLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Rechercher des emplacements similaires</h2></td>
+                    <td>
+                    <img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" class="titleImage" alt="Rechercher des emplacements similaires">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Recherche les emplacements les plus similaires &agrave; un ou plusieurs emplacements de r&eacute;f&eacute;rence, sur la base des crit&egrave;res que vous d&eacute;finissez.
+            </p>
+            <br/>
+        </div>
+        <div id="TraceDownstreamTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Parcours aval</h2></td>
+                    <td>
+                    <img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" class="titleImage" alt="Parcours aval">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>D&eacute;termine les chemins des flux vers l'aval &agrave; partir des emplacements que vous sp&eacute;cifiez.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="largesize">
+        <h2>Analyser la répartition spatiale</h2>
+        <hr/>
+        <p>Ces outils vous permettent d'identifier, de quantifier et de visualiser les mod&egrave;les spatiaux dans vos donn&eacute;es.  
+            <ul>
+                <li>L'outil  <b>Calculer la densit&eacute;</b> s&eacute;lectionne des quantit&eacute;s connues de certains ph&eacute;nom&egrave;nes et les r&eacute;partit sur la carte.
+                </li>
+                <li> <b>Trouver des points chauds</b> identifie les agr&eacute;gations statistiquement significatives dans le mod&egrave;le spatial de vos donn&eacute;es.
+                </li>
+                <li>L'outil  <b>Trouver des points aberrants</b> d&eacute;termine si le mod&egrave;le spatial de vos donn&eacute;es pr&eacute;sente des points aberrants statistiquement significatifs.
+                </li>
+                <li>L&rsquo;outil  <b>Find Point Clusters (Rechercher des agr&eacute;gats)</b> de points d&eacute;tecte les agr&eacute;gats d&rsquo;entit&eacute;s ponctuelles dans le bruit environnant en se basant sur leur distribution spatiale.
+                </li>
+                <li>L'outil  <b>Interpoler les points</b> permet de pr&eacute;voir des valeurs dans de nouveaux sites en fonction de mesures trouv&eacute;es dans une collection de points.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Calculer la densité</h2></td>
+                    <td>
+                    <img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" class="titleImage" alt="Calculer la densit&eacute;">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>L'analyse de densit&eacute; s&eacute;lectionne des quantit&eacute;s connues de certains ph&eacute;nom&egrave;nes et les r&eacute;partit sur la carte. Vous pouvez utiliser cet outil, par exemple, pour afficher les concentrations d&rsquo;&eacute;clairs ou de tornades, l&rsquo;acc&egrave;s aux centres de soins m&eacute;dicaux et les densit&eacute;s de population.
+            </p>
+            <br/>
+        </div>
+        <div id="FindHotSpotsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Trouver des points chauds</h2></td>
+                    <td>
+                    <img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" class="titleImage" alt="Rechercher les points chauds">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Cet outil cr&eacute;e une carte indiquant les agr&eacute;gations statistiquement significatives pr&eacute;sentes dans vos donn&eacute;es. Utilisez cet outil pour d&eacute;couvrir les points chauds inattendus (rouges) et les points froids (bleus) des valeurs &eacute;lev&eacute;es et faibles des logements, des densit&eacute;s criminelles, des accidents mortels de la circulation, du ch&ocirc;mage ou de la biodiversit&eacute;, par exemple.
+            </p>
+            <br/>
+        </div>
+        <div id="FindOutliersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Trouver des points aberrants</h2></td>
+                    <td>
+                    <img src="../images/GUID-2FD18406-6333-45B9-8220-E930C1E154B2-web.png" class="titleImage" alt="Trouver des points aberrants">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Cet outil cr&eacute;e une carte indiquant les grappes et les points spatiaux aberrants statistiquement significatifs pr&eacute;sents dans vos donn&eacute;es. Utilisez cet outil pour identifier les entit&eacute;s dot&eacute;es de valeurs significativement diff&eacute;rentes de celles de leurs voisins.  Vous pouvez recourir &agrave; cet outil, par exemple, pour trouver des mod&egrave;les de d&eacute;pense anormaux, d&eacute;terminer o&ugrave; se trouvent les fronti&egrave;res les plus nettes entre la richesse et la pauvret&eacute; dans une zone d'&eacute;tude ou identifier si des comt&eacute;s aux Etats-Unis pr&eacute;sentent une esp&eacute;rance de vie exceptionnellement faible par rapport &agrave; leurs voisins.
+            </p>
+            <br/>
+        </div>
+        <div id="FindPointClustersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Rechercher des agrégats de points</h2></td>
+                    <td>
+                    <img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" class="titleImage" alt="Rechercher des agr&eacute;gats de points">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Cet outil d&eacute;tecte les zones o&ugrave; les points sont concentr&eacute;s et celles o&ugrave; ils sont s&eacute;par&eacute;s par des zones vides ou clairsem&eacute;es. Les points ne faisant pas partie d&rsquo;un agr&eacute;gat sont class&eacute;s comme bruit.
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Interpoler les points</h2></td>
+                    <td>
+                    <img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" class="titleImage" alt="Interpoler les points">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Cet outil permet de pr&eacute;voir des valeurs dans de nouveaux sites en fonction de mesures trouv&eacute;es dans une collection de points. L'outil s&eacute;lectionne des donn&eacute;es ponctuelles avec des valeurs &agrave; chaque point et renvoie des zones class&eacute;es par valeurs pr&eacute;vues. Vous pouvez utiliser cet outil, par exemple, pour pr&eacute;voir les niveaux de pr&eacute;cipitations sur un bassin versant en fonction de mesures prises dans des pluviom&egrave;tres individuels.
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="largesize">
+        <h2>Utiliser la proximité</h2>
+        <hr/>
+        <p>  Ces outils vous aident &agrave; r&eacute;pondre &agrave; l'une des questions les plus fr&eacute;quentes en mati&egrave;re d'analyse spatiale : &quot;Qu'est-ce qui se trouve &agrave; proximit&eacute; de quoi ?&quot;
+            <ul>
+                <li> <b>Relier les origines aux destinations</b> permet de mesurer le temps de trajet ou la distance &agrave; parcourir entre des paires de points.
+                </li>
+                <li> <b>Cr&eacute;er des zones tampon</b> permet de cr&eacute;er des surfaces d'&eacute;gale distance &agrave; partir des entit&eacute;s.
+                </li>
+                <li> <b>Cr&eacute;er des zones de desserte</b> permet de rechercher des zones autour des emplacements accessibles en un temps donn&eacute;.
+                </li>
+                <li> <b>Trouver le plus proche</b> permet d'identifier les emplacements les plus proches des lieux connus.
+                </li>
+                <li> <b>Planifier des itin&eacute;raires</b> permet de d&eacute;terminer le meilleur itin&eacute;raire pour une flotte de v&eacute;hicules devant passer par plusieurs arr&ecirc;ts.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ConnectOriginsToDestinationsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Relier les origines aux destinations</h2></td>
+                    <td>
+                    <img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" class="titleImage" alt="Relier les origines aux destinations">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Relier les origines aux destinations permet de mesurer le temps de trajet ou la distance &agrave; parcourir entre des paires de points. L'outil peut signaler des distances en ligne droite, des distances par la route ou des temps de trajet. Cet outil permet de r&eacute;aliser les op&eacute;rations suivantes&nbsp;:
+            </p>
+            <p>
+                <ul>
+                    <li>Calculez la distance totale ou la dur&eacute;e du trajet que les travailleurs parcourent entre leur domicile et leur lieu de travail.
+                    </li>
+                    <li>Mesurez la distance que les clients sont pr&ecirc;ts &agrave; parcourir pour effectuer leurs achats dans vos points de vente. Utilisez ces informations pour d&eacute;finir votre rayonnement commercial, en particulier si vous ciblez des campagnes publicitaires ou choisissez des emplacements pour de nouveaux points de vente.
+                    </li>
+                    <li>Calculez le kilom&eacute;trage attendu pour votre flotte de v&eacute;hicules. Ex&eacute;cutez ensuite l'outil Synth&eacute;tiser - A l'int&eacute;rieur pour signaler le kilom&eacute;trage par r&eacute;gion.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Vous indiquez les points de d&eacute;part et d'arriv&eacute;e et l'outil renvoie une couche contenant des lignes d'itin&eacute;raire, notamment des mesures, entre les origines et les destinations appari&eacute;es.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateBuffersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Créer des zones tampon</h2></td>
+                    <td>
+                    <img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" class="titleImage" alt="Cr&eacute;er des zones tampon">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Une zone tampon est une surface qui couvre une distance donn&eacute;e &agrave; partir d'une entit&eacute; ponctuelle, lin&eacute;aire ou surfacique. 
+            </p>
+            <p>Les zones tampon sont g&eacute;n&eacute;ralement utilis&eacute;es pour cr&eacute;er des surfaces qui peuvent faire l'objet d'analyses plus approfondies &agrave; l'aide d'autres outils, tel que Superposer les couches. Par exemple, si vous vous posez la question suivante : &quot;Quels sont les b&acirc;timents qui se trouvent &agrave; moins d'un kilom&egrave;tre de l'&eacute;cole ?&quot;, vous pouvez obtenir la r&eacute;ponse en cr&eacute;ant une zone tampon d'un kilom&egrave;tre autour de l'&eacute;cole et en superposant la zone tampon avec la couche contenant les emprises de b&acirc;timents. Le r&eacute;sultat final est une couche des b&acirc;timents qui se trouvent &agrave; moins d'un kilom&egrave;tre de l'&eacute;cole.  
+            </p>
+            <br/>
+        </div>
+        <div id="CreateDriveTimeAreasTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Créer des zones de desserte</h2></td>
+                    <td>
+                    <img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" class="titleImage" alt="Cr&eacute;er des zones de desserte">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Une zone de desserte est accessible dans un temps de conduite donn&eacute; ou &agrave; une distance de conduite donn&eacute;e. Les zones de desserte peuvent vous aider &agrave; r&eacute;pondre &agrave; des questions du type&nbsp;:
+                <ul>
+                    <li>Jusqu'o&ugrave; puis-je aller &agrave; partir d'ici dans un rayon de 30 minutes de conduite ?
+                    </li>
+                    <li>Jusqu'o&ugrave; puis-je aller &agrave; partir d'ici dans un rayon de 30&nbsp;minutes de conduite si je pars &agrave; 18&nbsp;heures pendant les heures de pointe&nbsp;?
+                    </li>
+                    <li>Quelles sont les parties de la ville que les pompiers peuvent atteindre en moins de cinq minutes ? Est-ce que la r&eacute;activit&eacute; serait am&eacute;lior&eacute;e en construisant une nouvelle caserne des pompiers ici ?
+                    </li>
+                    <li>Quelles sont les zones commer&ccedil;antes couvertes par mon commerce ? Quelles sont les zones qui se trouvent &agrave; moins de 10&nbsp;miles de mes magasins&nbsp;?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindNearestTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Trouver le plus proche</h2></td>
+                    <td>
+                    <img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" class="titleImage" alt="Trouver le plus proche">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Mesure le co&ucirc;t du trajet entre les incidents et les ressources et d&eacute;termine les &eacute;l&eacute;ments les plus proches entre eux. Le r&eacute;sultat est une couche pr&eacute;sentant les meilleurs itin&eacute;raires entre les incidents et les ressources, ainsi que le co&ucirc;t de d&eacute;placement (temps et distance) de chaque itin&eacute;raire. Par exemple, vous pouvez utiliser cet outil pour trouver l'h&ocirc;pital le plus proche du lieu d'un accident ou le distributeur automatique de billets le plus proche de votre position g&eacute;ographique.
+            </p>
+            <br/>
+        </div>
+        <div id="PlanRoutesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Planifier des itinéraires</h2></td>
+                    <td>
+                    <img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" class="titleImage" alt="Planifier des itin&eacute;raires">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Vous indiquez un ensemble d'arr&ecirc;ts et le nombre de v&eacute;hicules disponibles pour se rendre aux arr&ecirc;ts et l'outil Planifier des itin&eacute;raires d&eacute;termine comment attribuer efficacement les arr&ecirc;ts aux v&eacute;hicules et acheminer les v&eacute;hicules vers les arr&ecirc;ts.
+            </p>
+            <p>Utilisez cet outil pour planifier le travail d'une &eacute;quipe mobile d'inspecteurs, d'&eacute;valuateurs, de prestataires de services &agrave; domicile et d'autres, pour livrer ou r&eacute;cup&eacute;rer des colis dans des lieux &eacute;loign&eacute;s ou pour offrir des services de transport aux usag&eacute;s.
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="largesize">
+        <h2>Gérer les données</h2>
+        <hr/>
+        <p>Ces outils permettent de g&eacute;rer au quotidien les donn&eacute;es g&eacute;ographiques et de fusionner les donn&eacute;es avant leur analyse.  
+            <ul>
+                <li> <b>Fusionner les limites</b> permet de fusionner les surfaces qui partagent une limite commune et une valeur attributaire commune.
+                </li>
+                <li> <b>Extraire les donn&eacute;es</b> permet de cr&eacute;er de nouveaux jeux de donn&eacute;es en extrayant des entit&eacute;s de vos donn&eacute;es existantes.
+                </li>
+                <li> <b>Generate Tessellations</b> permet de cr&eacute;er des tessellations bas&eacute;es sur l&rsquo;&eacute;tendue de vos donn&eacute;es.
+                </li>
+                <li> <b>Combiner les couches</b> permet de copier toutes les entit&eacute;s de deux couches existantes ou plus dans une nouvelle couche.
+                </li>
+                <li> <b>Superposer les couches</b> permet de regrouper deux ou plusieurs couches en une seule couche. Vous pouvez comparer la superposition au fait de scruter une pile de cartes et de cr&eacute;er une seule carte contenant toutes les informations trouv&eacute;es dans la pile.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="DissolveBoundariesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Fusionner les limites</h2></td>
+                    <td>
+                    <img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" class="titleImage" alt="Dissoudre les limites">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Les surfaces qui se chevauchent ou partagent une limite commune sont combin&eacute;es pour former une surface unique.    
+            </p>
+            <p>Vous pouvez contr&ocirc;ler quelles limites sont combin&eacute;es en sp&eacute;cifiant un champ. Par exemple, si vous avez une couche de comt&eacute;s et que chaque comt&eacute; poss&egrave;de un attribut  <i>State_Name</i>, vous pouvez fusionner les limites &agrave; l'aide de l'attribut <i>State_Name</i>. Les comt&eacute;s adjacents seront combin&eacute;s si leur attribut <i>State_Name</i> poss&egrave;de la m&ecirc;me valeur. Le r&eacute;sultat final est une couche de limites d'Etats.
+            </p>
+            <br/>
+        </div>
+        <div id="ExtractDataTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Extraire les données</h2></td>
+                    <td>
+                    <img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" class="titleImage" alt="Extraire les donn&eacute;es">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Cr&eacute;e un fichier zip, CSV ou KMZ de donn&eacute;es &agrave; partir de vos couches et d'une zone d'int&eacute;r&ecirc;t que vous sp&eacute;cifiez.
+            </p>
+            <p> 
+            </p>
+            <br/>
+        </div>
+        <div id="GenerateTessellationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Générer des tessellations</h2></td>
+                    <td>
+                    <img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" class="titleImage" alt="G&eacute;n&eacute;rer des tessellations">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>G&eacute;n&egrave;re des tessellations sur une zone d&rsquo;&eacute;tude bas&eacute;e sur la taille et la forme sp&eacute;cifi&eacute;es.
+            </p>
+            <br/>
+        </div>
+        <div id="MergeLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Combiner les couches</h2></td>
+                    <td>
+                    <img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" class="titleImage" alt="Combiner les couches">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Copie les entit&eacute;s de deux couches existantes ou plus dans une nouvelle couche, par exemple&nbsp;:
+                <ul>
+                    <li>Vous disposez de trois couches pour l'Angleterre, le pays de Galles et l'Ecosse et vous souhaitez une seule couche pour la Grande-Bretagne. 
+                    </li>
+                    <li>Vous disposez de 12 couches et chacune contient des informations de parcelle pour les municipalit&eacute;s contigu&euml;s. Vous souhaitez les rassembler en une seule couche, en conservant uniquement les attributs qui portent le m&ecirc;me nom et qui ont le m&ecirc;me type sur les 12&nbsp;couches en entr&eacute;e.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="OverlayLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Superposer les couches</h2></td>
+                    <td>
+                    <img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" class="titleImage" alt="Superposer les couches">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>La superposition permet de regrouper deux ou plusieurs couches en une seule couche. Vous pouvez comparer la superposition au fait de scruter une pile de cartes et de cr&eacute;er une seule carte contenant toutes les informations trouv&eacute;es dans la pile, par exemple&nbsp;:
+                <ul>
+                    <li>Quelles parcelles se trouvent dans la zone de crue centennale&nbsp;? (Le terme &quot;dans&quot; est une autre mani&egrave;re de dire &quot;sur&quot;.)
+                          
+                    </li>
+                    <li>Quelles routes se trouvent dans quels d&eacute;partements&nbsp;?
+                    </li>
+                    <li>Quelle utilisation du sol se trouve sur quel type de sol&nbsp;?
+                         
+                    </li>
+                    <li>Quels puits se trouvent dans des bases militaires abandonn&eacute;es&nbsp;?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

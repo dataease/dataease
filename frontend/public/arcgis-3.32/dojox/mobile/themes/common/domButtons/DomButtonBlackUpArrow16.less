@@ -1,0 +1,23 @@
+@import "../css3.less";
+/* === BlackUpArrow16 ==*/
+.mblDomButtonBlackUpArrow16 {
+	position: relative;
+	width: 16px;
+	height: 16px;
+}
+.mblDomButtonBlackUpArrow16 > div {
+	position: absolute;
+	left: 0px;
+	clip: rect(0px 16px 12px 0px);
+}
+.mblDomButtonBlackUpArrow16 > div > div {
+	position: absolute;
+	top: 6px;
+	left: 3px;
+	width: 10px;
+	height: 10px;
+	margin: 0px;
+	font-size: 1px;
+	background-color: black;
+	.transform(scaleX(0.5) rotate(45deg));
+}

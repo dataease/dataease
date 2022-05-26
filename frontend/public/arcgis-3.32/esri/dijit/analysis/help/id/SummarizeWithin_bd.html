@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Ringkas di Dalam</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Ringkas di Dalam"></h2>
+        <hr/>
+    <p>Alat ini mencari fitur (serta bagian-bagian dari fitur) yang berada di dalam batas area pada layer input pertama.  
+        <ul>
+            <li>Dengan mengetahui layer batas air dan layer batas penggunaan lahan, hitung luas total dari jenis penggunaan lahan untuk setiap batas air. 
+            </li>
+            <li>Dengan mengetahui layer bagian persil di suatu daerah dan layer batas kota, ringkaslah nilai rata-rata dari bagian persil yang kosong di dalam setiap batas kota.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jika  <b>Gunakan jangkauan peta saat ini</b> dicentang, hanya fitur-fitur pada layer input dan layer yang akan diringkas yang terlihat di jangkauan peta saat ini yang akan dianalisis.  Jika tidak dicentang, semua fitur pada layer input dan layer yang akan diringkas akan dianalisis meskipun berada di luar jangkauan peta saat ini.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Pilih layer area untuk meringkas fitur lainnya yang berada dalam batasnya</h2></div>
+        <hr/>
+        <div>
+            <p>Layer area yang akan digunakan untuk meringkas fitur-fitur yang berada dalam batasnya. Anda dapat memilih untuk meringkas di dalam layer poligon yang Anda sediakan atau di dalam square bin atau hexagon bin yang dihasilkan ketika alat dijalankan.  Ketika membuat bin, untuk  <b>Persegi</b>, angka dan unit yang disebutkan akan menentukan tinggi dan panjang persegi. Untuk <b>Hexagon</b>, angka dan unit yang ditentukan akan menentukan jarak antara sisi paralel.
+            </p>
+            <p>Analisis menggunakan bin  <b>Persegi</b> atau <b>Heksagon</b> memerlukan sistem koordinat terproyeksi. Anda dapat menetapkan <b>Sistem koordinat pemrosesan</b> dalam <b>Lingkungan Analisis</b>. Jika sistem koordinat pemrosesan Anda tidak ditetapkan ke sistem koordinat terproyeksi, Anda akan diminta untuk menetapkannya saat Anda <b>Jalankan Analisis</b> .
+            </p>
+            <p>Selain memilih layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> di bawah daftar drop-down untuk menelusuri konten Anda untuk set data atau feature layer berbagi file big data.
+            </p>
+        </div>
+    </div>
+    <div id="summaryLayer">
+        <div><h2>Pilih layer untuk diringkas</h2></div>
+        <hr/>
+        <div>
+            <p>Fitur-fitur pada layer ini yang berada di dalam batas feature dalam layer input, atau bin yang ditentukan di atas, akan diringkas. 
+            </p>
+            <p>Selain memilih layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> di bawah daftar drop-down untuk menelusuri konten Anda untuk set data atau feature layer berbagi file big data.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Pilih jarak untuk membuat bin dan agregat</h2></div>
+        <hr/>
+        <div>
+            <p>Jarak yang digunakan untuk membuat bin.  
+            </p>
+            <p> <b>Ukuran Bin</b> untuk bin atau <b>Layer Area</b> harus ditetapkan.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Agregat menggunakan irisan waktu (opsional)</h2></div>
+        <hr/>
+        <div>
+            <p>Jika waktu diaktifkan pada layer titik input dan ini adalah tipe instan, Anda dapat menganalisis menggunakan langkah waktu.  Ada tiga parameter yang dapat Anda tentukan ketika menggunakan waktu:
+                <ul>
+                    <li> <b>Interval langkah waktu</b>
+                    </li>
+                    <li> <b>Seberapa sering mengulangi langkah waktu tersebut</b>
+                    </li>
+                    <li> <b>Waktu untuk diselaraskan dengan langkah waktu</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Misalnya, jika Anda memiliki data yang mewakili waktu satu tahun dan Anda ingin menganalisisnya menggunakan langkah mingguan, tetapkan  <b>Interval langkah waktu</b> ke <code>1 minggu</code>. 
+            </p>
+            <p>Misalnya, jika Anda memiliki data yang mewakili waktu satu tahun dan Anda ingin menganalisisnya menggunakan minggu pertama dalam bulan, atur  <b>Interval langkah waktu</b> ke <code>1 minggu</code>, <b>Seberapa sering mengulangi langkah waktu tersebut</b> ke <code>1 bulan</code>, dan <b>Waktu untuk diselaraskan dengan langkah waktu</b> ke <code>1 Januari, pukul 24.00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Interval waktu untuk agregasi</h2></div>
+        <hr/>
+        <div>
+            <p>Interval waktu yang digunakan untuk menghasilkan langkah waktu.  <b>Interval langkah waktu</b> dapat digunakan sendirian atau digunakan dengan parameter <b>Seberapa sering mengulangi langkah waktu tersebut</b> atau <b>Waktu untuk menyelaraskan langkah waktu ke</b> parameter.
+            </p>
+            <p>Misalnya, jika Anda ingin membuat langkah waktu yang berlaku setiap hari Senin dari pukul 09.00 hingga 10.00, atur  <b>Interval langkah waktu</b> ke <code>1 jam</code>, <b>Seberapa sering mengulangi langkah waktu tersebut</b> ke <code>1 minggu</code>, dan <b>Waktu untuk diselaraskan dengan langkah waktu</b> ke <code>09.00 pada hari Senin</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Langkah waktu untuk diagregatkan ke dalam</h2></div>
+        <hr/>
+        <div>
+            <p> Langkah yang digunakan untuk menghitung langkah waktu. <b>Seberapa sering mengulangi langkah waktu tersebut</b> dapat digunakan sendirian, dengan <b>Interval langkah waktu</b>, dengan <b>Waktu Referensi</b>, atau dengan <b>Interval langkah waktu</b> dan <b>Waktu untuk diselaraskan dengan langkah waktu</b>.
+            </p>
+            <p> Misalnya, jika Anda ingin membuat langkah waktu yang diberlakukan setiap hari Senin dari pukul 09.00 hingga 10.00, atur <b>Interval langkah waktu</b> ke <code>1 jam</code>, <b>Seberapa sering mengulangi langkah waktu tersebut</b> ke <code>1 minggu</code>, dan <b>Waktu untuk diselaraskan dengan langkah waktu</b> ke <code>09.00 pada hari Senin</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Waktu referensi yang digunakan untuk menyelaraskan irisan waktu</h2></div>
+        <hr/>
+        <div>
+            <p>Tanggal dan waktu yang digunakan untuk menyelaraskan pengirisan waktu. Langkah waktu akan dimulai pada dan dilanjutkan ke belakang dari waktu ini. Jika tidak ada waktu referensi yang dipilih, langkah waktu akan diselaraskan ke 1 Januari 1970. 
+            </p>
+            <p> Misalnya, jika Anda ingin membuat langkah waktu yang diberlakukan setiap hari Senin dari pukul 09.00 hingga 10.00, atur <b>Interval langkah waktu</b> ke <code>1 jam</code>, <b>Seberapa sering mengulangi langkah waktu tersebut</b> ke <code>1 minggu</code>, dan <b>Waktu untuk diselaraskan dengan langkah waktu</b> ke <code>09.00 pada hari Senin</code>.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Tambahkan statistik (opsional)</h2></div>
+        <hr/>
+        <div>
+            <p> Anda dapat menghitung statistik pada fitur yang diringkas. Anda dapat menghitung yang berikut di kolom numerik:
+                <ul>
+                    <li>Jumlah&mdash;Menghitung jumlah nilai nonnull. Dapat digunakan di kolom numerik ataupun string. Jumlah [null, 0, 2] adalah 2.
+                    </li>
+                    <li>Jumlah&mdash;Jumlah nilai numerik di kolom. Jumlah [null, null, 3] adalah 3.
+                    </li>
+                    <li>Rata-rata&mdash;Rata-rata nilai numerik. Rata-rata [0, 2, null] adalah 1.
+                    </li>
+                    <li>Min.&mdash;Nilai minimum kolom numerik. Minimal [0, 2, null] adalah 0. 
+                    </li>
+                    <li>Maks.&mdash;Nilai maksimum kolom numerik. Nilai maksimum [0, 2, null] adalah 2.
+                    </li>
+                    <li>Rentang&mdash;Rentang kolom numerik. Ini dihitung sebagai nilai minimum yang disubtraksi dari nilai maksimum. Rentang [0, null, 1] adalah 1. Rentang [null, 4] adalah 0.
+                    </li>
+                    <li>Varian&mdash;Varian kolom numerik di jalur. Varian [1] adalah null. Varian [null, 1,0,1,1] adalah 0,25.
+                    </li>
+                    <li>Simpangan baku&mdash;Simpangan baku kolom numerik. Simpangan baku [1] adalah null. Simpangan baku [null, 1,0,1,1] adalah 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Anda dapat menghitung yang berikut di kolom numerik:
+                <ul>
+                    <li>Jumlah&mdash;Jumlah string nonnull.
+                    </li>
+                    <li>Apa saja&mdash;Statistik ini adalah contoh acak nilai string di dalam kolom yang telah ditentukan.
+                    </li>
+                </ul>
+                Semua statistik dihitung pada nilai nonnull. Layer hasil akan berisi kolom baru untuk setiap statistik yang dihitung. Angka statistik berapa pun dapat ditambahkan dengan memilih sebuah atribut dan statistik. 
+            </p>
+            <p>Selain statistik ini, statistik proporsional akan dihitung pada semua kolom numerik:
+                <ul>
+                    <li>Jumlah&mdash;Jumlah setiap kolom dikalikan dengan proporsi layer ringkasan di dalam poligon. 
+                    </li>
+                    <li>Jumlah&mdash;Jumlah nilai terbobot di setiap kolom. Ketika jumlah terbobot yang diterapkan adalah proporsi layer ringkasan di dalam poligon.
+                    </li>
+                    <li>Rata-Rata&mdash;Rata-Rata tertimbang nilai di setiap kolom. Ketika jumlah terbobot yang diterapkan adalah proporsi layer ringkasan di dalam poligon.
+                    </li>
+                    <li>Min.&mdash;Minimum nilai tertimbang di setiap kolom. Ketika jumlah terbobot yang diterapkan adalah proporsi layer ringkasan di dalam poligon.
+                    </li>
+                    <li>Maks.&mdash;Maksimum nilai tertimbang di setiap kolom. Ketika jumlah terbobot yang diterapkan adalah proporsi layer ringkasan di dalam poligon.
+                    </li>
+                    <li>Rentang&mdash;Perbedaan antara nilai terbobot maksimal dan minimal.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Bergantung pada tipe fitur yang Anda ringkas, total jumlah titik di sekitarnya, total panjang garis, atau total area akan dihitung.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Pilih kolom untuk dikelompokkan</h2></div>
+        <hr/>
+        <div>
+            <p>Ini adalah atribut dari fitur  <b>Ringkas</b> yang dapat Anda gunakan untuk menghitung statistik secara terpisah untuk setiap nilai unik atribut. Sebagai contoh, misalkan layer input pertama memuat batas-batas kota dan fitur ringkasan adalah persil. Salah satu atribut persil tersebut adalah <i>Status</i> yang memuat dua nilai: KOSONG dan DIHUNI. Untuk menghitung total area persil yang kosong dan terisi di dalam batas kota, gunakan <i>Status</i> sebagai atribut pengelompokan. Statistik untuk setiap kelompok, seperti halnya jumlah fitur di dalam setiap batas area akan ditampilkan di pop-up layer hasil.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Tambahkan minoritas, mayoritas</h2></div>
+        <hr/>
+        <div>
+            <p>Kotak centang ini diaktifkan ketika Anda memilih kolom untuk dikelompokkan.    Jika Anda ingin mengetahui nilai atribut mana di dalam setiap kelompok yang merupakan minoritas (paling tidak dominan) atau mayoritas (paling dominan) di dalam setiap batas dari layer input pertama, pilih  <b>Tambahkan minoritas, mayoritas</b>.   Ketika Anda memilih <b>Tambahkan minoritas, mayoritas</b>, dua kolom baru telah ditambahkan ke layer hasil Anda. Jika Anda juga memilih <b>Tambahkan persentase</b>, dua kolom tambahan ditambahkan ke layer hasil berisi persentase nilai atribut minoritas dan mayoritas dalam setiap kelompok.
+            </p>
+            <ul>
+                <li>Jika Anda meringkas titik, nilai minoritas dan mayoritas dihitung berdasarkan jumlah titik di dalam setiap sekeliling area di layer area input.  
+                </li>
+                <li>Jika Anda meringkas garis, nilai minoritas dan mayoritas dihitung berdasarkan panjang garis di dalam setiap sekeliling area di layer area input.  
+                </li>
+                <li>Jika Anda meringkas area, nilai minoritas dan mayoritas dihitung berdasarkan area di dalam setiap sekeliling area di layer area input.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Tambahkan persentase</h2></div>
+        <hr/>
+        <div>
+            <p>Kotak centang ini diaktifkan bila Anda memilih kolom untuk pengelompokan.    Pilih  <b>Tambahkan persentase</b> jika Anda ingin menemukan persentase dari setiap nilai atribut di dalam setiap kelompok.  Sebuah kolom baru ditambahkan ke tabel hasil yang memuat persentase dari masing-masing nilai atribut di dalam setiap kelompok.   Jika <b>Tambahkan minoritas, mayoritas</b> juga dicentang, dua kolom lagi akan ditambahkan ke layer hasil yang memuat persentase dari nilai atribut minoritas dan mayoritas di dalam setiap kelompok.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Pilih data store</h2></div>
+        <hr/>
+        <div>
+            <p>Hasil GeoAnalytics disimpan pada penyimpanan data dan ditampilkan sebagai feature layer di  Portal for ArcGIS. Secara umum, hasil harus disimpan di penyimpanan data spatiotemporal dan ini adalah pilihan default. Secara umum, menyimpan hasil data store relasional adalah opsi yang bagus. Berikut adalah alasan mengapa Anda mungkin ingin menyimpan hasil di data store relasional: 
+                <ul>
+                    <li>Anda dapat menggunakan hasil di portal-ke-kolaborasi portal.
+                    </li>
+                    <li>Anda dapat mengaktifkan kemampuan sinkronisasi dengan hasil Anda.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Anda tidak boleh menggunakan data store relasional jika Anda berharap hasil GeoAnalytics untuk ditingkatkan dan ingin memanfaatkan kemampuan big data store spatiotemporal untuk menangani jumlah data yang besar.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p> Nama layer yang akan dibuat.  Jika Anda menulis ke sebuah ArcGIS Data Store, hasil Anda akan disimpan di  <b>Konten Saya</b> dan ditambahkan ke dalam peta. Jika Anda menulis ke berbagi file big data, hasil Anda akan disimpan ke berbagi file big data dan ditambahkan ke manifestasinya. Ini tidak akan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer sudah ada, alat tidak akan berfungsi.
+            </p>
+            <p>Saat menulis ke  ArcGIS Data Store (penyimpanan big data relasional atau spasiotemporal) menggunakan  <b>Simpan hasil di</b> kotak drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> tempat hasil akan disimpan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

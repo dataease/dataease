@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Злиття кордонів</h2><p/>
+        <h2><img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" alt="Злиття кордонів"></h2>
+        <hr/>
+    <p>Області, які накладаються або мають спільний кордон, об&rsquo;єднуються для утворення одиночної області.    
+    </p>
+    <p>Вказавши поле, ви можете контролювати, які кордони об&rsquo;єднуються. Наприклад, якщо у вас є шар округів і кожний округ має атрибут  <i>State_Name</i>, можна злити кордони за допомогою атрибуту <i>State_Name</i>. Суміжні округи будуть об&rsquo;єднано, якщо вони мають однакове значення для атрибуту <i>State_Name</i>. Кінцевим результатом є шар кордонів штату.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Вибрати шар областей, кордони якого будуть злиті</h2></div>
+        <hr/>
+        <div>
+            <p>Шар, який містить площадні об&rsquo;єкти, що будуть злиті. 
+            </p>
+            <p>In addition to choosing a layer from your map, you can select  <b>Choose Analysis Layer</b> found at the bottom of the drop-down list. This option opens a gallery where you can browse to and select datasets from various sources to use in your analysis. 
+            </p>
+        </div>
+    </div>
+    <div id="DissolveFields">
+        <div><h2>Вибрати метод злиття</h2></div>
+        <hr/>
+        <div>
+            <p>Можна вибрати один з двох методів об&rsquo;єднання площадних об&rsquo;єктів:
+                <ul>
+                    <li> <b>Області, що накладаються або є суміжними</b> &mdash; дві або більше областей, кордони яких накладаються один на одного, будуть об&rsquo;єднані в одну область. Окрім цього, області, які є суміжними (тобто вони мається спільний кордон) будуть об&rsquo;єднані в одну область.
+                    </li>
+                    <li> <b>Області з однаковим значенням поля</b> &mdash; області, які накладаються або мають спільний кордон, будуть об&rsquo;єднані у одну область, якщо вони мають однакове значення поля.
+                        <p>Наприклад, якщо у вас є шар округів і кожний округ має поле  <i>State_Name</i>, можна злити кордони за допомогою поля <i>State_Name</i>. Суміжні округи будуть об&rsquo;єднано, якщо вони мають однакове значення для атрибуту <i>State_Name</i>. Кінцевим результатом є шар кордонів штату.
+                        </p>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Якщо вибрано опцію  <b>Використовувати поточний екстент карти</b>, будуть злиті тільки ті об&rsquo;єкти у вхідному шарі, які видимі в межах поточного екстенту карти. Якщо цю опцію не вибрано, будуть злиті всі об'єкти у вхідному шарі, навіть якщо вони знаходяться за межами поточного екстенту карти.
+            </p>
+        </div>
+    </div>
+    <div id="multiPartFeatures">
+        <div><h2>Створити складені об'єкти</h2></div>
+        <hr/>
+        <div>
+            <p>В ArcGIS цифрове представлення місця або об'єкта, який має більше однієї частини, проте визначений як один об'єкт, оскільки він посилається на один набір атрибутів. В шарі штатів, наприклад, штат Гаваї може вважатись складеним об&rsquo;єктом, оскільки його окремі геометричні частини класифіковані як одиночний штат. Цей булев параметр пропонує дві опції:
+                <ul>
+                    <li>Вірно (відмічено): вихідний сервіс може містити складені об'єкти.
+                    </li>
+                    <li>Невірно (не відмічено): вихідний сервіс буде містити одиночні об&rsquo;єкти, а окремі об'єкти будуть створені для кожної частини.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Додати статистику</h2></div>
+        <hr/>
+        <div>
+            <p>При злитті областей можна підсумувати їх атрибути. Наприклад, якщо ви виконуєте злиття кордону між округами на основі  <i>State_Name</i> і кожний округ має поле <i>Population</i>, можна обчислити суму <i>Population</i> для штату.
+            </p>
+            <p>Доступні типи статистики:
+            </p>
+            <ul>
+                <li> <b>Сума</b> &mdash; додає загальне значення для вказаного поля
+                    
+
+                </li>
+                <li> <b>Середнє</b> &mdash; обчислює середнє значення для вказаного поля
+                    
+
+                </li>
+                <li> <b>Мінімум</b> &mdash; знаходить найменше значення для всіх записів вказаного поля
+                    
+
+                </li>
+                <li> <b>Максимум</b> &mdash; знаходить найбільше значення для всіх записів вказаного поля
+                    
+
+                </li>
+                <li> <b>Середньокв. Відхилення </b> &mdash; знаходить середньоквадратичне відхилення для значень у вказаному полі
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Назва результуючого шару</h2></div>
+        <hr/>
+        <div>
+            <p>Це назва шару, який буде створено в  <b>Моєму змісті</b> та додано до карти. Назва за замовчуванням базується на назві інструменту та назві вхідного шару. Якщо ім'я шару вже існує, вам буде запропоновано надати іншу назву.
+            </p>
+            <p>За допомогою розкривного меню  <b>Зберегти результат в</b> можна вказати назву папки у <b>Моєму змісті</b>, куди буде збережено результат.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

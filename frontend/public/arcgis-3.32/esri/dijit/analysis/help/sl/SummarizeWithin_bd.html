@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Povzemi znotraj</h2><p/>
+        <h2><img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" alt="Povzemi znotraj"></h2>
+        <hr/>
+    <p>To orodje najde geoobjekte (in dele geoobjektov), ki so znotraj meja poligonov v prvem vhodnem sloju.  
+        <ul>
+            <li>Podana sta sloj razvodnic in sloj mej kmetijskih povr&scaron;in po tipih rabe tal. Izračunajte skupno kmetijsko povr&scaron;ino po tipih rabe tal za vsako razvodje. 
+            </li>
+            <li>Podana sta sloj parcel v okrožju in sloj mej mesta. Povzemite povprečno vrednost nepozidanih parcel znotraj vsake meje mesta.
+            </li>
+        </ul>
+        
+    </p>
+    <p>Če je obkljukana možnost  <b>Uporabi trenutni obseg karte</b>, bodo analizirani samo tisti geoobjekti vhodnega sloja in sloja, ki ga je treba povzeti, ki so vidni znotraj trenutnega obsega karte. Če je možnost odkljukana, bodo analizirani vsi geoobjekti tako na vhodnem sloju kot na sloju, ki ga je treba povzeti, tudi če so zunaj trenutnega obsega karte.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Izberite poligonski sloj za povzemanje drugih geoobjektov znotraj njegovih meja</h2></div>
+        <hr/>
+        <div>
+            <p>Poligonski sloj, ki bo uporabljen za povzetek geoobjektov, ki padejo znotraj njegovih meja. Izbirate lahko med povzemanjem znotraj poligonskega sloja, ki ga zagotovite sami, ali znotraj &scaron;tirikotnih ali &scaron;estkotnih celic, ki se ustvarijo ob zagonu orodja. Ko se ustvarijo celice za  <b>Kvadrat</b>, navedena &scaron;tevila in enote določajo vi&scaron;ino in dolžino kvadrata. Za <b>&Scaron;estkotnik</b> navedeno &scaron;tevilo in enote določajo razdaljo med vzporednimi stranicami.
+            </p>
+            <p>Za analizo s  <b>&scaron;tirikotnimi</b> ali <b>&scaron;estkotnimi</b> celicami je zahtevan projiciran koordinatni sistem. <b>Procesni koordinatni sistem</b> lahko nastavite v <b>okoljih analize</b>. Če va&scaron; delovni koordinatni sistem ni nastavljen na projiciran koordinatni sistem, bo to od vas zahtevano, ko boste <b>Zagnali analizo</b> .
+            </p>
+            <p>Poleg izbire sloja s svoje karte lahko na dnu spustnega seznama izberete  <b>Izberi sloj za analizo</b>, da po svoji vsebini poi&scaron;čete delitev datotek velikih podatkov ali geoobjektni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="summaryLayer">
+        <div><h2>Izberi sloj za povzemanje</h2></div>
+        <hr/>
+        <div>
+            <p>Povzeti bodo geoobjekti v tem sloju, ki padejo znotraj meja geoobjektov v zgornjem vhodnem sloju ali celicah. 
+            </p>
+            <p>Poleg izbire sloja s svoje karte lahko na dnu spustnega seznama izberete  <b>Izberi sloj za analizo</b>, da po svoji vsebini poi&scaron;čete delitev datotek velikih podatkov ali geoobjektni sloj.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Izberite razdaljo za ustvarjanje celic in agregacijo v</h2></div>
+        <hr/>
+        <div>
+            <p>Uporabljena razdalja za ustvarjanje celic.  
+            </p>
+            <p>Nastavljena mora biti  <b>Velikost celice</b> za celice ali <b>poligonski sloj</b>.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Agregacija s pomočjo časovnih izsekov (izbirno)</h2></div>
+        <hr/>
+        <div>
+            <p>Če je čas na vhodnem točkovnem sloju omogočen in predstavlja trenutek v času, analizo lahko izvedete s časovnimi koraki. Pri uporabi časa lahko nastavite tri parametre:
+                <ul>
+                    <li> <b>Interval časovnih korakov</b>
+                    </li>
+                    <li> <b>Kako pogosto ponoviti časovni korak</b>
+                    </li>
+                    <li> <b>Čas za poravnavo časovnih korakov z</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Na primer, če imatepodatke, ki predstavljajo eno leto in jih želite analizirati s tedenskimi koraki, nastavite  <b>interval časovnih korakov</b> na <code>1 teden</code>. 
+            </p>
+            <p>Na primer, če imatepodatke, ki predstavljajo eno leto in jih želite analizirati glede na prvi teden v mesecu, , nastavite  <b>interval časovnih korakov</b> na <code>1 teden</code>, <b>pogostost ponavljanja časovnega koraka</b> na <code>1 mesec</code> in <b>čas za uskladitev časovnih korakov</b> na <code>1. januar ob 12.00</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Časovni interval za agregacijo v</h2></div>
+        <hr/>
+        <div>
+            <p>Časovniinterval, uporabljen za ustvarjanje korakov.  <b>Interval časovnega koraka</b> je mogoče uporabiti samostojno ali skupaj s <b>pogostostjo ponavljanja intervala časovnega koraka</b> ali <b>časom za uskladitev časovnih korakov s</b> parametrom.
+            </p>
+            <p>Na primer, če želite ustvariti časovne korake, kise odvijejo vsak ponedeljek od 9.00 do 10.00, nastavite  <b>Časovni korak</b> na <code>1 urp</code>, <b>Pogostost ponavljanja časovnega koraka</b> na <code>1 teden</code> in <b>Čas za uskladitev časovnih korakov na</b> <code>9.00 v ponedeljek</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Časovni korak za agregacijo v</h2></div>
+        <hr/>
+        <div>
+            <p> Korak, uporabljen za izračun časovnega koraka. <b>Pogostost ponavljanja časovnega koraka</b> je mogoče uporabiti samostojno, z <b>intervalom časovnega koraka</b>, z <b>referenčnim časom</b> ali tako z <b>intervalom časovnega koraka</b> kot <b>časom za uskladitev časovnih korakov na</b>.
+            </p>
+            <p> Na primer, če želite ustvariti časovne korake, ki se odvijejo vsak ponedeljek od 9.00 do 10.00, nastavite <b>interval časovnega koraka</b> na <code>1 uro</code>, <b>pogostost ponavljanja časovnih korakov</b> na <code>1 teden</code> in <b>čas za uskladitev časovnih korakov</b> na <code>9.00 v ponedeljek</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Referenčni čas, ki se uporablja za poravnavo časovnih izsekov</h2></div>
+        <hr/>
+        <div>
+            <p>Datum in čas, ki se uporabljata za poravnavo časovnih izsekov. Časovni koraki se bodo začeli ob in nadaljevali od tega časa naprej. Če ni izbran noben referenčni čas, se bo časovni korak poravnal na 1. januar 1970. 
+            </p>
+            <p> Na primer, čeželite ustvariti časovne korake, ki se odvijejo vsak ponedeljek od 9.00 do 10.00, nastavite <b>interval časovnega koraka</b> na <code>1 uro</code>, <b>pogostost ponavljanja časovnih korakov</b> na <code>1 teden</code> in <b>čas za uskladitev časovnih korakov</b> na <code>9.00 v ponedeljek</code>.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Dodaj statistiko (izbirno)</h2></div>
+        <hr/>
+        <div>
+            <p> Statistiko lahko izračunate na povzetih geoobjektih.Na &scaron;tevilskih poljih lahko izračunate naslednje:
+                <ul>
+                    <li>&Scaron;tetje &ndash; Izračuna &scaron;tevilo nepraznih vrednosti. Uporabljeno je lahko za  &scaron;tevilska ali besedilna polja. &Scaron;tetje za [null, 0, 2] je 2.
+                    </li>
+                    <li>Vsota &ndash; vsota &scaron;tevilskih vrednosti v polju. Vsota [null, null, 3] je 3.
+                    </li>
+                    <li>Srednja vrednost &ndash; srednja vrednost &scaron;tevilčnih vrednosti. Srednja vrednost za [0, 2, null] je 1.
+                    </li>
+                    <li>Minimum &ndash; minimalna vrednost &scaron;tevilskega polja. Minimum za [0, 2, null] je 0. 
+                    </li>
+                    <li>Maksimum &ndash; maksimalna vrednost &scaron;tevilskega polja. Maksimalna vrednost za [0, 2, null] je 2.
+                    </li>
+                    <li>Razpon &ndash; razpon &scaron;tevilskega polja. Izračuna se tako, da se minimalne vrednosti od&scaron;tejejo od maksimalne vrednosti. Razpon za [0, null, 1] je 1. Razpon za [null, 4] je 0.
+                    </li>
+                    <li>Varianca &ndash; varianca &scaron;tevilskega polja v sledi. Varianca za [1] je brez vrednosti. Varianca za [null, 1,0,1,1] je 0,25.
+                    </li>
+                    <li>Standardni odklon &ndash; standardni odklon &scaron;tevilskega polja. Standardni odklon za [1] je brez vrednosti. Standardni odklon [brez vrednosti, 1,0,1,1] je 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Na &scaron;tevilskih polji lahko izračunate naslednje:
+                <ul>
+                    <li>&Scaron;tetje &ndash; &scaron;tevilo nizov, ki imajo neničelno vrednost.
+                    </li>
+                    <li>Kateri koli &ndash; ta statistika je naključni vzorec besedilne vrednosti v navedenem polju.
+                    </li>
+                </ul>
+                Vsa statistika bo izračunana na neničelnih vrednostih. Sloj z rezultati bo vseboval nova polja za vsako izračunano statistiko. Z izbiro atributov in statistik je mogoče dodati katerokoli statistiko. 
+            </p>
+            <p>Poleg te statistike bo izračunana tudi statistika deležev v vseh &scaron;tevilskih poljih:
+                <ul>
+                    <li>&Scaron;tetje &ndash; &scaron;tetje vsakega polja, pomnoženo z deležem sloja povzetka znotraj poligonov. 
+                    </li>
+                    <li>Vsota &ndash; vsota tehtanih vrednosti v posameznem polju. Tukaj se uporablja utež, ki je delež sloja povzetka znotraj poligonov.
+                    </li>
+                    <li>Srednja vrednost &ndash; tehtana srednja vrednost vrednosti v vsakem polju. Tukaj se uporablja utež, ki je delež sloja povzetka znotraj poligonov.
+                    </li>
+                    <li>Minimum &ndash; minimum tehtanih vrednosti v posameznem polju. Tukaj se uporablja utež, ki je delež sloja povzetka znotraj poligonov.
+                    </li>
+                    <li>Maksimum &ndash; maksimum tehtanih vrednosti v posameznem polju. Tukaj se uporablja utež, ki je delež sloja povzetka znotraj poligonov.
+                    </li>
+                    <li>Razpon &ndash; razlika med maksimalnimi in minimalnimi tehtanimi vrednostmi.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Odvisno od tipov geoobjektov, ki jih povzemate, bo izračunano skupno &scaron;tevilo točk v bližini, skupna dolžina linij ali celotna povr&scaron;ina.
+            </p>
+        </div>
+    </div>
+    <div id="GroupBy">
+        <div><h2>Izberi polje za skupinjenje po</h2></div>
+        <hr/>
+        <div>
+            <p>To je atribut geoobjektov  <b>Povzemi</b>, ki jih lahko uporabljate za izračun statistike posebej za vsako enolično atributno vrednost. Na primer, predpostavite, da prvi vhodni sloj vsebuje meje mesta in povzetek geoobjektov so parcele. Eden izmed atributov parcel je <i>Status</i>, ki vsebuje dve vrednosti: NEIZKORI&Scaron;ČENA in POZIDANA. Za izračun skupne povr&scaron;ine neizkori&scaron;čenih in pozidanih parcel znotraj meja mesta uporabite <i>Status</i> za skupinjenje po atributu. Statistika za vsako skupino ter &scaron;tevilo geoobjektov znotraj meje vsakega poligona bosta prikazana v pojavnem oknu sloja z rezultati.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Dodaj manjšino, večino</h2></div>
+        <hr/>
+        <div>
+            <p>To izbirno polje je omogočeno, ko izberete polje skupinjenja po. Če želite izvedeti, katere vrednosti atributov so manj&scaron;ina znotraj vsake skupine (najmanj prevladujejo) ali večina (najbolj prevladujejo) znotraj vsake meje prvega vhodnega sloja, izberite  <b>Dodaj manj&scaron;ino, večino</b>. Ko izberete <b>Dodaj manj&scaron;ino, večino</b>, sta sloju z rezultati dodani dve novi polji. Če izberete tudi <b>Dodaj odstotke</b>, sta sloju z rezultati dodani &scaron;e dve polji, ki vsebujeta odstotke vrednosti atributov manj&scaron;ine in večine v vsaki skupini.
+            </p>
+            <ul>
+                <li>Če povzemate točke, so manj&scaron;inske in večinske vrednosti izračunane na podlagi &scaron;tevila točk znotraj vsakega omejitvenega območja v vhodnem poligonskem sloju.  
+                </li>
+                <li>Če povzemate linije, so manj&scaron;inske in večinske vrednosti izračunane na podlagi dolžine linij znotraj vsakega omejitvenega območja v vhodnem poligonskem sloju.  
+                </li>
+                <li>Če povzemate poligone, so manj&scaron;inske in večinske vrednosti izračunane na podlagi poligonov znotraj vsakega omejitvenega območja v vhodnem poligonskem sloju.  
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="PercentShape">
+        <div><h2>Dodaj odstotke</h2></div>
+        <hr/>
+        <div>
+            <p>To izbirno polje je omogočeno, ko izberete polje za skupinjenje. Izberite  <b>Dodaj odstotke</b>, če želite najti odstotek vsake atributne vrednosti znotraj vsake skupine. V tabelo rezultatov je dodano novo polje, ki vsebuje odstotke vsake atributne vrednosti znotraj vsake skupine. Če je prav tako obkljukano <b>Dodaj manj&scaron;ino, večino</b>, sta sloju rezultatov dodani &scaron;e dve polji, ki vsebujeta odstotke manj&scaron;inskih in večinskih vrednosti atributov v vsaki skupini.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Izberite shrambo podatkov</h2></div>
+        <hr/>
+        <div>
+            <p>Rezultati GeoAnalytics so shranjeni v shrambo podatkov in prikazani kot geoobjektni sloj v  Portal for ArcGIS. V večini primerov je treba rezultate shraniti v prostorsko-časovno shrambo podatkov, kar je privzeto. V nekaterih primerih je dobra možnost hramba podatkov v relacijskih shrambi podatkov. V nadaljevanju so navedeni razlogi, zakaj bi morda želeli shraniti rezultate v relacijsko shrambo podatkov: 
+                <ul>
+                    <li>Rezultate lahko uporabite za sodelovanjeprekportala.
+                    </li>
+                    <li>Pri rezultatih lahkoomogočite možnosti sinhronizacije.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Relacijske shrambe podatkov ne smete uporabljati, če pričakujete, da se bodo va&scaron;i rezultati GeoAnalytics povečali in želite izkoristiti možnosti velike prostorsko-časovne shrambe podatkov za obdelavo velikih količin podatkov.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Ime sloja z rezultati</h2></div>
+        <hr/>
+        <div>
+            <p> To je ime sloja, ki bo ustvarjen. Če zapisujete v ArcGIS Data Store, bodo va&scaron;i rezultati shranjeni v  <b>Moji vsebini</b> in dodani na karto. Če zapisujete v delitev datotek velikih podatkov, bodo va&scaron;i rezultati shranjeni v delitev datotek velikih podatkov in dodani v njen manifest. Ne bodo dodani v skupino. Privzeto ime temelji na imenu orodja in imenu vhodnega sloja. Če sloj že obstaja, orodje ne bo uspe&scaron;no.
+            </p>
+            <p>Ko zapisujete v  ArcGIS Data Store (relacijsko ali prostorsko-časovno shrambo velikih podatkov) s pomočjo spustnega menija  <b>Shrani rezultat v</b>, lahko navedete ime mape v <b>Moji vsebini</b>, kjer bo shranjen rezultat.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

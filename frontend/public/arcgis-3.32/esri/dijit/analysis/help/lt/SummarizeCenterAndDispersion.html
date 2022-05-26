@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Sumuoti centrą ir išsisklaidymą</h2><p/>
+        <h2><img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" alt="Sumuoti centrą ir i&scaron;sisklaidymą"></h2>
+        <hr/>
+    <p>&Scaron;is įrankis randa centrinius elementus ir kryptinį i&scaron;sisklaidymą.
+Jį galima naudoti atsakymų radimui į tokius klausimus kaip:
+        <ul>
+            <li>Kur yra centras?
+            </li>
+            <li>Kuris elementas lengviausiai pasiekiamas i&scaron; visų kitų?
+            </li>
+            <li>Kaip i&scaron;siskirstę, kompakti&scaron;ki ar integruoti yra elementai?
+            </li>
+            <li>Ar yra krypties tendencijų?
+            </li>
+        </ul>
+        
+    </p>
+    <p>Jei  <b>Naudoti esamą žemėlapio aprėptį</b> yra pažymėta, bus analizuojami tik tie įvesties sluoksnių elementai, kurie patenka į esamo žemėlapio aprėptį. Jei nepažymėta, bus analizuojami visi įvesties sluoksnio elementai, net jei jie nepatenka į esamą žemėlapio aprėptį.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisLayer">
+        <div><h2>Pasirinkite sluoksnį apibūdinimui</h2></div>
+        <hr/>
+        <div>
+            <p>Ta&scaron;kų, linijų ar plotų sluoksnis, kuris bus naudojamas ie&scaron;kant centrinių elementų ir kryptinio i&scaron;sisklaidymo.
+            </p>
+        </div>
+    </div>
+    <div id="summarizeTypes">
+        <div><h2>Suvestinės tipai</h2></div>
+        <hr/>
+        <div>
+            <p>Centro ir i&scaron;sisklaidymo sumavimo metodas. 
+            </p>
+            <ul>
+                <li>Centrinis elementas &ndash; randa duomenų rinkinyje arčiausiai centro esantį elementą.
+                </li>
+                <li>Vidutinis centras &ndash; randa elementų rinkinio geografinį centrą (arba koncentracijos centrą).
+                </li>
+                <li>Medianos centras &ndash; nustato padėtį, kurios bendras Euklido atstumas iki duomenų rinkinio elementų minimaliausias.
+                </li>
+                <li>Elipsė &ndash; sukuria standartinio nuokrypio elipses, sumuojančias erdvines geografinių elementų charakteristikas: centrinę tendenciją, i&scaron;sisklaidymą ir krypties tendencijas. Elipsių dydis gali būti nustatytas kaip 1, 2 arba 3 standartiniai nuokrypiai.
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="weightBy">
+        <div><h2>Svoris pagal (neprivaloma)</h2></div>
+        <hr/>
+        <div>
+            <p>Laukas, naudojamas pasverti padėtis pagal jų santykinę svarbą. 
+            </p>
+        </div>
+    </div>
+    <div id="groupBy">
+        <div><h2>Grupuoti pagal (neprivaloma)</h2></div>
+        <hr/>
+        <div>
+            <p>Laukas, naudojamas grupuoti elementus atskiriems centrinių elementų arba i&scaron;sisklaidymo skaičiavimams. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultatų sluoksnio pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p>Tai sluoksnio, kuris bus sukurtas ir patalpintas  <b>Turinyje</b> ir pridėtas į žemėlapį, pavadinimas. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnio pavadinimas jau egzistuoja, jūsų papra&scaron;ys pateikti kitą pavadinimą.
+            </p>
+            <p>I&scaron;plečiamajame meniu pasirinkę  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

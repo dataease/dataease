@@ -1,0 +1,3 @@
+//>>built
+define("dijit/_editor/nls/vi/FontChoice",{fontSize:"K\u00edch c\u1ee1",fontName:"Ph\u00f4ng ch\u1eef",formatBlock:"\u0110\u1ecbnh d\u1ea1ng",serif:"serif","sans-serif":"sans-serif",monospace:"monospace",cursive:"cursive",fantasy:"fantasy",noFormat:"Kh\u00f4ng c\u00f3",p:"\u0110o\u1ea1n",h1:"Ti\u00eau \u0111\u1ec1",h2:"Ti\u00eau \u0111\u1ec1 ph\u1ee5",h3:"Ph\u1ee5-ti\u00eau \u0111\u1ec1 ph\u1ee5",pre:"\u0110\u01b0\u1ee3c \u0111\u1ecbnh d\u1ea1ng tr\u01b0\u1edbc",1:"c\u1ef1c nh\u1ecf",2:"r\u1ea5t nh\u1ecf",
+3:"nh\u1ecf",4:"trung b\u00ecnh",5:"l\u1edbn",6:"r\u1ea5t l\u1edbn",7:"c\u1ef1c l\u1edbn"});

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Buscar ubicaciones similares</h2><p/>
+        <h2><img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" alt="Buscar ubicaciones similares"></h2>
+        <hr/>
+    <p>En funci&oacute;n de los criterios que se especifiquen, la herramienta Buscar ubicaciones similares mide la similitud de las ubicaciones de la capa de b&uacute;squeda de candidatos con una o varias ubicaciones de referencia. Esta herramienta puede responder a preguntas como 
+        <ul>
+            <li>&iquest;Cu&aacute;les de sus establecimientos son los m&aacute;s similares a los que tienen los mejores resultados en cuanto a los perfiles de los clientes?
+            </li>
+            <li>A la vista de las caracter&iacute;sticas de los pueblos m&aacute;s afectados por la enfermedad, &iquest;qu&eacute; otras localidades tienen un riesgo alto?
+            </li>
+        </ul>
+        Para responder a preguntas como estas, debe proporcionar las ubicaciones de referencia, las ubicaciones candidatas y los campos que representan los criterios que desea comparar. La primera capa de entrada debe contener tus ubicaciones o puntos de referencia.  Por ejemplo, puede ser una capa que contenga las tiendas con mejores resultados o los pueblos m&aacute;s afectados por la enfermedad. A continuaci&oacute;n, puede especificar la capa que contiene las ubicaciones candidatas. Pueden ser todos tus establecimientos o todos los pueblos restantes. Por &uacute;ltimo, debe identificar uno o varios campos que se utilizar&aacute;n para medir la similitud. La herramienta Buscar ubicaciones similares clasificar&aacute; todas las ubicaciones de b&uacute;squeda de candidatos seg&uacute;n su semejanza con las ubicaciones de referencia para todos los campos seleccionados.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Elige la capa que contiene las ubicaciones de referencia</h2></div>
+        <hr/>
+        <div>
+            <p>La capa que contiene las ubicaciones de referencia para cotejar. 
+            </p>
+            <p>Adem&aacute;s de elegir una capa en el mapa, puede elegir  <b>Elegir capa de an&aacute;lisis</b> en la parte inferior de la lista desplegable para examinar el contenido del dataset o la capa de entidades de un recurso compartido de archivos de big data.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayerSel">
+        <div><h2>Puedes usar todas las ubicaciones o realizar una selección</h2></div>
+        <hr/>
+        <div>
+            <p>Usa los botones de selecci&oacute;n para identificar las ubicaciones de referencia si es necesario. Esta opci&oacute;n solo est&aacute; disponible si las entidades est&aacute;n dibujadas en el mapa (no disponible para un archivo compartido de Big Data).  Por ejemplo, si la capa de entrada contiene todas las ubicaciones (las ubicaciones de referencia y las ubicaciones de b&uacute;squeda de candidatos), necesitar&aacute; utilizar una de las herramientas de selecci&oacute;n para identificar las ubicaciones de referencia.  Si creas dos capas independientes, una con las ubicaciones de referencia y otra con todas las ubicaciones de b&uacute;squeda de candidatos, no es necesario que realices una selecci&oacute;n.
+            </p>
+            <p>Si hay m&aacute;s de una ubicaci&oacute;n de referencia, se crea una &uacute;nica ubicaci&oacute;n promediando los valores de cada uno de los campos empleados para analizar la similitud.
+            </p>
+        </div>
+    </div>
+    <div id="searchLayer">
+        <div><h2>Buscar ubicaciones similares en</h2></div>
+        <hr/>
+        <div>
+            <p>Las entidades de b&uacute;squeda de candidatos de esta capa se clasificar&aacute;n de mayor a menor similitud. 
+            </p>
+            <p>Adem&aacute;s de elegir una capa en el mapa, puede elegir  <b>Elegir capa de an&aacute;lisis</b> en la parte inferior de la lista desplegable para examinar el contenido del dataset o la capa de entidades de un recurso compartido de archivos de big data.
+            </p>
+        </div>
+    </div>
+    <div id="analysisFields">
+        <div><h2>Basar la similitud en</h2></div>
+        <hr/>
+        <div>
+            <p>Los campos que selecciones ser&aacute;n los criterios empleados para evaluar la similitud. Si seleccionas un campo de poblaci&oacute;n e ingresos, por ejemplo, las ubicaciones de b&uacute;squeda de candidatos con las clasificaciones m&aacute;s bajas (las mejores) ser&aacute;n aquellas que tengan valores de poblaci&oacute;n e ingresos similares a los de las ubicaciones de referencia.
+            </p>
+        </div>
+    </div>
+    <div id="matchMethod">
+        <div><h2>Determinar los más y menos similares utilizando</h2></div>
+        <hr/>
+        <div>
+            <p>El m&eacute;todo que seleccione indicar&aacute; la forma de determinar la coincidencia. 
+                <ul>
+                    <li>En el m&eacute;todo de  <b>valores de campo</b> se utilizan las diferencias cuadradas de los valores estandarizados. Esta es la opci&oacute;n predeterminada.
+                    </li>
+                    <li>En el m&eacute;todo de  <b>perfiles de campo</b> se utilizan las matem&aacute;ticas de similitud de coseno para comparar el perfil de los valores estandarizados. Para utilizar perfiles de atributos es necesario utilizar al menos dos campos de an&aacute;lisis.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="numberOfResults">
+        <div><h2>Mostrar</h2></div>
+        <hr/>
+        <div>
+            <p>Puede ver todas las ubicaciones de b&uacute;squeda de candidatos clasificadas de m&aacute;s a menos similar o puede especificar el n&uacute;mero de resultados que desea ver. 
+                <ul>
+                    <li>Si especifica  <b>todas las ubicaciones de la m&aacute;s similar a la menos similar</b>, todas las entidades de la capa de b&uacute;squeda de candidatos se incluir&aacute;n por orden de clasificaci&oacute;n en la capa de resultados. Se devolver&aacute; un m&aacute;ximo de 10.000 resultados.
+                    </li>
+                    <li>Si especifica el  <code>n&uacute;mero de</code> <code>ubicaciones m&aacute;s, menos o m&aacute;s y menos</code> <b>similares</b>, deber&aacute; determinar cu&aacute;ntos de los candidatos m&aacute;s, menos o m&aacute;s y menos similares deber&aacute;n incluirse en la capa de resultados. El valor m&aacute;ximo permitido es 10.000.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="appendFields">
+        <div><h2>Elija campos para agregar a los resultados</h2></div>
+        <hr/>
+        <div>
+            <p>Tambi&eacute;n puede agregar campos a sus datos desde la capa de b&uacute;squeda. De forma predeterminada, se agregar&aacute;n todos los campos.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p> El nombre de la capa que se crear&aacute;.  Si escribe en un ArcGIS Data Store, sus resultados se guardar&aacute;n en  <b>Mi contenido</b> y se agregar&aacute;n al mapa. Si escribe en un recurso compartido de archivos de big data, sus resultados se almacenar&aacute;n en el recurso compartido de archivos de big data y se agregar&aacute;n a su manifiesto. No se agregar&aacute;n al mapa. El nombre predeterminado se basa en el nombre de la herramienta y en el nombre de la capa de entrada. Si la capa ya existe, la herramienta fallar&aacute;.
+            </p>
+            <p>Esta capa de resultados contendr&aacute; las ubicaciones de referencia y el n&uacute;mero de entidades de b&uacute;squeda de candidatos clasificadas que haya especificado.   Si el nombre de la capa de resultados ya existe, se le pedir&aacute; que le cambie el nombre.
+            </p>
+            <p>Cuando escriba en  ArcGIS Data Store (big data store espaciotemporal o relacional) con el cuadro desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,238 @@
+<div data-dojo-attach-point="_renderingRuleContainer" class="esriRenderingRuleContainer">
+  <table class="esriRenderingRuleTable">
+    <tbody>
+      <col class="esriRenderingRuleCol1"/>
+      <col class="esriRenderingRuleCol2"/>
+      <col class="esriRenderingRuleCol3"/>
+      <tr>
+        <td colspan="3">
+          <label class="esriRenderingRuleHeadingLabel" data-dojo-attach-point="rendererLabel">${_i18n.widgets.renderingRule.rendererLabelTitle}</label>
+          <a class="esriRenderingRuleWarningIcon" data-dojo-attach-point="vectorWarningIcon"></a>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" data-dojo-attach-point="rasterFunctionRow">
+          <div data-dojo-attach-point="rasterFunctionList" data-dojo-type="dijit/form/FilteringSelect"
+            class="esriRenderingRuleRasterFunctionList dijitSelect">
+          </div>
+        </td>
+      </tr>
+      <tr data-dojo-attach-point="bandIdsLabelBlock">
+        <td colspan="3">
+          <label class="esriRenderingRuleHeadingLabel" data-dojo-attach-point="bandIdsLabel">${_i18n.widgets.renderingRule.bandCombinationLabelTitle}</label>
+        </td>
+      </tr>
+      <tr data-dojo-attach-point="bandIdsBlock">
+        <td>
+          <div data-dojo-attach-point="bandIdsRedList" data-dojo-type="dijit/form/FilteringSelect"
+            class="esriRenderingRuleBandIdsRedList dijitSelect" data-dojo-attach-event="onChange: _updateStretchStatsGrid">
+          </div>
+        </td>
+        <td>
+          <div data-dojo-attach-point="bandIdsGreenList" data-dojo-type="dijit/form/FilteringSelect"
+            class="esriRenderingRuleBandIdsGreenList dijitSelect" data-dojo-attach-event="onChange: _updateStretchStatsGrid">
+          </div>
+        </td>
+        <td>
+          <div data-dojo-attach-point="bandIdsBlueList" data-dojo-type="dijit/form/FilteringSelect"
+            class="esriRenderingRuleBandIdsBlueList dijitSelect" data-dojo-attach-event="onChange: _updateStretchStatsGrid">
+          </div>
+        </td>
+      </tr>
+      <tr data-dojo-attach-point="bandIdsMsgBlock">
+        <td/>
+        <td colspan="2">
+          <div data-dojo-attach-point="msgLabel" class="esriRenderingRuleMsgLabel">
+          </div>
+        </td>
+      </tr>      
+      <tr>
+        <td colspan="3">
+          <label class="esriRenderingRuleEnhancementHeadingLabel" data-dojo-attach-point="imageEnhancementLabel">${_i18n.widgets.renderingRule.imageEnhancementLabelTitle}</label>
+        </td>
+      </tr>
+      <tbody data-dojo-attach-point="symbologyTypeBlock">
+        <tr data-dojo-attach-point="symbologyTypeLabelRow" class="esriRenderingRuleVisible">
+          <td colspan="3">
+            <label class="esriRenderingRuleSymbologyTypeLabel">${_i18n.widgets.renderingRule.symbologyTypeLabel}</label>
+          </td>
+        </tr>
+        <tr data-dojo-attach-point="symbologyTypeSelectRow" class="esriRenderingRuleVisible">
+          <td colspan="3">
+            <div data-dojo-attach-point="symbologyTypeSelect" data-dojo-type="dijit/form/Select" data-dojo-props="labelAttr: 'label'"
+            class="esriRnderingRuleSymbologyTypeSelect" data-dojo-attach-event="onChange: _onSymbologyTypeChange"></div>
+          </td>
+        </tr>
+      </tbody>
+      <tbody data-dojo-attach-point="stretchBlock">
+      <tr>
+        <td colspan="3">
+          <label data-dojo-attach-point="stretchDescLabel">${_i18n.widgets.renderingRule.stretchDescLabel}</label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3">
+          <label data-dojo-attach-point="stretchMethodLabel">${_i18n.widgets.renderingRule.stretchMethodLabel}</label>
+        </td>
+      </tr>      
+      <tr>
+        <td colspan="3">
+          <select data-dojo-attach-point="stretchMethodList" style="width:100%;" data-dojo-type="dijit/form/Select" class="esriRenderingRuleStretchMethodList">
+          </select>
+        </td>
+      </tr>
+      <tr data-dojo-attach-point="stretchMethodNoneDescBlock">
+        <td colspan="3">
+          <label data-dojo-attach-point="stretchMethodNoneDesc">${_i18n.widgets.renderingRule.stretchMethodNoneDesc}</label>
+        </td>
+      </tr> 
+      <tr data-dojo-attach-point="stretchMethodMinMaxDescBlock">
+        <td colspan="3">
+          <label data-dojo-attach-point="stretchMethodMinMaxDesc">${_i18n.widgets.renderingRule.stretchMethodMinMaxDesc}</label>
+        </td>
+      </tr>
+      <tr data-dojo-attach-point="numStdDevBlock">
+        <td colspan="3">
+          <label data-dojo-attach-point="numStdDevLabel">${_i18n.widgets.renderingRule.numStdDevLabelTitle}</label>
+          <input type="text" value="2.0" data-dojo-type="dijit/form/NumberTextBox" data-dojo-attach-point="numStdDevText" class="esriRenderingRuleFixedInput">
+          </input>
+          <label data-dojo-attach-point="numStdDevLabel">${_i18n.widgets.renderingRule.numStdDevEndLabelTitle}</label>
+        </td>
+        <td/>
+        <td/>
+      </tr>
+      <tr data-dojo-attach-point="minMaxPercentDescBlock">
+        <td colspan="3">
+          <label data-dojo-attach-point="numStdDescLabel">${_i18n.widgets.renderingRule.minMaxDescLabelTitle}</label>
+        </td>
+      </tr>      
+      <tr data-dojo-attach-point="maxPercentBlock">
+        <td>
+          <label data-dojo-attach-point="maxPercentLabel">${_i18n.widgets.renderingRule.maxPercentLabelTitle}</label>
+        </td>
+        <td colspan="2">
+          <input data-dojo-type="dijit/form/NumberTextBox" type="text" value="2.0" data-dojo-attach-point="maxPercentText" class="esriRenderingRuleFixedInput">
+          </input>
+          <label data-dojo-attach-point="percentLabel">${_i18n.widgets.renderingRule.percentLabelTitle}</label>
+        </td>
+      </tr>      
+      <tr data-dojo-attach-point="minPercentBlock">
+        <td>
+          <label data-dojo-attach-point="minPercentLabel">${_i18n.widgets.renderingRule.minPercentLabelTitle}</label>
+        </td>
+        <td colspan="2">
+          <input data-dojo-type="dijit/form/NumberTextBox" type="text" value="2.0" data-dojo-attach-point="minPercentText" class="esriRenderingRuleFixedInput">
+          </input>
+          <label data-dojo-attach-point="percentLabel">${_i18n.widgets.renderingRule.percentLabelTitle}</label>
+        </td>
+      </tr>
+      <tr data-dojo-attach-point="gammaBlock">
+        <td>
+          <label data-dojo-attach-point="gammaLabel">${_i18n.widgets.renderingRule.gammaLabelTitle}</label>
+        </td>
+        <td colspan="2">
+          <div id="gammaSliderID" data-dojo-attach-point="gammaSlider" class="esriRenderingRuleGammaSlider" data-dojo-type="dijit.form.HorizontalSlider" showbuttons="true" value="0.0" minimum="-1" maximum="1" intermediatechanges="true">
+            <div data-dojo-type="dijit.form.HorizontalRuleLabels" container="bottomDecoration" labels="${_i18n.widgets.renderingRule.minGammaLabel}, ${_i18n.widgets.renderingRule.maxGammaLabel}" style="height: 1.5em; font-size: 0.8em; color: #666">
+            </div>        
+          </div> 
+        </td>
+      </tr>
+      <tr data-dojo-attach-point="draBlock">
+        <td colspan="3">
+          <input type="checkbox" value="true" data-dojo-attach-point="draCheckbox" class="esriRenderingRuleDraCheckbox" data-dojo-attach-event="onChange: _onDRAChange">
+          </input>
+          <label class="esriRenderingRuleDraLabel" data-dojo-attach-point="draLabel">${_i18n.widgets.renderingRule.draLabelTitle}</label>
+        <td/>
+      </tr>
+      <tr data-dojo-attach-point="stretchStatsBlock">
+        <td colspan="3"><div data-dojo-attach-point="stretchStatsGrid"></div></td>
+      </tr>
+      </tbody>
+      <tbody data-dojo-attach-point="classifyBlock">
+        <tr data-dojo-attach-point="classifyFieldBlock">
+          <td>
+            <label data-dojo-attach-point="classifyFieldLabel">${_i18n.widgets.renderingRule.fieldLabel}</label>
+          </td>
+          <td colspan="2">
+            <input data-dojo-type="dijit/form/Select" data-dojo-attach-point="classifyFieldSelect" class="esriRenderingRuleClassifySelect"
+            data-dojo-props="labelAttr: 'alias'" data-dojo-attach-event="onChange: _onClassifyFieldChange"></input>
+          </td>
+        </tr>
+        <tr data-dojo-attach-point="classifyMethodBlock">
+          <td>
+            <label data-dojo-attach-point="classifyMethodLabel">${_i18n.widgets.renderingRule.methodLabel}</label>
+          </td>
+          <td colspan="2">
+            <input data-dojo-type="dijit/form/FilteringSelect" data-dojo-attach-point="classifyMethodSelect" class="esriRenderingRuleClassifyMethodSelect" 
+            data-dojo-props="labelAttr: 'label', labelType: 'html'" data-dojo-attach-event="onChange: _onClassifyMethodChange"></input>
+          </td>
+        </tr>
+        <tr data-dojo-attach-point="classifyNClassesBlock">
+          <td>
+            <label data-dojo-attach-point="classifyNClassesLabel">${_i18n.widgets.renderingRule.nClassesLabel}</label>
+          </td>
+          <td colspan="2">
+            <input data-dojo-type="dijit/form/NumberTextBox" data-dojo-attach-point="classifyNClassesInput" class="esriRenderingRuleClassifyClassSelect" data-dojo-attach-event="onChange: _updateClassifyGrid"></input>
+          </td>
+        </tr>
+        <tr data-dojo-attach-point="classifyIntervalsBlock">
+          <td>
+            <label data-dojo-attach-point="classifyIntervalLabel">${_i18n.widgets.renderingRule.intervalLabel}</label>
+          </td>
+          <td colspan="2">
+            <input data-dojo-type="dijit/form/NumberTextBox" data-dojo-attach-point="classifyIntervalInput" class="esriRenderingRuleClassifyIntervalSelect" 
+            data-dojo-attach-event="onChange: _updateClassifyGrid"></input>
+          </td>
+        </tr>
+      </tbody>
+      <tbody data-dojo-attach-point="uniqueValuesBlock">
+        <tr data-dojo-attach-point="uniqueValuesFieldBlock">
+          <td>
+            <label data-dojo-attach-point="uniqueValuesFieldLabel">${_i18n.widgets.renderingRule.fieldLabel}</label>
+          </td>
+          <td colspan="2">
+            <input data-dojo-type="dijit/form/Select" data-dojo-attach-point="uniqueValuesFieldSelect" 
+            class="esriRenderingRuleUniqueValuesSelect" data-dojo-props="labelAttr: 'alias'" data-dojo-attach-event="onChange: _updateUniqueValuesGrid"></input>
+          </td>
+        </tr>
+      </tbody>
+      <tr data-dojo-attach-point="colorRampLabelBlock">
+        <td colspan="3">
+          <div class="esriRenderingRuleColorRampHeading">${_i18n.widgets.renderingRule.colorRampTitle}</div>
+        </td>
+        </tr>
+        <tr data-dojo-attach-point="colorRampBlock">
+        <td colspan="3" >
+          <select data-dojo-attach-point="colorRampSelect" data-dojo-type="esri/dijit/ColorRampSelector" class="esriRenderingRuleColorRampList dijitSelect" 
+          data-dojo-props="dropDownPosition: ['below', 'above'], maxHeight: 200" data-dojo-attach-event="onChange: _onColorRampChange"></select>
+        </td>
+      </tr>
+      <tr data-dojo-attach-point="classifyGridBlock">
+        <td colspan="3">
+          <div data-dojo-attach-point="classifyLoadingMsg" class="esriRenderingRuleLoadingMsg">${_i18n.widgets.renderingRule.classifyLoadingMsg}</div>
+          <div data-dojo-attach-point="classifyGrid"></div>
+        </td>
+      </tr>   
+      <tr>
+      <tr data-dojo-attach-point="uniqueValuesGridBlock">
+        <td colspan="3">
+            <div data-dojo-attach-point="uniqueValuesLoadingMsg" class="esriRenderingRuleLoadingMsg">${_i18n.widgets.renderingRule.uniqueValuesLoadingMsg}</div>
+          <div data-dojo-attach-point="uniqueValuesGrid"></div>
+        </td>
+      </tr>   
+      <tr>
+        <td colspan="3">
+          <center><input type="button" data-dojo-attach-point="_apply" value="APPLY" size="15" class="esriRenderingRuleApplyButton" /></center>
+        </td>
+      </tr>      
+    </tbody>
+  </table>
+   <div data-dojo-type="dijit/TooltipDialog" data-dojo-attach-point="_vectorTooltipDlg" 
+    class="esriRenderingRuleVectorTooltip" style="display: none;">
+      <p>${_i18n.widgets.renderingRule.createVectorLayerDesc}</p>
+      <div class='dijitDialogPaneActionBar'>
+        <button data-dojo-type='dijit/form/Button' data-dojo-attach-event='onClick: _createVectorLayer' class="calcite blue">${_i18n.common.yesLabel}</button>
+        <button data-dojo-type='dijit/form/Button' data-dojo-attach-event='onClick: _hideVectorWarning' class="calcite transparent">${_i18n.common.noLabel}</button>
+      </div>
+    </div>
+</div>

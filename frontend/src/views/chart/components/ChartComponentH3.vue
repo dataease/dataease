@@ -4,7 +4,10 @@
     <span v-if="chart.type" v-show="title_show" ref="title" :style="title_class" style="cursor: default;display: block;">
       <p style="padding:6px 10px 0 10px;margin: 0;overflow: hidden;white-space: pre;text-overflow: ellipsis;">{{ chart.title }}</p>
     </span>
-    <div :id="chartId" style="width: 100%;overflow: hidden;" :style="{height:chartHeight}"></div>
+    <div v-if="chart.type === '3Dpie'" :id="chartId" style="width: 100%;overflow: hidden;" :style="{height:chartHeight}"></div>
+    <div v-if="chart.type === 'arc_map'">
+      <ArcGIS :chartId="chartId" />
+    </div>
   </div>
 </template>
  
@@ -12,6 +15,8 @@
 import highcharts from 'highcharts'
 import highcharts3d from 'highcharts/highcharts-3d'
 highcharts3d(highcharts)
+
+import ArcGIS from './arcgis/index.vue'
 
 import { uuid } from 'vue-uuid'
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar.vue'
@@ -44,7 +49,8 @@ export default {
     }
   },
   components: {
-    ViewTrackBar
+    ViewTrackBar,
+    ArcGIS
   },
   data() {
     return {
@@ -129,20 +135,13 @@ export default {
     drawView(){
       const chart = this.chart
       this.antVRenderStatus = true
-      // if (!chart.data || (!chart.data.datas && !chart.data.series)) {
-      //   chart.data = {
-      //     datas: [{}],
-      //     series: [
-      //       {
-      //         data: [0]
-      //       }
-      //     ]
-      //   }
-      // }
       if(chart.type === "3Dpie") {
         this.myChart = this.$highcharts.chart(this.chartId,JSON.parse(JSON.stringify(BASE_PIE)))
+        this.drawEcharts()
+      } else if (chart.type === 'arc_map') {
+        
       }
-      this.drawEcharts()
+      
       // else {
       //   if(this.myChart) {
       //     this.antVRenderStatus = false
@@ -158,6 +157,7 @@ export default {
       //   this.myChart.render()
       // }
     },
+
     drawEcharts() {
       const chart = this.chart
       let chart_option = {}

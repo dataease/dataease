@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/it/DetectObjectsUsingDeepLearning",{toolDefine:"Definisci oggetti usando apprendimento profondo",outputLayerName:"${layername}_rilevato",modelLabel:"Scegli il modello di apprendimento profondo usato per rilevare oggetti",modelArgsLabel:"Specifica gli argomenti del modello di apprendimento profondo",nameLabel:"Nome",valueLabel:"Valore",removeDuplicatesLable:"Rimuovi feature duplicate dall\u2019output (facoltativo)",queryModelArgsMsg:"Interrogazione argomenti modello in corso...",
+nonMaxSuppressionLabel:"Nessuna soppressione massima",options:"Opzioni",confidenceLabel:"Campo del punteggio di affidabilit\u00e0",classValueLabel:"Campo del valore di classe",maxOverlapLabel:"Rapporto di sovrapposizione massimo",numberOnlyMsg:"Sono consentiti solo valori numerici.",analysisLayerLabel:"Scegli l\u2019immagine usata per rilevare oggetti",itemDescription:"Image service di analisi generato da Rileva oggetti usando apprendimento profondo",itemTags:"Risultato dell\u2019analisi raster, Rileva oggetti usando apprendimento profondo, ${layername}",
+itemSnippet:"Image service di analisi generato da Rileva oggetti usando apprendimento profondo"});

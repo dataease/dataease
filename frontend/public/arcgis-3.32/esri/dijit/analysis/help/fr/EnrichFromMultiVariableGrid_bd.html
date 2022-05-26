@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Enrichir à l’aide d’un carroyage à plusieurs variables</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="Enrichir &agrave; l&rsquo;aide d&rsquo;un carroyage &agrave; plusieurs variables"></h2>
+        <hr/>
+    <p>L&rsquo;outil  Enrichir &agrave; l&rsquo;aide d&rsquo;un carroyage &agrave; plusieurs variables joint efficacement les attributs provenant d&rsquo;un carroyage &agrave; plusieurs variables &agrave; une couche de points.
+    </p>
+    <p>Un carroyage &agrave; plusieurs variables repr&eacute;sente une couche cr&eacute;&eacute;e avec l&rsquo;outil Construire un carroyage &agrave; plusieurs variables qui compile les attributs provenant des plusieurs couches en un seul carroyage de polygones. L&rsquo;utilisation d&rsquo;un carroyage &agrave; plusieurs variables en vue de l&rsquo;enrichissement permet d&rsquo;ajouter rapidement une masse d&rsquo;informations h&eacute;t&eacute;rog&egrave;nes &agrave; des donn&eacute;es ponctuelles en vue de leur analyse spatiale ult&eacute;rieure.
+    </p>
+    <p>Supposons, par exemple, que vous avez obtenu une couche concernant les crimes s&rsquo;&eacute;tant produits l&rsquo;ann&eacute;e pr&eacute;c&eacute;dente dans une ville. Vous voulez mod&eacute;liser les relations entre la fr&eacute;quence des crimes et divers facteurs d&eacute;mographiques, &eacute;conomiques et g&eacute;ographiques. Vous avez acc&egrave;s aux donn&eacute;es d&eacute;crivant ces facteurs, mais elles sont conserv&eacute;es dans cinq couches diff&eacute;rentes de types de g&eacute;om&eacute;trie diff&eacute;rents. Par ailleurs, certaines couches sont stock&eacute;es dans un partage de fichiers Big data tandis que d&rsquo;autres sont conserv&eacute;es en tant que services d&rsquo;entit&eacute;s. En cr&eacute;ant un carroyage &agrave; plusieurs variables pour stocker ces informations et en joignant le carroyage aux crimes avec l&rsquo;outil  Enrichir &agrave; l&rsquo;aide d&rsquo;un carroyage &agrave; plusieurs variables, vous avez la possibilit&eacute; de joindre efficacement un large choix d&rsquo;attributs &agrave; la couche de points avec l&rsquo;ex&eacute;cution de deux outils seulement. Vous pouvez utiliser les attributs joints comme des variables explicatives et commencer &agrave; construire un mod&egrave;le portant sur la fr&eacute;quence des crimes avec la couche obtenue.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>Choisir les entités ponctuelles à enrichir</h2></div>
+        <hr/>
+        <div>
+            <p>Entit&eacute;s ponctuelles qui seront enrichies par le carroyage &agrave; plusieurs variables.
+            </p>
+            <p>Outre le fait de choisir une couche de votre carte, vous pouvez s&eacute;lectionner  <b>Choose Analysis Layer (Choisir une couche d&rsquo;analyse)</b> au bas de la liste d&eacute;roulante pour parcourir votre contenu et rechercher une couche d&rsquo;entit&eacute;s ou un jeu de donn&eacute;es de partage de fichiers Big Data.
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>Choisir le carroyage à plusieurs variables d’enrichissement</h2></div>
+        <hr/>
+        <div>
+            <p>Carroyage &agrave; plusieurs variables contenant des attributs qui seront joints aux entit&eacute;s ponctuelles en entr&eacute;e. La couche doit &ecirc;tre cr&eacute;&eacute;e &agrave; l&rsquo;aide de l&rsquo;outil Construire un carroyage &agrave; plusieurs variables et figurer sur une couche d&rsquo;entit&eacute;s h&eacute;berg&eacute;es. Les couches de carroyages &agrave; plusieurs variables stock&eacute;es dans un partage de donn&eacute;es Big data ne sont pas prises en charge en entr&eacute;e par cet outil.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>Choisir les variables à ajouter</h2></div>
+        <hr/>
+        <div>
+            <p>Attributs dans la couche du carroyage &agrave; plusieurs variables qui seront joints aux entit&eacute;s ponctuelles en entr&eacute;e d&egrave;s que les entit&eacute;s ponctuelles intersectent le carroyage.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nom de la couche de résultat</h2></div>
+        <hr/>
+        <div>
+            <p> Nom de la couche &agrave; cr&eacute;er. Si vous &eacute;crivez sur une instance ArcGIS Data Store, les r&eacute;sultats seront enregistr&eacute;s dans  <b>My Content (Mon contenu)</b> et ajout&eacute;s &agrave; la carte. Si vous &eacute;crivez sur un partage de fichiers Big Data, les r&eacute;sultats seront enregistr&eacute;s dans le partage de fichiers Big Data et ajout&eacute;s &agrave; son manifeste. Il ne sera pas ajout&eacute; &agrave; la carte. Le nom par d&eacute;faut repose sur le nom de l'outil et sur le nom de la couche en entr&eacute;e. Si la couche existe d&eacute;j&agrave;, l'outil &eacute;choue.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

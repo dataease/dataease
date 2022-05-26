@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Geokoduoti vietoves iš lentelės</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="Geokoduoti vietoves i&scaron; lentelės"></h2>
+        <hr/>
+    <p>Geokodavimas konvertuoja adresus į koordinates. &Scaron;is įrankis konvertuoja adresus i&scaron; didelių duomenų failų lentelės į elementų sluoksnį su papildomais koordinačių stulpeliais.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>Pasirinkite įvesties lentelę</h2></div>
+        <hr/>
+        <div>
+            <p>Įvesties lentelė su adresais, kuri bus geokoduojama. 
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Pasirinkite lokatorių</h2></div>
+        <hr/>
+        <div>
+            <p>Pasirinkite vietos nustatymo paslaugą, pagal kurią bus koduojama. Jeigu vietos nustatymo paslaugos, kurią norite naudoti, nėra i&scaron;skleidžiamajame meniu, kreipkitės į administratorių, kad sukonfigūruotų vietos nustatymo paslaugą paketiniam geokodavimui.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>Šalis</h2></div>
+        <hr/>
+        <div>
+            <p>Jeigu visi jūsų adresai yra vienoje &scaron;alyje, kad rezultatai būtų kuo tikslesni, pasirinkite &scaron;alį. Kitu atveju, palikite &scaron;į parametrą tu&scaron;čią.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Pasirinkite duomenų laukus</h2></div>
+        <hr/>
+        <div>
+            <p>Vietos nustatymo paslaugai reikalingi tam tikri duomenų laukai, pvz., adresas, miestas, valstija ar pa&scaron;to kodas. Įvesties failo arba lentelės duomenų laukus suderinkite su lokatoriui reikalingais laukais naudodami i&scaron;skleidžiamą sąra&scaron;ą. Kuo daugiau laukų susiesite, tuo tikslesni bus rezultatai. Jeigu įvesties lentelėje visi duomenys yra viename stulpelyje, pasirinkite  <b>Vienas laukas</b> ir duomenų lauką i&scaron;skleidžiamajame meniu. Kitu atveju, pasirinkite <b>Keli laukai</b> ir susiekite atitinkamus lokatoriaus laukus su keliais laukų stulpeliais lentelėje.
+            </p>
+        </div>
+    </div>
+    <div id="includeAttributes">
+        <div><h2>Kiekvienai vietai</h2></div>
+        <hr/>
+        <div>
+            <p>Įtraukite papildomus laukus, kuriuos pateikia vietos nustatymo paslauga. Jei &scaron;i parinktis pažymėta, bus pateikti visi lokatoriaus sukurti laukai. Jei parinktis nepažymėta, jūsų įvesties duomenys bus pateikti su geokoduotomis koordinatėmis. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Išvesties rezultatų pavadinimas</h2></div>
+        <hr/>
+        <div>
+            <p> Pavadinimas sluoksnio, kuris bus sukurtas. Jei įra&scaron;ote į ArcGIS Data Store, jūsų rezultatai bus įra&scaron;yti į  <b>Turinį</b> ir įtraukti į žemėlapį. Jei įra&scaron;ote į didelių duomenų failo bendrinimą, jūsų rezultatai bus saugomi didelių duomenų failo bendrinime ir pridedami į jo deklaraciją. Jie nebus įtraukti į žemėlapį. Numatytasis pavadinimas sukuriamas pagal įrankio ir įvesties sluoksnio pavadinimus. Jei toks sluoksnis jau yra, įrankis neveiks.
+            </p>
+            <p>Kai ra&scaron;ote į   ArcGIS Data Store  (releacinių arba erdvėlaikinių didelių duomenų saugyklą) naudodami i&scaron;&scaron;okantįjį meniu  <b>Įra&scaron;yti rezultatą į</b>, galite nurodyti <b>Turinyje</b> esančio aplanko, kur bus įra&scaron;yti rezultatai, pavadinimą.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

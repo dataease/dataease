@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Melhorar a Partir de Uma Grelha de Múltiplas Variáveis</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="Melhorar a Partir de Uma Grelha de M&uacute;ltiplas Vari&aacute;veis"></h2>
+        <hr/>
+    <p>A ferramenta  Melhorar a Partir de Uma Grelha de M&uacute;ltiplas Vari&aacute;veis junta eficientemente atributos de uma grelha de m&uacute;ltiplas vari&aacute;veis a uma camada de pontos.
+    </p>
+    <p>Uma grelha de m&uacute;ltiplas vari&aacute;veis &eacute; qualquer camada criada com a ferramenta Construir Grelha de M&uacute;ltiplas Vari&aacute;veis, que compila atributos de m&uacute;ltiplas camadas para uma &uacute;nica grelha de pol&iacute;gonos.  Utilizar uma grelha de m&uacute;ltiplas vari&aacute;veis para melhoria permite-lhe adicionar rapidamente grandes e diversas recolhas de informa&ccedil;&atilde;o a dados de pontos para utiliza&ccedil;&atilde;o em posteriores an&aacute;lises espaciais.
+    </p>
+    <p>Por exemplo, suponhamos que obteve uma camada de novos eventos de crime que ocorreram no &uacute;ltimo ano numa cidade. Pretende modelar as rela&ccedil;&otilde;es entre a frequ&ecirc;ncia dos crimes e uma diversidade de fatores demogr&aacute;ficos, econ&oacute;micos e geogr&aacute;ficos. Tem acesso a dados que descrevem estes fatores, mas est&atilde;o armazenados em cinco diferentes camadas com distintos tipos de geometria. Al&eacute;m disso, algumas camadas est&atilde;o armazenadas numa partilha de ficheiros de big data enquanto outras est&atilde;o armazenadas como servi&ccedil;os de elementos. Criando uma grelha de m&uacute;ltiplas vari&aacute;veis para armazenar esta informa&ccedil;&atilde;o e, em seguida, juntando a grelha aos seus eventos de crime com a ferramenta  Melhorar a Partir de Uma Grelha de M&uacute;ltiplas Vari&aacute;veis, poder&aacute; juntar eficientemente uma ampla variedade de atributos &agrave; sua camada de pontos com apenas duas execu&ccedil;&otilde;es da ferramenta. Pode depois utilizar os atributos que se juntaram como vari&aacute;veis explanat&oacute;rias e come&ccedil;ar a criar um modelo de frequ&ecirc;ncia dos crimes com a camada resultante.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>Escolher os elementos de pontos a melhorar</h2></div>
+        <hr/>
+        <div>
+            <p>Os elementos de pontos que ser&atilde;o melhorados pela grelha de m&uacute;ltiplas vari&aacute;veis.
+            </p>
+            <p>Para al&eacute;m de escolher uma camada do seu mapa, pode escolher  <b>Escolher Camada de An&aacute;lise</b> na parte inferior da lista pendente para navegar at&eacute; aos seus conte&uacute;dos de um conjunto de dados de partilha de ficheiros de big data ou camada de elementos.
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>Escolher a grelha de múltiplas variáveis a partir da qual melhorar</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de grelha de m&uacute;ltiplas vari&aacute;veis que cont&eacute;m atributos que se ir&atilde;o juntar aos elementos de pontos de entrada. A camada ter&aacute; de ter sido criada utilizando a ferramenta Construir Grelha de M&uacute;ltiplas Vari&aacute;veis e tem de ser uma camada de elementos alojada. Camadas de grelha de m&uacute;ltiplas vari&aacute;veis armazenadas numa partilha de ficheiros de big data n&atilde;o s&atilde;o suportadas como entrada para esta ferramenta.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>Escolher as variáveis a adicionar</h2></div>
+        <hr/>
+        <div>
+            <p>Os atributos na camada de grelha de m&uacute;ltiplas vari&aacute;veis que se ir&atilde;o juntar aos elementos de pontos de entrada sempre que os elementos de pontos intersetem a grelha.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p> O nome da camada que ser&aacute; criada.  Se estiver a escrever para ArcGIS Data Store, os seus resultados ser&atilde;o gravados em  <b>O Meu Conte&uacute;do</b> e adicionados ao mapa. Se estiver a escrever para uma partilha de ficheiros big data, os seus resultados ser&atilde;o guardados numa partilha de ficheiros big data e adicionados ao seu manifesto. N&atilde;o ser&atilde;o adicionados ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Caso a camada j&aacute; existe, a ferramenta ir&aacute; falhar.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

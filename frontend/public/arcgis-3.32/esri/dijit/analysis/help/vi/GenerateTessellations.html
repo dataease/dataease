@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Tạo Lưới tổ ong</h2><p/>
+        <h2><img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" alt="Tạo Lưới tổ ong"></h2>
+        <hr/>
+    <p>C&ocirc;ng cụ n&agrave;y tạo ra c&aacute;c lưới tổ ong tr&ecirc;n một khu vực nghi&ecirc;n cứu dựa tr&ecirc;n h&igrave;nh dạng v&agrave; k&iacute;ch thước quy định.
+    </p>
+    <p>Hộp chọn  <b>Sử dụng phạm vi bản đồ hiện tại</b> được bỏ chọn đối với c&ocirc;ng cụ n&agrave;y bởi v&igrave; phạm vi được sử dụng để tạo lưới tổ ong do th&ocirc;ng số <b>X&aacute;c định phạm vi</b> kiểm so&aacute;t.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="binType">
+        <div><h2>Chọn Hình dạng</h2></div>
+        <hr/>
+        <div>
+            <p>H&igrave;nh dạng hoặc h&igrave;nh học của lưới tổ ong bạn muốn tạo.  C&aacute;c h&igrave;nh dạng c&oacute; sẵn l&agrave;  <code>H&igrave;nh vu&ocirc;ng</code>, <code>H&igrave;nh lục gi&aacute;c</code>, <code>H&igrave;nh lục gi&aacute;c ngang</code>, <code>H&igrave;nh tam gi&aacute;c</code> hoặc <code>H&igrave;nh thoi</code>.
+            </p>
+        </div>
+    </div>
+    <div id="extentLayer">
+        <div><h2>Xác định khu vực nghiên cứu</h2></div>
+        <hr/>
+        <div>
+            <p>Phạm vi hoặc khu vực m&agrave; c&aacute;c lưới tổ ong sẽ bao tr&ugrave;m.  C&oacute; thể x&aacute;c định phạm vi bằng c&aacute;ch sử dụng phạm vi bản đồ hiện tại, phạm vi của một lớp hiện c&oacute; hoặc bằng c&aacute;ch tương t&aacute;c vẽ một khu vực sẽ sử dụng l&agrave;m phạm vi.
+            </p>
+            <p>Nếu bạn đ&atilde; chọn một lớp đối tượng để x&aacute;c định phạm vi th&igrave; t&ugrave;y chọn chỉ giữ c&aacute;c lưới tổ ong giao nhau sẽ được bật.  Nếu được chọn, chỉ những lưới tổ ong bao phủ hoặc giao nhau với c&aacute;c đối tượng trong lớp phạm vi được chỉ định mới được tạo trong lớp lưới tổ ong kết quả. 
+            </p>
+            <p>
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>Kh&ocirc;ng được chọn
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-141880D1-A748-4F7B-B700-0036CA9ACCE1-web.png" alt="Độ bao phủ Đầy đủ">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Được chọn
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-F43D993E-5881-4A35-A4AE-4221EDD48374-web.png" alt="Độ bao phủ Đối tượng">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="binSize">
+        <div><h2>Xác định kích thước bin bằng cách chỉ định</h2></div>
+        <hr/>
+        <div>
+            <p>K&iacute;ch thước của mỗi &ocirc;.  C&oacute; thể x&aacute;c định k&iacute;ch thước &ocirc; bằng c&aacute;ch chỉ định h&igrave;nh vu&ocirc;ng đơn vị hoặc chỉ định khoảng c&aacute;ch được t&iacute;nh bằng c&aacute;c ph&eacute;p đo sau, trong đ&oacute; d = Khoảng c&aacute;ch: 
+                <table border="1">
+                <tr>
+                    <td>
+                        <p>H&igrave;nh vu&ocirc;ng
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-4DCDA345-EA0F-46AA-975D-27455F13AAA7-web.png" alt="Lưới tổ ong H&igrave;nh vu&ocirc;ng">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>H&igrave;nh lục gi&aacute;c
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-5A685C3F-B984-4B5E-8E8A-1EE7AB7FC434-web.png" alt="Lưới tổ ong H&igrave;nh lục gi&aacute;c">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>H&igrave;nh lục gi&aacute;c ngang
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-61A8B883-A581-4A8D-9D77-57CEA96D9598-web.png" alt="Lưới tổ ong H&igrave;nh lục gi&aacute;c ngang">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>H&igrave;nh tam gi&aacute;c
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-08AB7A29-A0E7-4210-8462-7550DC99A2F2-web.png" alt="Lưới tổ ong H&igrave;nh tam gi&aacute;c">
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>H&igrave;nh thoi
+                        </p>
+                    </td>
+                    <td>
+                        <p> <img src="../images/GUID-165A71F1-381F-4699-97FA-F83C30AC96E7-web.png" alt="Lưới tổ ong H&igrave;nh thoi">
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </p>
+        </div>
+    </div>
+    <div id="tessellationPolygonLayer">
+        <div><h2>Tên lớp kết quả</h2></div>
+        <hr/>
+        <div>
+            <p>Đ&acirc;y l&agrave; t&ecirc;n lớp sẽ được tạo trong mục  <b>Nội dung của T&ocirc;i</b> v&agrave; th&ecirc;m v&agrave;o bản đồ. Nếu lớp đ&atilde; tồn tại, bạn sẽ được y&ecirc;u cầu cung cấp t&ecirc;n mới.
+            </p>
+            <p>Sử dụng chức năng  <b>Lưu kết quả trong</b> menu thả xuống, bạn c&oacute; thể chỉ định t&ecirc;n thư mục trong phần <b>Nội dung của T&ocirc;i</b> nơi sẽ lưu trữ kết quả của bạn.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

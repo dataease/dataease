@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Kopēt datu krātuvē</h2><p/>
+        <h2><img src="../images/GUID-4030C721-25E4-41C0-A240-B18E869FC434-web.png" alt="Kopēt datu krātuvē"></h2>
+        <hr/>
+    <p>&Scaron;is rīks iekopēs ievades slāni datu krātuvē. Rezultātus var kopēt uz  ArcGIS Data Store (relāciju vai telpas un laika lielo datu krātuvi) un portālā tiks izveidots slānis, vai arī rezultātus var dro&scaron;i kopēt lielā datu failā. 
+    </p>
+    <p>Piemēram, varat kopēt elementus, kas tiek glabāti  <code>lielo datu faila koplietojumā</code>, uz <code>relāciju datu krātuvi</code> un norādīt, ka jākopē tikai elementi, kas atrodas pa&scaron;reizējā kartes pārklājumā. Tādējādi tiek izveidots viesots elementu serviss tikai ar tiem elementiem, kas atradās norādītajā kartes pārklājumā.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Izvēlieties kopējamo slāni</h2></div>
+        <hr/>
+        <div>
+            <p>Slānis vai tabula, kas tiks kopēta. 
+            </p>
+            <p>Papildus slāņa izvēlei kartē varat izvēlēties  <b>Izvēlēties analīzes slāni</b> nolaižamā saraksta apak&scaron;ā, lai saturā atrastu Big Data koplietojuma datu kopu vai elementu slāni.
+            </p>
+        </div>
+    </div>
+    <div id="selection">
+        <div><h2>Jūs varat izmantot visus elementus vai veikt atlasi (pēc izvēles)</h2></div>
+        <hr/>
+        <div>
+            <p>Pēc izvēles izmantojiet izvēles pogu, lai identificētu tos novietojumus, ko vēlaties kopēt
+            </p>
+        </div>
+    </div>
+    <div id="outputDataStore">
+        <div><h2>Izvēlieties datu krātuvi, kurā kopēt</h2></div>
+        <hr/>
+        <div>
+            <p>Datu krātuve, kurā tiks kopēts slānis. &Scaron;is parametrs ignorēs atlasi  <b>Analīzes vidē</b>. Pieejamas &scaron;ādas opcijas:
+                <ul>
+                    <li> <b>ArcGIS datu krātuve</b> ArcGIS Data Store <ul>
+                            <li> <b>Laika un telpas</b> -&Scaron;ī ir noklusējuma opcija.
+                            </li>
+                            <li> <b>Relāciju</b>
+                            </li>
+                        </ul>
+                        
+                    </li>
+                    <li> <b>Lielo datu failu koplieto&scaron;anas izvades veidnes</b>
+                        <ul>
+                            <li>Pieejamo lielo datu failu koplieto&scaron;anas veidņu saraksts formātā  <b>bigDataFileShareName-templateName</b>. Pirms rīka palai&scaron;anas ir jākonfigurē lielo datu failu koplieto&scaron;anas veidnes.
+                            </li>
+                        </ul>
+                        
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Rezultātu slāņa nosaukums</h2></div>
+        <hr/>
+        <div>
+            <p> Slāņa nosaukums, kas tiks izveidots. Ja rakstāt uz ArcGIS Data Store, rezultāti tiks saglabāti mapē  <b>Mans saturs</b> un pievienoti kartei. Ja rakstā uz lielu datu failu koplietojumu,, rezultāti tiks saglabāti lielajā datu failu koplietojumā un pievienot  tā sarakstam. Tas netiks pievienots kartei. Noklusējuma nosaukums ir balstīts uz rīka nosaukumu un ievades slāņa nosaukumu. Ja slānis jau pastāv, rīks nedarbosies.
+            </p>
+            <p>Rakstot uz   ArcGIS Data Store  (relāciju vai telpas un laika lielo datu krātuvi), izmantojot nolaižamo lodziņu  <b>Saglabāt rezultātu,</b> var norādīt mapes nosaukumu mapē <b>Mans saturs,</b> kurā tiks saglabāts rezultāts.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

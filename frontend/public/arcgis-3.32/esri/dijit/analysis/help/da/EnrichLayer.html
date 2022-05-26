@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Enrich Layer</h2><p/>
+        <h2><img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" alt="Enrich Layer"></h2>
+        <hr/>
+    <p>Dette v&aelig;rkt&oslash;j beriger dine data ved at hente fakta om de mennesker, steder og virksomheder, der omgiver dine datasteder, og g&oslash;r det muligt for dig at besvare sp&oslash;rgsm&aring;l om steder, som du ikke kan besvare med kort alene. For eksempel: Hvilken type mennesker bor her? Hvad &oslash;nsker mennesker, der bor i dette omr&aring;de, at foretage sig? Hvilke vaner, og hvilken livsstil har de? Hvilke typer virksomheder er der i dette omr&aring;de?
+    </p>
+    <p>Resultatet bliver et nyt lag, der indeholder alle demografiske og geografiske oplysninger fra givne datasamlinger. De nye oplysninger tilf&oslash;jes som et felt i tabellen.
+    </p>
+    <p>Hvis feltet  <b>Brug aktuel kortudstr&aelig;kning</b> er markeret, er det kun objekterne i det inputlag, der er synligt inden for den aktuelle kortudstr&aelig;kning, der beriges. Hvis markeringen fjernes, beriges alle objekter i inputlaget, ogs&aring; selv om de er uden for den aktuelle kortudstr&aelig;kning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Vælg det lag, der skal beriges med nye data</h2></div>
+        <hr/>
+        <div>
+            <p>Det punkt-, linje- eller omr&aring;delag, der skal beriges med nye attributdata. 
+            </p>
+            <p>Ud over at v&aelig;lge et lag fra dit kort kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten. Denne indstilling &aring;bner et galleri, hvor du kan gennemse og v&aelig;lge datas&aelig;t fra forskellige kilder, som du kan bruge i din analyse. 
+            </p>
+        </div>
+    </div>
+    <div id="DataCollection">
+        <div><h2>Berigelsesvariabler</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Klik p&aring;  <b>V&aelig;lg variabler</b> for at &aring;bne <b>databrowseren</b>. <b>Databrowseren</b> kan hj&aelig;lpe dig med at finde og v&aelig;lge berigelsesvariabler individuelt eller i samlinger.
+            </p>
+            <p>Et omr&aring;de v&aelig;lges automatisk baseret p&aring; dine data. Du kan v&aelig;lge en anden region, hvis dine data d&aelig;kker mere end &eacute;n landsdel. 
+            </p>
+            <p>Berigelsesvariablerne er organiseret i datasamlinger, s&aring; der er nem adgang til dem. N&aring;r du v&aelig;lger en datasamling, viser browseren et par af de mest popul&aelig;re berigelsesvariabler i samlingen. Under  <b>Forts&aelig;t med at bladre</b> vises desuden kategorier inden for samlingen. Inden for hver kategori kan du v&aelig;lge hele underkategorier eller bore dig ned i en underkategori og v&aelig;lge individuelle berigelsesvariabler. Du kan ogs&aring; bruge s&oslash;gefeltet til at finde en bestemt variabel inden for en kategori.
+            </p>
+            <p>N&aring;r du v&aelig;lger variabler, som skal medtages til berigelse, f&oslash;jes de til indk&oslash;bsvognen i hj&oslash;rnet af  <b>databrowseren</b>. Brug indk&oslash;bsvognen til at holde styr p&aring; antallet af variabler, som du har valgt.
+            </p>
+            <p>Hver variabel, der er valgt, tilf&oslash;jes som et felt i dit resultatlag.
+            </p> 
+        </div>
+    </div>
+    <div id="BufferOption">
+        <div><h2>Definér områder, der skal beriges</h2></div>
+        <hr/>
+        <div>
+            <p>Defin&eacute;r omr&aring;det omkring dine inputpunkter eller -linjer, der skal beriges, ved enten at bruge en afstand i fugleflugtslinje eller en valgt rejsetilstand. For en afstand i fugleflugtslinje skal du angive en v&aelig;rdi op til 1000 miles (1609 kilometers). Rejsetilstande kan kun bruges, n&aring;r dit inputlag indeholder punkter. De tilg&aelig;ngelige rejsetilstande fasts&aelig;ttes af administratoren for din organisation. N&aring;r du bruger en af rejsetilstandene, foretages m&aring;lingerne langs med veje eller g&aring;stier, og m&aring;lingerne stemmer overens med g&aelig;ldende regler s&aring;som ensrettede gader, ulovlige vendinger osv. N&aring;r du har valgt tilstand og m&aring;l, skal du angive en varighed eller afstand p&aring; op til 5 timer (300 minutter) eller 300 miles (482,8 kilometer).
+            </p>
+            <p>Hvis  <b>Return&eacute;r resultat som afgr&aelig;nsningsomr&aring;der</b> er markeret, vil det returnerede resultat v&aelig;re omr&aring;deobjekter, som defineres af tids- eller afstandsv&aelig;rdierne ovenfor. Hvis feltet ikke er markeret, vil det returnerede resultat v&aelig;re punktobjekter.
+            </p>
+        </div>
+    </div>
+    <div id="OutputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er navnet p&aring; det lag, som oprettes i  <b>Mit indhold</b> og f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis lagnavnet allerede findes, vil du blive bedt om at angive et andet navn.
+            </p>
+            <p>Ved hj&aelig;lp af rullemenuen  <b>Gem resultat</b> kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet skal gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

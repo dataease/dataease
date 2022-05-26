@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Nastavení prostředí analýzy portálu</h2><p/>
+        <h2></h2>
+        <hr/>
+    <p>  Nastaven&iacute; prostřed&iacute; pro anal&yacute;zu v Portal for ArcGIS a  ArcGIS Online. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="overwriteResult">
+        <div><h2>Přepsat výslednou vrstvu</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Zad&aacute;, zda přepsat existuj&iacute;c&iacute; vrstvy. Když je tato volba za&scaron;krtnuta, bude př&iacute;padn&aacute; vrstva se stejn&yacute;m n&aacute;zvem, kter&aacute; již existuje ve va&scaron;em obsahu, přeps&aacute;na.
+            </p>
+            <p>
+                <ul>
+                    <li>Za&scaron;krtnuto &ndash; Pokud ve va&scaron;em obsahu již existuje vrstva se stejn&yacute;m n&aacute;zvem, bude přeps&aacute;na. V&yacute;stup bude m&iacute;t stejn&yacute; souřadnicov&yacute; syst&eacute;m jako vstup.
+                    </li>
+                    <li>Neza&scaron;krtnuto &ndash; Pokud zadan&yacute; n&aacute;zev v&yacute;sledn&eacute; vrstvy již existuje, dojde k&nbsp;chybě a v&yacute;slednou vrstvu bude nutn&eacute; před spu&scaron;těn&iacute;m n&aacute;stroje přejmenovat. Jedn&aacute; se o v&yacute;choz&iacute; nastaven&iacute;.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="closeAnalysisWidget">
+        <div><h2>Zavřít widget analýzy po spuštění analýzy</h2></div>
+        <hr/>
+        <div>
+            <p>Zad&aacute;, zda zachovat aktivovan&eacute; a otevřen&eacute; dialogov&eacute; okno anal&yacute;zy při pr&aacute;ci n&aacute;stroje. Toto nastaven&iacute; v&aacute;m umožňuje snadno upravovat va&scaron;e parametry anal&yacute;zy, zat&iacute;mco předchoz&iacute; &uacute;loha anal&yacute;zy st&aacute;le prob&iacute;h&aacute;. Anal&yacute;za je opakovan&yacute; proces, a když dialogov&eacute; okno n&aacute;stroje ponech&aacute;te otevřen&eacute;, můžete upravit parametry a anal&yacute;zu spustit znovu.
+            </p>
+            <p>
+                <ul>
+                    <li>Za&scaron;krtnuto &ndash; Dialogov&eacute; okno n&aacute;stroje anal&yacute;zy se zavře a budete vr&aacute;ceni na tabulku obsahu. Toto je v&yacute;choz&iacute; hodnota
+                    </li>
+                    <li>Neza&scaron;krtnuto &ndash; Dialogov&eacute; okno n&aacute;stroje anal&yacute;zy zůstane otevřen&eacute; a aktivn&iacute;.   
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="storeAnalysisResults">
+        <div><h2>Uložit výsledky analýzy jako hostované vrstvy prvku</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Urč&iacute;, zda v&yacute;sledn&aacute; vrstva vytvořen&aacute; z va&scaron;&iacute; anal&yacute;zy bude feature collection nebo hostovan&aacute; vrstva prvků. 
+            </p>
+            <p>
+                <ul>
+                    <li>Za&scaron;krtnuto &ndash; V&yacute;sledky va&scaron;&iacute; anal&yacute;zy vytvoř&iacute; hostovanou vrstvu prvků a ve va&scaron;em obsahu bude vytvořena položka. Jedn&aacute; se o v&yacute;choz&iacute; nastaven&iacute;.
+                    </li>
+                    <li>Neza&scaron;krtnuto &ndash; V&yacute;sledky va&scaron;&iacute; anal&yacute;zy vytvoř&iacute; kolekci prvků.     
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputCoordinateSystem">
+        <div><h2>Výstupní souřadnicový systém</h2></div>
+        <hr/>
+        <div>
+            <p>Zad&aacute; souřadnicov&yacute; syst&eacute;m v&yacute;sledn&eacute; vrstvy pro anal&yacute;zu rastru.    
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Stejn&eacute; jako vstup</b> &ndash; V&yacute;sledek va&scaron;&iacute; anal&yacute;zy bude ve stejn&eacute;m souřadnicov&eacute;m syst&eacute;mu jako vstup. Jedn&aacute; se o v&yacute;choz&iacute; nastaven&iacute;.
+                    </li>
+                    <li> <b>Jak je zad&aacute;no</b> &ndash; V&yacute;sledek va&scaron;&iacute; anal&yacute;zy bude ve stejn&eacute;m souřadnicov&eacute;m syst&eacute;mu, jak&yacute; jste vybrali. Když je vybr&aacute;na tato možnost, klikněte na tlač&iacute;tko gl&oacute;bu a vyberte ze seznamu zn&aacute;m&yacute;ch souřadnicov&yacute;ch syst&eacute;mů nebo zadejte WKID souřadnicov&eacute;ho syst&eacute;mu do př&iacute;slu&scaron;n&eacute;ho pole.
+                    </li>
+                    <li> <b>Vrstva
+&lt;name&gt;</b>&mdash;V&yacute;sledek va&scaron;&iacute; anal&yacute;zy bude ve stejn&eacute;m souřadnicov&eacute;m syst&eacute;mu jako existuj&iacute;c&iacute; vrstva, kterou jste vybrali na va&scaron;&iacute; webov&eacute; mapě.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingCoordinateSystem">
+        <div><h2>Probíhá zpracování souřadnicového systému</h2></div>
+        <hr/>
+        <div>
+            <p>Zad&aacute; souřadnicov&yacute; syst&eacute;m, kter&yacute; va&scaron;e anal&yacute;za použije během zpracov&aacute;n&iacute; geoanal&yacute;zy.   
+            </p>
+            <p>Někter&eacute; geoanalytick&eacute; anal&yacute;zy vyžaduj&iacute;, aby bylo zpracov&aacute;n&iacute; provedeno v&nbsp;rovinn&eacute;m souřadnicov&eacute;m syst&eacute;mu.   Jak&yacute;koli n&aacute;stroj, kter&yacute; m&aacute; implementov&aacute;no vkl&aacute;d&aacute;n&iacute; dat nebo line&aacute;rn&iacute;ch jednotek do přihr&aacute;dek, vyžaduje rovinn&yacute; souřadnicov&yacute; syst&eacute;m. 
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Stejn&eacute; jako vstup</b> &ndash; Va&scaron;e anal&yacute;za bude zpracov&aacute;na ve stejn&eacute;m souřadnicov&eacute;m syst&eacute;mu jako vstup. Jedn&aacute; se o v&yacute;choz&iacute; nastaven&iacute;.
+                    </li>
+                    <li> <b>Jak je zad&aacute;no</b> &ndash; Va&scaron;e anal&yacute;za bude ve stejn&eacute;m souřadnicov&eacute;m syst&eacute;mu, jak&yacute; jste vybrali. Když je vybr&aacute;na tato možnost, klikněte na tlač&iacute;tko gl&oacute;bu a vyberte ze seznamu zn&aacute;m&yacute;ch rovinn&yacute;ch souřadnicov&yacute;ch syst&eacute;mů nebo zadejte WKID souřadnicov&eacute;ho syst&eacute;mu do př&iacute;slu&scaron;n&eacute;ho pole.
+                    </li>
+                    <li> <b>Vrstva
+&lt;name&gt;</b>&mdash;Va&scaron;e anal&yacute;za bude ve stejn&eacute;m souřadnicov&eacute;m syst&eacute;mu jako existuj&iacute;c&iacute; vrstva, kterou jste vybrali na va&scaron;&iacute; webov&eacute; mapě.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingExtent">
+        <div><h2>Rozsah</h2></div>
+        <hr/>
+        <div>
+            <p>Zad&aacute; rozsah nebo prostřed&iacute;, kter&eacute; bude použit&eacute; během proveden&iacute; anal&yacute;zy. V&scaron;echny vstupn&iacute; prvky, kter&eacute; se nach&aacute;zej&iacute; zcela uvnitř zadan&eacute;ho rozsahu nebo ho prot&iacute;naj&iacute;, budou použity v&nbsp;anal&yacute;ze.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>V&yacute;choz&iacute;</b> &ndash; Rozsah poskytnut&yacute; n&aacute;strojem.
+                    </li>
+                    <li> <b>Jak je zad&aacute;no</b>&mdash;Rozsah je definov&aacute;n souřadnicemi, kter&eacute; jste uvedli.
+                    </li>
+                    <li> <b>Vrstva
+&lt;name&gt;</b>&mdash;Rozsah použit&yacute; ke zpracov&aacute;n&iacute; va&scaron;&iacute; anal&yacute;zy bude ve stejn&eacute;m prostorov&eacute;m rozsahu jako existuj&iacute;c&iacute; vrstva, kterou jste vybrali na va&scaron;&iacute; webov&eacute; mapě. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="snapRaster">
+        <div><h2>Rastr pro přichycení</h2></div>
+        <hr/>
+        <div>
+            <p>Uprav&iacute; rozsah va&scaron;&iacute; v&yacute;stupn&iacute; rastrov&eacute; vrstvy tak, aby vyhovovala zarovn&aacute;n&iacute; buněk zadan&eacute; vrstvy  <b>Rastr pro přichycen&iacute;</b> v anal&yacute;ze rastru.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Velikost pixelu</h2></div>
+        <hr/>
+        <div>
+            <p>Nastav&iacute; rozli&scaron;en&iacute; nebo velikost buněk použit&eacute; při vytvořen&iacute; v&yacute;stupn&iacute; rastrov&eacute; vrstvy v anal&yacute;ze rastru. V&yacute;choz&iacute; v&yacute;stupn&iacute; rozli&scaron;en&iacute; je určeno největ&scaron;&iacute; velikost&iacute; buňky vstupn&iacute; rastrov&eacute; vrstvy.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Minim&aacute;ln&iacute; ze vstupů</b> &ndash; Použ&iacute;t nejmen&scaron;&iacute; velikost buňky ze v&scaron;ech vstupn&iacute;ch vrstev.
+                    </li>
+                    <li> <b>Maxim&aacute;ln&iacute; ze vstupů</b> &ndash; Použ&iacute;t největ&scaron;&iacute; velikost buňky ze v&scaron;ech vstupn&iacute;ch vrstev. Jedn&aacute; se o v&yacute;choz&iacute; nastaven&iacute;.
+                    </li>
+                    <li> <b>Jak je zad&aacute;no</b> &ndash; Zadejte č&iacute;selnou hodnotu pro nastaven&iacute; velikosti buňky. Pokud je zvolena tato možnost, v&yacute;choz&iacute; hodnota je 1.
+                    </li>
+                    <li> <b>N&aacute;zev &lt;vrstvy&gt;</b> &ndash; Nastavte velikost buňky na zvolenou rastrovou vrstvu.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="mask">
+        <div><h2>Maska</h2></div>
+        <hr/>
+        <div>
+            <p>Zad&aacute; vrstvu, kter&aacute; bude použita pro definov&aacute;n&iacute; va&scaron;&iacute; oblasti z&aacute;jmu v anal&yacute;ze rastru. Při anal&yacute;ze budou br&aacute;ny v&nbsp;potaz pouze buňky, kter&eacute; spadaj&iacute; do masky anal&yacute;zy.
+            </p>
+            <ul>
+                <li>Maska může b&yacute;t rastr nebo vrstva prvků.
+                </li>
+                <li>Pokud je maskou anal&yacute;zy rastr, při definici masky budou zv&aacute;ženy v&scaron;echny buňky s&nbsp;hodnotou. Buňky v&nbsp;rastru masky, kter&eacute; jsou typu NoData, budou považov&aacute;ny za um&iacute;stěn&eacute; mimo masku a ve v&yacute;sledn&eacute; vrstvě anal&yacute;zy budou tak&eacute; typu NoData. 
+                </li>
+                <li>Pokud je maska anal&yacute;zy vrstvou prvků, bude při spu&scaron;těn&iacute; vnitřně převedena na rastr. Ujistěte se proto, že položky
+ <b>Velikost buňky</b> a <b>Rastr pro přichycen&iacute;</b> jsou nastaveny způsobem vhodn&yacute;m pro va&scaron;i anal&yacute;zu.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Úložiště dat</h2></div>
+        <hr/>
+        <div>
+            <p>V&yacute;sledky geoanal&yacute;zy mohou b&yacute;t uloženy buďto v  ArcGIS Data Store a vystaveny jako vrstva prvků v  Portal for ArcGIS nebo v konfigurovan&eacute;m sd&iacute;len&eacute;m souboru velk&yacute;ch dat. 
+            </p>
+            <p>Když ukl&aacute;d&aacute;te v&yacute;sledek v  ArcGIS Data Store,ve vět&scaron;ině př&iacute;padů mus&iacute; b&yacute;t v&yacute;sledky uloženy v datov&eacute;m &uacute;loži&scaron;ti pro velk&aacute; časoprostorov&aacute; data. Jedn&aacute; se o v&yacute;choz&iacute; nastaven&iacute;. Důvody k uložen&iacute; v&yacute;sledků do relačn&iacute;ho datov&eacute;ho &uacute;loži&scaron;tě: 
+                <ul>
+                    <li>Použit&iacute; v&yacute;sledků ke spolupr&aacute;ci mezi port&aacute;ly
+                    </li>
+                    <li>Povolen&iacute; funkc&iacute; synchronizace s v&yacute;sledky
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Relačn&iacute; datov&eacute; &uacute;loži&scaron;tě byste použ&iacute;vat neměli, pokud oček&aacute;v&aacute;te n&aacute;růst množstv&iacute; v&yacute;sledků geoanal&yacute;zy a chcete využ&iacute;t v&yacute;hod časoprostorov&eacute;ho &uacute;loži&scaron;tě Big Data ke zpracov&aacute;n&iacute; velk&yacute;ch objemů dat. 
+            </p>
+        </div>
+    </div>
+    <div id="parallelProcessingFactor">
+        <div><h2>Faktor paralelního zpracování</h2></div>
+        <hr/>
+        <div>
+            <p>Rozděl&iacute; proces anal&yacute;zy mezi v&iacute;ce instanc&iacute; služby Zpracov&aacute;n&iacute; rastru. 
+            </p>
+            <p>N&aacute;stroje, kter&eacute; berou ohled na prostřed&iacute;  <b>Faktor paraleln&iacute;ho zpracov&aacute;n&iacute;</b>, v&aacute;m umožn&iacute; ř&iacute;dit počet instanc&iacute; služeb Zpracov&aacute;n&iacute; rastru, kter&eacute; mohou b&yacute;t použity pro zpracov&aacute;n&iacute; va&scaron;ich dat.
+            </p>
+            <p>Pokud n&aacute;stroj nebere ohled na  <b>Typ procesoru</b>, nebo pokud je prostřed&iacute; <b>Typ procesoru</b> nastaveno na <b>CPU</b>, prostřed&iacute; <b>Faktor paraleln&iacute;ho zpracov&aacute;n&iacute;</b> ř&iacute;d&iacute; instance služby Zpracov&aacute;n&iacute; rastru (CPU). Pokud je <b>Typ procesoru</b> nastaven na <b>GPU</b>, prostřed&iacute; <b>Faktor paraleln&iacute;ho zpracov&aacute;n&iacute;</b> ř&iacute;d&iacute; počet instanc&iacute; Zpracov&aacute;n&iacute; rastru (GPU).
+            </p> 
+            <p>Nastaven&iacute;m  <b>Faktor paraleln&iacute;ho zpracov&aacute;n&iacute;</b>, můžete požadovat počet paraleln&iacute;ch zpracov&aacute;n&iacute;, kter&aacute; image server rastrov&eacute; anal&yacute;zy použ&iacute;v&aacute; ke zpracov&aacute;n&iacute; jedn&eacute; &uacute;lohy rastrov&eacute; anal&yacute;zy. Nicm&eacute;ně, pokud celkov&yacute; počet paraleln&iacute;ch zpracov&aacute;n&iacute; přesahuje maxim&aacute;ln&iacute; počet instanc&iacute; služby Zpracov&aacute;n&iacute; rastru (CPU nebo GPU), dal&scaron;&iacute; paraleln&iacute; procesy budou zařazeny do fronty.
+            </p>
+            <p>Pokud nen&iacute;  <b>Faktor paraleln&iacute;ho zpracov&aacute;n&iacute;</b> zad&aacute;n, což je ve v&yacute;choz&iacute;m nastaven&iacute;, n&aacute;stroj použije 80 procent z maxim&aacute;ln&iacute;ho počtu instanc&iacute; služby Zpracov&aacute;n&iacute; rastru. Může b&yacute;t zad&aacute;no cel&eacute; č&iacute;slo nebo procento jako faktor paraleln&iacute;ho zpracov&aacute;n&iacute;.
+            </p>
+        </div>
+    </div>
+    <div id="processorType">
+        <div><h2>Typ procesoru</h2></div>
+        <hr/>
+        <div>
+            <p>N&aacute;stroje, kter&eacute; berou ohled na prostřed&iacute;  <b>Typ procesoru</b>, v&aacute;m umožňuj&iacute; zvolit, kde a jak chcete zpracov&aacute;vat svoje data. Sv&aacute; data můžete zpracov&aacute;vat pomoc&iacute; CPU nebo GPU serverov&eacute;ho poč&iacute;tače.Pokud je prostřed&iacute; <b>Typ procesoru</b> pr&aacute;zdn&eacute;, n&aacute;stroj použije CPU ke zpracov&aacute;n&iacute; dat. Jedn&aacute; se o v&yacute;choz&iacute; nastaven&iacute;.
+            </p> 
+            <p>Zpracov&aacute;n&iacute; pomoc&iacute; CPU může b&yacute;t synchronizov&aacute;no přes v&iacute;ce j&aacute;der a instanc&iacute;, to je prov&aacute;děno pomoc&iacute;  <b>Faktoru paraleln&iacute;ho zpracov&aacute;n&iacute;</b>.
+            </p>
+            <p>GPU jsou &uacute;činn&eacute; při zpracov&aacute;n&iacute; grafiky a obrazu, jelikož d&iacute;ky sv&eacute; vysoce paraleln&iacute; struktuře dobře funguj&iacute; při opakovan&eacute;m zpracov&aacute;n&iacute; velk&yacute;ch bloků dat.N&aacute;stroje rastrov&eacute; anal&yacute;zy, kter&eacute; berou ohled na toto prostřed&iacute;, mohou distribuovat svoje &uacute;lohy např&iacute;č instancemi GPU na v&iacute;ce serverov&yacute;ch poč&iacute;tač&iacute;ch rastrov&eacute; anal&yacute;zy, to je prov&aacute;děno pomoc&iacute;  <b>Faktoru paraleln&iacute;ho zpracov&aacute;n&iacute;</b>.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>GPU</b>&mdash;Data budou zpracov&aacute;na pomoc&iacute; grafick&eacute;ho procesoru.
+                    </li>
+                    <li> <b>CPU</b>&mdash;Data budou zpracov&aacute;na pomoc&iacute; centr&aacute;ln&iacute; procesorov&eacute; jednotky poč&iacute;tače.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

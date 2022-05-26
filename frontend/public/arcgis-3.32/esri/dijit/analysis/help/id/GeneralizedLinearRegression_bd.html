@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Regresi Linear yang Digeneralisasi</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="Diagram alur kerja GeneralizedLinearRegression"></h2>
+        <hr/>
+    <p>Melakukan Regresi Linear yang Dihasilkan 
+(GLR) untuk membuat prediksi atau membuat model variabel terikat dalam hal hubungannya dengan seperangkat variabel penjelas.  Alat ini dapat digunakan untuk mencocokkan model kontinu (Gaussian), biner (logistic), dan jumlah (Poisson).
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Jenis Analisis</h2></div>
+        <hr/>
+        <div>
+            <p>Menentukan mode pengoperasian alat. Alat dapat dijalankan untuk melatih model hanya untuk menilai kinerja, atau melatih sebuah model dan memprediksikan ke fitur. Jenis prediksi adalah sebagai berikut:
+                <ul>
+                    <li> <b>Cocokkan model untuk menilai kinerja model</b>&mdash;Sebuah model akan dicocokkan dan diterapkan ke data input. Gunakan opsi ini untuk menilai akurasi model Anda sebelum membuat prediksi mengenai set data baru atau memahami hubungan dan pendorong variabel yang Anda prediksikan. Output opsi ini akan menjadi feature service data yang Anda cocokkan dan diagnostik model.
+                    </li>
+                    <li> <b>Cocokkan model dan prediksikan nilai</b>&mdash; Prediksi atau klasifikasi akan dibuat untuk fitur input dan fitur prediksi. Variabel penjelas harus diberikan baik untuk fitur prediksi dan fitur yang akan diprediksikan. Output opsi ini akan menjadi feature service model Anda yang dicocokkan ke data input, sebuah feature service nilai yang diprediksikan dan diagnostik model.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>Cocokkan model untuk menilai kinerja model</h2></div>
+        <hr/>
+        <div>
+            <p>Gunakan mode ini jika Anda ingin mencocokkan sebuah model, lalu selidiki kecocokannya.
+            </p>
+            <p>Dengan pilihan ini, model akan dilatih menggunakan layer input. Gunakan opsi ini untuk menilai akurasi model Anda sebelum membuat prediksi mengenai set data baru. Opsi ini akan membuat output diagnostik model diterapkan pada model untuk data latihan Anda.
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>Cocokkan sebuah model dan prediksikan nilai</h2></div>
+        <hr/>
+        <div>
+            <p>Gunakan mode ini jika Anda ingin mencocokkan sebuah model, dan menerapkan model tersebut ke set data untuk membuat prediksi.
+            </p>
+            <p>Prediksi atau klasifikasi akan dibuat untuk fitur. Output opsi ini akan menjadi feature service, diagnostik model, dan tabel opsional tingkat kepentingan variabel.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>Pilih sebuah layer untuk membuat sebuah model</h2></div>
+        <hr/>
+        <div>
+            <p>Layer berisi fitur titik, garis, area, atau tabular yang berisi variabel terikat dan penjelas.
+            </p>
+            <p>Selain memilih layer dari peta, Anda dapat memilih  <b>Pilih Layer Analisis</b> di bawah daftar drop-down untuk menelusuri konten Anda untuk set data atau feature layer berbagi file big data.
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>Pilih kolom untuk membuat model</h2></div>
+        <hr/>
+        <div>
+            <p>Kolom numerik berisi nilai-nilai yang diamati untuk dijadikan model dan jenis nilai yang Anda jadikan model. Ada tiga jenis nilai yang dapat Anda jadikan model
+                <ul>
+                    <li>Kontinu&mdash;Mewakili nilai yang kontinu. Model yang digunakan adalah Gaussian, dan alat melakukan regresi kuadrat terkecil biasa.
+                    </li>
+                    <li>Biner&mdash;Mewakili ada atau tidaknya nilai. Harus ada 1dtk dan 0dtk. Model yang digunakan adalah Regresi Logistik.
+                    </li>
+                    <li>Jumlah&mdash;Mewakili perbedaan dan mewakili peristiwa, contohnya, jumlah kejahatan, insiden penyakit, atau kecelakaan lalu lintas. Model yang digunakan adalah regresi Poisson. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Pilih sebuah layer untuk memprediksikan nilai</h2></div>
+        <hr/>
+        <div>
+            <p>Layer dengan fitur mewakili lokasi tempat perkiraan harus dihitung. Setiap fitur dalam set data ini harus berisi nilai untuk semua variabel penjelas yang ditentukan. Variabel terikat untuk fitur-fitur ini akan diperkirakan menggunakan model yang dikalibrasikan untuk layer input.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Pilih kolom penjelas</h2></div>
+        <hr/>
+        <div>
+            <p>Satu kolom atau lebih mewakili variabel penjelas (kolom) yang membantu memprediksikan nilai. Hanya kolom numerik yang akan terlihat.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Pilih bagaimana kolom penjelas dicocokkan</h2></div>
+        <hr/>
+        <div>
+            <p>Bagaimana variabel terkait dalam layer input akan cocok dengan variabel dalam layer prediksi. Hanya variabel yang digunakan dalam membuat model yang akan disertakan dalam tabel. Hanya nilai numerik yang dapat digunakan. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nama layer hasil</h2></div>
+        <hr/>
+        <div>
+            <p> Nama layer yang akan dibuat.  Jika Anda menulis ke sebuah ArcGIS Data Store, hasil Anda akan disimpan di  <b>Konten Saya</b> dan ditambahkan ke dalam peta. Jika Anda menulis ke berbagi file big data, hasil Anda akan disimpan ke berbagi file big data dan ditambahkan ke manifestasinya. Ini tidak akan ditambahkan ke peta. Nama default ditetapkan berdasarkan nama alat dan nama layer input. Jika layer sudah ada, alat tidak akan berfungsi.
+            </p>
+            <p>Hasil yang dikembalikan akan tergantung pada jenis analisis. Jika Anda mencocokkan untuk menilai kecocokan model, hasil akan berisi layer data input yang cocok dengan model dan info hasil penilaian kecocokan model. Jika Anda mencocokkan dan memprediksi, hasil akan berisi layer data input yang cocok dengan model, layer hasil yang diprediksikan, dan info hasil penilaian kecocokan model.
+            </p>
+            <p>Saat menulis ke  ArcGIS Data Store (penyimpanan big data relasional atau spasiotemporal) menggunakan  <b>Simpan hasil di</b> kotak drop-down, Anda dapat menentukan nama folder di <b>Konten Saya</b> tempat hasil akan disimpan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

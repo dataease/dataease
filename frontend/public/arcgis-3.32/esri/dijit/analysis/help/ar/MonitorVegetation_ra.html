@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>مراقبة الغطاء النباتي</h2><p/>
+        <h2><img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" alt="أداة رصد المناطق النباتية للبوابة الإلكترونية"></h2>
+        <hr/>
+    <p>تعمل هذه الأداة على إجراء عملية حسابية على نطاقات طبقة البيانات النقطية متعددة النطاق للكشف عن معلومات الغطاء النباتي لمنطقة الدراسة.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>حدد البيانات المُدخَلَة</h2></div>
+        <hr/>
+        <div>
+            <p>اختر طبقة البيانات النقطية متعددة النطاق. تأكد من أن البيانات النقطية المدخلة تحتوي على النطاقات المناسبة المتوفرة.
+            </p> 
+        </div>
+    </div>
+    <div id="vegetationIndexType">
+        <div><h2>اختر طريقة لمراقبة الغطاء النباتي</h2></div>
+        <hr/>
+        <div>
+            <p>اختر طريقة إنشاء طبقة الفهرس النباتي. يمكن للفهارس المختلفة للنباتات المساعدة في تمييز معالم معينة أو تقليل تنوع الضوضاء.
+            </p>
+            <ul>
+                <li>Global Environmental Monitoring Index &mdash; 
+يُعد GEMI فهرس نباتي غير خطي للمراقبة البيئية العالمية من صور القمر الصناعي. إنه مماثل لـ NDVI، لكنه أقل حساسية على تأثيرات الجو. إنها تتأثر بالتربة العارية. وبالتالي، فمن غير المستحسن استخدامها في مناطق النباتات ذات كثافة ضئيلة أو معتدلة.
+
+                </li>
+                <li>Green Vegetation Index - Landsat TM &mdash; 
+تم تصميم GVI في الأصل من صور Landsat MSS ولكن تم التعديل للاستخدام مع صور Landsat TM. إنها أيضًا تُعرف بفهرس النبات الأخضر Landsat TM Tasseled Cap. يمكن استخدام فهرس المراقبة مع الصور التي تشارك نطاقاتها نفس السمات الطيفية.
+
+                </li>
+                <li>Modified Soil Adjusted Vegetation Index &mdash; 
+MSAVI2 هو فهرس نباتي يحاول التقليل من تأثيرات التربة العارية من طريقة SAVI.
+
+                </li>
+                <li>Normalized Difference Vegetation Index  &mdash; 
+NDVI هو فهرس قياسي يتيح لك إنشاء صورة تعرض الكتلة الإحيائية أو الاخضرار النسبي. يستفيد هذا المؤشر من تباين سمات النطاقين من مجموعة البيانات النقطية متعددة الأطياف؛ مما يعني امتصاص صبغة الكلوروفيل في النطاق الأحمر و وانعكاسية عالية من المواد النباتية في النطاق القريب من الأشعة تحت الحمراء.
+
+                </li>
+                <li>Perpendicular Vegetation Index &mdash; 
+PVI مماثل لمؤشر الاختلاف في النباتات؛ ومع ذلك، يُعد حساس للتغييرات في الغلاف الجوي. عند استخدام هذه الطريقة لمقارنة الصور المختلفة، فإنه ينبغي استخدامها فقط على الصور التي تم تصحيحها فيما يتعلق بالغلاف الجوي. يمكن توفير هذه المعلومات عن طريق مورّد البيانات.
+
+                </li>
+                <li>Soil-Adjusted Vegetation Index &mdash; 
+SAVI هو مؤشر الغطاء النباتي الذي يحاول التقليل من تأثيرات سطوع التربة باستخدام معامل تصحيح سطوع التربة. يُستخدم هذا في أغلب الأحيان في المناطق القاحلة حيث يكون الغطاء النباتي منخفض.
+
+                </li>
+                <li>Sultan's Formula &mdash; 
+تأخذ عملية صيغة السلطان صورة 8 بت من ستة نطاقات وتطبق خوارزمية محددة لإنتاج صورة 8 بت من ثلاثة نطاقات. تُميز الصورة الناتجة التكوينات الصخرية تسمى صخور الأفيوليت على السواحل. تم تصميم هذه الصيغة استنادً إلى نطاقات TM وETM لمشهد Landsat 5 أو 7.
+
+                </li>
+                <li>Transformed Soil-Adjusted Vegetation Index &mdash; 
+SAVI-المحول هو مؤشر الغطاء النباتي الذي يحاول التقليل من تأثيرات سطوع التربة عن طريق افتراض خط التربة لديه منحدر مطلق وجزء محصور.
+
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="bandIndexes">
+        <div><h2>حدد فهارس مجموعة NIR ومجموعة Red</h2></div>
+        <hr/>
+        <div>
+            <p>تحديد فهارس نطاق NIR والنطاقات الحمراء.
+            </p>
+            <p>تلتقط كل أجهزة الاستشعار الفضائية والكاميرا الجوية المعلومات التي يتم تقسيمها إلى فهارس النطاق. يحتوي كل فهرس من فهارس النطاق على معلومات الجزء المحدد من الطيف الكهرومغناطيسي. تتطلب طريقة مراقبة الغطاء النباتي تحديد فهرس النطاق الذي يلتقط NIR والأطوال الموجية الحمراء.
+            </p>
+        </div>
+    </div>
+    <div id="slopeOfSoilLine">
+        <div><h2>انحدار خط التربة</h2></div>
+        <hr/>
+        <div>
+            <p>منحدر خط التربة. المنحدر هو العلاقة الخطية التقريبية بين NIR والنطاقات الحمراء على مخطط التشتت.
+            </p>
+            <p>تكون هذه المعلمة صالحة فقط لطريقة فهرس النبات المحول ذات التربة المعدلة.
+            </p>
+        </div>
+    </div>
+    <div id="interceptOfSoilLine">
+        <div><h2>تقاطع</h2></div>
+        <hr/>
+        <div>
+            <p>تكون قيمة NIR عندما يكون انعكاس قيمة النطاق الأحمر صفرًا لخطوط التربة المعينة.
+            </p>
+            <p> <code>(a = NIR - sRed)</code> ، عندما يكون قيمة Red صفر.
+            </p> 
+            <p>تكون هذه المعلمة صالحة فقط لطريقة فهرس الغطاء النباتي المحول ذي التربة المعدلة.
+            </p>
+        </div>
+    </div>
+    <div id="greenVegetativeCover">
+        <div><h2>مقادر تغطية النباتات الخضراء</h2></div>
+        <hr/>
+        <div>
+            <p>تحديد مقدار الغطاء النباتي الأخضر المطلوب بواسطة طريقة SAVI.
+            </p>
+            <p>فيما يلي القيم الصحيحة: 
+
+                <ul>
+                    <li>1 = مناطق بدون غطاء نباتي أخضر
+                        
+ 
+                    </li>
+                    <li>0.5 = مناطق مع غطاء نباتي أخضر معتدل
+                        
+ 
+                    </li>
+                    <li>0 = مناطق مع غطاء نباتي أخضر مرتفع
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="adjustmentFactor">
+        <div><h2>عامل الضبط</h2></div>
+        <hr/>
+        <div>
+            <p>تحديد عامل الضبط للمساعدة في تقليل تأثير التربة، والمطلوب بواسطة طريق فهرس الغطاء النباتي المحول ذي التربة المعدلة. القيمة الافتراضية هي 0.08.
+            </p>
+            <p>تعني القيمة المنخفضة أنك تتجاهل تأثيرات التربة. تعني القيمة المرتفعة أن التربة تؤثر على النتيجة.
+            </p>
+        </div>
+    </div>
+    <div id="outputLayer">
+        <div><h2>اسم طبقة النتيجة</h2></div>
+        <hr/>
+        <div>
+            <p>سيتم إنشاء اسم الطبقة في  <b>المحتوى</b> وسيتم إضافته إلى الخريطة. يستند الاسم الافتراضي إلى اسم الأداة واسم الطبقة المدخلة. إذا وُجدت الطبقة بالفعل، سيطلب منك كتابة اسم آخر.
+            </p>
+            <p>يمكنك تحديد اسم مجلد في  <b>محتواي</b> حيث سيتم حفظ النتيجة باستخدام المربع المنسدل <b>حفظ النتيجة في</b>
+            </p>
+        </div>
+    </div>
+</div>
+</html>

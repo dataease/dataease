@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Классифицировать объекты при помощи глубокого обучения</h2><p/>
+        <h2><img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" alt="Классификация пикселов с использованием глубокого обучения"></h2>
+        <hr/>
+    <p>Этот инструмент запускает обученную модель глубокого обучения на входном растре для создания классифицированного растра, где у каждого допустимого пиксела есть значение назначенного класса.
+    </p>
+    <p>Если включена опция  <b>Использовать текущий экстент карты</b>, анализируется только область растра, которая отображаются в текущем экстенте карты. Если опция отключена, будет проанализирован весь растр, даже если он находится вне текущего экстента карты.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRaster">
+        <div><h2>Выберите изображение для классификации пикселей</h2></div>
+        <hr/>
+        <div>
+            <p>Входное изображение для классификации.
+            </p>
+            <p>Им может быть URL сервиса изображений, растровый слой или слой сервиса изображений.
+            </p>
+        </div>
+    </div>
+    <div id="model">
+        <div><h2>Выберите модель глубокого обучения для классификации пикселов</h2></div>
+        <hr/>
+        <div>
+            <p>Элемент входных данных пакета глубокого обучения ( <code>.dlpk</code>).
+            </p>
+            <p>Пакет глубокого обучения состоит из JSON-файла определения модели Esri ( <code>.emd</code>), двоичного файла модели глубокого обучения и, при необходимости, растровой функции Python.
+            </p>
+        </div>
+    </div>
+    <div id="modelArguments">
+        <div><h2>Введите аргументы модели глубокого обучения</h2></div>
+        <hr/>
+        <div>
+            <p>Аргументы функции задаются в классе растровой функции Python, на который ссылается входная модель. Здесь вы указываете дополнительные параметры и аргументы глубокого обучения для экспериментов и уточнений, например, порог достоверности для настройки чувствительности.
+            </p>
+            <p>Названия аргументов заполняются инструментом при чтении модуля Python на сервере растрового анализа.
+            </p>  
+            <p> 
+            </p>
+        </div>
+    </div>
+    <div id="outputClassifiedRaster">
+        <div><h2>Имя слоя результата</h2></div>
+        <hr/>
+        <div>
+            <p>Имя слоя, который будет добавлен в  <b>Мои ресурсы</b> и на карту. Имя слоя по умолчанию зависит от имени инструмента и имени входного слоя. Если имя слоя уже используется, появится запрос ввести новое имя.
+            </p>
+            <p>Вы можете указать имя папки в  <b>Моих ресурсах</b>, где будет сохранен результат, с помощью ниспадающего списка <b>Сохранить результат в</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

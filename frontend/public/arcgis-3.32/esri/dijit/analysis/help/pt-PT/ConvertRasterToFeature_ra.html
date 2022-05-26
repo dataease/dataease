@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Converter Raster para Elemento</h2><p/>
+        <h2><img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" alt="Ferramenta Converter Raster para Elemento"></h2>
+        <hr/>
+    <p>Esta ferramenta converte um raster para um conjunto de dados de elementos, em forma de pontos, linhas ou pol&iacute;gonos.
+    </p>
+    <p>O par&acirc;metro  <b>Escolher campo</b> permite-lhe selecionar o campo de atributos no qual o conjunto de dados raster de entrada se tornar&aacute; um atributo na classe de elementos de sa&iacute;da. Este par&acirc;metro encontra-se dispon&iacute;vel apenas para rasters inteiros que tenham atributos adicionais na tabela associada.
+    </p>
+    <p>O raster de entrada pode ter qualquer tamanho de c&eacute;lula.
+    </p>
+    <p>Rasters inteiros podem ser convertidos para elementos de ponto, linha ou pol&iacute;gono; no entanto, rasters de ponto flutuante podem  apenas ser convertidos para elementos de ponto.
+    </p>
+    <p>Se a op&ccedil;&atilde;o  <b>Utilizar a extens&atilde;o atual do mapa</b> estiver marcada , ser&atilde;o convertidas apenas as c&eacute;lulas raster que se encontrem vis&iacute;veis na atual extens&atilde;o do mapa. Se n&atilde;o marcar a op&ccedil;&atilde;o, ser&atilde;o convertidas todas as c&eacute;lulas da camada raster, mesmo que se encontrem fora da extens&atilde;o atual do mapa. Tome esta informa&ccedil;&atilde;o em conta no caso de a camada raster ser de grande dimens&atilde;o ou ter uma resolu&ccedil;&atilde;o muito elevada.
+    </p>
+    <p>Outros casos de utiliza&ccedil;&atilde;o desta ferramenta incluem os seguintes:
+ 
+        <ul>
+            <li>Criar elementos de pol&iacute;gono a partir de um raster de classifica&ccedil;&atilde;o de utiliza&ccedil;&atilde;o do solo.
+                
+ 
+            </li>
+            <li>Riachos identificados numa DEM podem ser convertidos em elementos de linha.
+                
+
+            </li>
+            <li>Uma DEM pode ser convertida em elementos de ponto que podem ser utilizados em fluxos de trabalho n&atilde;o baseados em raster.
+                
+ 
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Selecionar camada raster para converter</h2></div>
+        <hr/>
+        <div>
+            <p>A camada raster de entrada que ser&aacute; convertida em camadas de elementos.
+            </p>
+        </div>
+    </div>
+    <div id="field">
+        <div><h2>Escolher campo</h2></div>
+        <hr/>
+        <div>
+            <p>Introduza um campo que especifique que valor ser&aacute; utilizado para a convers&atilde;o.
+            </p>
+            <p>Pode ser um valor inteiro ou de texto.
+            </p>
+            <p>Um campo que contenha valores de ponto flutuantes pode ser utilizado apenas se a sa&iacute;da for para um conjunto de dados de ponto.
+            </p>
+            <p>A escolha predefinida consiste em utilizar o campo  <i>Value</i> , que cont&eacute;m o valor de cada c&eacute;lula raster.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Escolher tipo de saída</h2></div>
+        <hr/>
+        <div>
+            <p>Escolha o tipo de sa&iacute;da de entre ponto, linha ou pol&iacute;gono.
+            </p>
+            <ul>
+                <li>Ponto&mdash;O raster ser&aacute; convertido para um conjunto de dados de ponto.
+                    
+ 
+                </li>
+                <li>Linha&mdash;O raster ser&aacute; convertido para um conjunto de dados de elementos de linha.
+                    
+ 
+                </li>
+                <li>Pol&iacute;gono&mdash;O raster ser&aacute; convertido para um conjunto de dados de elementos de pol&iacute;gono.
+                    
+
+                </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div id="simplifyLinesOrPolygons">
+        <div><h2>Simplificar linhas ou polígonos</h2></div>
+        <hr/>
+        <div>
+            <p>Especifique se os elementos devem ser simplificados.
+            </p>
+            <p>Se estiver marcada (a predefini&ccedil;&atilde;o), os elementos de linha ou de pol&iacute;gono ser&atilde;o suavizados, por forma a produzirem um resultado mais generalizado. Caso esta op&ccedil;&atilde;o se encontre desmarcada, os elementos lineares seguir&atilde;o os limites das c&eacute;lulas do conjunto de dados raster.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>O nome da camada que ser&aacute; criada em  <b>O Meu Conte&uacute;do</b> e adicionada ao mapa. O nome padr&atilde;o &eacute; baseado no nome da ferramenta e do nome da camada de entrada. Se a camada j&aacute; existir, ser-lhe-&aacute; pedido que introduza outro nome.
+            </p>
+            <p>&Eacute; poss&iacute;vel especificar o nome de uma pasta em  <b>O Meu Conte&uacute;do</b>, onde o resultado ser&aacute; guardado utilizando a op&ccedil;&atilde;o <b>Guardar Resultado em</b> da caixa suspensa.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

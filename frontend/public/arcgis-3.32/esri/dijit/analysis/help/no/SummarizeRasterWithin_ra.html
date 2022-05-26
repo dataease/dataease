@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Summer raster innenfor</h2><p/>
+        <h2><img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" alt="Summer raster innenfor-verkt&oslash;yet"></h2>
+        <hr/>
+    <p>Dette verkt&oslash;yet summerer et raster basert p&aring; omr&aring;der (soner) som er definert av det f&oslash;rste inndatalaget.
+    </p>
+    <p>Noen eksempler p&aring; bruksomr&aring;der er f&oslash;lgende:
+    </p>
+    <p>
+        <ul>
+            <li>Hvis du har et lag med nedb&oslash;rsfeltgrenser og et lag med arealbruksgrenser etter arealbrukstype, kan du beregne samlet areal for arealbrukstypen for hvert nedb&oslash;rsfelt.
+                
+
+            </li>
+            <li>Hvis du har et lag med tomtene i et fylke og et lag med bygrenser, kan du summere gjennomsnittsverdien p&aring; ledige tomter innenfor hver enkelt bygrense.
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    <p>Hvis det er merket av for  <b>Bruk gjeldende kartutstrekning</b>, er det kun geoobjektene i inndatalaget og laget som skal summeres som er synlige i gjeldende kartutstrekning, som analyseres. Hvis det ikke er merket av for dette alternativet, analyseres alle geoobjekter i b&aring;de inndatalaget og laget som skal summeres, selv om de befinner seg utenfor gjeldende kartutstrekning.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="sumWithinLayer">
+        <div><h2>Velg områdelag der et rasterlag skal summeres innenfor definerte grenser</h2></div>
+        <hr/>
+        <div>
+            <p>Laget som definerer grensene for omr&aring;dene eller sonene som skal summeres.
+            </p>
+            <p>Laget kan v&aelig;re et raster eller inneholde geoobjektsdata. For raster blir sonene definert av alle steder i inndataene som har samme celleverdi. Omr&aring;dene beh&oslash;ver ikke v&aelig;re sammenhengende.
+            </p>
+        </div>
+    </div>
+    <div id="zoneField">
+        <div><h2>Velg felt for å definere grensene</h2></div>
+        <hr/>
+        <div>
+            <p>Dette er attributtet som definerer laget som skal brukes til &aring; definere omr&aring;denes grenser.
+            </p>
+            <p>Sett f.eks. at det f&oslash;rste inndatalaget definerer administrative grenser, med attributter som definerer regionen, distriktet, og eiendoms-ID for hver enhet. Du har ogs&aring; et rasterlag som definerer et biologisk mangfoldsindeks for hver lokasjon. Med det feltet du velger, kan du velge &aring; beregne gjennomsnittlig biologisk mangfold p&aring; lokal-, distrikt- eller regionalniv&aring;.
+            </p>
+        </div>
+    </div>
+    <div id="sumRasterLayer">
+        <div><h2>Velg rasterlag som skal summeres</h2></div>
+        <hr/>
+        <div>
+            <p>Rastercellene i dette laget vil bli summert av omr&aring;dene (sonene) de faller innenfor.
+            </p>
+        </div>
+    </div>
+    <div id="sumStatistic">
+        <div><h2>Velg statistikk som skal beregnes</h2></div>
+        <hr/>
+        <div>
+            <p>N&aring;r du velger et lag &aring; summere, kan du ogs&aring; beregne statistikk for eventuelle numeriske attributter for punktene, linjene eller omr&aring;dene innenfor inndataomr&aring;delaget.
+            </p>
+            <p>De tilgjengelige statistikktypene n&aring;r det valgte feltet er heltall, er Gjennomsnittlig, Majoritet, Maksimum, Median, Minimum, Minoritet, Omr&aring;de, Standardavvik, Sum og Variasjon.
+            </p>
+            <p>Hvis feltet er flyttall, er alternativene Gjennomsnittlig, Maksimum, Minimum, Omr&aring;de, Standardavvik og Sum.
+            </p>
+        </div>
+    </div>
+    <div id="missingValues">
+        <div><h2>Ignorer manglende verdier i beregningen</h2></div>
+        <hr/>
+        <div>
+            <p>Hvis du velger &aring; ignorere manglende verdier, vil bare cellene som har en verdi i laget som skal summeres, bli brukt til &aring; fastsette utdataverdien for dette omr&aring;det. Hvis det ellers er manglende verdier hvor som helst i et omr&aring;de, anses det som utilstrekkelig informasjon til &aring; utf&oslash;re statistiske beregninger for alle cellene i den sonen, og omr&aring;det vil f&aring; en nullverdi (NoData) i utdataene.
+            </p>
+        </div>
+    </div>
+    <div id="resultLayer">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p>Navnet p&aring; laget som opprettes i  <b>Mitt innhold</b> og legges til kartet. Standardnavnet er basert p&aring; verkt&oslash;ynavnet og navnet p&aring; inndatalaget. Hvis laget finnes allerede, blir du bedt om &aring; oppgi et annet navn.
+            </p>
+            <p>Du kan angi navnet p&aring; en mappe i  <b>Mitt innhold</b>, der resultatet blir lagret via rullegardinlisten <b>Lagre resultat i</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

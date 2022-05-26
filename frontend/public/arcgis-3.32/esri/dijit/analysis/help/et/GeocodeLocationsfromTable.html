@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Geokodeeri asukohad tabelist</h2><p/>
+        <h2><img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" alt="Geokodeeri asukohad tabelist"></h2>
+        <hr/>
+    <p>Geokodeerimine v&otilde;imaldab teisendada aadressid koordinaatideks. See t&ouml;&ouml;riist teisendab aadressid tabelist, CSV-failist v&otilde;i Exceli failist objektikihti v&otilde;i v&auml;ljundfaili ning koordinaadid kuvatakse lisaveergudena.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputTable">
+        <div><h2>Valige sisendtabel</h2></div>
+        <hr/>
+        <div>
+            <p>Geokodeeritav sisendtabel koos aadressidega. Sisendiks peab olema tabel CSV v&otilde;i Exceli faili kujul.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeServiceURL">
+        <div><h2>Valige lokaator</h2></div>
+        <hr/>
+        <div>
+            <p>Valige lokaatorteenus, mille vastu geokodeerida. Kui lokaatorteenust, mida soovite kasutada, rippmen&uuml;&uuml;s pole, v&otilde;tke &uuml;hendust administraatoriga, et ta konfigureeriks lokaatorteenuse protsessip&otilde;hise geokodeerimise jaoks.  
+
+            </p>
+        </div>
+    </div>
+    <div id="sourceCountry">
+        <div><h2>Riik</h2></div>
+        <hr/>
+        <div>
+            <p>Kui k&otilde;ik teie aadressid p&auml;rinevad &uuml;hest riigist, valige see riik, et tagada k&otilde;ige t&auml;psemad tulemused. Vastasel juhul j&auml;tke see parameeter t&uuml;hjaks.
+            </p>
+        </div>
+    </div>
+    <div id="geocodeParameters">
+        <div><h2>Valige andmeväljad</h2></div>
+        <hr/>
+        <div>
+            <p>Lokaatorteenus eeldab teatud andmev&auml;lju nt aadress, linn, maakond ja sihtnumber. Vastendage sisendfailis v&otilde;i tabelis asuvad andmev&auml;ljad lokaatori eeldatavate v&auml;ljadega rippbokside abil. Mida rohkem v&auml;lju vastendate, seda t&auml;psemad tulemused on. Kui sisendtabelis on k&otilde;ik andmed &uuml;hes veerus, tehke valik  <b>&Uuml;ks v&auml;li</b> ja valige andmev&auml;li rippmen&uuml;&uuml;st. Vastasel juhul tehke valik <b>Mitu v&auml;lja</b> ja vastendage vastavad lokaatorv&auml;ljad mitme tabelis asuva v&auml;lja veeruga.
+            </p>
+        </div>
+    </div>
+    <div id="outputType">
+        <div><h2>Valige väljundi formaat</h2></div>
+        <hr/>
+        <div>
+            <p>V&auml;ljundi tulemuste formaat. Kui otsustate luua objektiteenuse, lisatakse sisendtabelis asuvad aadressid kaardile punktobjektide kihina. CSV ja XLS alusel lisatakse failid koos geokodeerimise t&ouml;&ouml; tulemustega jaotisse  <b>Minu sisu</b>, kui t&ouml;&ouml; on l&otilde;pule viidud.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Väljundtulemi nimi</h2></div>
+        <hr/>
+        <div>
+            <p>See on selle kihi nimi, mis luuakse jaotises  <b>Minu sisu</b> ja lisatakse kaardile.  Vaikenimi p&otilde;hineb t&ouml;&ouml;riista nimel ja sisendkihi nimel. Kui samanimeline kiht on juba olemas, palutakse teil sisestada m&otilde;ni muu nimi.
+            </p>
+            <p>Rippmen&uuml;&uuml;  <b>Salvesta tulemused</b> kaudu saate jaotises <b>Minu sisu</b> m&auml;&auml;rata selle kausta nime, kuhu tulemus salvestatakse.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,130 @@
+<div data-dojo-attach-point="containerNode">
+
+  <div data-dojo-type="esri/dijit/metadata/form/Element"
+    data-dojo-props="target:'citeinfo',
+      label:'${i18nFgdc.citeinfo.caption}'">
+    
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'origin',maxOccurs:'unbounded',
+        label:'${i18nFgdc.citeinfo.origin}'">
+    </div>  
+    
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'pubdate',
+        label:'${i18nFgdc.citeinfo.pubdate}',
+        alternateValues:['Unknown','Unpublished material']">
+      <div data-dojo-type="esri/dijit/metadata/form/fgdc/InputDate">
+        <div data-dojo-type="esri/dijit/metadata/form/tools/ClickableValueTool"
+          data-dojo-props="value:'Unknown',label:'${i18nFgdc.alternates.unknown}'"></div>  
+        <div data-dojo-type="esri/dijit/metadata/form/tools/ClickableValueTool"
+          data-dojo-props="value:'Unpublished material',label:'${i18nFgdc.alternates.unpublishedMaterial}'"></div>  
+      </div>
+    </div>  
+    
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'pubtime',minOccurs:0,
+        label:'${i18nFgdc.citeinfo.pubtime}',
+        alternateValues:['Unknown']">
+      <div data-dojo-type="esri/dijit/metadata/form/fgdc/InputTime">
+        <div data-dojo-type="esri/dijit/metadata/form/tools/ClickableValueTool"
+          data-dojo-props="value:'Unknown',label:'${i18nFgdc.alternates.unknown}'"></div>  
+      </div>
+    </div>  
+    
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'title',isDocumentTitle:true,
+        label:'${i18nFgdc.citeinfo.title}'">
+    </div>  
+    
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'edition',minOccurs:0,
+        label:'${i18nFgdc.citeinfo.edition}'">
+    </div>  
+    
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'geoform',minOccurs:0,
+        label:'${i18nFgdc.citeinfo.geoform.caption}'">
+      <div data-dojo-type="esri/dijit/metadata/form/InputSelectOne">
+        <div data-dojo-type="esri/dijit/metadata/form/Options">
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'',value:''"></div>
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nFgdc.citeinfo.geoform.atlas}',value:'atlas'"></div>  
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nFgdc.citeinfo.geoform.audio}',value:'audio'"></div>  
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nFgdc.citeinfo.geoform.diagram}',value:'diagram'"></div>                    
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nFgdc.citeinfo.geoform.sDocument}',value:'document'"></div>  
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nFgdc.citeinfo.geoform.globe}',value:'globe'"></div>              
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nFgdc.citeinfo.geoform.map}',value:'map'"></div>              
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nFgdc.citeinfo.geoform.model}',value:'model'"></div>  
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nFgdc.citeinfo.geoform.multiMediaPresentation}',value:'multimedia presentation'"></div>  
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nFgdc.citeinfo.geoform.profile}',value:'profile'"></div>                    
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nFgdc.citeinfo.geoform.rasterDigitalData}',value:'raster digital data'"></div>  
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nFgdc.citeinfo.geoform.remoteSensingImage}',value:'remote-sensing image'"></div>              
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nFgdc.citeinfo.geoform.section}',value:'section'"></div>  
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nFgdc.citeinfo.geoform.spreadsheet}',value:'spreadsheet'"></div>  
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nFgdc.citeinfo.geoform.tabularDigitalData}',value:'tabular digital data'"></div>  
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nFgdc.citeinfo.geoform.vectorDigitalData}',value:'vector digital data'"></div>                    
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nFgdc.citeinfo.geoform.video}',value:'video'"></div>  
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nFgdc.citeinfo.geoform.view}',value:'view'"></div>              
+          <div data-dojo-type="esri/dijit/metadata/form/Option"
+            data-dojo-props="label:'${i18nFgdc.alternates.other}',value:'_other',isOther:true"></div>  
+        </div>            
+      </div>
+    </div>  
+    
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'serinfo',minOccurs:0,
+        label:'${i18nFgdc.citeinfo.serinfo.caption}'">
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'sername',
+          label:'${i18nFgdc.citeinfo.serinfo.sername}'">
+      </div>  
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'issue',
+          label:'${i18nFgdc.citeinfo.serinfo.issue}'">
+      </div>
+    </div>
+    
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'pubinfo',minOccurs:0,
+        label:'${i18nFgdc.citeinfo.pubinfo.caption}'">
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'pubplace',
+          label:'${i18nFgdc.citeinfo.pubinfo.pubplace}'">
+      </div>  
+      <div data-dojo-type="esri/dijit/metadata/form/Element"
+        data-dojo-props="target:'publish',
+          label:'${i18nFgdc.citeinfo.pubinfo.publish}'">
+      </div>
+    </div>  
+    
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'othercit',minOccurs:0,
+        label:'${i18nFgdc.citeinfo.othercit}'">
+      <div data-dojo-type="esri/dijit/metadata/form/InputTextArea"></div>
+    </div>
+    
+    <div data-dojo-type="esri/dijit/metadata/form/Element"
+      data-dojo-props="target:'onlink',minOccurs:0,maxOccurs:'unbounded',useTabs:false,preferOpen:true,
+        label:'${i18nFgdc.citeinfo.onlink}'">
+    </div>
+    
+  </div>
+  
+</div>

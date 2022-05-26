@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/da/PredictUsingTrendRaster",{toolDefine:"Forudsig ved brug af tendensraster",outputLayerName:"${layername}_predict",variablesLabel:"V\u00e6lg den eller de variabler, der bliver forudsagt",variablesListLabel:"Variabler [Dimension Info] (beskrivelse)",dimensionDefinitionLabel:"V\u00e6lg den metode, der skal bruges til at angive dimensionsv\u00e6rdier for forudsigelsen",dimensionValuesLabel:"Angiv dimensionsv\u00e6rdi(er) for forudsigelsen",dimensionIntervalLabel:"Angiv dimensionsinterval for forudsigelsen.",
+intervalValueLabel:"Angiv antallet af trin mellem start- og slutv\u00e6rdierne",intervalUnitLabel:"V\u00e6lg den enhed, der bliver brugt som v\u00e6rdi for tidsintervallet",startLabel:"Startv\u00e6rdi",endLabel:"Slutv\u00e6rdi",byValueLabel:"Efter v\u00e6rdi",byIntervalLabel:"Efter interval",hours:"Timer",days:"Dage",weeks:"Uger",months:"M\u00e5neder",years:"\u00c5r",custom:"Brugerdefineret",itemDescription:"Analysebilledtjeneste genereret ud fra Forudsig ved brug af tendensraster",itemTags:"Rasteranalyseresultat, Forudsig ved brug af tendensraster, ${layername}",
+itemSnippet:"Analysebilledtjeneste genereret ud fra Forudsig ved brug af tendensraster"});

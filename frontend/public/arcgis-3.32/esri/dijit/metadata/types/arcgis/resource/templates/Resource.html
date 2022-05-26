@@ -1,0 +1,116 @@
+<div data-dojo-attach-point="containerNode">
+
+  <!-- resource -->
+  <div data-dojo-type="esri/dijit/metadata/form/Element" 
+    data-dojo-props="target:'dataIdInfo',showHeader:false">
+    <div data-dojo-type="esri/dijit/metadata/form/Tabs">
+    
+      <!-- citation -->
+      <div data-dojo-type="esri/dijit/metadata/types/arcgis/resource/ResourceCitation"
+        data-dojo-props="label:'${i18nArcGIS.citation.caption}'">
+      </div>
+      
+      <!-- details -->
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,label:'${i18nArcGIS.resource.section.details}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Tabs">
+        
+          <!-- description -->
+          <div data-dojo-type="esri/dijit/metadata/form/Section"
+            data-dojo-props="showHeader:false,label:'${i18nArcGIS.resource.section.description}'">
+            <div data-dojo-type="esri/dijit/metadata/types/arcgis/resource/Description"></div>
+          </div>
+
+          <!-- resource language -->
+          <div data-dojo-type="esri/dijit/metadata/form/Section"
+            data-dojo-props="showHeader:false,label:'${i18nArcGIS.codelist.LanguageCode}'">
+            <div data-dojo-type="esri/dijit/metadata/types/arcgis/resource/ResourceLanguage"></div>
+          </div>
+                    
+          <!-- status -->
+          <div data-dojo-type="esri/dijit/metadata/form/Section"
+            data-dojo-props="showHeader:false,label:'${i18nArcGIS.resource.section.status}'">
+            <div data-dojo-type="esri/dijit/metadata/types/arcgis/resource/Status"></div>
+          </div>
+
+          <!-- representation -->
+          <div data-dojo-type="esri/dijit/metadata/form/Section"
+            data-dojo-props="showHeader:false,label:'${i18nArcGIS.resource.section.representation}'">
+            <div data-dojo-type="esri/dijit/metadata/types/arcgis/resource/Representation"></div>
+          </div>
+                    
+          <!-- resolution -->
+          <div data-dojo-type="esri/dijit/metadata/form/Section"
+            data-dojo-props="showHeader:false,label:'${i18nArcGIS.resource.section.resolution}'">
+            <div data-dojo-type="esri/dijit/metadata/types/arcgis/resource/Resolution"></div>
+          </div>
+        
+        </div>
+      </div>
+      
+      <!-- keywords -->
+      <div data-dojo-type="esri/dijit/metadata/types/arcgis/keywords/Keywords"
+        data-dojo-props="showHeader:false,isKeywordsSection:true,label:'${i18nArcGIS.resource.section.keywords}'">
+      </div>
+      
+      <!-- extent -->
+      <div data-dojo-type="esri/dijit/metadata/types/arcgis/resource/ResourceExtent"
+        data-dojo-props="isExtentSection:true,label:'${i18nArcGIS.extent.caption}'">
+      </div>
+      
+      <!-- contact -->
+      <div data-dojo-type="esri/dijit/metadata/types/arcgis/resource/ResourceContact"
+        data-dojo-props="label:'${i18nArcGIS.contact.caption}'">
+      </div>
+      
+      <!-- maintenance -->
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,label:'${i18nArcGIS.maintenance.caption}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Element"
+          data-dojo-props="target:'resMaint',minOccurs:0,label:'${i18nArcGIS.resource.resMaint}'">
+          <div data-dojo-type="esri/dijit/metadata/types/arcgis/maintenance/MaintenanceElements"></div>
+        </div>
+      </div>
+      
+      <!-- constraints -->
+      <div data-dojo-type="esri/dijit/metadata/types/arcgis/resource/ResourceConstraints"
+        data-dojo-props="isConstraintsSection:true,label:'${i18nArcGIS.constraints.caption}'">
+      </div>
+      
+      <!-- additional -->
+      <div data-dojo-type="esri/dijit/metadata/form/Section"
+        data-dojo-props="showHeader:false,label:'${i18nArcGIS.resource.section.additional}'">
+        <div data-dojo-type="esri/dijit/metadata/form/Tabs">
+        
+          <!-- browse graphic -->
+          <div data-dojo-type="esri/dijit/metadata/form/Section"
+            data-dojo-props="showHeader:false,label:'${i18nArcGIS.resource.section.browse}'">
+            <div data-dojo-type="esri/dijit/metadata/types/arcgis/resource/BrowseGraphic"></div>
+          </div>
+        
+          <!-- service -->
+          <div class="gxeServiceTab" data-dojo-type="esri/dijit/metadata/types/arcgis/resource/Service"
+            data-dojo-props="label:'${i18nArcGIS.service.caption}'">
+          </div>
+        
+          <!-- format -->
+          <div data-dojo-type="esri/dijit/metadata/types/arcgis/resource/ResourceFormat"
+            data-dojo-props="showHeader:false,label:'${i18nArcGIS.resource.section.format}'">
+          </div>
+          
+          <!-- usage -->
+          <div data-dojo-type="esri/dijit/metadata/types/arcgis/resource/Usage"
+            data-dojo-props="showHeader:false,label:'${i18nArcGIS.resource.section.usage}'">
+          </div>
+
+          <!-- aggregate information -->
+          <div data-dojo-type="esri/dijit/metadata/types/arcgis/resource/AggregateInfo"
+            data-dojo-props="label:'${i18nArcGIS.resource.section.aggregateInfo}'">
+          </div>
+              
+        </div>
+      </div>
+              
+    </div>
+  </div>
+</div>

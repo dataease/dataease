@@ -24,6 +24,7 @@
     "echarts": "^5.0.1",
     "element-resize-detector": "^1.2.3",
     "element-ui": "2.15.7",
+    "esri-loader": "^3.5.0",
     "file-save": "^0.2.0",
     "file-saver": "^2.0.5",
     "fit2cloud-ui": "1.5.4",

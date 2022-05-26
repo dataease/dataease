@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Optimale loopkosten van het netwerk bepalen</h2><p/>
+        <h2><img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" alt="Tool voor het bepalen van Optimale loopkosten van netwerk"></h2>
+        <hr/>
+    <p>Deze tool berekent het optimale kostennetwerk uit een reeks invoergebieden.
+    </p>
+    <p>Een voorbeeld van toepassing van dit instrument is het vinden van het beste netwerk voor hulpverleningsvoertuigen.
+    </p>
+    <p>Als  <b>Huidig extent van de kaart gebruiken</b> is aangevinkt, worden alleen die locaties in de invoerlaag die binnen het huidige extent van de kaart zichtbaar zijn, geanalyseerd. Als de optie niet is aangevinkt, worden alle locaties in de invoerlaag geanalyseerd, zelfs als deze zich buiten het huidige extent van de kaart bevinden.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputRegionsRasterOrFeatures">
+        <div><h2>Kies het raster of de locatie van een objectlaag voor de bepaling van de looppaden tussen</h2></div>
+        <hr/>
+        <div>
+            <p>De invoerregio's die via het netwerk met de laagste kosten moeten worden aangesloten.
+            </p>
+            <p>Regio's kunnen worden gedefinieerd door een imageservice of een featureservice.
+            </p>
+            <p>Voor imageservice worden de regio's gedefinieerd door groepen aangrenzende cellen van dezelfde waarde. Elke regio moet een uniek nummer krijgen. De cellen die geen deel uitmaken van een regio moeten NoData zijn. Het rastertype moet den integer zijn en de waarden kunnen zowel positief als negatief zijn.
+            </p>
+            <p>Voor featureservice kan de invoer een punt, lijn of polygoon zijn.
+            </p>
+        </div>
+    </div>
+    <div id="inputCostRaster">
+        <div><h2>Kies de loopkosten van de rasterlaag</h2></div>
+        <hr/>
+        <div>
+            <p>Een raster dat de impedantie of de kosten definieert om planimetrisch door elke cel te bewegen.
+            </p>
+            <p>De waarde op elke cellocatie vertegenwoordigt de kosten per eenheid afstand voor het verplaatsen door de cel. Elke cellocatiewaarde wordt vermenigvuldigd met de celresolutie, terwijl ook de diagonale beweging wordt gecompenseerd om de totale kosten van het passeren door de cel te verkrijgen.
+            </p>
+            <p>De waarden van het kostenraster kunnen gehele getallen of zwevendekommagetallen zijn, maar ze kunnen niet negatief of nul zijn (u kunt geen negatieve of nulkosten hebben).
+            </p> 
+        </div>
+    </div>
+    <div id="outputOptimumNetworkName">
+        <div><h2>Resultaat polylijnlaagnaam van de optimale paden</h2></div>
+        <hr/>
+        <div>
+            <p>De naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, wordt u gevraagd een nieuwe naam te geven.
+            </p>
+            <p>U kunt de naam van een map opgeven in  <b>Mijn Content</b>, waar het resultaat wordt opgeslagen met het vervolgkeuzemenu <b>Resultaat opslaan in</b>.
+            </p>
+        </div>
+    </div>
+    <div id="outputNeighborNetworkName">
+        <div><h2>Resultaat polylijnlaagnaam van de aangrenzende paden</h2></div>
+        <hr/>
+        <div>
+            <p>De naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, wordt u gevraagd een nieuwe naam te geven.
+            </p>
+            <p>U kunt de naam van een map opgeven in  <b>Mijn Content</b>, waar het resultaat wordt opgeslagen met het vervolgkeuzemenu <b>Resultaat opslaan in</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

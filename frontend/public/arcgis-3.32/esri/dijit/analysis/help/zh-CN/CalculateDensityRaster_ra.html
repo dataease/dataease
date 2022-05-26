@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>计算密度</h2><p/>
+        <h2><img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" alt="计算密度工具"></h2>
+        <hr/>
+    <p>此工具通过将已知量的某种现象（表示为点或线属性）扩散到整个地图上，从而依据点要素或线要素创建密度地图。结果是按密度从小到大分类的面图层。
+    </p>
+    <p>对于点输入，每个点应表示某一事件或事件点的位置，结果图层应表示每个单位面积中的事件点计数。新位置中的密度值越大则表示此位置附近的点越多。在多数情况下，可以将结果图层视为未来事件的风险表面。例如，如果输入点表示受到雷击的位置，则可将结果图层视为未来可能受到雷击的风险表面。
+    </p>
+    <p>对于线输入，线密度表面表示每个位置附近的线总数。所计算的密度值的单位是每单位面积的线长度。例如，如果线表示河流，则结果图层将表示搜索半径范围内的河流总长度。此结果可用于确定适合放牧动物的区域。
+    </p>
+    <p>此工具的其他用例如下：
+
+        <ul>
+            <li>创建犯罪密度地图以帮助警方适当地将资源分配到高犯罪率区域。
+                
+ 
+            </li>
+            <li>计算某县的医院密度。结果图层将显示容易到达医院和不容易到达医院的区域，此信息可用于确定新建医院的位置。
+                
+ 
+            </li>
+            <li>根据发生森林火灾的历史位置确定森林火灾的高风险区域。
+                
+ 
+            </li>
+            <li>查找距离主干道较远的社区以计划修建新道路的位置。
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointOrLineFeatures">
+        <div><h2>选择计算密度所使用的输入点或线图层</h2></div>
+        <hr/>
+        <div>
+            <p>将用于计算密度图层的输入点或线图层。
+            </p>
+        </div>
+    </div>
+    <div id="countField">
+        <div><h2>使用计数字段</h2></div>
+        <hr/>
+        <div>
+            <p>提供一个字段，用于指定每个位置处的事件点数量。例如，如果您具有表示城市的点，则您可以将表示城市人口的字段作为计数字段，结果人口密度图层将计算拥有较多人口的城市附近的较大人口密度。
+            </p>
+            <p>如果使用默认选项  <b>None</b>，则假定每个位置代表一个计数。
+            </p>
+        </div>
+    </div>
+    <div id="searchDistance">
+        <div><h2>搜索距离</h2></div>
+        <hr/>
+        <div>
+            <p>输入距离，以指定计算密度值时查找点要素或线要素的搜索距离。例如，如果您提供的搜索距离是 10,000 米，则输出图层中任意位置的密度将根据距此位置 10,000 米范围内的要素进行计算。在 10,000 米范围内任何不具有事件点的位置得到的密度值将为零。
+            </p>
+            <p>如果未提供距离，则将根据输入要素的位置和计数字段中的值（如果已提供计数字段）计算默认值。
+            </p>
+        </div>
+    </div>
+    <div id="outputAreaUnits">
+        <div><h2>输出面积单位</h2></div>
+        <hr/>
+        <div>
+            <p>指定输出区域的面积单位。密度等于计数除以面积，此参数用于指定密度计算中的面积单位。
+            </p>
+            <p>可用的面积单位包括平方英里、平方英尺、平方米和平方千米。
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>输出像元大小</h2></div>
+        <hr/>
+        <div>
+            <p>输出栅格的像元大小和单位。
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>结果图层名称</h2></div>
+        <hr/>
+        <div>
+            <p>将在 <b>我的内容</b>中创建并添加到地图中的图层的名称。默认名称基于工具名称以及输入图层名称。如果该名称的图层已存在，则系统将提示您提供其他名称。
+            </p>
+            <p>您可以使用 <b>将结果保存在</b>下拉框指定 <b>我的内容</b>中的文件夹名称，结果将保存到该文件夹中。
+            </p>
+        </div>
+    </div>
+</div>
+</html>

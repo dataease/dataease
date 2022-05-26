@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="raToolbox">
+        <p>An&agrave;lisi del r&agrave;ster us permet fer l'an&agrave;lisi de datasets r&agrave;ster grans mitjan&ccedil;ant l' ArcGIS Image Server. Aix&ograve; us permet analitzar dades m&eacute;s r&agrave;pid i aprofitar la pot&egrave;ncia del servidor. Els conjunts d'eines disponibles actualment a trav&eacute;s de l'experi&egrave;ncia d'usuari web del  Portal for ArcGIS s&oacute;n  <b>Resumir les dades</b>, <b>Analitza els patrons</b>, <b>Utilitza la proximitat</b>, <b>Analitza la imatge</b>, <b>Analitza el terreny</b>, <b>Administra les dades</b> i <b>Aprenentatge profund</b>.
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="smallsize">
+        <h2>Resumir les dades</h2>
+        <hr/>
+        <p>Aquest conjunt d'eines cont&eacute; una eina per calcular algunes estad&iacute;stiques d'una capa r&agrave;ster dins dels l&iacute;mits d'&agrave;rea que definiu. 
+            <ul>
+                <li> <b>Resumir el r&agrave;ster dins de</b> calcula les estad&iacute;stiques de les cel&middot;les del r&agrave;ster que queden dins de l&iacute;mits d'&agrave;rea definits.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="SummarizeRasterWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Resumir el ràster dins de</h2></td>
+                    <td>
+                    <img src="../images/GUID-D61C156C-2B2C-488C-BF28-B6CB9277BF4B-web.png" class="titleImage" alt="Eina Resumir el r&agrave;ster dins de">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Calcula algunes estad&iacute;stiques de resum de les cel&middot;les del r&agrave;ster dins d'&agrave;rees definides.
+            </p>
+            <p>Alguns exemples d'aplicacions s&oacute;n: 
+
+                <ul>
+                    <li>Donada una capa d'&agrave;rees de conca hidrogr&agrave;fica i una capa r&agrave;ster d'elevaci&oacute;, calculeu l'interval d'elevacions dins de cada conca hidrogr&agrave;fica per determinar quines tindran el cabal m&eacute;s alt.
+                        
+
+                    </li>
+                    <li>Donada una capa d'unitats de gesti&oacute; administrativa i una capa r&agrave;ster de categories d'&uacute;s del s&ograve;l, calculeu la varietat de valors d'&uacute;s del s&ograve;l dins de cada &agrave;rea d'administraci&oacute; per identificar quines exigiran m&eacute;s esfor&ccedil;os per determinar un pla d'administraci&oacute;.
+                        
+
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="regularsize">
+        <h2>Analitza els patrons</h2>
+        <hr/>
+        <p>Aquestes eines us ajuden a identificar, quantificar i visualitzar els patrons espacials de les vostres dades. 
+
+            <ul>
+                <li> <b>Calcula la densitat</b> pren quantitats conegudes d'algun fenomen i les dispersa pel mapa per crear un mapa de densitat.
+                    
+
+                </li>
+                <li> <b>Interpola els punts</b> prediu els valors en ubicacions noves en funci&oacute; de les mesures d'una col&middot;lecci&oacute; de punts.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityRasterTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Calcula la densitat</h2></td>
+                    <td>
+                    <img src="../images/GUID-4EE4838C-E210-43CE-99C7-1A648A18C10B-web.png" class="titleImage" alt="Eina Calcula la densitat">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>L'an&agrave;lisi de densitat pren quantitats conegudes d'algun fenomen i les dispersa pel mapa per crear un mapa de densitat. Per exemple, podeu fer servir aquesta eina per mostrar concentracions de llamps o tornados, l'acc&eacute;s a instal&middot;lacions m&egrave;diques i densitats de poblaci&oacute;.
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsEBKTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Interpola els punts</h2></td>
+                    <td>
+                    <img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" class="titleImage" alt="Eina Interpola els punts">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Aquesta eina us permet predir els valors en ubicacions noves en funci&oacute; de les mesures d'una col&middot;lecci&oacute; de punts. L'eina pren les dades de punts amb valors en cada punt i retorna &agrave;rees classificades pels valors predits. Per exemple, podeu fer servir aquesta eina per predir els nivells de precipitacions en una conca hidrogr&agrave;fica a partir de les mesures de diversos pluvi&ograve;metres.
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="regularsize">
+        <h2>Utilitza la proximitat</h2>
+        <hr/>
+        <p>Aquestes eines us ajuden a respondre una de les preguntes m&eacute;s habituals de l'an&agrave;lisi espacial: &quot;Qu&egrave; hi ha a prop de qu&egrave;?&quot;
+
+            <ul>
+                <li> <b>Calcula la dist&agrave;ncia</b> calcula la dist&agrave;ncia euclidiana, la direcci&oacute; i l'assignaci&oacute; des d'un origen &uacute;nic o un conjunt d'or&iacute;gens.
+                    
+
+                </li>
+                <li> <b>Determina la xarxa de cost de viatge &ograve;ptima</b> calcula la xarxa de cost &ograve;ptima a partir d'un conjunt de regions d'entrada.
+                    
+
+                </li>
+                <li> <b>Determina la ruta de cost de viatge com a polil&iacute;nia</b> calcula la ruta de polil&iacute;nia de menor cost entre els or&iacute;gens i les destinacions conegudes.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDistanceTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Calcula la distància</h2></td>
+                    <td>
+                    <img src="../images/GUID-34E2E6F3-2F60-43F5-B499-D5735DE08602-web.png" class="titleImage" alt="Calcula la dist&agrave;ncia">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Calcula la dist&agrave;ncia euclidiana, la direcci&oacute; i l'assignaci&oacute; des d'un origen &uacute;nic o un conjunt d'or&iacute;gens. Podeu utilitzar aquesta eina per determinar a quina dist&agrave;ncia es troba una ubicaci&oacute; d'una carretera, un edifici o un parc. Tamb&eacute; podeu determinar quina direcci&oacute; heu de prendre des d'una ubicaci&oacute; per tornar a un origen de la manera m&eacute;s directa. De cada ubicaci&oacute; de l'&agrave;rea d'estudi podeu veure quin &eacute;s l'origen m&eacute;s proper.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineOptimumTravelCostNetworkTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Determina la xarxa de cost de viatge òptima</h2></td>
+                    <td>
+                    <img src="../images/GUID-097BDD6E-0AD8-44F2-BB70-C5395F4B1AF4-web.png" class="titleImage" alt="Il&middot;lustraci&oacute; de l'eina Determina la xarxa de cost de viatge &ograve;ptima">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Calcula la xarxa de cost &ograve;ptima a partir d'un conjunt de regions d'entrada.
+            </p>
+            <br/>
+        </div>
+        <div id="DetermineTravelCostPathAsPolylineTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Determina la ruta de cost de viatge com a polilínia</h2></td>
+                    <td>
+                    <img src="../images/GUID-9A27DEB7-0276-483C-A12F-3E70D636550D-web.png" class="titleImage" alt="Il&middot;lustraci&oacute; de l'eina Determina la ruta de cost de viatge com a polil&iacute;nia">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Calcula la ruta de polil&iacute;nia de menor cost entre els or&iacute;gens i les destinacions conegudes.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeImageCategory" class="smallsize">
+        <h2>Analitza la imatge</h2>
+        <hr/>
+        <p>L'eina seg&uuml;ent us ajuda a analitzar imatges. 
+            <ul>
+                <li> <b>Aplica la plantilla de funci&oacute; de r&agrave;ster</b> processa les imatges amb la cadena de funcions, tal com s'especifica a la plantilla de funci&oacute; de r&agrave;ster.
+                </li>
+                <li> <b>Supervisa la vegetaci&oacute;</b> detecta la vegetaci&oacute; en una imatge segons les operacions aritm&egrave;tiques de les bandes.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ApplyRFxTemplateTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Aplica la plantilla de funció de ràster</h2></td>
+                    <td>
+                    <img src="../images/GUID-6464A140-88C7-4CCB-BB2A-07548ADC9981-web.png" class="titleImage" alt="Aplica la plantilla de funci&oacute; de r&agrave;ster">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Processa les imatges amb la cadena de funcions, tal com s'especifica a la plantilla de funci&oacute; de r&agrave;ster.
+            </p>
+            <br/>
+        </div>
+        <div id="MonitorVegetationTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Supervisa la vegetació</h2></td>
+                    <td>
+                    <img src="../images/GUID-7763FCC0-2EA1-463B-98D0-4EBDF6150907-web.png" class="titleImage" alt="Eina Supervisa la vegetaci&oacute; del portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Realitza una operaci&oacute; aritm&egrave;tica sobre les bandes d'una capa r&agrave;ster multibanda per revelar la informaci&oacute; de cobertura de vegetaci&oacute; de l'&agrave;rea d'estudi.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzeTerrainCategory" class="regularsize">
+        <h2>Analitza el terreny</h2>
+        <hr/>
+        <p>Aquestes eines us ajuden a analitzar superf&iacute;cies de r&agrave;ster. 
+            <ul>
+                <li> <b>Calcula el pendent</b> calcula la inclinaci&oacute; del terreny.
+                    
+
+                </li>
+                <li> <b>Deriva l'orientaci&oacute;</b> calcula la direcci&oacute; del pendent m&eacute;s pronunciat de cada ubicaci&oacute;.
+                    
+
+                </li>
+                <li> <b>Crea una conca visual</b> identifica qu&egrave; es pot veure des de qualsevol punt del paisatge.
+                    
+
+                </li>
+                <li> <b>Conca hidrogr&agrave;fica</b> calcula l'&agrave;rea de contribuci&oacute; sobre les ubicacions identificades en una superf&iacute;cie.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateSlopeTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Calcula el pendent</h2></td>
+                    <td>
+                    <img src="../images/GUID-D33862C6-01BB-445E-B0C3-BC8B8C1858DA-web.png" class="titleImage" alt="Eina Calcula el pendent del portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Identifica una superf&iacute;cie que mostra el pendent de les dades d'elevaci&oacute; d'entrada. El pendent representa la velocitat de canvi d'elevaci&oacute; de cada cel&middot;la del model d'elevaci&oacute; digital (DEM).
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveAspectTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Deriva l'orientació</h2></td>
+                    <td>
+                    <img src="../images/GUID-D03FF025-0530-4D0D-87A3-B25D6716F8F0-web.png" class="titleImage" alt="Eina Deriva l'orientaci&oacute; del portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Identifica la direcci&oacute; descendent de la velocitat m&agrave;xima de canvi del valor des de cada cel&middot;la a les cel&middot;les ve&iuml;nes. L'orientaci&oacute; es pot considerar la direcci&oacute; del pendent.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Crea una conca visual</h2></td>
+                    <td>
+                    <img src="../images/GUID-BB8B8CAF-330E-4C41-9D94-AF4728D0D0F3-web.png" class="titleImage" alt="Eina Crea una conca visual">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Determina les ubicacions en una superf&iacute;cie de r&agrave;ster que s&oacute;n visibles per a un conjunt d'observadors.
+            </p>
+            <br/>
+        </div>
+        <div id="WatershedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Conca hidrogràfica</h2></td>
+                    <td>
+                    <img src="../images/GUID-AF749369-8C2D-46FF-9D74-2CF7CAB7C7B0-web.png" class="titleImage" alt="Tasca de conca hidrogr&agrave;fica">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Determina l'&agrave;rea de contribuci&oacute; sobre un conjunt de cel&middot;les d'un r&agrave;ster.
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="regularsize">
+        <h2>Administra les dades</h2>
+        <hr/>
+        <p>Aquestes eines es fan servir per a l'administraci&oacute; di&agrave;ria de les dades geogr&agrave;fiques i per combinar dades abans de l'an&agrave;lisi. 
+            <ul>
+                <li> <b>Extreu el r&agrave;ster</b> retalla parts un dataset r&agrave;ster per fer-ne m&eacute;s an&agrave;lisis.
+                    
+
+                </li>
+                <li> <b>Nova representaci&oacute; cartogr&agrave;fica de valors</b> assigna diferents valors a les cel&middot;les del r&agrave;ster.
+                    
+
+                </li>
+                <li> <b>Converteix una entitat a r&agrave;ster</b> rasteritza dades vectorials.
+                    
+
+                </li>
+                <li> <b>Converteix un r&agrave;ster a entitat</b> vectoritza dades de r&agrave;ster.
+                    
+
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ExtractRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Extreu el ràster</h2></td>
+                    <td>
+                    <img src="../images/GUID-DC9CBCB9-A07C-42D3-A0CB-2FB1483CBF4C-web.png" class="titleImage" alt="Eina Extreu el r&agrave;ster del portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Extraieu cel&middot;les d'un r&agrave;ster d'acord amb el valor, la forma o l'extensi&oacute; d'un dataset diferent.
+            </p>
+            <br/>
+        </div>
+        <div id="RemapValuesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Nova representació cartogràfica de valors</h2></td>
+                    <td>
+                    <img src="../images/GUID-4006E442-A60B-469A-891D-5ED442F64CB8-web.png" class="titleImage" alt="Eina Nova representaci&oacute; cartogr&agrave;fica de valors del portal">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Canvia valors de cel&middot;la individuals o intervals de valors de cel&middot;la per valors nous.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertFeatureToRasterTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Converteix una entitat a ràster</h2></td>
+                    <td>
+                    <img src="../images/GUID-FC535A9C-A946-419A-9A85-95EB31E4D3A0-web.png" class="titleImage" alt="Eina Converteix una entitat a r&agrave;ster">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Creeu un nou dataset r&agrave;ster a partir d'un dataset d'entitats existent.
+            </p>
+            <br/>
+        </div>
+        <div id="ConvertRasterToFeatureTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Converteix un ràster a entitat</h2></td>
+                    <td>
+                    <img src="../images/GUID-7BBBCE28-2FDA-46B8-99D7-65F560AB2F2B-web.png" class="titleImage" alt="Eina Converteix un r&agrave;ster a entitat">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Creeu un nou dataset d'entitats a partir d'un dataset r&agrave;ster existent.
+            </p>
+            <br/>
+        </div>
+    <div id="DeepLearningCategory" class="largesize">
+        <h2>Aprenentatge profund del conjunt d'eines</h2>
+        <hr/>
+        <p>Aquestes eines 	s'utilitzen per detectar entitats espec&iacute;fiques en una imatge o per classificar els p&iacute;xels en un dataset r&agrave;ster. L'aprenentatge profund &eacute;s un tipus de m&egrave;tode d'aprenentatge autom&agrave;tic d'intel&middot;lig&egrave;ncia artificial que detecta entitats a les imatges mitjan&ccedil;ant diverses capes de xarxes neuronals, on cada capa &eacute;s capa&ccedil; d'extreure una o diverses entitats &uacute;niques de la imatge. Aquestes eines utilitzen els models que s'han format per detectar entitats espec&iacute;fiques als marcs d'aprenentatge profund de tercers, com ara el TensorFlow, el CNTK i el Keras, i proporcionar entitats o mapes de classes.
+            <ul>
+                <li> <b>Classifica els p&iacute;xels amb Aprenentatge profund</b> produeix un r&agrave;ster classificat mitjan&ccedil;ant un model d'aprenentatge profund format.
+                </li>
+                <li> <b>Detecta objectes amb Aprenentatge profund</b> produeix una classe d'entitat que cont&eacute; objectes que cerca en un r&agrave;ster d'entrada mitjan&ccedil;ant un model d'aprenentatge profund format.
+                </li>
+            </ul>
+             
+        </p>
+    </div>
+        <div id="ClassifyPixelsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Classifica els píxels amb Aprenentatge profund</h2></td>
+                    <td>
+                    <img src="../images/GUID-88BE63A6-B06C-4C61-9AB1-8DA5A08C6783-web.png" class="titleImage" alt="Classifica els p&iacute;xels amb Aprenentatge profund">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Executa un model d'aprenentatge profund format en un r&agrave;ster d'entrada per produir un r&agrave;ster classificat, on cada p&iacute;xel v&agrave;lid t&eacute; una etiqueta de classe assignada.
+            </p>
+            <br/>
+        </div>
+        <div id="DetectObjectsUsingDeepLearningTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Detecta objectes amb Aprenentatge profund</h2></td>
+                    <td>
+                    <img src="../images/GUID-EE76A33E-0B8F-48EE-94F8-782FAD241D72-web.png" class="titleImage" alt="Detecta objectes amb Aprenentatge profund">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Executa un model d'aprenentatge profund format en un r&agrave;ster d'entrada per produir una classe d'entitat que contingui els objectes que troba. Les entitats poden ser quadres de delimitaci&oacute; o pol&iacute;gons al voltant dels objectes trobats, o b&eacute; punts als centres dels objectes.
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

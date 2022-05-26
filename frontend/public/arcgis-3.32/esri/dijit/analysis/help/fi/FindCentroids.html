@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Etsi keskipisteet</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="Etsi keskipisteet"></h2>
+        <hr/>
+    <p>T&auml;m&auml; ty&ouml;kalu toimii monipiste-, viiva- tai aluekohteiden karttatasojen kanssa ja sen avulla voidaan m&auml;&auml;ritt&auml;&auml; jokaisen kohteen keskipiste.
+    </p>
+    <p>Jos valittuna on  <b>K&auml;yt&auml; nykyist&auml; karttalaajuutta</b>, vain l&auml;ht&ouml;aineiston monipiste, viiva- tai aluekarttatasossa olevat, nykyisess&auml; karttalaajuudessa n&auml;kyv&auml;t kohteet analysoidaan. Jos toimintoa ei ole valittu, kaikki sy&ouml;tekarttatason kohteet analysoidaan &ndash; my&ouml;s kohteet, jotka ovat nykyisen karttalaajuuden ulkopuolella.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Valitse karttataso, jonka kohteita käytetään keskipisteiden luonnissa</h2></div>
+        <hr/>
+        <div>
+            <p> Monipiste-, viiva- tai aluekarttataso, jota k&auml;ytet&auml;&auml;n keskipisteiden etsimiseen.
+            </p>
+            <p>Kartasta valittavan karttatason lis&auml;ksi voit valita alareunan avattavasta luettelosta  <b>Valitse analyysikarttataso</b> -vaihtoehdon. T&auml;m&auml; vaihtoehto avaa gallerian, jossa voit selata ja valita aineistoryhmi&auml; erilaisista l&auml;hteist&auml; ja k&auml;ytt&auml;&auml; niit&auml; analyysissa. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>Näytä tulosaineiston sijainnit</h2></div>
+        <hr/>
+        <div>
+            <p> Kun valittuna on <b>Todellisessa keskipisteess&auml;</b> (oletusasetus), tulosaineisto palauttaa jokaisen l&auml;ht&ouml;aineiston kohteen keskipisteen todellisen sijainnin. Keskipisteet sijaitsevat seuraavasti:
+                <ul>
+                    <li>Monipistekohteet: Tulosaineiston keskipiste sijaitsee monipistekohteen kaikkien pisteiden keskim&auml;&auml;r&auml;isill&auml; x- ja y-koordinaateilla.
+                    </li>
+                    <li>Viivakohteet: Tulosaineiston keskipiste sijaitsee viivakohteen kaikkien viivasegmenttien painotetuilla keskim&auml;&auml;r&auml;isill&auml; x- ja y-koordinaateilla. Paino perustuu segmentin pituuteen.
+                    </li>
+                    <li>Aluekohteet: Tulosaineiston keskipiste sijaitsee alueen keskell&auml;.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Kun valittuna on  <b>Sis&auml;ltyv&auml;t l&auml;ht&ouml;aineiston kohteisiin</b>, tulosaineiston pistekohteet sis&auml;ltyv&auml;t jokaiseen l&auml;ht&ouml;aineiston kohteeseen. Tuloksena olevat pistekohteet n&auml;kyv&auml;t seuraavanlaisesti:
+                <ul>
+                    <li>Monipistekohteet: Tulosaineiston keskipiste on p&auml;&auml;llekk&auml;in yhden monipisteryhm&auml;n pisteen kanssa.
+                    </li>
+                    <li>Viivakohteet: L&auml;ht&ouml;aineiston keskipiste on viivalla.  Jos viiva on k&auml;yr&auml;, tulosaineisto on viivan keskipisteess&auml;. 
+                    </li>
+                    <li>Aluekohteet: Tulosaineiston piste on aluekohteen sis&auml;ll&auml;.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Tulostason nimi</h2></div>
+        <hr/>
+        <div>
+            <p>Sen tason nimi, joka luodaan kohtaan  <b>Oma sis&auml;lt&ouml;</b> ja joka lis&auml;t&auml;&auml;n karttaan. Oletusnimi perustuu ty&ouml;kalun nimeen ja l&auml;ht&ouml;karttatason nimeen. Jos karttatason nimi on jo luotu, sinua pyydet&auml;&auml;n antamaan toinen nimi.
+            </p>
+            <p>Avattavan  <b>Tallenna tulos kohteeseen</b> -valikon avulla voit m&auml;&auml;ritt&auml;&auml; sen <b>Oma sis&auml;lt&ouml;</b> -kansion nimen, johon tulos tallennetaan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

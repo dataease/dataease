@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Generaliseret lineær regression</h2><p/>
+        <h2><img src="../images/GUID-4E435A7B-8EC1-4020-9D92-DE88E8E8BBB1-web.png" alt="Workflow-diagram for Generaliseret line&aelig;r regression"></h2>
+        <hr/>
+    <p>Udf&oslash;rer Generaliseret line&aelig;r regression 
+(GLR) for at generere forudsigelser eller for at modellere en afh&aelig;ngig variabel med hensyn til dens relation til et s&aelig;t forklarende variabler. Dette v&aelig;rkt&oslash;j kan bruges til at tilpasse kontinuerlige (gaussiske), bin&aelig;re (logistiske) og t&aelig;llem&aelig;ssige (Poisson) modeller.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="analysisType">
+        <div><h2>Analysetype</h2></div>
+        <hr/>
+        <div>
+            <p>Angiver v&aelig;rkt&oslash;jets funktionsm&aring;de. V&aelig;rkt&oslash;jet kan k&oslash;res for at tr&aelig;ne en model til kun at vurdere ydeevne eller for at tr&aelig;ne en model og forudsige objekter. Der findes f&oslash;lgende typer forudsigelser:
+                <ul>
+                    <li> <b>Tilpas en model til vurdering af model-ydeevne</b> &ndash; En model bliver tilpasset og anvendt p&aring; inputdataene. Brug denne indstilling til at vurdere n&oslash;jagtigheden af ​​din model, f&oslash;r du genererer forudsigelser p&aring; et nyt datas&aelig;t, eller til at forst&aring; relationer og drivere for din forudsagte variabel. Output fra denne indstilling bliver en featuretjeneste af de tilpassede data og modeldiagnostik.
+                    </li>
+                    <li> <b>Tilpas en model og forudsig v&aelig;rdier</b> &ndash; Forudsigelser eller klassifikationer genereres for inputobjekter og forudsigelsesobjekter. Forklarende variabler skal v&aelig;re til r&aring;dighed for b&aring;de forudsigelsesobjekterne og de objekter, der skal forudsiges. Output fra denne indstilling bliver en featuretjeneste af din model, der er tilpasset dine inputdata, en featuretjeneste af forudsagte v&aelig;rdier samt modeldiagnostik.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="fit">
+        <div><h2>Tilpas en model for at vurdere modelydelsen</h2></div>
+        <hr/>
+        <div>
+            <p>Brug denne tilstand, hvis du vil tilpasse en model og unders&oslash;ge tilpasningen.
+            </p>
+            <p>Med denne indstilling bliver modellen tr&aelig;net ved hj&aelig;lp af et inputlag. Brug denne indstilling til at vurdere n&oslash;jagtigheden af ​​din model, f&oslash;r du genererer forudsigelser p&aring; et nyt datas&aelig;t. Denne indstilling viser modeldiagnostik og anvender modellen p&aring; dine tr&aelig;ningsdata.
+            </p>
+        </div>
+    </div>
+    <div id="fitAndPredict">
+        <div><h2>Tilpas en model, og forudsig værdier</h2></div>
+        <hr/>
+        <div>
+            <p>Brug denne tilstand, hvis du vil tilpasse en model og anvende modellen p&aring; datas&aelig;ttet for at generere forudsigelser.
+            </p>
+            <p>Der genereres forudsigelser eller klassifikationer for objekter. Output ved denne indstilling er en featuretjeneste, modeldiagnostik samt en valgfri tabel over variablernes betydning.
+            </p>
+        </div>
+    </div>
+    <div id="inputLayer">
+        <div><h2>Vælg et lag, som en model skal genereres ud fra</h2></div>
+        <hr/>
+        <div>
+            <p>Laget indeholder punkt-, linje-, omr&aring;de- eller tabelobjekter, som indeholder de afh&aelig;ngige og forklarende variabler.
+            </p>
+            <p>Udover at du kan v&aelig;lge et lag i dit kort, kan du v&aelig;lge  <b>V&aelig;lg analyselag</b> nederst p&aring; rullelisten for at g&aring; til dit indhold til et big data-fildelingsdatas&aelig;t eller -vektorlag.
+            </p>
+        </div>
+    </div>
+    <div id="dependentVariable">
+        <div><h2>Vælg det felt, der skal modelleres</h2></div>
+        <hr/>
+        <div>
+            <p>Det numeriske felt, der indeholder de observerede v&aelig;rdier, som modelleres, og den type ​​v&aelig;rdi, du modellerer. Der er tre typer v&aelig;rdier, du kan modellere
+                <ul>
+                    <li>Kontinuerlig - Repr&aelig;senterer kontinuerlige v&aelig;rdier. Den anvendte model er gaussisk, og v&aelig;rkt&oslash;jet udf&oslash;rer regression efter mindste kvadraters princip.
+                    </li>
+                    <li>Bin&aelig;r - Repr&aelig;senterer tilstedev&aelig;relses- eller frav&aelig;rsv&aelig;rdier. Disse skal v&aelig;re 1-taller og 0&rsquo;er. Den anvendte model er Logistisk Regression.
+                    </li>
+                    <li>Antal - Repr&aelig;senterer diskret og repr&aelig;senterer begivenheder, for eksempel antallet af forbrydelser, sygdomsforekomster eller trafikulykker. Den anvendte model er Poisson-regression. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="featuresToPredict">
+        <div><h2>Vælg et lag, der skal forudsiges værdier for</h2></div>
+        <hr/>
+        <div>
+            <p>Et lag med objekter, der repr&aelig;senterer steder, hvor estimater skal beregnes. Hver funktion i dette datas&aelig;t skal indeholde v&aelig;rdier for alle angivne forklarende variabler. Den afh&aelig;ngige variabel for disse objekter bliver estimeret ved hj&aelig;lp af modellen, der er kalibreret til inputlaget.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariables">
+        <div><h2>Vælg forklarende felter</h2></div>
+        <hr/>
+        <div>
+            <p>Et eller flere felter, der repr&aelig;senterer de forklarende variabler (felter), som hj&aelig;lper med at forudsige v&aelig;rdien. Kun numeriske felter er synlige.
+            </p>
+        </div>
+    </div>
+    <div id="explanatoryVariableMatching">
+        <div><h2>Vælg, hvordan forklarende felter skal matches</h2></div>
+        <hr/>
+        <div>
+            <p>Hvordan de tilsvarende variabler i inputlaget matcher variablerne i forudsigelseslaget. Kun de variabler, der anvendes ved generering af modellen, medtages i tabellen. Der kan kun bruges numeriske v&aelig;rdier. 
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Navn på resultatlag</h2></div>
+        <hr/>
+        <div>
+            <p> Navnet p&aring; det lag, som oprettes. Hvis du skriver til et ArcGIS Data Store, bliver  dine resultater gemt i  <b>Mit indhold</b> og f&oslash;jet til kortet. Hvis du skriver til en big data-fildeling, bliver dine resultater gemt i big data-fildelingen og f&oslash;jet til dens manifest. De bliver ikke f&oslash;jes til kortet. Standardnavnet er baseret p&aring; navnet p&aring; v&aelig;rkt&oslash;jet og navnet p&aring; inputlaget. Hvis laget allerede findes, vil v&aelig;rkt&oslash;jet ikke fungere.
+            </p>
+            <p>De returnerede resultater afh&aelig;nger af typen af ​​analyse. Hvis du tilpasser for at vurdere modeltilpasning, vil resultaterne indeholde et lag af inputdata, der passer til modellen og resultatoplysninger, der vurderer modeltilpasningen. Hvis du tilpasser og forudsiger, vil resultaterne indeholde et lag af inputdataene, der passer til modellen, et lag af forudsagte resultater og resultatoplysninger, der vurderer modeltilpasningen.
+            </p>
+            <p>N&aring;r du skriver til   ArcGIS Data Store  (relationelt eller spatiotemporalt big data-lager) ved hj&aelig;lp af rullelisten  <b>Gem resultat i </b>, kan du angive navnet p&aring; en mappe i <b>Mit indhold</b>, hvor resultatet gemmes.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

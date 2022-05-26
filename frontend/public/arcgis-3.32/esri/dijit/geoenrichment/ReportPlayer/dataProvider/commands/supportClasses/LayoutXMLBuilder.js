@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/dataProvider/commands/supportClasses/LayoutXMLBuilder","dojo/_base/lang esri/dijit/geoenrichment/utils/JsonXmlConverter esri/dijit/geoenrichment/ReportPlayer/core/conversion/reportingEngine/converters/DocumentConverter esri/dijit/geoenrichment/ReportPlayer/core/conversion/ConversionUtil esri/dijit/geoenrichment/ReportPlayer/core/supportClasses/DocumentOptions esri/dijit/geoenrichment/ReportPlayer/core/sections/SectionTypes".split(" "),function(g,h,k,e,
+l,m){return{buildLayoutXML:function(a){var d=k.buildDocumentTag({addDefaultQuery:!0,report:{templateJson:{documentOptions:g.mixin({},a.documentOptions,{left:0,right:0,top:0,bottom:0})}}}).documentTag,f=l.getPageBox(a.documentOptions),n=e.pxToPt(f.w),p=e.pxToPt(f.h);a.svgStrings.forEach(function(c,b){d.tags.push({name:"section",attributes:{type:m.DETAILS},tags:[{name:"img",attributes:{left:0,top:0,width:n,height:p},tags:[{text:"__svgString__"+b+"__svgString__"}]}]});b<a.svgStrings.length-1&&d.tags.push({name:"pageBreak"})});
+var c=h.parseJson(d);a.svgStrings.forEach(function(a,b){c=c.replace("__svgString__"+b+"__svgString__",a)});return c}}});

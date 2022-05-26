@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>העשר מגריד מרובה-משתנים</h2><p/>
+        <h2><img src="../images/GUID-AC3885D9-F068-4C09-8B7F-5694E77D9F65-web.png" alt="העשר מגריד מרובה-משתנים"></h2>
+        <hr/>
+    <p>הכלי  העשר מגריד מרובה-ערכים מצרף ביעילות מאפיינים מגריד מרובה-משתנים לשכבת נקודה.
+    </p>
+    <p>גריד מרובה משתנים הוא כל שכבה שנוצרה עם הכלי 'בנה גריד מרובה משתנים', אשר מאחד מאפיינים משכבות מרובות לגריד אחד של פוליגונים.  שימוש בגריד מרובה-משתנים לצורך העשרה מאפשר לך להוסיף במהירות אוסףים גדולים ומגוונים לנתוני נקודה לשימוש בניתוח מרחבי נוסף.
+    </p>
+    <p>לדוגמה, נניח שאתה משיג שכבה של אירועי פשיעה חדשים שאירעו בשנה החולפת ברחבי העיר. ברצונך לדגם את הקשר בין תדירות פשיעה לבין מגוון גורמים דמוגרפיים, כלכליים וגיאוגרפיים. יש לך גישה לנתונים שמתארים גורמים אלה, אבל הם מאוחסנים בחמש שכבות שונות עם סוגי גיאומטריה שונים. בנוסף, חלק מהשכבות מאוחסנות במיקום שיתוף קובצי Big Data בעוד אחרים מאוחסנים כשירות ישויות. על ידי יצירת גריד מרובה-משתנים לאחסון מידע זה ולאחר מכן צירוף הגריד לאירועי הפשיעה בעזרת הכלי  העשר מגריד מרובה-משתנים, באפשרותך לצרף ביעילות מגוון רחב של מאפיינים לשכבת הנקודה בשתי הפעלות בלבד של הכלי. באפשרותך אז להשתמש במאפיינים המצורפים כמשתנים מסבירים ולהתחיל לבנות מודל של תדירות פשיעה עם שכבת התוצאה.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputFeatures">
+        <div><h2>בחר את הישויות הנקודתיות שברצונך להעשיר</h2></div>
+        <hr/>
+        <div>
+            <p>ישויות הנקודה שיועשרו על ידי הגריד מרובה המשתנים.
+            </p>
+            <p>בנוסף לבחירת שכבה מהמפה שלך, באפשרותך לבחור באפשרות  <b>בחר שכבת ניתוח</b> בתחתית הרשימה הנפתחת כדי לדפדף לתכנים שלך עבור סט נתוני שיתוף קובץ Big Data או שכבת ישויות. באפשרותך אופציונלית להחיל מסנן על שכבת הקלט או להחיל בחירה על שכבות מתארחות שנוספו למפה שלך. מסננים ובחירות מוחלים רק עבור ניתוח. 
+            </p>
+        </div>
+    </div>
+    <div id="gridLayer">
+        <div><h2>בחר את הגריד מרובה-המשתנים שלפיו ברצונך לבצע את ההעשרה</h2></div>
+        <hr/>
+        <div>
+            <p>שכבת הגריד מרובה המשתנים שמכיל את המאפיינים שיצורפו לישויות הנקודה של הקלט. על השכבה להיווצר בעזרת הכלי 'בנה גריד מרובה משתנים' ולהיות שכבת ישויות מתארחת. שכבות מרובות משתנים שמאוחסנות במיקום משותף לקובצי Big Data לא נתמכות כקלט לכלי זה.
+            </p>
+        </div>
+    </div>
+    <div id="enrichAttributes">
+        <div><h2>בחר את המשתנים להוספה</h2></div>
+        <hr/>
+        <div>
+            <p>המאפיינים בגריד מרובה המשתנים, אשר יצורפו לישויות הנקודה של הקלט בכל פעם שישויות הנקודה מצטלבות עם הגריד.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>שם שכבת התוצאה</h2></div>
+        <hr/>
+        <div>
+            <p> השם של השכבה שתיווצר.  אם אתה כותב ל- ArcGIS Data Store, התוצאות שלך יישמרו ב-<b>התוכן שלי</b> ויתווספו למפה. אם אתה כותב לקובץ שיתוף Big Data, התוצאות שלך יאוחסנו בקובץ השיתוף של Big Data ויתווספו למניפסט שלו. הם לא יתווספו למפה. שם ברירת המחדל מבוסס על שם הכלי ושם שכבת הקלט. אם השכבה כבר קיימת, הכלי ייכשל.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

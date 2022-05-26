@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Crea Campo di Vista</h2><p/>
+        <h2><img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" alt="Crea Campo di Visuale"></h2>
+        <hr/>
+    <p>Lo strumento Crea Campo di vista crea aree in cui un osservatore pu&ograve; visualizzare oggetti presenti sul suolo. I punti di osservazione in input possono rappresentare osservatori (ad esempio, persone sul suolo o i punti di osservazione in una torretta di avvistamento degli incendi) oppure oggetti sotto osservazione (come turbine eoliche, serbatoi d'acqua, veicoli o altre persone).  Le aree risultanti corrispondono alle aree in cui gli osservatori possono visualizzare gli oggetti osservati e viceversa: gli oggetti osservati possono vedere gli osservatori.
+    </p>
+    <p>Sia gli osservatori che gli oggetti osservati possono essere pi&ugrave; in alto rispetto al suolo e tali altezze sono usate per stabilire la visibilit&agrave;. Ad esempio, un campo di vista calcolato per turbine eoliche di 400 piedi (122 metri) e per persone di 6 piedi (182 cm) posizionate sul suolo sar&agrave; pi&ugrave; grande rispetto a un campo di vista calcolato per turbine di 200 piedi (61 metri) e per persone di 6 piedi (182 cm).
+    </p>
+    <p>Tenere presente che il calcolo del campo di vista non prende in considerazione eventuali ostacoli come alberi o edifici. Puoi formulare il calcolo su un suolo brullo, senza altri elementi ad eccezione dell'osservatore e degli oggetti osservati.
+    </p>
+    <p>Il layer risultante contiene feature area che rappresentano le aree visibili. Il campo  <i>Frequency</i> registra il numero di punti di osservazione visibili da ogni area. Ad esempio, per cinque punti di input ognuno dei quali rappresenta una torretta di avvistamento incendi, il campo <i>Frequency</i> presenter&agrave; dei valori compresi tra uno e cinque; le aree con un valore pari a uno possono essere viste solo da una torretta, mentre le aree con un valore pari a cinque possono essere viste da tutte le torrette. Il layer risultante contiene anche il campo <i>DEMResolution</i> che registra la risoluzione del modello DEM (Digital Elevation Model) usato per creare i campi di vista.
+    </p>
+    <p>Se si seleziona  <b>Usa estensione mappa corrente</b>, verranno analizzati solo i punti di osservazione visibili nell'estensione mappa corrente.  Se l'opzione &egrave; deselezionata, verranno analizzati tutti i punti di osservazione nel layer di input, anche se sono esterni all'estensione mappa corrente.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Feature puntuali che rappresentano le posizioni dell'osservatore</h2></div>
+        <hr/>
+        <div>
+            <p>Feature puntuali da utilizzare come posizioni dell'osservatore. 
+            </p>
+            <p>Oltre a scegliere un layer dalla mappa, &egrave; possibile selezionare  <b>Scegli layer di analisi</b> in fondo all'elenco a discesa. Con questa opzione si apre una galleria in cui &egrave; possibile individuare e selezionare dataset di varie fonti da utilizzare nell'analisi. 
+            </p>
+        </div>
+    </div>
+    <div id="ObserverHeight">
+        <div><h2>Altezza delle posizioni dell'osservatore</h2></div>
+        <hr/>
+        <div>
+            <p>Si tratta dell'altezza dal suolo delle posizioni dell'osservatore.    Il valore predefinito &egrave; impostata sull'altezza media di una persona.  
+            </p>
+        </div>
+    </div>
+    <div id="TargetHeight">
+        <div><h2>Altezza di altri oggetti al suolo</h2></div>
+        <hr/>
+        <div>
+            <p>Si tratta dell'altezza di strutture o persone rispetto al suolo usata per stabilire la visibilit&agrave;. Il campo di vista risultante corrisponde alle aree in cui un punto di osservazione pu&ograve; vedere gli altri oggetti.  &Egrave; vero anche il contrario: gli altri oggetti possono vedere un punto di osservazione. 
+            </p>
+            <p>
+                <ul>
+                    <li>Se i punti di osservazione rappresentano turbine eoliche e si desidera stabilire se le persone sul suolo possono vederle, &egrave; necessario inserire l'altezza media di una persona (circa 6 piedi, 182 cm).  Nel risultato vengono visualizzate le aree in cui una persona sul suolo pu&ograve; vedere le turbine eoliche.
+                    </li>
+                    <li>Se i punti di osservazione rappresentano le torrette di avvistamento incendi e si desidera stabilire quali torrette di avvistamento possono vedere un pennacchio di fumo di 20 piedi (6 metri) o pi&ugrave; alto, &egrave; necessario inserire 20 piedi (6 metri) per l'altezza.  Nel risultato vengono visualizzate le aree in cui una torretta di avvistamento pu&ograve; vedere un pennacchio di fumo alto almeno 20 piedi (6 metri).
+                    </li>
+                    <li>Se i punti di osservazione rappresentano punti panoramici su strade e sentieri e si desidera stabilire dove &egrave; possibile vedere turbine eoliche alte 400 piedi (121 metri) o anche pi&ugrave; alte, &egrave; necessario inserire 400 piedi (121 metri) per l'altezza.  Nel risultato vengono visualizzate le aree in cui una persona in un punto panoramico pu&ograve; vedere una turbina eolica alta almeno 400 piedi (121 metri).
+                    </li>
+                    <li>Se i punti di osservazione rappresentano punti panoramici e si desidera stabilire l'area sul suolo che una persona pu&ograve; vedere da un punto panoramico, &egrave; necessario inserire zero.  Nel risultato vengono visualizzate le aree che possono essere osservate dal punto panoramico.  
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="MaximumDistance">
+        <div><h2>Distanza di visualizzazione massima</h2></div>
+        <hr/>
+        <div>
+            <p>Questa &egrave; la distanza in cui termina il calcolo delle aree visibili. Oltre questa distanza, non &egrave; possibile sapere se i punti di osservazione e gli altri oggetti possono vedersi a vicenda. Valori alti aumentano i tempi di calcolo. Il valore massimo consentito &egrave; 31 miglia (50 chilometri).
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nome del layer dei risultati</h2></div>
+        <hr/>
+        <div>
+            <p>Questo &egrave; il nome del layer che verr&agrave; creato in  <b>I miei contenuti</b> e aggiunto alla mappa.  Il nome predefinito &egrave; basato sul nome dello strumento e sul nome del layer di input. Se il nome del layer esiste gi&agrave;, verr&agrave; richiesto di fornire un altro nome.
+            </p>
+            <p>Utilizzare il men&ugrave; a discesa  <b>Salva risultato in</b> per specificare il nome di una cartella in <b>I miei contenuti</b> in cui salvare il risultato.
+            </p>
+            <p> L&rsquo;esecuzione di questo strumento non consuma crediti.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

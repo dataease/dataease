@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="aoToolbox">
+        <p>Verktygsl&aring;dan Analys av geoobjekt inneh&aring;ller en rad verktyg som du kan f&aring; &aring;tkomst till och anv&auml;nda. &Aring;tg&auml;rderna finns ordnade nedan i kategorier. Kategorierna &auml;r logiska grupperingar och p&aring;verkar inte hur du f&aring;r &aring;tkomst till eller anv&auml;nder &aring;tg&auml;rderna p&aring; n&aring;got s&auml;tt.
+        </p>
+    </div>
+    <div id="SummarizeDataCategory" class="largesize">
+        <h2>Summera data</h2>
+        <hr/>
+        <p>Dessa verktyg ber&auml;knar totalt antal, l&auml;ngd, yta och enkel beskrivande statistik f&ouml;r geoobjekt och deras attribut inom omr&aring;den eller n&auml;ra andra geoobjekt.
+            <ul>
+                <li> <b>Aggregera punkter</b> ber&auml;knar statistik om punkter som hamnar inom angivna omr&aring;den.
+                </li>
+                <li> <b>F&ouml;rena geoobjekt</b> &ouml;verf&ouml;r attribut fr&aring;n ett lager eller tabell till en annan baserat p&aring; rums- och attributrelationer.
+                </li>
+                <li> <b>Summera n&auml;ra</b> ber&auml;knar statistik f&ouml;r geoobjekt och deras attribut som finns inom ett angivet avst&aring;nd.
+                </li>
+                <li> <b>Summera inom</b> ber&auml;knar statistik f&ouml;r omr&aring;desgeoobjekt och attribut som &ouml;verlappar varandra.
+                </li>
+                <li> <b>Summera mitt och spridning</b> ber&auml;knar centrala geoobjekt och riktningsf&ouml;rdelningar.
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="AggregatePointsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Aggregera punkter</h2></td>
+                    <td>
+                    <img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" class="titleImage" alt="Aggregera punkter">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Det h&auml;r verktyget anv&auml;nder ett lager med punktgeoobjekt och ett lager med omr&aring;desgeoobjekt f&ouml;r att avg&ouml;ra vilka punkter som hamnar i vilket omr&aring;de och ber&auml;kna statistik om alla punkter i varje omr&aring;de. Exempel:
+                <ul>
+                    <li>Med hj&auml;lp av punkter d&auml;r brott har beg&aring;tts vill du r&auml;kna ut antalet brott per l&auml;n eller annat administrativt distrikt.
+                    </li>
+                    <li>Hitta de h&ouml;gsta och l&auml;gsta int&auml;kterna f&ouml;r franchisebutiker per stat.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="JoinFeaturesTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Förena geoobjekt</h2></td>
+                    <td>
+                    <img src="../images/GUID-2230E8B8-8956-475C-9C65-68A92359BB48-web.png" class="titleImage" alt="F&ouml;rena geoobjekt">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>F&ouml;rena geoobjekt &ouml;verf&ouml;r attribut fr&aring;n ett lager eller tabell till en annan baserat p&aring; rums- och attributrelationer. Exempel:
+                <ul>
+                    <li>L&auml;gg till information om en gemensam gr&auml;ns eller demografisk information i incidentdata.
+                    </li>
+                    <li>Identifiera de n&auml;rmaste inr&auml;ttningarna till en k&auml;nd plats.
+                    </li>
+                    <li>Fastst&auml;ll hur m&aring;nga bost&auml;der som ligger inom en &ouml;versv&auml;mningszon.
+                    </li>
+                    <li>Identifiera vanliga boplatser f&ouml;r olika vilda arter.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeNearbyTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Summera nära</h2></td>
+                    <td>
+                    <img src="../images/GUID-A5033D27-81B6-42E7-BA38-50D25C1CCCCA-web.png" class="titleImage" alt="Summera n&auml;ra">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Hittar geoobjekt som ligger inom ett angivet avst&aring;nd fr&aring;n geoobjekt i indatalagret. Avst&aring;nd kan m&auml;tas l&auml;ngs raka linjer eller via m&ouml;jliga v&auml;gar i ett f&auml;rdl&auml;ge. Statistik ber&auml;knas sedan f&ouml;r geoobjekten i n&auml;rheten. Exempel:
+                <ul>
+                    <li>Ber&auml;kna den totala befolkningen inom fem minuter fr&aring;n en f&ouml;reslagen plats f&ouml;r en ny butik.
+                    </li>
+                    <li>Ber&auml;kna antalet motorv&auml;gsavfarter inom fem minuter fr&aring;n en f&ouml;reslagen plats f&ouml;r en ny butik som ett m&aring;tt p&aring; butikens tillg&auml;nglighet.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeWithinTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Summera inom</h2></td>
+                    <td>
+                    <img src="../images/GUID-9B12DB3F-AA7B-41EB-87C6-D2DEC3D52DA9-web.png" class="titleImage" alt="Summera inom">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Hittar omr&aring;den (och delar av omr&aring;den) som &ouml;verlappar mellan tv&aring; lager och ber&auml;knar statistik om &ouml;verlappningen. Exempel:
+                <ul>
+                    <li>Med ett lager f&ouml;r avrinningsomr&aring;den och ett lager med markanv&auml;ndningsomr&aring;den enligt markanv&auml;ndningstyp kan du ber&auml;kna den totala arealen f&ouml;r de olika markanv&auml;ndningstyperna f&ouml;r varje avrinningsomr&aring;de. 
+                    </li>
+                    <li>Med ett lager f&ouml;r fastigheter i ett l&auml;n och ett lager kommungr&auml;nser kan du sammanfatta snittv&auml;rdet f&ouml;r de tomma fastigheterna i varje kommun.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="SummarizeCenterAndDispersionTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Summera mitt och spridning</h2></td>
+                    <td>
+                    <img src="../images/GUID-D2D53CA4-8A35-4163-9765-77BF232E569D-web.png" class="titleImage" alt="Summera mitt och spridning">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Detta verktyg anv&auml;nder punktgeoobjekt till att ber&auml;kna medelcentrum, mediancentrum eller ellips (distribution). Exempel:
+                <ul>
+                    <li>Givet ett lager med mittpunkter i en kvartersgrupp kan det centrala geoobjektet viktat med befolkning anv&auml;ndas f&ouml;r att identifiera vilken del av staden som &auml;r den mest l&auml;ttillg&auml;ngliga f&ouml;r ett centrum f&ouml;r scenkonst.
+                    </li>
+                    <li>Givet ett lager med &auml;lgobservationer &ouml;ver flera &aring;r i en park kan medelcentrum anv&auml;ndas f&ouml;r att se var &auml;lgarna samlas p&aring; sommaren och vintern.
+                    </li>
+                    <li>Givet ett lager &ouml;ver brandincidenter kan medelcentrum anv&auml;ndas f&ouml;r att m&auml;ta den centrala tendensen i br&auml;nderna utan att p&aring;verkas av perifera avvikelser.
+                    </li>
+                    <li>Givet ett lager med grundvattenprover kan en ellips anv&auml;ndas f&ouml;r att best&auml;mma hur ett smitt&auml;mne sprids.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+    <div id="EnrichLocationsCategory" class="smallsize">
+        <h2>Databerikning</h2>
+        <hr/>
+        <p>De h&auml;r verktygen hj&auml;lper dig utforska egenskaper f&ouml;r omr&aring;den. Detaljerade demografiska data och statistik returneras f&ouml;r de omr&aring;den du har valt. 
+            <ul>
+                <li> <b>Berika lager</b> h&auml;mtar information om personer, platser och f&ouml;retag i ett specifikt omr&aring;de eller inom ett angivet avst&aring;nd eller en angiven restid fr&aring;n en plats.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="EnrichLayerTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Berika lager</h2></td>
+                    <td>
+                    <img src="../images/GUID-5B2D9742-AFD2-4054-8D05-ED6A80EDAF4D-web.png" class="titleImage" alt="Berika lager">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Berika lager h&auml;mtar information om personer, platser och f&ouml;retag i ett specifikt omr&aring;de eller inom ett angivet avst&aring;nd eller en angiven restid fr&aring;n en plats.
+
+            </p>
+            <br/>
+        </div>
+    <div id="FindLocationsCategory" class="largesize">
+        <h2>Hitta platser</h2>
+        <hr/>
+        <p>Dessa verktyg anv&auml;nds f&ouml;r att identifiera eller skapa geoobjekt som uppfyller villkor som du anger. Typen av villkor beror p&aring; vilket verktyg du anv&auml;nder. Ditt villkor kan till exempel vara baserat p&aring; geografiska fr&aring;gor eller attributfr&aring;gor, synliga omr&aring;den fr&aring;n en angiven h&ouml;jd, omr&aring;den nedstr&ouml;ms f&ouml;r vissa dr&auml;neringspunkter eller k&ouml;rtid under specifika trafikf&ouml;rh&aring;llanden.
+            <ul>
+                <li> <b>V&auml;lj b&auml;sta inr&auml;ttningar</b> v&auml;ljer de b&auml;sta platserna f&ouml;r inr&auml;ttningar genom att tilldela platser som efterfr&aring;gar dessa inr&auml;ttningar p&aring; ett s&auml;tt som uppfyller ett visst m&aring;l.
+                </li>
+                <li> <b>Skapa siktomr&aring;de</b> skapar omr&aring;den som &auml;r synliga baserat p&aring; de platser du anger.
+                </li>
+                <li> <b>Skapa avrinningsomr&aring;den</b> skapar uppsamlingsomr&aring;den baserat p&aring; de platser du anger.
+                </li>
+                <li> <b>H&auml;rled nya platser</b> skapar nya omr&aring;den fr&aring;n platser i unders&ouml;kningsomr&aring;det som uppfyller en rad kriterier.
+                </li>
+                <li> <b>Hitta centroider</b> hittar den representativa mittpunkten (centroiden) f&ouml;r indatageoobjekt.
+                </li>
+                <li> <b>Hitta befintliga platser</b> s&ouml;ker efter befintliga omr&aring;den i ett lager som uppfyller en rad kriterier.
+                </li>
+                <li> <b>Hitta liknande platser</b> hittar de platser som &auml;r mest lika en eller flera referensplatser baserat p&aring; kriterier som du anger.
+                </li>
+                <li class="PortalOnly"> <b>Geokoda platser fr&aring;n tabell</b> konverterar adresser fr&aring;n en tabell till koordinater. 
+                </li>
+                <li> <b>Sp&aring;ra nedstr&ouml;ms</b> avg&ouml;r fl&ouml;desm&ouml;nstren nedstr&ouml;ms fr&aring;n de platser du anger.
+                </li>
+            </ul>
+            
+        </p>
+        <p> 
+        </p>
+    </div>
+        <div id="ChooseBestFacilitiesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Välj bästa inrättningar</h2></td>
+                    <td>
+                    <img src="../images/GUID-E57BEC1A-C404-436B-B389-65711FF83088-web.png" class="titleImage" alt="V&auml;lj b&auml;sta inr&auml;ttningar">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>V&auml;ljer de b&auml;sta platserna f&ouml;r inr&auml;ttningar genom att tilldela platser som efterfr&aring;gar dessa inr&auml;ttningar p&aring; ett s&auml;tt som uppfyller ett visst m&aring;l.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateViewshedTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Skapa siktområde</h2></td>
+                    <td>
+                    <img src="../images/GUID-491E9A75-30CC-4526-9F71-E47FD25536DE-web.png" class="titleImage" alt="Skapa siktomr&aring;de">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Skapar omr&aring;den som &auml;r synliga baserat p&aring; de platser du anger.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateWatershedsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Skapa avrinningsområden</h2></td>
+                    <td>
+                    <img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" class="titleImage" alt="Skapa avrinningsomr&aring;den">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Skapar uppsamlingsomr&aring;den baserat p&aring; de platser du anger.
+            </p>
+            <br/>
+        </div>
+        <div id="DeriveNewLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Härled nya platser</h2></td>
+                    <td>
+                    <img src="../images/GUID-4A756008-8431-4AA5-BD42-7135296560DD-web.png" class="titleImage" alt="H&auml;rled nya platser">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Skapar nya geoobjekt i unders&ouml;kningsomr&aring;det som uppfyller en rad kriterier du anger. Kriterierna kan bygga p&aring; attributfr&aring;gor (till exempel fastigheter som &auml;r tomma) och geografiska fr&aring;gor (till exempel inom 1 kilometer fr&aring;n en flod). 
+            </p>
+            <br/>
+        </div>
+        <div id="FindCentroidsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Hitta centroider</h2></td>
+                    <td>
+                    <img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" class="titleImage" alt="Hitta centroider">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Hittar den representativa mittpunkten (centroiden) f&ouml;r varje indatageoobjekt av typen flera punkter, linje eller omr&aring;de.
+            </p>
+            <br/>
+        </div>
+        <div id="FindExistingLocationsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Hitta befintliga platser</h2></td>
+                    <td>
+                    <img src="../images/GUID-FEF355B4-CF3B-48F6-9EC1-A00A1D53C81F-web.png" class="titleImage" alt="Hitta befintliga platser">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>V&auml;ljer befintliga geoobjekt i unders&ouml;kningsomr&aring;det som uppfyller en rad kriterier du anger. Kriterierna kan bygga p&aring; attributfr&aring;gor (till exempel fastigheter som &auml;r tomma) och geografiska fr&aring;gor (till exempel inom 1 kilometer fr&aring;n en flod). 
+            </p>
+            <br/>
+        </div>
+        <div id="GeocodeLocationsfromTableTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Geokoda platser från tabell</h2></td>
+                    <td>
+                    <img src="../images/GUID-E4194410-7BBF-4349-98C9-22781D35183E-web.png" class="titleImage" alt="Geokoda platser fr&aring;n tabell">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Konverterar adresser till koordinater. Anv&auml;nd det h&auml;r verktyget p&aring; adresser i ett Excel-kalkylblad eller en CSV-fil.
+            </p>
+            <br/>
+        </div>
+        <div id="FindSimilarLocationsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Hitta liknande platser</h2></td>
+                    <td>
+                    <img src="../images/GUID-6262A84E-9087-4E48-930E-E9B89FECC836-web.png" class="titleImage" alt="Hitta liknande platser">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Hittar de platser som &auml;r mest lika en eller flera referensplatser baserat p&aring; kriterier som du anger.
+            </p>
+            <br/>
+        </div>
+        <div id="TraceDownstreamTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Spåra nedströms</h2></td>
+                    <td>
+                    <img src="../images/GUID-1700E318-5F2D-4D4D-BF21-B12663F5D3C4-web.png" class="titleImage" alt="Sp&aring;ra nedstr&ouml;ms">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Avg&ouml;r fl&ouml;desm&ouml;nstren nedstr&ouml;ms fr&aring;n de platser du anger.
+            </p>
+            <br/>
+        </div>
+    <div id="AnalyzePatternsCategory" class="regularsize">
+        <h2>Analysera mönster</h2>
+        <hr/>
+        <p>Dessa verktyg hj&auml;lper dig identifiera, m&auml;ta och visualisera geografiska m&ouml;nster i dina data.  
+            <ul>
+                <li> <b>Ber&auml;kna densitet</b> tar k&auml;nda antal av ett fenomen och sprider ut dessa antal &ouml;ver kartan.
+                </li>
+                <li>Med  <b>Hitta hotspots</b> kan du identifiera statistiskt signifikant klustring i de geografiska m&ouml;nstren f&ouml;r dina data.
+                </li>
+                <li> <b>Hitta avvikelser</b> fastst&auml;ller om det finns statistiskt signifikanta avvikelser i det geografiska m&ouml;nstret f&ouml;r dina data.
+                </li>
+                <li> <b>Hitta punktkluster</b> hittar kluster av punktgeoobjekt i bakgrundsbrus baserat p&aring; deras rumsliga f&ouml;rdelning.
+                </li>
+                <li> <b>Interpoleringspunkter</b> f&ouml;ruts&auml;ger v&auml;rden p&aring; nya platser baserat p&aring; m&auml;tningar fr&aring;n en samling punkter.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="CalculateDensityTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Beräkna densitet</h2></td>
+                    <td>
+                    <img src="../images/GUID-20E554EC-1F41-4951-99FE-B3FE71DB2E17-web.png" class="titleImage" alt="Ber&auml;kna densitet">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Densitetsanalyser tar k&auml;nda antal av ett fenomen och sprider ut dessa antal &ouml;ver kartan. Du kan anv&auml;nda det h&auml;r verktyget f&ouml;r att till exempel visa koncentrationer av blixtnedslag eller tornador, tillg&aring;ng till v&aring;rdinr&auml;ttningar och befolkningst&auml;thet.
+            </p>
+            <br/>
+        </div>
+        <div id="FindHotSpotsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Hitta hotspots</h2></td>
+                    <td>
+                    <img src="../images/GUID-D4A59131-AC88-4C7A-85BA-67861D5C1CF8-web.png" class="titleImage" alt="Hitta hotspots">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Det h&auml;r verktyget skapar en karta som visar statistiskt signifikant geografisk klustring i dina data. Anv&auml;nd verktyget f&ouml;r att hitta ov&auml;ntade hotspots (r&ouml;da) och coldspots (bl&aring;) f&ouml;r till exempel h&ouml;ga och l&aring;ga huspriser, brottsfall, trafikolyckor med d&ouml;dlig utg&aring;ng, arbetsl&ouml;shet och biodiversitet.
+            </p>
+            <br/>
+        </div>
+        <div id="FindOutliersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Hitta avvikelser</h2></td>
+                    <td>
+                    <img src="../images/GUID-2FD18406-6333-45B9-8220-E930C1E154B2-web.png" class="titleImage" alt="Hitta avvikelser">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Det h&auml;r verktyget skapar en karta som visar statistiskt signifikant klustring och geografiska avvikelser i dina data. Anv&auml;nd verktyget f&ouml;r att identifiera geoobjekt som har v&auml;rden som skiljer sig signifikant fr&aring;n sina grannar. Du kan till exempel anv&auml;nda verktyget f&ouml;r att uppt&auml;cka onormala utgiftsm&ouml;nster, fastst&auml;lla var de skarpaste gr&auml;nserna g&aring;r mellan v&auml;lst&aring;nd och fattigdom i ett unders&ouml;kningsomr&aring;de, eller fastst&auml;lla om det finns l&auml;n i USA d&auml;r den f&ouml;rv&auml;ntade livsl&auml;ngden &auml;r ovanligt kort j&auml;mf&ouml;rt med de angr&auml;nsande.
+            </p>
+            <br/>
+        </div>
+        <div id="FindPointClustersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Hitta punktkluster</h2></td>
+                    <td>
+                    <img src="../images/GUID-025ADB1C-E4BF-4C8D-A35F-1D0E222627F9-web.png" class="titleImage" alt="Hitta punktkluster">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Det h&auml;r verktyget uppt&auml;cker omr&aring;den d&auml;r punkter &auml;r koncentrerade och d&auml;r de &auml;r separerade av omr&aring;den som &auml;r tomma eller glesa. Punkter som inte ing&aring;r i ett kluster &auml;r m&auml;rkta som brus.
+            </p>
+            <br/>
+        </div>
+        <div id="InterpolatePointsTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Interpoleringspunkter</h2></td>
+                    <td>
+                    <img src="../images/GUID-28FC50AA-7B10-487C-949B-241EF2F8028E-web.png" class="titleImage" alt="Interpoleringspunkter">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Med det h&auml;r verktyget kan du f&ouml;ruts&auml;ga v&auml;rden p&aring; nya platser baserat p&aring; m&auml;tningar fr&aring;n en samling punkter. Verktyget samlar punktdata med v&auml;rden vid varje punkt och returnerar omr&aring;den klassificerade enligt f&ouml;rutsagda v&auml;rden. Du kan till exempel anv&auml;nda det h&auml;r verktyget f&ouml;r att f&ouml;ruts&auml;ga regnniv&aring;er inom ett avrinningsomr&aring;de baserat p&aring; m&auml;tningar vid enskilda regnm&auml;tare.
+            </p>
+            <br/>
+        </div>
+    <div id="UseProximityCategory" class="regularsize">
+        <h2>Använd närhet</h2>
+        <hr/>
+        <p>  De h&auml;r verktygen hj&auml;lper dig besvara en av de vanligaste fr&aring;gorna vid geografiska analyser: &quot;Vad ligger n&auml;ra vad?&quot;
+            <ul>
+                <li> <b>Anslut startpunkter till destinationer</b> m&auml;ter restiden eller avst&aring;ndet mellan punktpar.
+                </li>
+                <li> <b>Skapa buffertar</b> skapar omr&aring;den med lika stort avst&aring;nd fr&aring;n geoobjekt.
+                </li>
+                <li> <b>Skapa k&ouml;rtidsomr&aring;den</b> hittar omr&aring;den runt platser som g&aring;r att n&aring; inom en tidsperiod.
+                </li>
+                <li> <b>Hitta n&auml;rmaste</b> identifierar de platser som ligger n&auml;rmast k&auml;nda platser.
+                </li>
+                <li> <b>Planera rutter</b> fastst&auml;ller den b&auml;sta rutten f&ouml;r en fordonspark som ska stanna vid flera platser.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="ConnectOriginsToDestinationsTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Koppla startplatser till destinationer</h2></td>
+                    <td>
+                    <img src="../images/GUID-7266D30B-0250-4132-B1A5-9B59F0212FAD-web.png" class="titleImage" alt="Koppla startplatser till destinationer">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Koppla startpunkter till destinationer m&auml;ter restiden eller avst&aring;ndet mellan punktpar. Verktyget kan rapportera raka linjer, avst&aring;nd l&auml;ngs v&auml;g eller resetider. Med det h&auml;r verktyget kan du
+            </p>
+            <p>
+                <ul>
+                    <li>Ber&auml;kna det totala avst&aring;ndet eller tiden pendlare f&auml;rdas mellan hem och arbete.
+                    </li>
+                    <li>M&auml;ta hur l&aring;ngt kunder reser f&ouml;r att handla i dina butiker. Anv&auml;nda informationen f&ouml;r att definiera din marknadsr&auml;ckvidd, i synnerhet n&auml;r du inriktar dig p&aring; annonskampanjer eller v&auml;ljer nya butiksplatser.
+                    </li>
+                    <li>Ber&auml;kna den f&ouml;rv&auml;ntade k&ouml;rstr&auml;ckan f&ouml;r din fordonspark. Efter&aring;t k&ouml;ra verktyget Summera inom f&ouml;r att rapportera k&ouml;rstr&auml;cka efter delstat eller annan region.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Du anger start- och slutpunkter, och verktyget returnerar ett lager som inneh&aring;ller ruttlinjer, inklusive m&auml;tningar, mellan de kopplade startpunkterna och destinationerna.
+            </p>
+            <br/>
+        </div>
+        <div id="CreateBuffersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Skapa buffertar</h2></td>
+                    <td>
+                    <img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" class="titleImage" alt="Skapa buffertar">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>En buffert &auml;r ett omr&aring;de som t&auml;cker ett givet avst&aring;nd fr&aring;n ett punkt-, linje- eller omr&aring;desgeoobjekt. 
+            </p>
+            <p>Buffertar anv&auml;nds normalt sett f&ouml;r att skapa omr&aring;den som kan analyseras ytterligare med andra verktyg, till exempel &Ouml;verlagra lager. Om fr&aring;gan till exempel &auml;r &quot;Vilka byggnader ligger inom en kilometer fr&aring;n skolan?&quot;, kan du hitta svaret genom att skapa en buffert p&aring; en kilometer kring skolan och sedan &ouml;verlagra bufferten med det lager som inneh&aring;ller byggnadsavtrycken.  Slutresultatet blir ett lager med de byggnader som ligger inom en kilometer fr&aring;n skolan.  
+            </p>
+            <br/>
+        </div>
+        <div id="CreateDriveTimeAreasTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Skapa körtidsområden</h2></td>
+                    <td>
+                    <img src="../images/GUID-6F629A09-768D-4C04-88A4-AB941811ADE9-web.png" class="titleImage" alt="Skapa k&ouml;rtidsomr&aring;den">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Ett k&ouml;rtidsomr&aring;de &auml;r ett omr&aring;de du kan n&aring; inom en viss k&ouml;rtid eller ett visst k&ouml;ravst&aring;nd. Med k&ouml;rtidsomr&aring;den kan du besvara fr&aring;gor som:
+                <ul>
+                    <li>Var kan jag &aring;ka inom 30 minuters k&ouml;rtid h&auml;rifr&aring;n?
+                    </li>
+                    <li>Var kan jag &aring;ka h&auml;rifr&aring;n inom 30 minuters k&ouml;rtid klockan 18:00 under rusningstrafik?
+                    </li>
+                    <li>Vilka delar av staden kan brandk&aring;ren komma till p&aring; under fem minuter? Hur skulle brandk&aring;rens utryckningstider f&ouml;rb&auml;ttras om vi bygger en ny brandstation h&auml;r?
+                    </li>
+                    <li>Vilka marknadsomr&aring;den t&auml;cker mitt f&ouml;retag? Vilka omr&aring;den ligger inom 10 kilometer fr&aring;n mina butiker?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="FindNearestTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Hitta närmaste</h2></td>
+                    <td>
+                    <img src="../images/GUID-150C2484-7459-405A-8835-B4E72CD49738-web.png" class="titleImage" alt="Hitta n&auml;rmaste">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>M&auml;ter reskostnaden mellan h&auml;ndelser och anl&auml;ggningar och avg&ouml;r vilka som ligger n&auml;rmast varandra. Resultatet &auml;r ett lager som visar de b&auml;sta rutterna mellan h&auml;ndelser och inr&auml;ttningar tillsammans med reskostnaden (tid och avst&aring;nd) f&ouml;r varje rutt.  Du kan till exempel anv&auml;nda verktyget f&ouml;r att hitta n&auml;rmaste sjukhus fr&aring;n en olycka eller n&auml;rmaste uttagsautomat.
+            </p>
+            <br/>
+        </div>
+        <div id="PlanRoutesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Planera rutter</h2></td>
+                    <td>
+                    <img src="../images/GUID-09CC6D60-3C72-42D7-968E-B0663F0B1EBB-web.png" class="titleImage" alt="Planera rutter">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Om du anger en upps&auml;ttning stopp och antalet fordon tillg&auml;ngliga f&ouml;r att stanna vid stoppen, fastst&auml;ller Planera rutter hur stoppen effektivt ska tilldelas fordonen och skapar rutter f&ouml;r fordonen till stoppen.
+            </p>
+            <p>Med verktygets hj&auml;lp kan du planera arbetet f&ouml;r ett mobilt team med inspekt&ouml;rer, v&auml;rderingsm&auml;n, leverant&ouml;rer som erbjuder support i hemmet med mera; leverera eller h&auml;mta f&ouml;rem&aring;l fr&aring;n avl&auml;gsna platser; eller erbjuda m&auml;nniskor transporttj&auml;nster.
+            </p>
+            <br/>
+        </div>
+    <div id="ManageDataCategory" class="largesize">
+        <h2>Hantera data</h2>
+        <hr/>
+        <p>Dessa verktyg anv&auml;nds f&ouml;r b&aring;de den dagliga hanteringen av geografiska data och f&ouml;r att kombinera data inf&ouml;r en analys.  
+            <ul>
+                <li> <b>L&ouml;s upp gr&auml;nser</b> sammanfogar omr&aring;den som delar en gemensam gr&auml;ns och ett gemensamt attributv&auml;rde.
+                </li>
+                <li> <b>Extrahera data</b> skapar nya dataupps&auml;ttningar genom att extrahera geoobjekt fr&aring;n befintliga data.
+                </li>
+                <li> <b>Skapa tessellationer</b> skapar tessellationer baserat p&aring; dina datas utbredning.
+                </li>
+                <li> <b>Sammanfoga lager</b> kopierar alla geoobjekt fr&aring;n tv&aring; eller flera befintliga lager till ett nytt lager.
+                </li>
+                <li> <b>&Ouml;verlagra lager</b> kombinerar tv&aring; eller flera lager till ett enda lager.  Du kan t&auml;nka dig &ouml;verlagring som att titta igenom en h&ouml;g med kartor och skapa en enda karta med all information som finns i h&ouml;gen.
+                </li>
+            </ul>
+            
+        </p>
+    </div>
+        <div id="DissolveBoundariesTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Lös upp gränser</h2></td>
+                    <td>
+                    <img src="../images/GUID-7B5F69B0-3625-404F-8B52-2B562766C0BB-web.png" class="titleImage" alt="L&ouml;s upp gr&auml;nser">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Omr&aring;den som &ouml;verlappar eller delar en gemensam gr&auml;ns sammanfogas till ett enda omr&aring;de.    
+            </p>
+            <p>Du kan styra vilka gr&auml;nser som sammanfogas genom att ange ett f&auml;lt. Om du till exempel har ett lager med l&auml;n och varje l&auml;n har attributet  <i>State_Name</i>, kan du l&ouml;sa upp gr&auml;nserna med hj&auml;lp av attributet <i>State_Name</i>.  Omr&aring;den som ligger bredvid varandra sammanfogas om de har samma v&auml;rde f&ouml;r <i>State_Name</i>.  Slutresultatet blir ett lager med delstatsgr&auml;nser.
+            </p>
+            <br/>
+        </div>
+        <div id="ExtractDataTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Extrahera data</h2></td>
+                    <td>
+                    <img src="../images/GUID-CE24332B-74C0-412F-BB94-31415A02195A-web.png" class="titleImage" alt="Extrahera data">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Skapar en zip-, CSV- eller KMZ-fil med data fr&aring;n dina lager och en aktuell yta som du anger.
+            </p>
+            <p> 
+            </p>
+            <br/>
+        </div>
+        <div id="GenerateTessellationsTool" class="smallsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Skapa tessellationer</h2></td>
+                    <td>
+                    <img src="../images/GUID-7D6FF8CB-15F3-4051-9C57-46E6C3708788-web.png" class="titleImage" alt="Skapa tessellationer">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Skapar tessellationer &ouml;ver ett unders&ouml;kningsomr&aring;de baserat p&aring; specificerad form och storlek.
+            </p>
+            <br/>
+        </div>
+        <div id="MergeLayersTool" class="regularsize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Sammanfoga lager</h2></td>
+                    <td>
+                    <img src="../images/GUID-BDDD6517-4EE7-4EEC-AE15-15DD9B709131-web.png" class="titleImage" alt="Sammanfoga lager">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>Kopierar geoobjekt fr&aring;n tv&aring; eller flera befintliga lager till ett nytt lager, till exempel:
+                <ul>
+                    <li>Jag har tre lager f&ouml;r England, Wales och Skottland, och vill ha ett enda lager f&ouml;r Storbritannien. 
+                    </li>
+                    <li>Jag har 12 lager som vart och ett inneh&aring;ller paketinformation f&ouml;r sammanh&auml;ngande distrikt Jag vill sammanfoga dem till ett enda lager och bara beh&aring;lla de attribut som har samma namn och typ i de 12 indatalagren.
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+        <div id="OverlayLayersTool" class="largesize">
+            <table class="toolSummaryTable">
+                <thead></thead>
+                <tbody><tr>
+                    <td><h2>Överlagra lager</h2></td>
+                    <td>
+                    <img src="../images/GUID-CE1E0E84-F3B5-446B-9FDE-4DA057F106CC-web.png" class="titleImage" alt="&Ouml;verlagra lager">
+                    </td>
+                </tr></tbody>
+            </table>
+<hr/>
+            <p>&Ouml;verlagring kombinerar tv&aring; eller flera lager till ett enda lager. Du kan t&auml;nka dig &ouml;verlagring som att titta igenom en h&ouml;g med kartor och skapa en enda karta med all information som finns i h&ouml;gen., till exempel:
+                <ul>
+                    <li>Vilka fastigheter finns inom gr&auml;nserna f&ouml;r den 100-&aring;riga flodsl&auml;tten? (Vilket &auml;r ett annat s&auml;tt att s&auml;ga ovanp&aring;.)
+                          
+                    </li>
+                    <li>Vilka v&auml;gar ligger i vilka l&auml;nder?
+                    </li>
+                    <li>Vilken typ av markanv&auml;ndning finns p&aring; vilken jordtyp?
+                         
+                    </li>
+                    <li>Vilka brunnar finns p&aring; &ouml;vergivna milit&auml;rbaser?
+                    </li>
+                </ul>
+                
+            </p>
+            <br/>
+        </div>
+</div>
+</html>

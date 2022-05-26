@@ -1,0 +1,6 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/geoenrichment/ReportPlayer/core/supportClasses/templateJsonUtils/PageJsonUtil",["dojo/_base/lang","../DocumentOptions"],function(k,l){return{getGraphicReportEmptyPageJson:function(b){function e(a){var c=k.mixin(l.getDefaultDocumentOptions(),b.documentOptions);if(!a){a=[];for(var d=0;d<b.numColumns;d++)a.push({field:"field"+d,style:{}});for(var d=[],h=0;h<b.numRows;h++)d.push({style:{},fieldInfos:{}});a=[{style:{},data:{columns:a,data:d}}]}return{documentOptions:c,sectionsTables:a}}
+b=b||{};b.numRows=b.numRows||3;b.numColumns=b.numColumns||2;if(b.jsonToCopy){var c=b.jsonToCopy,c=c.sectionsTables[c.sectionsTables.length-1];if(!c)return e();var g={style:{},data:{}};g.data.columns=c.data.columns.map(function(a){return{field:a.field,style:{width:a.style.width}}});g.data.data=c.data.data.map(function(a){var b=a.style.fields,d;if(b){d={};for(var c in b){var f=b[c],e=d[c]={};f.width&&(e.width=f.width);f.height&&(e.height=f.height)}}return{rowSpans:a.rowSpans&&JSON.parse(JSON.stringify(a.rowSpans)),
+columnSpans:a.columnSpans&&JSON.parse(JSON.stringify(a.columnSpans)),style:{height:a.style.height,fields:d}}});return e([g])}return e()}}});

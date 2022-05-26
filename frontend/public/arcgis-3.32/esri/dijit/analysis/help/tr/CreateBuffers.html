@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="regularsize">
+        <h2>Tampon Bölge Oluşturma</h2><p/>
+        <h2><img src="../images/GUID-7F4A8E4D-42E3-41C1-9238-16619CE65079-web.png" alt="Tampon Oluştur"></h2>
+        <hr/>
+    <p>Tampon noktaya, &ccedil;izgiye ya da alan detayına g&ouml;re verilen mesafeyi kapsayan bir alandır. 
+    </p>
+    <p>Tamponlar genelde, Katmanları Bindir gibi bir ara&ccedil; kullanarak daha fazla analiz edilebilecek alanlar oluşturmak i&ccedil;in kullanılır. &Ouml;rneğin &quot;Okula bir kilometre mesafedeki binalar nelerdir?&quot; sorusu sorulduğunda, yanıt okul &ccedil;evresinde bir kilometrelik bir tampon oluşturularak ve tamponu bina ayak izlerini i&ccedil;eren katman ile bindirmek i&ccedil;in Katmanları Bindir aracı kullanılarak bulunabilir. Nihai sonu&ccedil; okulun bir kilometre &ccedil;evresi i&ccedil;inde yer alan binalardan oluşan bir katmandır.  
+    </p>
+    <p> <b>Ge&ccedil;erli harita kapsamını kullan</b> işaretli ise, yalnızca ge&ccedil;erli harita yayılımında g&ouml;r&uuml;n&uuml;r olan detaylar &ouml;n belleğe alınır.  İşaretli değilse, girdi katmanındaki t&uuml;m detaylar, ge&ccedil;erli harita yayılımının dışında bile olsa &ouml;n belleğe alınır.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Ön belleğe alınacak detayları içeren katmanı seç</h2></div>
+        <hr/>
+        <div>
+            <p>&Ouml;n belleğe alınacak nokta, &ccedil;izgi ya da alan detayları. 
+            </p>
+            <p>Haritanızdan bir katman se&ccedil;meye ek olarak, a&ccedil;ılır listenin alt kısmında bulunan  <b>Analiz Katmanı Se&ccedil;</b> se&ccedil;eneğini de se&ccedil;ebilirsiniz. Bu se&ccedil;enek, analizinizde kullanmak &uuml;zere &ccedil;eşitli kaynaklardan gelen veri k&uuml;melerine g&ouml;z atabileceğiniz ve se&ccedil;ebileceğiniz bir galeri a&ccedil;ar. 
+            </p>
+        </div>
+    </div>
+    <div id="BufferSize">
+        <div><h2>Tampon boyutunu girin</h2></div>
+        <hr/>
+        <div>
+            <p>Tek bir mesafe değeri ya da her bir değeri bir boşluk ile ayırarak birden fazla değer girebilirsiniz. Ayrıca  <b>Alan</b> &ouml;ğesine tıklayarak, mesafe değerini i&ccedil;eren girdi katmanında bir &ouml;znitelik de belirleyebilirsiniz.
+            </p> 
+        </div>
+    </div>
+    <div id="OptionPoint">
+        <div><h2>Seçenekler</h2></div>
+        <hr/>
+        <div>
+            <p>Bindirilen tamponların nasıl işlenmesini istediğinizi se&ccedil;in. Başka bir tampon &uuml;zerinde yer alan herhangi bir tamponda, genel olan alanlar korunabilir (Bindir) ya da birleştirilebilir (Birleştir).  <b>Dağılma</b> kullanıldığında, t&uuml;m tamponlar tek bir &ccedil;ok par&ccedil;alı detaya d&ouml;n&uuml;şt&uuml;r&uuml;lerek &ccedil;akışmalar ortadan kaldırılır.
+            </p>  
+            <p> Birden fazla mesafe kullanıldığında, son tampon mesafesine olan mesafenin nasıl temsil edileceğini se&ccedil;ebilirsiniz; &ouml;rneğin mesafeler 10 ve 14 ise:
+                <ul>
+                    <li> <b>Halkalar</b> se&ccedil;ildiğinde 0 ile 10 ve 10 ile 14 arasında değişen tamponlar oluşacaktır.
+                    </li>
+                    <li> <b>Diskler</b> se&ccedil;ildiğinde 0 ile 10 ve 0 ile 14 arasında değişen tamponlar oluşacaktır.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionPoly">
+        <div><h2>Seçenekler</h2></div>
+        <hr/>
+        <div>
+            <p>Bindirilen tamponların nasıl işlenmesini istediğinizi se&ccedil;in. Başka bir tampon &uuml;zerinde yer alan herhangi bir tamponda, genel olan alanlar korunabilir (Bindir) ya da birleştirilebilir (Birleştir).  <b>Dağılma</b> kullanıldığında, t&uuml;m tamponlar tek bir &ccedil;ok par&ccedil;alı detaya d&ouml;n&uuml;şt&uuml;r&uuml;lerek &ccedil;akışmalar ortadan kaldırılır.
+            </p>
+            <p>Alan detayları &ccedil;evresinde tek bir tampon oluştururken (bir mesafe girildiğinde), tamponlanan &ouml;zelliğin, sonu&ccedil; tamponunda dahil edilip edilmeyeceğini se&ccedil;ebilirsiniz.
+            </p>
+            <p>Birden fazla mesafe kullanıldığında, son tampon mesafesine olan mesafenin nasıl temsil edileceğini se&ccedil;ebilirsiniz; &ouml;rneğin mesafeler 10 ve 14 ise:
+                <ul>
+                    <li> <b>Halkalar</b> se&ccedil;ildiğinde 0 ile 10 ve 10 ile 14 arasında değişen tamponlar oluşacaktır.
+                    </li>
+                    <li> <b>Diskler</b> se&ccedil;ildiğinde 0 ile 10 ve 0 ile 14 arasında değişen tamponlar oluşacaktır.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OptionLine">
+        <div><h2>Seçenekler</h2></div>
+        <hr/>
+        <div>
+            <p>Bindirilen tamponların nasıl işlenmesini istediğinizi se&ccedil;in. Başka bir tampon &uuml;zerinde yer alan herhangi bir tamponda, genel olan alanlar korunabilir (Bindir) ya da birleştirilebilir (Birleştir).  <b>Dağılma</b> kullanıldığında, t&uuml;m tamponlar tek bir &ccedil;ok par&ccedil;alı detaya d&ouml;n&uuml;şt&uuml;r&uuml;lerek &ccedil;akışmalar ortadan kaldırılır.
+            </p>
+            <p>&Ccedil;izgiler &ccedil;evresinde tek bir tampon oluştururken (bir mesafe girildiğinde), &ccedil;izginin hangi tarafının tamponlanacağını se&ccedil;ebilirsiniz. Genelde her iki taraf da se&ccedil;ilir. Sol ve sağ taraf, bir &ccedil;izginin ilk x,y koordinatından (başlangı&ccedil; koordinatı) o &ccedil;izginin son x,y koordinatına (bitiş koordinatı) doğru y&uuml;r&uuml;yormuşsunuz gibi belirlenir. Sol ya da sağ tarafın se&ccedil;ilmesi genelde &ccedil;izgi detaylarının oluşturulduğunu ve &ouml;zel bir y&ouml;nde (&ouml;rneğin, bir nehir ağının yukarı akış ya da aşağı akış y&ouml;n&uuml;nde) depolandığını bildiğiniz anlamına gelir. &Ccedil;izgilerin u&ccedil;larında tampon yuvarlanabilir (Yuvarla) ya da d&uuml;z ge&ccedil;ebilir (D&uuml;z).
+            </p>
+            <p>Birden fazla tampon (birden &ccedil;ok mesafe) oluşturulduğunda, son tampon mesafesine olan mesafenin nasıl temsil edileceğini se&ccedil;ebilirsiniz; &ouml;rneğin mesafeler 10 ve 14 ise:
+                <ul>
+                    <li> <b>Halkalar</b> se&ccedil;ildiğinde 0 ile 10 ve 10 ile 14 arasında değişen tamponlar oluşacaktır.
+                    </li>
+                    <li> <b>Diskler</b> se&ccedil;ildiğinde 0 ile 10 ve 0 ile 14 arasında değişen tamponlar oluşacaktır.
+                    </li>
+                </ul>
+                
+            </p> 
+        </div>
+    </div>
+    <div id="OptionNolayer">
+        <div><h2>Seçenekler</h2></div>
+        <hr/>
+        <div>
+            <p>&Ouml;nbelleğe almak i&ccedil;in bir katman se&ccedil;tikten sonra &ouml;rt&uuml;şen tampon b&ouml;lgelerin nasıl işleneceğini belirleyebilirsiniz. Başka bir tampon &uuml;zerinde yer alan herhangi bir tamponda, genel olan alanlar korunabilir (Bindir) ya da birleştirilebilir (Birleştir).  <b>Dağılma</b> kullanıldığında, t&uuml;m tamponlar tek bir &ccedil;ok par&ccedil;alı detaya d&ouml;n&uuml;şt&uuml;r&uuml;lerek &ccedil;akışmalar ortadan kaldırılır. Buna ek olarak birden &ccedil;ok mesafenin nasıl g&ouml;sterileceğini de belirtebilirsiniz.   &Ccedil;izgi detayları i&ccedil;eren katmanlar i&ccedil;in tampon olacak &ccedil;izgi tarafını belirleyebilirsiniz.  Alan detayları i&ccedil;eren katmanlar i&ccedil;in tampon olacak detayın sonu&ccedil; tamponuna alınıp alınmayacağını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+    <div id="BufferLayer">
+        <div><h2>Sonuç katmanı adı</h2></div>
+        <hr/>
+        <div>
+            <p>Bu,  <b>İ&ccedil;eriğim</b>'de oluşturulacak ve haritaya eklenecek katmanın adıdır.  Varsayılan ad, ara&ccedil; adına ve girdi katmanı adına dayanır. Katman adı zaten mevcutsa, başka bir ad sağlamanız istenir.
+            </p>
+            <p> <b>Sonu&ccedil;ları kaydet</b> a&ccedil;ılır men&uuml;s&uuml;n&uuml; kullanarak <b>İ&ccedil;eriğim</b> alanında sonucun kaydedileceği klas&ouml;r adını belirleyebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

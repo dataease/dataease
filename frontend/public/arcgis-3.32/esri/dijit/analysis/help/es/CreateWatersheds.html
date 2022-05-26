@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Crear cuencas hidrográficas</h2><p/>
+        <h2><img src="../images/GUID-4DE64CF6-2A02-46F6-8AE4-4D9227AAB71C-web.png" alt="Crear cuencas hidrogr&aacute;ficas"></h2>
+        <hr/>
+    <p>Esta herramienta determina la cuenca hidrogr&aacute;fica o el &aacute;rea de contribuci&oacute;n aguas arriba para cada punto de la capa de entrada. 
+    </p>
+    <p>Por ejemplo, sup&oacute;n que tienes entidades de puntos que representan ubicaciones de contaminaci&oacute;n h&iacute;drica y desea encontrar las fuentes probables de contaminaci&oacute;n. Debido a que la fuente de contaminaci&oacute;n debe estar en alg&uacute;n sitio dentro de la cuenca hidrogr&aacute;fica aguas arriba del punto, puedes usar esta herramienta para definir las cuencas hidrogr&aacute;ficas que contienen las fuentes de contaminaci&oacute;n.
+    </p>
+    <p>La ubicaci&oacute;n de tus puntos de entrada es importante.  Si no est&aacute;n situadas exactamente en un conducto de drenaje, las cuencas hidrogr&aacute;ficas resultantes podr&iacute;an ser muy peque&ntilde;as y no ser &uacute;tiles para tu an&aacute;lisis. La  <b>distancia de b&uacute;squeda hasta el drenaje m&aacute;s cercano</b> se puede usar para ajustar la ubicaci&oacute;n de tus puntos de entrada, de forma que coincidan exactamente con una l&iacute;nea de drenaje para encontrar as&iacute; la cuenca hidrogr&aacute;fica que fluye hasta el punto situado en la l&iacute;nea de drenaje.  Las ubicaciones ajustadas que se han usado para encontrar las cuencas hidrogr&aacute;ficas se escriben en la capa de salida y tus puntos de entrada no se modifican.
+    </p>
+    <p>El resultado es una capa de grupo que contiene dos capas: las cuencas hidrogr&aacute;ficas y los puntos ajustados usados para calcular las cuencas hidrogr&aacute;ficas.     
+    </p>
+    <p>Las cuencas hidrogr&aacute;ficas resultantes contendr&aacute;n todos los atributos de tus puntos de entrada y estos atributos adicionales:     
+        <ul>
+            <li> <i>PourPtID</i>: contiene el valor del Id. del punto de entrada
+            </li>
+            <li> <i>Area Square Kilometers</i>: contiene el &aacute;rea, en kil&oacute;metros cuadrados, de la cuenca hidrogr&aacute;fica aguas arriba
+            </li>
+            <li> <i>Description</i> y <i>DataResolution</i>: contienen informaci&oacute;n perteneciente a los datos hidrol&oacute;gicos usados para calcular el seguimiento
+            </li>
+        </ul>
+        
+    </p>
+    <p>Si se ha activado  <b>Usar la extensi&oacute;n del mapa actual</b>, solo se usar&aacute;n las entidades de la extensi&oacute;n de mapa actual para calcular las cuencas hidrogr&aacute;ficas.  Si la opci&oacute;n est&aacute; desactivada, se analizar&aacute;n todas las entidades de la capa de entrada, aunque est&eacute;n fuera de la extensi&oacute;n de mapa actual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Entidades de puntos utilizadas para calcular las cuencas hidrográficas</h2></div>
+        <hr/>
+        <div>
+            <p>Se calcular&aacute; una cuenca hidrogr&aacute;fica (el &aacute;rea de contribuci&oacute;n aguas arriba) para cada punto.  
+            </p>
+            <p>Adem&aacute;s de elegir una capa del mapa, puede seleccionar  <b>Elegir capa de an&aacute;lisis</b>, que se encuentra al final de la lista desplegable. Esta opci&oacute;n abre una galer&iacute;a en la que puede buscar y seleccionar datasets de varias fuentes para usarlos en su an&aacute;lisis. 
+            </p>
+        </div>
+    </div>
+    <div id="SearchDistance">
+        <div><h2>Distancia de búsqueda hasta el drenaje más cercano</h2></div>
+        <hr/>
+        <div>
+            <p>Si tus puntos de entrada est&aacute;n situados lejos de una l&iacute;nea de drenaje, es probable que las cuencas hidrogr&aacute;ficas sean muy peque&ntilde;as y no muy &uacute;tiles para el an&aacute;lisis, por ejemplo para determinar la fuente de contaminaci&oacute;n aguas arriba.  En la mayor parte de casos, te conviene que tu punto de entrada se alinee con la l&iacute;nea de drenaje m&aacute;s cercano para encontrar las cuencas hidrogr&aacute;ficas que fluyen a un punto ubicado en la l&iacute;nea de drenaje.  Para encontrar el conducto de drenaje m&aacute;s cercano, especifique una distancia de b&uacute;squeda. Si no especificas una distancia de b&uacute;squeda, la herramienta calcular&aacute; y utilizar&aacute; una distancia de b&uacute;squeda conservadora.  
+            </p>
+            <p>Para utilizar una ubicaci&oacute;n exacta de tu punto de entrada, especifica una distancia de b&uacute;squeda de cero.  
+            </p>
+            <p>Para los objetivos del an&aacute;lisis, Esri ha calculado previamente los conductos de drenaje mediante modelos hidrol&oacute;gicos est&aacute;ndar. Si no existe ning&uacute;n conducto de drenaje dentro de la distancia de b&uacute;squeda, se usar&aacute; la ubicaci&oacute;n que contenga la mayor acumulaci&oacute;n de flujo dentro de la distancia de b&uacute;squeda.
+            </p> 
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nombre de capa de resultados</h2></div>
+        <hr/>
+        <div>
+            <p>Este es el nombre de la capa que se crear&aacute; en  <b>Mi contenido</b> y se agregar&aacute; al mapa.  El nombre predeterminado se basa en el nombre de la herramienta y el nombre de la capa de entrada. Si el nombre de capa ya existe, se le pedir&aacute; que indique otro nombre.
+            </p>
+            <p>Con el men&uacute; desplegable  <b>Guardar el resultado en</b>, puede especificar el nombre de una carpeta de <b>Mi contenido</b> en la que se guardar&aacute; el resultado.
+            </p>
+            <p> Ejecutar esta herramienta no consume cr&eacute;ditos.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

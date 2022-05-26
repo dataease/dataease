@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Pengaturan Lingkungan Analisis Portal</h2><p/>
+        <h2></h2>
+        <hr/>
+    <p>  Pengaturan lingkungan untuk analisis di Portal for ArcGIS dan  ArcGIS Online. 
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="overwriteResult">
+        <div><h2>Timpa layer hasil</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Menentukan apakah harus menimpa layer yang sudah ada.    Saat dicentang, jika suatu layer dengan nama sama telah ada pada konten Anda, layer itu akan ditimpa.
+            </p>
+            <p>
+                <ul>
+                    <li>Dicentang&mdash;jika suatu layer dengan nama sama telah ada pada konten Anda, layer itu akan ditimpa. Output akan memiliki sistem koordinat yang sama dengan inputnya.
+                    </li>
+                    <li>Tidak dicentang&mdash;Jika nama layer hasil yang diberikan sudah ada, sebuah kesalahan akan terjadi dan layer hasil harus diganti namanya sebelum alat dapat dieksekusi. Ini adalah default.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="closeAnalysisWidget">
+        <div><h2>Tutup widget analisis setelah menjalankan analisis</h2></div>
+        <hr/>
+        <div>
+            <p>Menentukan apakah menjaga kotak dialog analisis tetap terbuka dan aktif sementara alat melakukan pemrosesan.     Pengaturan ini memungkinkan Anda melakukan modifikasi pada parameter analisis Anda saat tugas analisis sebelumnya masih berjalan.  Analisis adalah proses yang berulang, dan dengan menjaga kotak dialog alat tetap terbuka, ini akan memungkinkan Anda melakukan pengubahan parameter dan menjalankan kembali analisis Anda.
+            </p>
+            <p>
+                <ul>
+                    <li>Dicentang&mdash;Kotak dialog alat analisis akan tertutup, dan fokus akan kembali ke daftar isi. Ini adalah default
+                    </li>
+                    <li>Tidak dicentang&mdash;Kotak dialog alat analisis akan tetap terbuka dan aktif.   
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="storeAnalysisResults">
+        <div><h2>Simpan hasil analisis sebagai feature layer yang di-host</h2></div>
+        <hr/>
+        <div>
+            
+            <p>Menentukan apakah layer hasil yang dibuat dari analisis Anda akan menjadi kumpulan fitur atau feature layer yang di-host. 
+            </p>
+            <p>
+                <ul>
+                    <li>Dicentang&mdash;Hasil analisis Anda akan dibuat sebagai feature layer yang di-host, dan sebuah item akan dibuat dalam konten Anda. Ini adalah default.
+                    </li>
+                    <li>Tidak Dicentang&mdash;Hasil analisis Anda akan dibuat sebagai kumpulan fitur.     
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="outputCoordinateSystem">
+        <div><h2>Sistem koordinat output</h2></div>
+        <hr/>
+        <div>
+            <p>Menentukan sistem koordinat layer hasil untuk analisis raster.    
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Sama seperti Input</b>]&mdash;Hasil analisis Anda akan memiliki sistem koordinat yang sama dengan input. Ini adalah default.
+                    </li>
+                    <li> <b>Seperti yang ditentukan</b>&mdash;Hasil analisis Anda akan berada dalam sistem koordinat yang Anda pilih.   Saat opsi ini dipilih, klik tombol bola dunia, lalu pilih dari daftar sistem koordinat yang diketahui, atau tambahkan referensi spasial WKID dalam kotak yang disediakan.
+                    </li>
+                    <li> <b>Layer
+&lt;name&gt;</b>&mdash;Hasil analisis Anda akan berada dalam sistem koordinat yang sama dengan layer pilihan dalam web map Anda yang sudah ada.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingCoordinateSystem">
+        <div><h2>Memproses sistem koordinat</h2></div>
+        <hr/>
+        <div>
+            <p>Menentukan sistem koordinat analisis Anda akan digunakan selama eksekusi analisis GeoAnalytics.   
+            </p>
+            <p>Untuk GeoAnalytics, beberapa analisis mengharuskan bahwa proses dieksekusi pada sistem koordinat terproyeksi.   Setiap alat yang menerapkan penempatan data atau unit linear mengharuskan sistem koordinat terproyeksi. 
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Sama seperti input</b>&mdash;Analisis Anda akan diproses pada sistem koordinat yang sama seperti input. Ini adalah default.
+                    </li>
+                    <li> <b>Seperti yang ditentukan</b>&mdash;Analisis Anda akan berada dalam sistem koordinat yang Anda pilih.   Saat opsi ini dipilih, klik tombol bola dunia, lalu pilih dari daftar sistem koordinat terproyeksi yang diketahui, atau tambahkan referensi spasial WKID dalam kotak yang disediakan.
+                    </li>
+                    <li> <b>Layer
+&lt;name&gt;</b>&mdash; Analisis Anda akan berada dalam sistem koordinat yang sama dengan layer pilihan yang ada dalam web map Anda.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="processingExtent">
+        <div><h2>Jangkauan</h2></div>
+        <hr/>
+        <div>
+            <p>Menentukan jangkauan atau batasan yang akan digunakan selama eksekusi analisis.  Seluruh fitur input yang sepenuhnya berada di dalam atau yang berpotongan dengan jangkauan tertentu akan digunakan pada analisis.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Default</b>&mdash;Jangkauan yang disediakan oleh alat.
+                    </li>
+                    <li> <b>Seperti yang ditentukan</b>&mdash;Jangkauan ditentukan oleh koordinat yang Anda sediakan.
+                    </li>
+                    <li> <b>Layer
+&lt;name&gt;</b>&mdash;Jangkauan yang digunakan untuk memproses analisis Anda akan sama dengan jangkauan spasial layer pilihan dalam web map Anda yang ada. 
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="snapRaster">
+        <div><h2>Snap Raster</h2></div>
+        <hr/>
+        <div>
+            <p>Sesuaikan jangkauan layer raster output, sehingga akan cocok dengan penyejajaran sel layer  <b>Snap Raster</b> yang ditentukan dalam analisis raster.
+            </p>
+        </div>
+    </div>
+    <div id="cellSize">
+        <div><h2>Ukuran Sel</h2></div>
+        <hr/>
+        <div>
+            <p>Menentukan ukuran sel atau resolusi yang akan digunakan untuk membuat layer raster output dalam analisis raster. Resolusi output default ditentukan oleh ukuran sel terbesar dari layer raster input.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>Input Minimum</b>&mdash;Gunakan ukuran sel terkecil dari seluruh layer input.
+                    </li>
+                    <li> <b>Input Maksimum</b>&mdash;Gunakan ukuran sel terbesar dari seluruh layer input. Ini adalah default.
+                    </li>
+                    <li> <b>Seperti yang ditentukan</b>&mdash;Tentukan nilai angka untuk menetapkan ukuran sel. Jika ini dipilih, nilai default adalah 1.
+                    </li>
+                    <li> <b>Layer &lt;name&gt;</b>&mdash;Set the cell size to the raster layer chosen.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="mask">
+        <div><h2>Mask</h2></div>
+        <hr/>
+        <div>
+            <p>Menentukan layer yang akan digunakan untuk menentukan area perhatian dalam analisis raster Anda.   Hanya sel yang berada dalam mask analisis yang akan diperhitungkan dalam operasi analisis.
+            </p>
+            <ul>
+                <li>Mask dapat berupa raster atau feature layer.
+                </li>
+                <li>Jika mask analisis adalah raster, seluruh sel yang memiliki nilai akan diperhitungkan untuk menentukan mask. Sel pada raster mask yang merupakan NoData akan dianggap berada di luar mask dan akan menjadi NoData pada layer hasil analisis. 
+                </li>
+                <li>Jika masker analisis adalah feature layer, maka akan diubah secara internal menjadi raster saat eksekusi. Karena alasan ini, pastikan bahwa
+ <b>Ukuran Sel</b> dan <b>Snap Raster</b> diatur dengan baik untuk analisis Anda.
+                </li>
+            </ul>
+             
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Penyimpanan data</h2></div>
+        <hr/>
+        <div>
+            <p>Hasil GeoAnalytics dapat disimpan di  ArcGIS Data Store dan ditampilkan sebagai feature layer di  Portal for ArcGIS atau berbagi file big data yang dikonfigurasi. 
+            </p>
+            <p>Saat Anda menyimpan hasil di  ArcGIS Data Store, dalam banyak kasus, hasil seharusnya disimpan dalam penyimpanan data spasiotemporal. Ini adalah default. Berikut adalah alasan mengapa Anda mungkin ingin menyimpan hasil di sebuah penyimpanan data relasional: 
+                <ul>
+                    <li>Untuk menggunakan hasil di kolaborasi portal-ke-portal
+                    </li>
+                    <li>Untuk mengaktifkan kemampuan sinkronisasi dengan hasil Anda
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Anda tidak boleh menggunakan penyimpanan data relasional jika Anda berharap hasil GeoAnalytics dapat meningkat dan ingin memanfaatkan kemampuan penyimpanan big data spatiotemporal untuk menangani jumlah data yang besar. 
+            </p>
+        </div>
+    </div>
+    <div id="parallelProcessingFactor">
+        <div><h2>Faktor pemrosesan paralel</h2></div>
+        <hr/>
+        <div>
+            <p>Mendistribusikan analisis pada beberapa contoh layanan Pemrosesan Raster. 
+            </p>
+            <p>Alat yang mematuhi lingkungan  <b>Faktor pemrosesan paralel</b> memungkinkan Anda untuk mengendalikan jumlah contoh layanan pemrosesan raster yang dapat digunakan untuk memproses data Anda.
+            </p>
+            <p>Jika alat tidak mematuhi  <b>Jenis prosesor</b>, atau jika lingkungan <b>Jenis prosesor</b> diatur ke <b>CPU</b>, lingkungan <b>Faktor pemrosesan paralel</b> mengendalikan contoh layanan pemrosesan raster (CPU). Jika <b>Jenis prosesor</b> diatur ke <b>GPU</b>, lingkungan <b>Faktor pemrosesan paralel</b> mengendalikan jumlah contoh raster yang memproses GPU.
+            </p> 
+            <p>Dengan mengatur  <b>Faktor pemrosesan paralel</b>, Anda dapat meminta jumlah pekerja paralel yang digunakan server gambar analisis raster untuk memproses satu tugas analisis raster. Namun, jika jumlah total pemrosesan paralel melebihi jumlah maksimal pemrosesan contoh layanan pemrosesan raster (CPU atau GPU), proses paralel tambahan akan diantrekan.
+            </p>
+            <p>Jika  <b>Faktor pemrosesan paralel</b> tidak ditentukan, yang mana merupakan default, alat akan menggunakan 80 persen jumlah maksimal untuk raster memproses contoh layanan. Baik bilangan bulat atau persentase dapat ditentukan sebagai faktor pemrosesan paralel.
+            </p>
+        </div>
+    </div>
+    <div id="processorType">
+        <div><h2>Jenis prosesor</h2></div>
+        <hr/>
+        <div>
+            <p>Alat yang mematuhi lingkungan  <b>Jenis prosesor</b> memungkinkan Anda untuk memilih tempat dan bagaimana Anda ingin memproses data Anda. Anda dapat memproses data Anda menggunakan CPU atau GPU komputer server.  Jika lingkungan <b>Jenis prosesor</b> kosong, alat menggunakan CPU untuk memproses data. Ini adalah default.
+            </p> 
+            <p>Memproses CPU dapat diparalelkan di beberapa inti dan contoh, sebagaimana ditangani oleh  <b>Faktor pemrosesan paralel</b>.
+            </p>
+            <p>GPU bekerja efektif pada pemrosesan grafik dan gambar, yang mana struktur paralel tingginya menjadikannya efisien dalam memproses blok data yang besar secara repetitif. Alat Analisis Raster yang mematuhi lingkungan ini dapat membagikan tugasnya di seluruh contoh GPU pada beberapa mesin server analisis raster, sebagaimana ditangani oleh  <b>Faktor pemrosesan paralel</b>.
+            </p>
+            <p>
+                <ul>
+                    <li> <b>GPU</b>&mdash;Data akan diproses menggunakan unit pemrosesan grafik.
+                    </li>
+                    <li> <b>CPU</b>&mdash;Data akan diproses menggunakan unit pemrosesan sentral komputer.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+</div>
+</html>

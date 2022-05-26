@@ -1,0 +1,5 @@
+// All material copyright ESRI, All Rights Reserved, unless otherwise specified.
+// See http://js.arcgis.com/3.32/esri/copyright.txt for details.
+//>>built
+define("esri/dijit/analysis/nls/bs/FindDwellLocations",{inputLayerLabel:"Odaberite sloj za tra\u017eenje mjesta stanovanja",selectTracksLabel:"Odaberite jedno ili vi\u0161e polja za identifikaciju tragova",defineDistanceLabel:"Odredite prostornu udaljenost za pretra\u017eivanje",distMethodLabel:"Odaberite metodu za izra\u010dun udaljenosti",temporalSearchLabel:"Odredite vremenski raspon za pretra\u017eivanje",outputDwellLabel:"Izlazne lokacije mjesta stanovanja kao",outputLayerName:"Prona\u0111i lokacije mjesta stanovanja za ${inputLayerName}",
+meanCenters:"Srednje sredine",convexHulls:"Konveksni trupovi",dwellFeatures:"Geoobjekti mjesta stanovanja",allFeatures:"Svi geoobjekti",itemDescription:"Sloj geoobjekata koji je generiran pokretanjem rje\u0161enja Prona\u0111i lokacije mjesta stanovanja za ${inputLayerName}.",itemTags:"Rezultat analize, Prona\u0111i lokacije mjesta stanovanja, ${inputLayerName}",itemSnippet:"Sloj geoobjekata koji je generiran funkcijom Prona\u0111i lokacije mjesta stanovanja"});

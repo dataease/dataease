@@ -1,0 +1,32 @@
+@import "variables.less";
+@import "../common/CheckBox.less";
+
+.mblCheckBox:disabled{
+  border-color: @holo-grey2;
+}
+.mblCheckBoxSelected {
+  background-image: none;
+  border-color: @holo-checkbox-selected-color;
+  box-shadow: 0px 0px 1px 4px @holo-checkbox-checked-color;
+  background-color: @holo-checkbox-checked-color;
+  
+}
+.mblCheckBoxChecked,
+.mblCheckBox:checked {
+  background-image: none;
+  
+  &.mblCheckBoxSelected {
+    background-image: none;
+    border-color: @holo-checkbox-selected-color;
+    box-shadow: 0px 0px 3px 4px @holo-checkbox-checked-color;
+    background-color: @holo-checkbox-checked-color;
+  }
+}
+
+.mblCheckBox:checked::after{
+  border-color: @holo-checkbox-tick-color;
+}
+
+.mblCheckBox:disabled::after{
+  border-color: @holo-grey2;
+}

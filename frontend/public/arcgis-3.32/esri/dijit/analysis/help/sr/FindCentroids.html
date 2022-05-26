@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="smallsize">
+        <h2>Pronađi težišta</h2><p/>
+        <h2><img src="../images/GUID-75D9AF75-68C3-48BF-8062-D5499BD06978-web.png" alt="Pronađi teži&scaron;ta"></h2>
+        <hr/>
+    <p>Ova alatka radi sa slojem geoobjekata sa vi&scaron;e tačaka, linijskih geoobjekata ili geoobjekata oblasti radi određivanja reprezentativnog centra svakog geoobjekta.
+    </p>
+    <p>Ako je izabrana opcija  <b>Koristi trenutni obuhvat mape</b>, biće analizirani samo geoobjekti u ulaznom sloju sa vi&scaron;e tačaka, linijskom ili sloju oblasti vidljivi unutar trenutnog obuhvata mape. Ako nije izabrana, analiziraće se svi geoobjekti u ulaznom sloju, čak i ako su izvan trenutnog obuhvata mape.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputLayer">
+        <div><h2>Odaberite sloj čiji geoobjekti će da budu korišćeni za generisanje težišta</h2></div>
+        <hr/>
+        <div>
+            <p> Sloj sa vi&scaron;e tačaka, linijski ili sloj oblasti koji će se koristiti za pronalaženje teži&scaron;ta.
+            </p>
+            <p>Pored biranja sloja sa mape, možete da selektujete  <b>Izaberi sloj za analizu</b> koji se nalazi na dnu padajuće liste. Ova opcija otvara galeriju gde možete da pregledate i birate skupove podataka iz raznih izvora za kori&scaron;ćenje u va&scaron;oj analizi. 
+            </p>
+        </div>
+    </div>
+    <div id="inside">
+        <div><h2>Prikaži izlazne lokacije</h2></div>
+        <hr/>
+        <div>
+            <p> Kada je izabrana opcija <b>U pravom teži&scaron;tu</b> (podrazumevano), izlaz će vratiti pravu lokaciju teži&scaron;ta za svaki ulazni geoobjekat. Teži&scaron;ta će biti locirana na sledeći način:
+                <ul>
+                    <li>Geoobjekti sa vi&scaron;e tačaka &ndash; Izlazno teži&scaron;te će se nalaziti u proseku x i y koordinata svih tačaka u geoobjektu sa vi&scaron;e tačaka.
+                    </li>
+                    <li>Linijski geoobjekti &ndash; Izlazno teži&scaron;te će se nalaziti u ponderisanom proseku x i y koordinata sredi&scaron;njih tačaka svih linijskih segmenata u linijskom geoobjektu. Težina je zasnovana na dužini segmenta.
+                    </li>
+                    <li>Geoobjekti oblasti &ndash; Izlazno teži&scaron;te će se nalaziti u sredi&scaron;tu oblasti.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Kada je izabrana opcija  <b>sadržano u ulaznim geoobjektima</b>, izlazni tačkasti geoobjekti će biti sadržani od strane ili unutar svakog ulaznog geoobjekta. Rezultujući tačkasti geoobjekti će izgledati na sledeći način:
+                <ul>
+                    <li>Geoobjekti sa vi&scaron;e tačaka &ndash; Izlazno teži&scaron;te će biti koincidentno sa jednom od tačaka u grupi vi&scaron;e tačaka.
+                    </li>
+                    <li>Linijski geoobjekti &ndash; Izlazno teži&scaron;te će biti na liniji.  Ako je linija zakrivljena, izlaz će biti u sredi&scaron;njoj tački linije. 
+                    </li>
+                    <li>Geoobjekti oblasti &ndash; Izlazna tačka će biti unutar geoobjekta oblasti.
+                    </li>
+                </ul>
+                
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Naziv sloja sa rezultatima</h2></div>
+        <hr/>
+        <div>
+            <p>Ovo je naziv sloja koji će biti kreiran u  <b>Mom sadržaju</b> i dodat na mapu. Podrazumevani naziv je zasnovan na nazivu alatke i nazivu ulaznog sloja. Ako naziv sloja već postoji, bićete upitani da unesete drugi naziv.
+            </p>
+            <p>Koristeći padajući meni  <b>Sačuvaj rezultat u</b>, možete da navedete ime fascikle u <b>Mom sadržaju</b> u kojoj će rezultat biti sačuvan.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

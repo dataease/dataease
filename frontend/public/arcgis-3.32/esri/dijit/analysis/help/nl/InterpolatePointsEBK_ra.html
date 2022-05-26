@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Punten interpoleren</h2><p/>
+        <h2><img src="../images/GUID-06D80BB3-7154-4FAA-9C9B-D665450EF3BC-web.png" alt="Tool punten interpoleren"></h2>
+        <hr/>
+    <p>Deze tool voorspelt waarden op nieuwe locaties op basis van metingen van een verzameling van punten. De tool neemt puntgegevens met waarden op elk punt en retourneert een raster van voorspelde waarden.
+    </p>
+    <p>Andere gebruiksvoorbeelden van deze tool zijn de volgende:
+
+        <ul>
+            <li>Een dienst voor het beheer van de luchtkwaliteit heeft sensoren die de mate van vervuiling meet. Punten interpoleren kan worden gebruikt om de mate van vervuiling te voorspellen op locaties waar geen sensoren zijn, zoals locaties met risicopopulaties, zoals scholen of ziekenhuizen.
+                
+
+            </li>
+            <li>Voorspel concentraties van zware metalen in gewassen op basis van monsters die worden genomen van individuele planten.
+                
+
+            </li>
+            <li>Voorspel niveaus van voedingsstoffen in de bodem (stikstof, fosfor, kalium enzovoort) en andere indicatoren (zoals elektrische geleidbaarheid) om hun relatie met gewasopbrengsten te onderzoeken en geschikte hoeveelheden meststoffen voor elke locatie in het veld voor te schrijven.
+                
+
+            </li>
+            <li>Meteorologische toepassingen zijn onder andere de voorspelling van de temperatuur, neerslag en verwante variabelen (zoals zure regen).
+                
+
+            </li>
+        </ul>
+        
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="inputPointFeatures">
+        <div><h2>Kies de puntenlaag welke de locaties bevat met bekende waarden</h2></div>
+        <hr/>
+        <div>
+            <p>De puntenlaag die de punten bevat waar de waarden zijn gemeten.
+            </p>
+        </div>
+    </div>
+    <div id="interpolateField">
+        <div><h2>Kies een veld om te interpoleren</h2></div>
+        <hr/>
+        <div>
+            <p>Kies het veld waarvan u de waarden wilt interpoleren. Het veld moet numeriek zijn.
+            </p>
+        </div>
+    </div>
+    <div id="optimizeFor">
+        <div><h2>Optimaliseer voor</h2></div>
+        <hr/>
+        <div>
+            <p>Kies uw voorkeur voor snelheid versus nauwkeurigheid.
+            </p>
+            <p>Het berekenen van nauwkeurigere voorspellingen duurt langer. Deze parameter wijzigt de standaardwaarden van verschillende andere parameters van Punten interpoleren om de rekensnelheid, nauwkeurigheid van de resultaten of een combinatie van beide te optimaliseren. Standaard wordt de tool geoptimaliseerd voor evenwicht.
+            </p>
+        </div>
+    </div>
+    <div id="transformData">
+        <div><h2>Data transformeren naar normale verdeling</h2></div>
+        <hr/>
+        <div>
+            <p>Kies of u uw gegevens wilt omzetten naar de normale verdeling.
+            </p>
+            <p>Interpolatie is het meest nauwkeurig voor gegevens die een normale (klokvormige) verdeling volgen. Als uw gegevens niet normaal lijken te worden verdeeld, moet u een transformatie uitvoeren.
+            </p>
+        </div>
+    </div>
+    <div id="sizeOfLocalModels">
+        <div><h2>Omvang van de lokale modellen</h2></div>
+        <hr/>
+        <div>
+            <p>Punten interpoleren werkt door het bouwen van plaatselijke interpolatiemodellen die met elkaar zijn gemengd om de uiteindelijke voorspellingskaart te maken. Deze parameter regelt hoeveel punten zullen worden opgenomen in elk plaatselijk model. Lagere waarden maken de resultaten meer lokaal en kunnen kleinschalige effecten onthullen, maar het kan enige instabiliteit in de berekeningen introduceren. Hogere waarden zijn stabieler maar sommige lokale effecten kunnen worden gemist.
+            </p>
+            <p>De waarde kan vari&euml;ren van 30 tot 500, maar typische waarden liggen tussen 50 en 200.
+            </p>
+        </div>
+    </div>
+    <div id="numberOfNeighbors">
+        <div><h2>Aantal buren</h2></div>
+        <hr/>
+        <div>
+            <p>Voorspellingen zijn berekend op basis van de aangrenzende punten. Deze parameter bepaalt hoeveel punten worden gebruikt in de berekening. Met een groter aantal buren worden over het algemeen meer nauwkeurige resultaten geproduceerd, maar het duurt langer om de resultaten te berekenen.
+            </p>
+            <p>Deze waarde kan vari&euml;ren van 1 tot 64, maar typische waarden liggen tussen 5 en 15.
+            </p>
+        </div>
+    </div>
+    <div id="outputCellSize">
+        <div><h2>Output celgrootte</h2></div>
+        <hr/>
+        <div>
+            <p>De celgrootte en de eenheid voor de uitvoerrasters.
+            </p>
+            <p>De beschikbare eenheden zijn voet, mijl, meter en kilometer.
+            </p>
+        </div>
+    </div>
+    <div id="outputPredictionError">
+        <div><h2>Fout in voorspelling van de uitvoer</h2></div>
+        <hr/>
+        <div>
+            <p>Kies of u een raster van standaard fouten wilt maken voor de voorspelde waarden.
+            </p>
+            <p>Standaardfouten zijn handig omdat deze informatie bieden over de betrouwbaarheid van de voorspelde waarden. Een eenvoudige vuistregel is dat de waarde true in 95 procent van de gevallen binnen twee standaardfouten van de voorspelde waarde zal vallen. Stel bijvoorbeeld dat een nieuwe locatie een voorspelde waarde van 50 krijgt met een standaardfout van 5. Dit betekent dat de beste inschatting van deze tool is dat de waarde true op die locatie 50 bedraagt, maar dat deze redelijkerwijs ook tussen 40 en 60 zou kunnen liggen. Om het bereik met redelijke waarden te berekenen, vermenigvuldigt u de standaardfout met 2. Vervolgens voegt u deze waarde toe aan de voorspelde waarde om de bovengrens van het bereik te kennen en trekt u deze waarde af van de voorspelde waarde om de ondergrens van het bereik te kennen.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Resultaat laagnaam</h2></div>
+        <hr/>
+        <div>
+            <p>De naam van de laag die in  <b>Mijn Content</b> wordt gemaakt en aan de kaart wordt toegevoegd. De standaardnaam is gebaseerd op de toolnaam en de naam van de invoerlaag. Als de laag al bestaat, wordt u gevraagd een nieuwe naam te geven.
+            </p>
+            <p>U kunt de naam van een map opgeven in  <b>Mijn Content</b>, waar het resultaat wordt opgeslagen met het vervolgkeuzemenu <b>Resultaat opslaan in</b>.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

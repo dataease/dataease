@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Punkte aggregieren</h2><p/>
+        <h2><img src="../images/GUID-6C1620D9-D176-41FA-8283-833D8B1CCCFC-web.png" alt="Punkte aggregieren"></h2>
+        <hr/>
+    <p>Dieses Werkzeug kann mit einem Punkt-Feature-Layer und einem Fl&auml;chen-Feature-Layer verwendet werden.  Eingabe-Fl&auml;chen-Features k&ouml;nnen aus einem Polygon-Layer stammen oder quadratische oder hexagonale Abschnitte sein, die beim Ausf&uuml;hren des Werkzeugs berechnet werden. Das Werkzeug ermittelt zun&auml;chst, welche Punkte in den angegebenen Fl&auml;chen liegen. Nachdem diese r&auml;umliche Beziehung der Punkte in diesen Fl&auml;chen bestimmt wurde, werden Statistiken zu allen Punkten in der Fl&auml;che berechnet und der Fl&auml;che zugewiesen. Die einfachste Statistik ist die Anzahl der Punkte innerhalb der Fl&auml;che. Sie k&ouml;nnen jedoch auch andere Statistiken abrufen. 
+
+    </p>
+    <p>Angenommen, Sie verf&uuml;gen &uuml;ber Punkt-Features f&uuml;r Caf&eacute;standorte und Fl&auml;chen-Features f&uuml;r Landkreise und Sie m&ouml;chten die Umsatzzahlen der Caf&eacute;s nach Landkreis zusammenfassen. Angenommen, die Caf&eacute;s weisen das Attribut  <i>TOTAL_SALES</i> auf und Sie k&ouml;nnen die Summe aller <i>TOTAL_SALES</i> in jedem Landkreis oder den Minimal- bzw. Maximalwert f&uuml;r <i>TOTAL_SALES</i>
+ in jedem Landkreis oder andere Statistiken wie Anzahl, Bereich, Standardabweichung und Varianz abrufen.
+    </p>
+    <p>Dieses Werkzeug kann auch mit Daten mit aktivierten Zeiteigenschaften verwendet werden. Wenn Zeiteigenschaften f&uuml;r die Eingabepunkte aktiviert sind, sind die Zeitintervalloptionen verf&uuml;gbar. Zeitintervalle erm&ouml;glichen die Berechnung der Beziehung der Punkte in Fl&auml;chen, w&auml;hrend ein bestimmter Zeitabschnitt betrachtet wird. Sie k&ouml;nnen beispielsweise st&uuml;ndliche Intervalle anzeigen, die in Ausgaben f&uuml;r jede Stunde resultieren. 
+    </p>
+    <p>Nehmen Sie als Zeitbeispiel an, Sie verf&uuml;gen &uuml;ber Punkt-Features jeder Transaktion, die in verschiedenen Caf&eacute;s, durchgef&uuml;hrt wurde, und &uuml;ber keinen Fl&auml;chen-Layer. Die Daten werden &uuml;ber den Zeitraum eines Jahres erfasst und jede Transaktion hat eine Position und einen Zeitstempel. Angenommen, jede Transaktion verf&uuml;gt &uuml;ber das Attribut  <i>TOTAL_SALES</i> und kann die Summe aller <i>TOTAL_SALES</i> innerhalb des gew&uuml;nschten Raumes und der gew&uuml;nschten Zeit abrufen. Wenn diese Transaktionen f&uuml;r eine einzelne Stadt gelten, lassen sich Fl&auml;chen erstellen, die 1-Kilometer-Gitternetzen entsprechen, und w&ouml;chentliche Zeitintervalle betrachten, um die Transaktionen im Kontext von Raum und Zeit zusammenzufassen.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Layer auswählen, der Punkte enthält, die in Flächen aggregiert werden sollen</h2></div>
+        <hr/>
+        <div>
+            <p>Der Punkt-Layer, der in die Fl&auml;chen aggregiert wird. Der Raumbezug von Punkt-Layern, die in  <b>Quadrat- </b> oder <b>hexagonale </b> Abschnitte aggregiert sind, muss auf ein projiziertes Koordinatensystem festgelegt sein, das die <b>Analyseumgebungen</b> verwendet.
+            </p>
+            <p>Sie k&ouml;nnen nicht nur einen Layer aus der Karte ausw&auml;hlen, sondern auch unten in der Dropdown-Liste die Option  <b>Analyse-Layer ausw&auml;hlen</b> ausw&auml;hlen, um zu Ihren Inhalten f&uuml;r ein Big-Data-Dateifreigabe-Dataset bzw. -Feature-Layer zu navigieren.
+            </p>
+        </div>
+    </div>
+    <div id="inputAggregation">
+        <div><h2>Einen Flächen-Layer auswählen, in den aggregiert werden soll</h2></div>
+        <hr/>
+        <div>
+            <p>Die Fl&auml;chen, in die der Punkt-Layer aggregiert wird. Sie k&ouml;nnen zwischen einem Fl&auml;chen-Layer, den Sie bereitstellen, oder zwischen Abschnitten ausw&auml;hlen, die beim Ausf&uuml;hren des Werkzeugs erstellt werden.   Beim Erstellen von Abschnitten geben die f&uuml;r  <b>Quadrat</b> angegebene Zahl und die Einheiten die H&ouml;he und L&auml;nge des Quadrats an. Bei <b>Hexagon</b> wird anhand der angegebenen Zahl und der Einheiten die Entfernung zwischen parallelen Seiten festgelegt.
+            </p>
+            <p>F&uuml;r Analysen, die  <b>Quadrat</b>- oder <b>hexagonale</b> Abschnitte verwenden, ist ein projiziertes Koordinatensystem erforderlich. Sie k&ouml;nnen das <b>Verarbeitungskoordinatensystem</b> in <b>Analyseumgebungen</b> festlegen. Wenn das Verarbeitungskoordinatensystem nicht auf ein projiziertes Koordinatensystem festgelegt ist, werden Sie aufgefordert, es festzulegen, wenn Sie die <b>Analyse ausf&uuml;hren</b> .
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Den Flächen-Layer auswählen, in den aggregiert werden soll</h2></div>
+        <hr/>
+        <div>
+            <p>Der Fl&auml;chen-Layer, zu dem die Punkte aggregiert werden. Alle Punkte, die innerhalb der Grenzen von Fl&auml;chen in diesem Layer liegen, werden gez&auml;hlt und optional anhand der von Ihnen ausgew&auml;hlten Statistiken zusammengefasst. 
+            </p>
+            <p>Es muss entweder eine  <b>Abschnittsgr&ouml;&szlig;e</b> f&uuml;r Abschnitte oder ein <b>Fl&auml;chen-Layer</b> festgelegt werden.
+            </p>
+        </div>
+    </div>
+    <div id="inputBins">
+        <div><h2>Eine Entfernung zum Erstellen von Abschnitten auswählen, in die aggregiert werden soll</h2></div>
+        <hr/>
+        <div>
+            <p>Die Entfernung zum Erstellen von Abschnitten, in die Ihre Eingabepunkte aggregiert werden sollen. Bei einem Quadratabschnitt stellt die Gr&ouml;&szlig;e die H&ouml;he des Quadrats dar. Bei einem Hexagon stellt die Gr&ouml;&szlig;e die H&ouml;he des Hexagons (von parallelen Seiten) dar.  
+            </p>
+            <p>Es muss entweder eine  <b>Abschnittsgr&ouml;&szlig;e</b> f&uuml;r Abschnitte oder ein <b>Fl&auml;chen-Layer</b> festgelegt werden.
+            </p>
+        </div>
+    </div>
+    <div id="timeSlicing">
+        <div><h2>Mit Zeitschritten aggregieren (optional)</h2></div>
+        <hr/>
+        <div>
+            <p>Wenn Zeiteigenschaften f&uuml;r den Eingabepunkt-Layer aktiviert und vom Typ &quot;Sofort&quot; sind, kann die Analyse mittels Zeitintervallen durchgef&uuml;hrt werden. Bei Verwendung von Zeit k&ouml;nnen drei Parameter festgelegt werden:
+                <ul>
+                    <li> <b>Zeitschrittintervall</b>
+                    </li>
+                    <li> <b>Wie h&auml;ufig der Zeitschritt wiederholt werden soll</b>
+                    </li>
+                    <li> <b>Zeit zum Ausrichten von Zeitschritten</b>
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Wenn Sie beispielsweise &uuml;ber Daten verf&uuml;gen, die ein Jahr darstellen, und Sie f&uuml;r diese eine Analyse mit w&ouml;chentlichen Schritten durchf&uuml;hren m&ouml;chten, setzen Sie  <b>Zeitschrittintervall</b> auf <code>1 Woche</code>. 
+            </p>
+            <p>Wenn Sie beispielsweise &uuml;ber Daten verf&uuml;gen, die ein Jahr darstellen, und Sie f&uuml;r diese eine Analyse mit der ersten Woche des Monats durchf&uuml;hren m&ouml;chten, setzen Sie  <b>Zeitschrittintervall</b> auf <code>1 Woche</code>, <b>Wie h&auml;ufig der Zeitschritt wiederholt werden soll</b> auf <code>1 Monat</code> und <b>Zeit zum Ausrichten von Zeitschritten</b> auf den <code>1. Januar 12:00 Uhr</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeInterval">
+        <div><h2>Zeitschrittintervall</h2></div>
+        <hr/>
+        <div>
+            <p>Das Zeitintervall f&uuml;r die Erzeugung von Zeitschritten. Das  <b>Zeitschrittintervall</b> kann entweder allein oder zusammen mit dem Parameter <b>Wie h&auml;ufig der Zeitschritt wiederholt werden soll</b> oder <b>Zeit zum Ausrichten von Zeitschritten</b> verwendet werden.
+            </p>
+            <p>Wenn Sie beispielsweise Zeitschritte erstellen m&ouml;chten, die jeden Montag von 9:00 bis 10:00 Uhr stattfinden, setzen Sie  <b>Zeitschrittintervall</b> auf <code>1 Stunde</code>, <b>Wie h&auml;ufig der Zeitschritt wiederholt werden soll</b> auf <code>1 Woche</code> und <b>Zeit zum Ausrichten von Zeitschritten</b> auf <code>9:00:00 Uhr am Montag</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeStep">
+        <div><h2>Wie häufig der Zeitschritt wiederholt werden soll</h2></div>
+        <hr/>
+        <div>
+            <p> Der Schritt zum Berechnen eines Zeitschritts. <b>Wie h&auml;ufig der Zeitschritt wiederholt werden soll</b> kann allein oder zusammen mit <b>Zeitschrittintervall</b>, mit <b>Bezugszeit</b> oder sowohl mit <b>Zeitschrittintervall</b> als auch mit <b>Zeit zum Ausrichten von Zeitschritten</b> verwendet werden.
+            </p>
+            <p> Wenn Sie beispielsweise Zeitschritte erstellen m&ouml;chten, die jeden Montag von 9:00 bis 10:00 Uhr stattfinden, setzen Sie <b>Zeitschrittintervall</b> auf <code>1 Stunde</code>, <b>Wie h&auml;ufig der Zeitschritt wiederholt werden soll</b> auf <code>1 Woche</code> und <b>Zeit zum Ausrichten von Zeitschritten</b> auf <code>9:00:00 Uhr am Montag</code>.
+            </p>
+        </div>
+    </div>
+    <div id="timeReference">
+        <div><h2>Zeit zum Ausrichten von Zeitschritten</h2></div>
+        <hr/>
+        <div>
+            <p>Das Datum und die Uhrzeit zum Ausrichten der Zeitintervalle. Die Zeitintervalle beginnen bzw. enden an diesem Zeitpunkt. Wenn keine Bezugszeit ausgew&auml;hlt wurde, werden die Intervalle am 1. Januar 1970 ausgerichtet. 
+            </p>
+            <p> Wenn Sie beispielsweise Zeitschritte erstellen m&ouml;chten, die jeden Montag von 9:00 bis 10:00 Uhr stattfinden, setzen Sie <b>Zeitschrittintervall</b> auf <code>1 Stunde</code>, <b>Wie h&auml;ufig der Zeitschritt wiederholt werden soll</b> auf <code>1 Woche</code> und <b>Zeit zum Ausrichten von Zeitschritten</b> auf <code>9:00:00 Uhr am Montag</code>.
+            </p>
+        </div>
+    </div>
+    <div id="summaryFields">
+        <div><h2>Statistiken hinzufügen (optional)</h2></div>
+        <hr/>
+        <div>
+            <p> Sie k&ouml;nnen f&uuml;r Features, die zusammengefasst wurden, Statistiken berechnen.F&uuml;r numerische Felder sind folgende Berechnungen m&ouml;glich:
+                <ul>
+                    <li>Anzahl: Berechnet die Anzahl der Nicht-NULL-Werte.Sie kann f&uuml;r numerische Felder oder Zeichenfolgen verwendet werden. Die Anzahl von [NULL, 0, 2] betr&auml;gt 2.
+                    </li>
+                    <li>Summe: Die Summe der numerischen Werte in einem Feld. Die Summe von [NULL, NULL, 3] betr&auml;gt 3.
+                    </li>
+                    <li>Mittelwert: Der Mittelwert der numerischen Werte. Der Mittelwert von [0, 2, NULL] betr&auml;gt 1.
+                    </li>
+                    <li>Min: Der Minimalwert eines numerischen Feldes. Der Minimalwert von [0, 2, NULL] betr&auml;gt 0. 
+                    </li>
+                    <li>Max: Der Maximalwert eines numerischen Feldes. Der Maximalwert von [0, 2, NULL] betr&auml;gt 2.
+                    </li>
+                    <li>Bereich: Der Bereich eines numerischen Feldes. Dieser wird durch die Subtraktion der Minimalwerte vom Maximalwert berechnet. Der Bereich von [0, NULL, 1] lautet 1. Der Bereich von [NULL, 4] lautet 0.
+                    </li>
+                    <li>Varianz: Die Varianz eines numerischen Feldes in einer Spur. Die Varianz von [1] betr&auml;gt Null. Die Varianz von [NULL, 1,0,1,1] betr&auml;gt 0,25.
+                    </li>
+                    <li>Standardabweichung: Die Standardabweichung eines numerischen Feldes. Die Standardabweichung von [1] ist Null. Die Standardabweichung von [NULL, 1,0,1,1] ist 0,5. 
+                    </li>
+                </ul>
+                
+            </p>
+            <p>F&uuml;r Zeichenfolgenfelder sind folgende Berechnungen m&ouml;glich:
+                <ul>
+                    <li>Anzahl: Die Anzahl der Nicht-NULL-Werte.
+                    </li>
+                    <li>Beliebig: Diese Statistik ist eine auf dem Zufallsprinzip basierende Stichprobe eines Zeichenfolgenwertes im angegebenen Feld.
+                    </li>
+                </ul>
+                Alle Statistiken werden f&uuml;r Nicht-NULL-Werte berechnet. Der resultierende Layer enth&auml;lt ein neues Feld f&uuml;r jede berechnete Statistik. Jede Anzahl von Statistiken kann durch Auswahl eines Attributs und einer Statistik ausgew&auml;hlt werden. 
+            </p>
+        </div>
+    </div>
+    <div id="spatialReference">
+        <div><h2>SpatialReference (WKID)</h2></div>
+        <hr/>
+        <div>
+            <p>Dies ist ein tempor&auml;rer Parameter f&uuml;r die Vorabversion zum Festlegen des Raumbezugs f&uuml;r die Verarbeitung. Viele Big-Data-Werkzeuge erfordern die Verwendung eines projizierten Koordinatensystems als Raumbezug f&uuml;r die Verarbeitung. Das Werkzeug verwendet standardm&auml;&szlig;ig das Eingabe-Koordinatensystem, kann jedoch nicht ausgef&uuml;hrt werden, wenn es sich um ein geographisches Koordinatensystem handelt. Geben Sie zum Festlegen eines projizierten Koordinatensystems die WKID ein. Die Eingabe f&uuml;r  <b>Web Mercator</b> ist beispielsweise <code>3857</code>.
+            </p>
+        </div>
+    </div>
+    <div id="dataStore">
+        <div><h2>Einen ArcGIS Data Store zum Speichern der Ergebnisse auswählen</h2></div>
+        <hr/>
+        <div>
+            <p>GeoAnalytics-Ergebnisse werden in einem Data Store gespeichert und als Feature-Layer in  Portal for ArcGIS dargestellt. In den meisten F&auml;llen sollten Ergebnisse im Data Store vom Typ &quot;spatiotemporal&quot; gespeichert werden, was gleichzeitig die Standardeinstellung ist. Manchmal empfiehlt es sich auch, Ergebnisse im Data Store vom Typ &quot;relational&quot; zu speichern. Die folgenden Gr&uuml;nde sprechen daf&uuml;r, die Ergebnisse im Data Store vom Typ &quot;relational&quot; zu speichern: 
+                <ul>
+                    <li>Sie k&ouml;nnen die Ergebnisse in portal&uuml;bergreifender Zusammenarbeit verwenden.
+                    </li>
+                    <li>Sie sind in der Lage, Synchronisierungsfunktionen mit Ihren Ergebnissen zu aktivieren.
+                    </li>
+                </ul>
+                
+            </p>
+            <p>Der Einsatz des Data Stores vom Typ &quot;relational&quot; wird nicht empfohlen, wenn abzusehen ist, dass Ihre GeoAnalytics-Ergebnisse weiter zunehmen. Nutzen Sie in diesem Fall die Funktionen des Big Data Store vom Typ &quot;spatiotemporal&quot; zur Verwaltung von gro&szlig;en Datenmengen.
+            </p>
+        </div>
+    </div>
+    <div id="outputName">
+        <div><h2>Name des Ergebnis-Layers</h2></div>
+        <hr/>
+        <div>
+            <p> Der Name des Layers, der erstellt wird.  Wenn Sie in einen ArcGIS Data Store schreiben, werden Ihre Ergebnisse in  <b>Eigene Inhalte</b> gespeichert und der Karte hinzugef&uuml;gt. Wenn Sie in eine Big-Data-Dateifreigabe schreiben, werden Ihre Ergebnisse in der Big-Data-Dateifreigabe gespeichert und  ihrem Manifest hinzugef&uuml;gt. Sie werden nicht der Karte hinzugef&uuml;gt. Der Standardname basiert auf dem Werkzeugnamen und dem Namen des Eingabe-Layers. Wenn der Layer bereits vorhanden ist, kann das Werkzeug nicht ausgef&uuml;hrt werden.
+            </p>
+            <p>Wenn Sie &uuml;ber das Dropdown-Feld  <b>Ergebnis speichern in</b> in ArcGIS Data Store (Big Data Store vom Typ &quot;relational&quot; oder &quot;spatiotemporal&quot;) schreiben, k&ouml;nnen Sie den Namen eines Ordners in  <b>Eigene Inhalte</b> angeben, in dem das Ergebnis gespeichert wird.
+            </p>
+        </div>
+    </div>
+</div>
+</html>

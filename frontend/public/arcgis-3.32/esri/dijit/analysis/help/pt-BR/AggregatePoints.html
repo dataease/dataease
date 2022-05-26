@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="Stylesheet" href="../css/analysis.css" />
+    <script type="text/javascript">
+        function init() {
+            if (window.location.hash) {
+                var parentDiv, nodes, i, helpInfo, helpId, helpInfoArr, helpEnvFilter, envContent, hideEnvClass, hideNodes;
+                helpInfo = window.location.hash.substring(1);
+                    if(helpInfo.indexOf("-")) {
+                        helpInfoArr = helpInfo.split("-");
+                        helpId = helpInfoArr[0];
+                        helpEnvFilter = helpInfoArr[1];
+                    }
+                    else {
+                        helpId = helpInfo;
+                    }
+                parentDiv = document.getElementById("topics");
+                nodes = parentDiv.children;
+                    hideEnvClass = (helpEnvFilter === "OnlineOnly"? "PortalOnly": "OnlineOnly");
+                    if(document.getElementsByClassName) {
+                        hideNodes = document.getElementsByClassName(hideEnvClass);
+                    }
+                    else {
+                        hideNodes = document.querySelectorAll(hideEnvClass);
+                    }
+                for(i=0; i < nodes.length; i++) {
+                    if(nodes[i].id !== helpId) {
+                        nodes[i].style.display ="none";
+                    }
+                    }
+                    for(i=0; i < hideNodes.length; i++) {
+                        hideNodes[i].style.display ="none";
+                    }
+                }
+            }
+    </script>
+</head>
+<body onload="init()">
+<div id="topics">
+    <div id="toolDescription" class="largesize">
+        <h2>Agregar Pontos</h2><p/>
+        <h2><img src="../images/GUID-60C59C66-3038-4D0E-8F6A-EC6C53FEAA02-web.png" alt="Agregar Pontos"></h2>
+        <hr/>
+    <p>Esta ferramenta trabalha com uma camada de fei&ccedil;&otilde;es de ponto e uma camada de fei&ccedil;&otilde;es de &aacute;rea. Ela primeiro determina quais pontos caem dentro de cada &aacute;rea. Ap&oacute;s determinar este relacionamento espacial do ponto na &aacute;rea, as estat&iacute;sticas sobre todos os pontos na &aacute;rea s&atilde;o calculadas e atribu&iacute;das para a &aacute;rea. A estat&iacute;stica mais b&aacute;sica &eacute; a contagem do n&uacute;mero de pontos dentro da &aacute;rea, mas voc&ecirc; tamb&eacute;m pode obter outras estat&iacute;sticas. 
+    </p>
+    <p>Por exemplo, suponha que voc&ecirc; tenha fei&ccedil;&otilde;es de ponto dos locais das cafeterias e fei&ccedil;&otilde;es de &aacute;rea dos munic&iacute;pios, e voc&ecirc; deseja resumir as vendas de caf&eacute; por munic&iacute;pio. Assumindo que as cafeterias t&ecirc;m um atributo  <i>TOTAL_SALES</i> , voc&ecirc; pode obter a soma de todos <i>TOTAL_SALES</i> dentro de cada munic&iacute;pio ou o m&iacute;nimo ou m&aacute;ximo <i>TOTAL_SALES</i> dentro de cada munic&iacute;pio, ou o desvio padr&atilde;o de todas as vendas dentro de cada munic&iacute;pio.
+    </p>
+    <p>Se  <b>Utilizar extens&atilde;o de mapa atual</b> estiver selecionada, somente as fei&ccedil;&otilde;es na camada de ponto de entrada e camada de &aacute;rea vis&iacute;vel dentro da extens&atilde;o de mapa atual ser&atilde;o analisadas.  Se n&atilde;o estiver selecionada, todas as fei&ccedil;&otilde;es em ambas a camada de ponto de entrada e a camada de &aacute;rea ser&atilde;o analisadas, mesmo que estiverem fora da extens&atilde;o de mapa atual.
+    </p>
+    </div>
+    <!--Parameter divs for each param-->
+    <div id="pointLayer">
+        <div><h2>Escolha a camada contendo pontos para agregar nas áreas</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de ponto que ser&aacute; agregada nas &aacute;reas.
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> localizado na parte inferior da lista suspensa. Esta op&ccedil;&atilde;o abre uma galeria onde voc&ecirc; pode procurar e selecionar conjunto de dados de v&aacute;rias fontes para utilizar em sua an&aacute;lise. 
+            </p>
+        </div>
+    </div>
+    <div id="polygonLayer">
+        <div><h2>Escolha a camada contendo as áreas de agregação</h2></div>
+        <hr/>
+        <div>
+            <p>A camada de &aacute;rea na qual os pontos ser&atilde;o agregados. Quaisquer pontos que ca&iacute;rem dentro dos limites de &aacute;reas nesta camada ser&atilde;o contados e opcionalmente resumidos utilizando suas op&ccedil;&otilde;es de estat&iacute;stica.  
+            </p>
+            <p>Voc&ecirc; pode escolher entre uma camada de &aacute;rea que voc&ecirc; fornece ou caixas que s&atilde;o geradas quando a ferramenta &eacute; executada.   Ao gerar caixas, para  <b>Quadrado</b>, o n&uacute;mero e unidades especificadas determinam a altura e comprimento do quadrado. Para <b>Hex&aacute;gono</b>, o n&uacute;mero e unidades especificadas determina a dist&acirc;ncia entre os lados paralelos.
+            </p>
+            <p>Al&eacute;m de escolher uma camada do seu mapa, voc&ecirc; pode selecionar  <b>Escolher Camada de An&aacute;lise</b> localizado na parte inferior da lista suspensa. Esta op&ccedil;&atilde;o abre uma galeria onde voc&ecirc; pode procurar e selecionar conjunto de dados de v&aacute;rias fontes para utilizar em sua an&aacute;lise. 
+            </p>
+        </div>
+    </div>
+    <div id="KeepBoundaryNoPoints">
+        <div><h2>Manter áreas sem pontos</h2></div>
+        <hr/>
+        <div>
+            <p>Determina se as &aacute;reas que n&atilde;o t&ecirc;m nenhum ponto dentro delas aparecem na camada resultante. Se n&atilde;o selecionada, as &aacute;reas sem pontos n&atilde;o aparecer&atilde;o no resultado. Se selecionada, as &aacute;reas sem pontos aparecer&atilde;o no resultado.  
+            </p>
+        </div>
+    </div>
+    <div id="SummaryFields">
+        <div><h2>Adicionar estatística</h2></div>
+        <hr/>
+        <div>
+            <p>Voc&ecirc; pode calcular estat&iacute;sticas sobre atributos da camada de ponto de entrada como soma, m&eacute;dia, m&iacute;nimo, m&aacute;ximo e desvio padr&atilde;o. A camada resultante conter&aacute; um novo atributo para cada estat&iacute;stica calculada. Qualquer n&uacute;mero de estat&iacute;stica pode ser adicionado ao escolher um atributo e estat&iacute;stica (uma nova caixa suspensa aparecer&aacute;).
+ 
+            </p>
+            <p>Se a camada para resumir n&atilde;o tiver quaisquer campos de n&uacute;mero, a estat&iacute;stica adicional n&atilde;o estar&aacute; dispon&iacute;vel.
+            </p>
+        </div>
+    </div>
+    <div id="GroupByField">
+        <div><h2>Escolher campo para agrupar por</h2></div>
+        <hr/>
+        <div>
+            <p> Voc&ecirc; pode criar grupos de estat&iacute;stica utilizando um atributo na camada de ponto de entrada.    Por exemplo, se voc&ecirc; estiver agregando crimes para limites do bairro, voc&ecirc; poder&aacute; ter um atributo <i>Crime_type</i> com cinco diferentes tipos de crime. Cada um dos tipos de crime formam um grupo, e a estat&iacute;stica que voc&ecirc; escolher ser&aacute; calculada para cada valor &uacute;nico de <i>Crime_type</i>. A estat&iacute;stica para cada grupo, como tamb&eacute;m, a contagem de pontos, ser&aacute; exibida no pop-up da camada resultante. Quando voc&ecirc; escolher um atributo do grupo, dois resultados ser&atilde;o criados: a camada resultante e uma tabela resultante contendo a estat&iacute;stica para cada um dos grupos.
+            </p>
+        </div>
+    </div>
+    <div id="MinorityMajority">
+        <div><h2>Adicionar minoria, maioria</h2></div>
+        <hr/>
+        <div>
+            <p>Esta caixa de sele&ccedil;&atilde;o &eacute; habilitada quando voc&ecirc; escolhe um campo para agrupar. Se voc&ecirc; desejar descobrir quais valores de atributo dentro de cada grupo s&atilde;o a minoria (menos dominante) ou a maioria (mais dominante) dentro da dist&acirc;ncia ou tempo que voc&ecirc; especificou, selecione  <b>Adicionar minoria, maioria</b>.   Quando voc&ecirc; seleciona <b>Adicionar minoria, maioria</b>, dois novos campos s&atilde;o adicionados na sua camada resultante.   Se voc&ecirc; tamb&eacute;m selecionar <b>Adicionar porcentagens</b>, dois campos adicionais ser&atilde;o adicionados na camada resultante contendo as porcentagens dos valores de atributo da minoria e maioria dentro de cada grupo.
+            </p>
+            <p>Por exemplo, se voc&ecirc; for um planejador da cidade e voc&ecirc; deseja descobrir quais esp&eacute;cies de &aacute;rvore est&atilde;o em minoria e quais est&atilde;o em maioria dentro de todos os parques da cidade, agregue seus dados de &aacute;rvore com suas &aacute;reas de parque e marque esta op&ccedil;&atilde;o.
+            </p>
+        </div>
+    </div>
+    <div id="PercentPoints">
+        <div><h2>Adicionar porcentagens</h2></div>
+        <hr/>
+        <div>
+            <p>Esta caixa de sele&ccedil;&atilde;o &eacute; habilitada quando voc&ecirc; escolhe um campo para agrupar. Selecione  <b>Adicionar porcentagens</b> se desejar localizar a porcentagem de cada valor de atributo dentro de cada grupo.  Um novo campo &eacute; adicionado na tabela resultante contendo as porcentagens de cada valor de atributo dentro de cada grupo. Se <b>Adicionar minoria, maioria</b> tamb&eacute;m for selecionado, dois campos adicionais ser&atilde;o adicionados na camada resultante contendo as porcentagens dos valores de atributo da minoria e maioria dentro de cada grupo.
+            </p>
+        </div>
+    </div>
+    <div id="OutputLayer">
+        <div><h2>Nome da camada resultante</h2></div>
+        <hr/>
+        <div>
+            <p>Este &eacute; o nome da camada que ser&aacute; criada em  <b>Meu Conte&uacute;do</b> e adicionada no mapa.  O nome padr&atilde;o &eacute; baseado no nome da ferramenta e o nome da camada de entrada. Se o nome da camada j&aacute; existir, voc&ecirc; ser&aacute; solicitado para fornecer outro nome.
+            </p>
+            <p>Ao utilizar o menu suspenso  <b>Salvar resultado em</b>, &eacute; poss&iacute;vel especificar o nome de uma pasta em <b>Meu Conte&uacute;do</b> onde o resultado ser&aacute; salvo.
+            </p>
+        </div>
+    </div>
+</div>
+</html>
