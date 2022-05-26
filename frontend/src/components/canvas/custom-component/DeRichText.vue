@@ -107,7 +107,7 @@ export default {
         plugins: 'advlist autolink link image lists charmap  media wordcount table contextmenu directionality pagebreak', // 插件
         // 工具栏
         // toolbar: 'undo redo |  fontsizeselect fontselect | bold italic forecolor backcolor underline strikethrough | alignleft aligncenter alignright | lists image media table link | bullist numlist ',
-        toolbar: 'undo redo |formatselect fontselect fontsizeselect forecolor backcolor bold italic underline strikethrough link | ' +
+        toolbar: 'undo redo |fontselect fontsizeselect |forecolor backcolor bold italic |underline strikethrough link| formatselect |' +
             'alignleft aligncenter alignright | bullist numlist |' +
             ' blockquote subscript superscript removeformat | table image media | fullscreen ' +
             '| bdmap indent2em lineheight formatpainter axupimgs',
