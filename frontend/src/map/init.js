@@ -13,8 +13,8 @@ function ArcGIS() {
 
 ArcGIS.prototype.init = function init($el) {
   // 加载地图必备样式文件
-  loadCss("http://localhost:9528/arcgis-3.32/esri/css/esri.css");
-  loadCss("http://localhost:9528/arcgis-3.32/dijit/themes/claro/claro.css");
+  loadCss("http://2.40.7.227:8080/arcgis-3.32/esri/css/esri.css");
+  loadCss("http://2.40.7.227:8080/arcgis-3.32/dijit/themes/claro/claro.css");
 
   // 异步加载对应 js 模块
   loadModules(
