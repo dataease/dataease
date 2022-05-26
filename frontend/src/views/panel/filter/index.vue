@@ -55,7 +55,8 @@ export default {
         '文本过滤组件': [
           'textSelectWidget',
           'textSelectGridWidget',
-          'textInputWidget'
+          'textInputWidget',
+          'textSelectTreeWidget'
         ],
         '数字过滤组件': [
           'numberSelectWidget',

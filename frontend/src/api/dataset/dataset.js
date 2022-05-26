@@ -146,11 +146,21 @@ export function post(url, data, showLoading = true, timeout = 60000) {
   })
 }
 
-export function fieldValues(fieldId) {
+export function mappingFieldValues(data) {
   return request({
-    url: '/dataset/field/fieldValues/' + fieldId,
+    url: '/dataset/field/mappingFieldValues',
     method: 'post',
-    loading: true
+    loading: true,
+    data
+  })
+}
+
+export function linkMappingFieldValues(data) {
+  return request({
+    url: '/dataset/field/linkMappingFieldValues',
+    method: 'post',
+    loading: true,
+    data
   })
 }
 
