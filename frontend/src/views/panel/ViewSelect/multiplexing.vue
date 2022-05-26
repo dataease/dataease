@@ -11,7 +11,7 @@
         v-if="selectedPanel"
         :component-data="componentData"
         :canvas-style-data="canvasStyleData"
-        :show-position="'multiplexing'"
+        :show-position="showPosition"
       />
       <el-col v-else style="height: 100%;">
         <el-row style="height: 100%; background-color: var(--ContentBG);" class="custom-position">
@@ -45,6 +45,7 @@ export default {
   },
   data() {
     return {
+      showPosition: 'multiplexing',
       activeName: 'PanelList',
       viewLoading: false,
       panelLoading: false,
@@ -60,21 +61,25 @@ export default {
 
   },
   mounted() {
+    this.$store.commit('initCurMultiplexingComponents')
   },
   methods: {
     showDetails(params) {
+      this.$store.commit('initCurMultiplexingComponents')
       const _this = this
       _this.selectedPanel = params
       if (params.showType === 'panel') {
-        this.panelLoading = true
+        _this.showPosition = 'multiplexing'
+        _this.panelLoading = true
         findOne(params.showId).then(response => {
-          this.panelLoading = false
+          _this.panelLoading = false
           panelDataPrepare(JSON.parse(response.data.panelData), JSON.parse(response.data.panelStyle), function(rsp) {
             _this.componentData = rsp.componentData
             _this.canvasStyleData = rsp.componentStyle
           })
         })
       } else if (params.showType === 'view') {
+        _this.showPosition = 'multiplexing-view'
         _this.componentData = []
         const componentId = uuid.v1()
         _this.canvasStyleData = deepCopy(DEFAULT_COMMON_CANVAS_STYLE_STRING)

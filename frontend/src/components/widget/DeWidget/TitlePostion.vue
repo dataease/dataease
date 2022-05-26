@@ -7,17 +7,16 @@
     <el-col>
       <el-form ref="tabsStyleForm" :model="styleInfo" label-width="80px" size="mini" class="demo-form-inline">
         <el-form-item :label="$t('chart.text_h_position')" class="form-item">
-          <el-radio-group v-model="styleInfo.hPosition" size="mini" @change="styleChange">
+          <el-radio-group v-model="styleInfo.horizontal" size="mini">
             <el-radio-button label="left">{{ $t('chart.text_pos_left') }}</el-radio-button>
             <el-radio-button label="center">{{ $t('chart.text_pos_center') }}</el-radio-button>
             <el-radio-button label="right">{{ $t('chart.text_pos_right') }}</el-radio-button>
           </el-radio-group>
         </el-form-item>
-        <el-form-item :label="$t('chart.text_v_position')" class="form-item">
-          <el-radio-group v-model="styleInfo.vPosition" size="mini" @change="styleChange">
+        <el-form-item v-if="showVertical" :label="$t('chart.text_v_position')" class="form-item">
+          <el-radio-group v-model="styleInfo.vertical" size="mini">
             <el-radio-button label="top">{{ $t('chart.text_pos_top') }}</el-radio-button>
             <el-radio-button label="center">{{ $t('chart.text_pos_center') }}</el-radio-button>
-            <el-radio-button label="bottom">{{ $t('chart.text_pos_bottom') }}</el-radio-button>
           </el-radio-group>
         </el-form-item>
 
@@ -37,25 +36,10 @@ export default {
     styleInfo: {
       type: Object,
       default: null
-    }
-  },
-
-  data() {
-    return {
-      defaultPosition: {
-        hPosition: 'left',
-        vPosition: 'center'
-      }
-    }
-  },
-
-  created() {
-
-  },
-  methods: {
-
-    styleChange() {
-      this.$store.commit('recordStyleChange')
+    },
+    showVertical: {
+      type: Boolean,
+      default: false
     }
   }
 
