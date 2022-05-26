@@ -78,7 +78,9 @@ export default {
       type: Object,
       // {}
       default() {
-        return {}
+        return {
+          width: '100%'
+        }
       }
     },
     // 下拉框 挂类
