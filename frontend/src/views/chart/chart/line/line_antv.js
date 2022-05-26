@@ -104,6 +104,7 @@ export function baseLineOptionAntV(plot, container, chart, action) {
 }
 
 export function baseAreaOptionAntV(plot, container, chart, action) {
+  console.log(plot, container, chart, action)
   // theme
   const theme = getTheme(chart)
   // attr

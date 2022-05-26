@@ -999,6 +999,8 @@ export default {
     chart_type_distribute: '分布',
     chart_type_relation: '关系',
     chart_type_space: '空间位置',
+    texture_pie: '纹理饼图',
+    heat_map: '热力图',
     preview: '上一步',
     next: '下一步',
     select_dataset: '选择数据集',

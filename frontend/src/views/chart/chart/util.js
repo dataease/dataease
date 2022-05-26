@@ -320,6 +320,20 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_map',
     icon: 'map'
   },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_distribute',
+    value: 'pie-txture',
+    title: 'chart.texture_pie',
+    icon: 'pie-txture'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_distribute',
+    value: 'diagram',
+    title: 'chart.heat_map',
+    icon: 'diagram'
+  }
   /* 下面是highcharts图表类型 */
   // {
   //   render: 'highcharts',

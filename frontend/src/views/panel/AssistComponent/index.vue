@@ -104,6 +104,7 @@ export default {
 
   methods: {
     handleDragStart(ev) {
+      console.log('======拖拽触发事件', ev)
       this.$store.commit('setDragComponentInfo', this.componentInfo(ev.target.dataset.id))
       ev.dataTransfer.effectAllowed = 'copy'
       const dataTrans = {
@@ -161,6 +162,7 @@ export default {
     componentInfo(id) {
     // 辅助设计组件
       let component
+      console.log('componentList', componentList)
       componentList.forEach(componentTemp => {
         if (id === componentTemp.id) {
           component = deepCopy(componentTemp)
