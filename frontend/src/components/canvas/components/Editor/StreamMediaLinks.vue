@@ -19,7 +19,7 @@
             Tips:{{ $t('panel.live_tips') }}
           </span>
         </el-form-item>
-        <el-row v-if="streamMediaInfoTemp.videoType !== 'webrtc'">
+        <el-row v-if="streamMediaInfoTemp.videoType === 'flv' || streamMediaInfoTemp.videoType === 'hls'">
           <el-form-item :label="$t('panel.is_live')">
             <el-radio-group v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].isLive">
               <el-radio :label="true">{{ $t('panel.yes') }}</el-radio>
@@ -39,7 +39,8 @@
             <el-input v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].url" />
           </el-form-item>
         </el-row>
-        <el-row v-if="streamMediaInfoTemp.videoType === 'webrtc'">
+
+        <el-row v-if="streamMediaInfoTemp.videoType === 'webrtc' || streamMediaInfoTemp.videoType === 'rtmp'">
           <el-form-item :label="$t('panel.video_links')">
             <el-input v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].url" />
           </el-form-item>
