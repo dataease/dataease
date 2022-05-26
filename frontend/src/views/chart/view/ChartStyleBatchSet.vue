@@ -5,6 +5,7 @@
     </el-row>
     <chart-style
       v-if="mixProperties&&batchOptChartInfo"
+      class="chart-style-main"
       :param="param"
       :view="batchOptChartInfo"
       :chart="batchOptChartInfo"
@@ -128,6 +129,10 @@ export default {
     overflow-y: hidden;
     width: 100%;
     border-left: 1px solid #E6E6E6
+  }
+
+  .chart-style-main{
+    height:  calc(100% - 40px)!important;
   }
 
   .view-title-name {
