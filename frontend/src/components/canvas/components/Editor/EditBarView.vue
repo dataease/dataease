@@ -9,7 +9,7 @@
       </span>
     </div>
     <div v-if="positionCheck('multiplexing')" style="margin-right: -1px;width: 18px;z-index: 5">
-      <el-checkbox size="medium" @change="multiplexingCheck" />
+      <el-checkbox v-model="multiplexingCheckModel" size="medium" @change="multiplexingCheck" />
     </div>
   </div>
 </template>
@@ -41,6 +41,7 @@ export default {
   },
   data() {
     return {
+      multiplexingCheckModel: false,
       componentType: null,
       linkageActiveStatus: false,
       editFilter: [
@@ -67,6 +68,10 @@ export default {
     ])
   },
   mounted() {
+    if (this.showPosition === 'multiplexing-view') {
+      this.multiplexingCheckModel = true
+      this.multiplexingCheck(this.multiplexingCheckModel)
+    }
   },
   beforeDestroy() {
   },
@@ -86,7 +91,7 @@ export default {
       this.$emit('showViewDetails')
     },
     positionCheck(position) {
-      return this.showPosition === position
+      return this.showPosition.includes(position)
     },
     multiplexingCheck(val) {
       if (val) {
